@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate icon" href="/favicon.svg" />
+    <title>Portfolio | Senior Fullstack Developer</title>
+    <meta name="description" content="Professional portfolio showcasing projects and skills." />
+    <meta name="author" content="Eka" />
+
+    <meta property="og:title" content="Portfolio | Senior Fullstack Developer" />
+    <meta property="og:description" content="Professional portfolio showcasing projects and skills." />
+    <meta property="og:type" content="website" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <script>
+      (function () {
+        var host = location.hostname || '';
+        var isProd = /etech\.my\.id$/i.test(host);
+        if (isProd) {
+          var methods = ['log','warn','error','info','debug','trace'];
+          for (var i=0;i<methods.length;i++){
+            try { console[methods[i]] = function(){}; } catch(e) {}
+          }
+        }
+      })();
+    </script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
