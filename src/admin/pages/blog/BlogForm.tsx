@@ -8,9 +8,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/use-toast';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
 import { api } from '../../services/api';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Loader2, Save, ArrowLeft, Image as ImageIcon, Sparkles, Youtube, Code, Wand2, Trash2, MessageCircle, Plus } from 'lucide-react';
+import { Loader2, Save, ArrowLeft, Image as ImageIcon, Sparkles, Youtube, Code, Wand2, Trash2, MessageCircle, Plus, Calendar as CalendarIcon } from 'lucide-react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
@@ -131,6 +134,7 @@ export default function BlogForm() {
     seo_description: '',
     seo_keywords: '',
     is_published: false,
+    published_at: undefined as Date | undefined,
     views: 0,
     likes: 0
   });
@@ -205,6 +209,7 @@ export default function BlogForm() {
         seo_description: postData.seo_description || '',
         seo_keywords: safeParseTags(postData.seo_keywords),
         is_published: postData.is_published,
+        published_at: postData.published_at ? new Date(postData.published_at) : undefined,
         views: postData.views || 0,
         likes: postData.likes || 0
       });
@@ -281,7 +286,8 @@ export default function BlogForm() {
         seo_keywords: formData.seo_keywords.split(',').map(t => t.trim()).filter(Boolean),
         cover_image_url: formData.coverImage,
         views: safeViews,
-        likes: safeLikes
+        likes: safeLikes,
+        published_at: formData.published_at || new Date()
       };
 
       if (id) {
@@ -491,6 +497,39 @@ export default function BlogForm() {
               </div>
               <div className="text-sm text-muted-foreground text-right">
                 {formData.is_published ? "Akan dipublikasikan" : "Simpan sebagai Draft"}
+              </div>
+
+              <div className="pt-4 border-t space-y-2">
+                <Label>Tanggal Pembuatan (Opsional)</Label>
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button
+                            variant={"outline"}
+                            className={cn(
+                                "w-full justify-start text-left font-normal",
+                                !formData.published_at && "text-muted-foreground"
+                            )}
+                        >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {formData.published_at ? (
+                                format(formData.published_at, "PPP", { locale: idLocale })
+                            ) : (
+                                <span>Pilih tanggal (Default: Sekarang)</span>
+                            )}
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                            mode="single"
+                            selected={formData.published_at}
+                            onSelect={(date) => setFormData({...formData, published_at: date})}
+                            initialFocus
+                        />
+                    </PopoverContent>
+                </Popover>
+                <p className="text-xs text-muted-foreground">
+                    Tanggal ini akan ditampilkan sebagai waktu publikasi.
+                </p>
               </div>
 
               {/* Custom Views & Likes */}

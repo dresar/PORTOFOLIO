@@ -239,7 +239,7 @@ const BlogList = () => {
                         <div className="flex items-center gap-4 text-xs text-muted-foreground mb-3">
                           <div className="flex items-center gap-1">
                             <Calendar className="h-3 w-3" />
-                            <span>{post.published_at ? format(new Date(post.published_at), 'dd MMM yyyy', { locale: id }) : '-'}</span>
+                            <span>{format(new Date(post.published_at || post.created_at), 'dd MMM yyyy', { locale: id })}</span>
                           </div>
                           <div className="flex items-center gap-1">
                             <User className="h-3 w-3" />

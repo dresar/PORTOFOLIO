@@ -253,7 +253,7 @@ const BlogDetail = () => {
                     </Badge>
                     <span className="text-muted-foreground text-sm flex items-center">
                         <Calendar className="w-4 h-4 mr-1" />
-                        {format(new Date(post.created_at), 'd MMMM yyyy', { locale: idLocale })}
+                        {format(new Date(post.published_at || post.created_at), 'd MMMM yyyy', { locale: idLocale })}
                     </span>
                 </div>
 
