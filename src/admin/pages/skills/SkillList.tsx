@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { useToast } from '@/components/ui/use-toast';
+import { normalizeMediaUrl } from '@/lib/utils';
 import { api } from '../../services/api';
 import { 
   Plus, 
@@ -241,8 +242,26 @@ export default function SkillList() {
             </div>
             <CardContent className="p-5">
               <div className="flex justify-between items-start mb-4">
-                <div className="p-2 bg-secondary/50 rounded-lg">
-                  {getCategoryIcon(skill.category)}
+                <div className="p-2 bg-secondary/50 rounded-lg w-12 h-12 flex items-center justify-center">
+                  {skill.logo_url ? (
+                     <img 
+                       src={normalizeMediaUrl(skill.logo_url)} 
+                       alt={skill.name} 
+                       className="w-8 h-8 object-contain" 
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.parentElement?.querySelector('.fallback-icon')?.classList.remove('hidden');
+                      }}
+                    />
+                  ) : (
+                     getCategoryIcon(skill.category)
+                  )}
+                  {/* Hidden fallback icon that shows if image fails */}
+                  {skill.logo_url && (
+                    <div className="fallback-icon hidden">
+                      {getCategoryIcon(skill.category)}
+                    </div>
+                  )}
                 </div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
