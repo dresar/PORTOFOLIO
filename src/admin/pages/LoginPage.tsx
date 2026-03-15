@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Loader2, Lock, Mail, Terminal } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import adminApi from '../services/adminApi';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -21,6 +22,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [isDbModalOpen, setIsDbModalOpen] = useState(false);
   const login = useAdminAuthStore((state) => state.login);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -76,6 +78,9 @@ export default function LoginPage() {
 
     } catch (error: any) {
       console.error("Login error:", error);
+      if (error.response?.status === 503) {
+        setIsDbModalOpen(true);
+      }
       const msg = error.response?.data?.error || error.response?.data?.message || "Invalid email or password";
       toast({
         variant: "destructive",
@@ -96,6 +101,20 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/40 p-4">
+      <Dialog open={isDbModalOpen} onOpenChange={setIsDbModalOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Koneksi Database Bermasalah</DialogTitle>
+            <DialogDescription>
+              Admin tidak bisa login karena koneksi database belum tersedia. Periksa konfigurasi server dan coba lagi.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setIsDbModalOpen(false)}>Tutup</Button>
+            <Button onClick={() => window.location.reload()}>Coba Lagi</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
       <Card className="w-full max-w-md shadow-xl border-t-4 border-t-primary">
         <CardHeader className="space-y-1 text-center">
           <CardTitle className="text-2xl font-bold">Admin Login</CardTitle>

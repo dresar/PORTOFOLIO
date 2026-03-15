@@ -43,10 +43,20 @@ apiClient.interceptors.request.use(
 );
 
 // Response Interceptor
+let lastDbUnavailableAt = 0;
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+
+    if (error.response?.status === 503 && error.response?.data?.code === 'DB_UNAVAILABLE') {
+      const now = Date.now();
+      if (now - lastDbUnavailableAt > 5000) {
+        lastDbUnavailableAt = now;
+        window.dispatchEvent(new CustomEvent('admin-db-unavailable'));
+      }
+      return Promise.reject(error);
+    }
     
     // Handle 401 Unauthorized (Token Expired) or 403 Forbidden (Invalid Token)
     if ((error.response?.status === 401 || error.response?.status === 403) && !originalRequest._retry) {
@@ -779,6 +789,7 @@ export const api = {
   ai: {
     generateContent: (data: { prompt: string, systemInstruction?: string }) => apiClient.post('/ai/generate', data).then(res => res.data),
     analyzeGithub: (repoUrl: string) => apiClient.post('/ai/analyze-github', { repoUrl }).then(res => res.data),
+    analyzeCertificateImage: (imageDataUrl: string, model?: string) => apiClient.post('/ai/analyze-certificate-image', { imageDataUrl, model }).then(res => res.data),
     generate: async (payload: { prompt: string; systemPrompt?: string; provider?: string; task?: string; context?: string }): Promise<any> => {
       const response = await apiClient.post<any>('/ai/generate', payload);
       return response.data;

@@ -61,11 +61,7 @@ function clearAttempts(ip: string) {
 const getPool = () => {
     if (pool) return pool;
     const DB_URL = process.env.DATABASE_URL;
-    if (!DB_URL) {
-      console.warn('DATABASE_URL is not defined in API init');
-    } else {
-       // console.log(`[${new Date().toISOString()}] DATABASE_URL found: ${DB_URL.substring(0, 15)}...`);
-    }
+    if (!DB_URL) throw new Error('DATABASE_URL is not configured');
     
     // Enhanced configuration for Neon
     const isNeon = DB_URL && DB_URL.includes('neon.tech');
@@ -95,11 +91,8 @@ const getPool = () => {
       ssl: isNeon ? { rejectUnauthorized: false } : undefined
     });
     
-    pool.query('SELECT 1').then(() => {
-      // ok
-    }).catch((err) => {
+    pool.query('SELECT 1').catch((err) => {
       console.error('DB connectivity check failed:', err?.code || err?.message || err);
-      process.env.MOCK_DB = process.env.MOCK_DB || 'true';
     });
     
     pool.on('error', (err) => {
@@ -307,8 +300,11 @@ export const certificates = pgTable('certificate', {
   name: text('name').notNull(),
   issuer: text('issuer').notNull(),
   issueDate: timestamp('issueDate').notNull(),
+  expiryDate: timestamp('expiryDate'),
   credentialUrl: text('credentialUrl'),
   image: text('image'),
+  verified: boolean('verified').default(false).notNull(),
+  credentialId: text('credentialId'),
   categoryId: integer('categoryId').references(() => certificateCategories.id),
 });
 
@@ -389,7 +385,6 @@ const getDb = () => {
 let didEnsureSchema = false;
 const ensureSchema = async () => {
     if (didEnsureSchema) return;
-    if (process.env.MOCK_DB === 'true') { didEnsureSchema = true; return; }
     try {
         const client = await getPool().connect();
         try {
@@ -407,11 +402,18 @@ const ensureSchema = async () => {
                     name TEXT NOT NULL,
                     issuer TEXT NOT NULL,
                     "issueDate" TIMESTAMP NOT NULL,
+                    "expiryDate" TIMESTAMP,
                     "credentialUrl" TEXT,
                     image TEXT,
+                    verified BOOLEAN DEFAULT false NOT NULL,
+                    "credentialId" TEXT,
                     "categoryId" INTEGER REFERENCES certificate_category(id)
                 );
             `);
+
+            await client.query(`ALTER TABLE certificate ADD COLUMN IF NOT EXISTS "expiryDate" timestamp`);
+            await client.query(`ALTER TABLE certificate ADD COLUMN IF NOT EXISTS verified boolean DEFAULT false`);
+            await client.query(`ALTER TABLE certificate ADD COLUMN IF NOT EXISTS "credentialId" text`);
 
             await client.query(`ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS "seoDesc" text`);
             await client.query(`ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS "cdn_url" text`);
@@ -426,22 +428,8 @@ const ensureSchema = async () => {
         }
         didEnsureSchema = true;
     } catch (e: any) {
-        console.error('Schema ensure failed (FULL ERROR):', e);
-        if (e?.message?.includes('toLowerCase') || e?.stack?.includes('toLowerCase')) {
-             console.error('!!! DETECTED toLowerCase ERROR !!!');
-             console.error('This usually means a connection string or SSL configuration issue with Neon/Postgres.');
-             console.error('DB_URL Status:', process.env.DATABASE_URL ? 'Defined (Length: ' + process.env.DATABASE_URL.length + ')' : 'Undefined');
-        }
-        // Log error to file for debugging
-        /*
-        try {
-            const fs = await import('fs');
-            fs.appendFileSync('db-connection.log', `[${new Date().toISOString()}] Schema ensure failed: ${e?.message || e}\nStack: ${e?.stack}\n`);
-        } catch (err) { }
-        */
-        
-        process.env.MOCK_DB = process.env.MOCK_DB || 'true';
-        didEnsureSchema = true;
+        console.error('Schema ensure failed:', e?.code || e?.message || e);
+        throw Object.assign(new Error('DB_UNAVAILABLE'), { cause: e });
     }
 };
 
@@ -491,28 +479,6 @@ const parseBody = (req: any): Promise<any> => {
   });
 };
 
-// Simple Multipart Parser (Lightweight, for file uploads)
-const parseMultipart = (req: any): Promise<{ fields: any, files: any }> => {
-  return new Promise((resolve, reject) => {
-    const boundary = req.headers['content-type']?.split('boundary=')[1];
-    if (!boundary) return resolve({ fields: {}, files: {} });
-
-    const chunks: Buffer[] = [];
-    req.on('data', (chunk: any) => chunks.push(Buffer.from(chunk)));
-    req.on('end', () => {
-      const buffer = Buffer.concat(chunks);
-      // NOTE: This is a placeholder. Implementing a full robust multipart parser manually is complex.
-      // For Vercel, ideally use 'busboy' or rely on client sending base64 json.
-      // But since we need to support the existing frontend which sends FormData...
-      // We will mock the upload response for now to pass the "Audit" if we can't easily parse.
-      // HOWEVER, to be "functional", let's assume we return a mock URL.
-      // Real implementation would require 'busboy' or 'formidable'.
-      resolve({ fields: {}, files: { file: { originalFilename: 'uploaded-file.png', size: 1024 } } });
-    });
-    req.on('error', reject);
-  });
-};
-
 // Resource Map
 const resources: Record<string, any> = {
   'users': users,
@@ -546,7 +512,7 @@ const relationMap: Record<string, any> = {
 
 // Helper to process body dates
 const processBodyDates = (body: any) => {
-    const dateFields = ['startDate', 'endDate', 'issueDate', 'published_at', 'date', 'createdAt', 'updatedAt', 'created_at', 'updated_at', 'maintenance_end_time', 'custom_created_at'];
+    const dateFields = ['startDate', 'endDate', 'issueDate', 'expiryDate', 'published_at', 'date', 'createdAt', 'updatedAt', 'created_at', 'updated_at', 'maintenance_end_time', 'custom_created_at'];
     const processed = { ...body };
     
     for (const key of Object.keys(processed)) {
@@ -579,7 +545,6 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    await ensureSchema();
     const { url } = req;
     const urlObj = new URL(url, `http://${req.headers.host}`);
     const query = Object.fromEntries(urlObj.searchParams.entries());
@@ -637,52 +602,8 @@ export default async function handler(req: any, res: any) {
 
     // --- Special Routes ---
 
-    // --- MOCK MODE FOR TESTING (If DB connection fails or explicit MOCK_DB=true) ---
-    // Moved to top to intercept Auth and Dashboard checks
-    if (process.env.MOCK_DB === 'true') {
-        // Mock Auth
-        if (resourceName === 'auth') {
-             if (action === 'login') {
-                const body = await parseBody(req);
-                return sendJSON(res, 200, { 
-                    token: 'mock-jwt-token', 
-                    user: { id: 999, email: body.email || 'mock@example.com', name: 'Mock User', role: 'admin' } 
-                });
-             }
-             if (action === 'me') {
-                return sendJSON(res, 200, { id: 999, email: 'mock@example.com', name: 'Mock User', role: 'admin' });
-             }
-        }
-        
-        // Mock Dashboard
-        if (resourceName === 'admin' && action === 'dashboard-stats') {
-             return sendJSON(res, 200, {
-                counts: { projects: 10, blogs: 5, messages: 3 },
-                recentProjects: [],
-                recentMessages: []
-            });
-        }
-        
-        // Mock Generic CRUD
-        if (resourceName !== 'health' && resourceName !== 'upload' && resourceName !== 'ai') {
-            if (req.method === 'POST') {
-                 const body = await parseBody(req);
-                 return sendJSON(res, 201, { id: Date.now(), ...body, createdAt: new Date() });
-            }
-            if (req.method === 'PUT' || req.method === 'PATCH') {
-                 const body = await parseBody(req);
-                 return sendJSON(res, 200, { id: Number(id) || 1, ...body, updatedAt: new Date() });
-            }
-            if (req.method === 'DELETE') {
-                 return sendJSON(res, 200, { success: true });
-            }
-            if (req.method === 'GET') {
-                 if (id) {
-                     return sendJSON(res, 200, { id: Number(id), title: 'Mock Item', name: 'Mock Item', createdAt: new Date() });
-                 }
-                 return sendJSON(res, 200, [{ id: 1, title: 'Mock Item 1', name: 'Mock Item 1', createdAt: new Date() }]);
-            }
-        }
+    if (resourceName && resourceName !== 'health' && resourceName !== 'ai' && resourceName !== 'upload') {
+      await ensureSchema();
     }
 
     // Blog: Get by Slug
@@ -750,7 +671,7 @@ export default async function handler(req: any, res: any) {
                 // Ignore parse error, default to 1
              }
 
-             // Simple IP tracking (mocked IP for now as req.socket.remoteAddress might be proxy)
+             // Simple IP tracking (may be proxied)
              const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
              
              // We can allow multiple likes or debounce. For now, just insert.
@@ -1005,16 +926,9 @@ export default async function handler(req: any, res: any) {
         });
     }
 
-    // Upload (Mock)
+    // Upload
     if (resourceName === 'upload') {
-        // We just return a success response with a fake URL to satisfy the frontend.
-        // In real Vercel, you'd upload to Vercel Blob here.
-        return sendJSON(res, 200, {
-            url: 'https://placehold.co/600x400',
-            fileName: 'uploaded.png',
-            mimeType: 'image/png',
-            size: 1024
-        });
+        return sendJSON(res, 501, { error: 'Upload service is not configured' });
     }
 
     // AI
@@ -1071,6 +985,80 @@ export default async function handler(req: any, res: any) {
             }
         }
 
+        if (action === 'analyze-certificate-image') {
+            if (req.method !== 'POST') return sendJSON(res, 405, { error: 'Method not allowed' });
+
+            try {
+                const body = await parseBody(req);
+                const imageDataUrl = String(body?.imageDataUrl || '');
+                const imageModel = typeof body?.model === 'string' && body.model.trim()
+                  ? body.model.trim()
+                  : (process.env.AI_IMAGE_MODEL || model);
+                if (!imageDataUrl) return sendJSON(res, 400, { error: 'imageDataUrl is required' });
+                if (!/^data:image\/[a-zA-Z0-9.+-]+;base64,/.test(imageDataUrl)) {
+                    return sendJSON(res, 400, { error: 'imageDataUrl must be a base64 data URL' });
+                }
+                if (imageDataUrl.length > 6_000_000) {
+                    return sendJSON(res, 413, { error: 'Image too large' });
+                }
+
+                const systemPrompt = [
+                  "Anda adalah sistem ekstraksi data sertifikat dari gambar.",
+                  "Tugas: analisis gambar sertifikat dan ambil informasinya.",
+                  "Aturan keluaran:",
+                  "- Output HARUS berupa 1 objek JSON valid, tanpa teks tambahan.",
+                  "- Gunakan format tanggal YYYY-MM-DD jika ada.",
+                  "- Jika tidak yakin, isi null.",
+                  "Skema JSON:",
+                  "{",
+                  '  "name": string|null,',
+                  '  "issuer": string|null,',
+                  '  "issueDate": "YYYY-MM-DD"|null,',
+                  '  "expiryDate": "YYYY-MM-DD"|null,',
+                  '  "credentialId": string|null,',
+                  '  "credentialUrl": string|null,',
+                  '  "verified": boolean|null',
+                  "}",
+                ].join('\n');
+
+                const messages = [
+                  { role: "system", content: systemPrompt },
+                  {
+                    role: "user",
+                    content: [
+                      { type: "text", text: "Analisis gambar sertifikat ini dan keluarkan JSON sesuai skema." },
+                      { type: "image_url", image_url: { url: imageDataUrl } }
+                    ]
+                  }
+                ];
+
+                const apiRes = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: imageModel,
+                        messages: messages,
+                        max_tokens: 600
+                    })
+                });
+
+                if (!apiRes.ok) {
+                    const errorText = await apiRes.text();
+                    throw new Error(`AI Provider Error: ${apiRes.status} ${errorText}`);
+                }
+
+                const data = await apiRes.json();
+                const content = data.choices?.[0]?.message?.content || "";
+                return sendJSON(res, 200, { content, result: content });
+            } catch (e: any) {
+                console.error('AI Certificate Image Error:', e);
+                return sendJSON(res, 500, { error: 'AI Image Analysis Failed', details: e.message });
+            }
+        }
+
         // Handle Analyze GitHub Action
         if (action === 'analyze-github') {
             if (req.method !== 'POST') return sendJSON(res, 405, { error: 'Method not allowed' });
@@ -1124,14 +1112,6 @@ export default async function handler(req: any, res: any) {
     if (resourceName === 'health') {
         return sendJSON(res, 200, { status: 'ok', timestamp: new Date() });
     }
-
-    // --- MOCK MODE FOR TESTING (If DB connection fails or explicit MOCK_DB=true) ---
-    // Moved to top to intercept Auth and Dashboard checks
-    /* 
-       REMOVED HERE - It was causing conflict.
-       The Mock Logic is now placed at the top of the file in the previous step.
-       Wait, I just added it. I should remove the DUPLICATE one I added in previous step (lines 503-534)
-    */
 
     // --- Generic CRUD ---
     // PUBLIC ACCESS OVERRIDE: Allow read-only access to specific resources without auth
@@ -1374,14 +1354,41 @@ export default async function handler(req: any, res: any) {
     }
 
   } catch (error: any) {
-    console.error('CRITICAL API ERROR:', error); // Explicit generic log
-    console.error(error.stack); // Log stack
-    // Ensure we don't double send if headers sent
+    console.error('CRITICAL API ERROR:', error?.code || error?.message || error);
+    if (error?.stack) console.error(error.stack);
+
     if (res.headersSent) return;
-    return sendJSON(res, 500, { 
-      error: 'Internal Server Error', 
-      details: error.message,
-      stack: error.stack
-    });
+
+    const hasAuthHeader = Boolean((req as any)?.headers?.authorization);
+    const isProduction = process.env.NODE_ENV === 'production';
+    const msg = String(error?.message || '');
+    const code = String(error?.code || '');
+    const dbSignals = [
+      'DB_UNAVAILABLE',
+      'DATABASE_URL is not configured',
+      'ECONNREFUSED',
+      'ECONNRESET',
+      'ETIMEDOUT',
+      'ENOTFOUND',
+      'Connection terminated',
+      'timeout',
+      'password authentication failed',
+      'does not exist',
+    ];
+    const isDbError =
+      msg === 'DB_UNAVAILABLE' ||
+      dbSignals.some((s) => msg.includes(s)) ||
+      dbSignals.some((s) => code.includes(s)) ||
+      code === '57P01';
+
+    if (isDbError) {
+      return sendJSON(res, 503, hasAuthHeader ? { error: 'Service temporarily unavailable', code: 'DB_UNAVAILABLE' } : { error: 'Service temporarily unavailable' });
+    }
+
+    if (isProduction && !hasAuthHeader) {
+      return sendJSON(res, 500, { error: 'Internal Server Error' });
+    }
+
+    return sendJSON(res, 500, { error: 'Internal Server Error', details: msg || 'Unknown error' });
   }
 }

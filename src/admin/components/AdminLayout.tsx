@@ -7,14 +7,23 @@ import { Toaster } from '@/components/ui/toaster';
 import { AIAssistant } from './AIAssistant';
 import { useAdminPrefetch } from '../hooks/useAdminPrefetch';
 import { Loader2 } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 export function AdminLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isDbModalOpen, setIsDbModalOpen] = useState(false);
   const { isAuthenticated } = useAdminAuthStore();
   const location = useLocation();
 
   // Trigger prefetching when authenticated
   const { isLoading: isPrefetching, progress } = useAdminPrefetch();
+
+  useEffect(() => {
+    const onDbUnavailable = () => setIsDbModalOpen(true);
+    window.addEventListener('admin-db-unavailable', onDbUnavailable as EventListener);
+    return () => window.removeEventListener('admin-db-unavailable', onDbUnavailable as EventListener);
+  }, []);
 
   // Redirect if not authenticated
   if (!isAuthenticated && location.pathname !== '/admin/login') {
@@ -46,6 +55,21 @@ export function AdminLayout() {
 
       <AIAssistant />
       <Toaster />
+
+      <Dialog open={isDbModalOpen} onOpenChange={setIsDbModalOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Koneksi Database Bermasalah</DialogTitle>
+            <DialogDescription>
+              Admin tidak bisa memuat data karena koneksi database belum tersedia. Periksa konfigurasi server dan coba lagi.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setIsDbModalOpen(false)}>Tutup</Button>
+            <Button onClick={() => window.location.reload()}>Coba Lagi</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

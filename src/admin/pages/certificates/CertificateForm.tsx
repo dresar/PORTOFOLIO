@@ -11,6 +11,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ModernLoader } from '@/components/ui/ModernLoader';
+import { extractCertificateFieldsFromImageDataUrl, extractCertificateFieldsFromText } from '../../services/aiService';
 
 export default function CertificateForm() {
   const { id } = useParams();
@@ -25,6 +26,9 @@ export default function CertificateForm() {
 
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
+  const [localImagePreview, setLocalImagePreview] = useState<string>('');
   
   const isEditing = !!id;
 
@@ -45,6 +49,12 @@ export default function CertificateForm() {
       loadCertificate(Number(id));
     }
   }, [id]);
+
+  useEffect(() => {
+    return () => {
+      if (localImagePreview) URL.revokeObjectURL(localImagePreview);
+    };
+  }, [localImagePreview]);
 
   // Removed loadCategories since useQuery handles it
 
@@ -137,6 +147,106 @@ export default function CertificateForm() {
     return <div className="flex justify-center py-12"><ModernLoader size="lg" text="Memuat Sertifikat..." /></div>;
   }
 
+  const handlePickImage = async (file: File | null) => {
+    if (!file) return;
+    setSelectedImageFile(file);
+    if (localImagePreview) URL.revokeObjectURL(localImagePreview);
+    setLocalImagePreview(URL.createObjectURL(file));
+  };
+
+  const applyIfEmpty = (current: string, next: unknown) => {
+    const nextStr = typeof next === 'string' ? next.trim() : '';
+    if (!nextStr) return current;
+    if (current.trim()) return current;
+    return nextStr;
+  };
+
+  const compressImageToDataUrl = async (file: File, maxSize = 1280, quality = 0.78) => {
+    const dataUrl: string = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || ''));
+      reader.onerror = () => reject(new Error('Gagal membaca file'));
+      reader.readAsDataURL(file);
+    });
+
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const el = new Image();
+      el.onload = () => resolve(el);
+      el.onerror = () => reject(new Error('Gagal memuat gambar'));
+      el.src = dataUrl;
+    });
+
+    const { width, height } = img;
+    const scale = Math.min(1, maxSize / Math.max(width, height));
+    const targetW = Math.max(1, Math.round(width * scale));
+    const targetH = Math.max(1, Math.round(height * scale));
+
+    const canvas = document.createElement('canvas');
+    canvas.width = targetW;
+    canvas.height = targetH;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('Canvas tidak tersedia');
+
+    ctx.drawImage(img, 0, 0, targetW, targetH);
+
+    const blob: Blob = await new Promise((resolve, reject) => {
+      canvas.toBlob(
+        (b) => (b ? resolve(b) : reject(new Error('Gagal mengompres gambar'))),
+        'image/jpeg',
+        quality
+      );
+    });
+
+    return await new Promise<string>((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(String(r.result || ''));
+      r.onerror = () => reject(new Error('Gagal membaca hasil kompres'));
+      r.readAsDataURL(blob);
+    });
+  };
+
+  const handleAnalyzeImage = async () => {
+    if (!selectedImageFile) {
+      toast({ variant: "destructive", title: "Gagal", description: "Pilih gambar sertifikat dulu." });
+      return;
+    }
+
+    setIsAnalyzing(true);
+    try {
+      const compressedDataUrl = await compressImageToDataUrl(selectedImageFile);
+      let extracted: any;
+      try {
+        extracted = await extractCertificateFieldsFromImageDataUrl(compressedDataUrl);
+      } catch {
+        const mod: any = await import('tesseract.js');
+        const Tesseract = mod?.default || mod;
+        const ocr = await Tesseract.recognize(selectedImageFile, 'eng+ind');
+        const text = ocr?.data?.text || '';
+        extracted = await extractCertificateFieldsFromText(text);
+      }
+
+      setFormData(prev => ({
+        ...prev,
+        name: applyIfEmpty(prev.name, extracted.name),
+        issuer: applyIfEmpty(prev.issuer, extracted.issuer),
+        issueDate: applyIfEmpty(prev.issueDate, extracted.issueDate),
+        expiryDate: applyIfEmpty(prev.expiryDate, extracted.expiryDate),
+        credentialId: applyIfEmpty(prev.credentialId, extracted.credentialId),
+        credentialUrl: applyIfEmpty(prev.credentialUrl, extracted.credentialUrl),
+        verified: typeof extracted.verified === 'boolean' ? extracted.verified : prev.verified,
+      }));
+
+      toast({ title: "Berhasil", description: "Analisis selesai. Form diisi otomatis dari gambar." });
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Analisis Gagal", description: error?.message || "Gagal menganalisis gambar sertifikat." });
+    } finally {
+      setIsAnalyzing(false);
+      setSelectedImageFile(null);
+      if (localImagePreview) URL.revokeObjectURL(localImagePreview);
+      setLocalImagePreview('');
+    }
+  };
+
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       <div className="flex items-center gap-4">
@@ -155,6 +265,46 @@ export default function CertificateForm() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between gap-3 flex-wrap">
+                <div className="space-y-1">
+                  <div className="font-medium">AI Autofill dari Gambar</div>
+                  <div className="text-sm text-muted-foreground">Pilih gambar sertifikat, lalu jalankan analisis untuk mengisi form otomatis.</div>
+                </div>
+                <div className="flex gap-2">
+                  <Button type="button" variant="outline" onClick={handleAnalyzeImage} disabled={isAnalyzing}>
+                    {isAnalyzing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                    {isAnalyzing ? 'Menganalisis...' : 'Analisis & Isi Otomatis'}
+                  </Button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                <div className="space-y-2">
+                  <Label>Pilih Gambar untuk Analisis (Tidak Disimpan)</Label>
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handlePickImage(e.target.files?.[0] || null)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Preview</Label>
+                  <div className="h-28 w-full rounded border overflow-hidden bg-muted flex items-center justify-center">
+                    {(localImagePreview || formData.image) ? (
+                      <img
+                        src={localImagePreview || formData.image}
+                        alt="Preview"
+                        className="w-full h-full object-contain"
+                      />
+                    ) : (
+                      <div className="text-sm text-muted-foreground">Belum ada gambar</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label>Nama Sertifikat</Label>
