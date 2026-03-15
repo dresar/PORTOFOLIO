@@ -10,10 +10,11 @@ import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/use-toast';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 import { api } from '../../services/api';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Loader2, Save, ArrowLeft, Image as ImageIcon, Sparkles, Youtube, Code, Wand2, Trash2, MessageCircle, Plus, Calendar as CalendarIcon } from 'lucide-react';
+import { Loader2, Save, ArrowLeft, Image as ImageIcon, Sparkles, Youtube, Code, Trash2, MessageCircle, Plus, Calendar as CalendarIcon } from 'lucide-react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
@@ -33,6 +34,7 @@ import { ModernLoader } from '@/components/ui/ModernLoader';
 import { normalizeMediaUrl, formatCompactNumber } from '@/lib/utils';
 import { format } from 'date-fns';
 import { id as idLocale } from 'date-fns/locale';
+import { z } from 'zod';
 
 // Setup Lowlight
 const lowlight = createLowlight(common);
@@ -42,7 +44,7 @@ lowlight.register('js', js);
 lowlight.register('ts', ts);
 lowlight.register('python', python);
 
-const MenuBar = ({ editor, onAIRequest }: { editor: any, onAIRequest: (prompt: string) => void }) => {
+const MenuBar = ({ editor }: { editor: any }) => {
   if (!editor) {
     return null;
   }
@@ -87,13 +89,6 @@ const MenuBar = ({ editor, onAIRequest }: { editor: any, onAIRequest: (prompt: s
       <Button variant="ghost" size="sm" onClick={addYoutube}>
         <Youtube className="h-4 w-4" />
       </Button>
-      <div className="flex-grow"></div>
-      <Button variant="outline" size="sm" className="gap-2 text-purple-500 border-purple-500 hover:bg-purple-500/10" onClick={() => {
-        const prompt = window.prompt("Apa yang ingin AI tulis untukmu?");
-        if (prompt) onAIRequest(prompt);
-      }}>
-        <Wand2 className="h-3 w-3" /> AI Writer
-      </Button>
     </div>
   );
 };
@@ -105,7 +100,10 @@ export default function BlogForm() {
   const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [aiLoading, setAiLoading] = useState(false);
+  const [isAIBlogModalOpen, setIsAIBlogModalOpen] = useState(false);
+  const [aiTopic, setAiTopic] = useState('');
+  const [aiPrimaryKeyword, setAiPrimaryKeyword] = useState('');
+  const [aiBlogLoading, setAiBlogLoading] = useState(false);
 
   // Comments State
   const [newCommentName, setNewCommentName] = useState('Admin');
@@ -138,6 +136,49 @@ export default function BlogForm() {
     views: 0,
     likes: 0
   });
+
+  const aiBlogSchema = z.object({
+    author: z.literal('Eka Syarif Maulana'),
+    title: z.string(),
+    slug: z.string(),
+    excerpt: z.string(),
+    content_html: z.string(),
+    tags: z.union([z.array(z.string()), z.string()]).optional(),
+    seo_title: z.string(),
+    seo_description: z.string(),
+    seo_keywords: z.union([z.array(z.string()), z.string()]).optional(),
+  });
+
+  const slugify = (value: string) =>
+    value
+      .toLowerCase()
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9\s-]/g, '')
+      .trim()
+      .replace(/[\s_-]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
+  const extractFirstJsonObject = (text: string) => {
+    const cleaned = text.replace(/```json/gi, '```').replace(/```/g, '').trim();
+    const start = cleaned.indexOf('{');
+    if (start === -1) return null;
+    let depth = 0;
+    for (let i = start; i < cleaned.length; i++) {
+      const ch = cleaned[i];
+      if (ch === '{') depth += 1;
+      if (ch === '}') depth -= 1;
+      if (depth === 0) return cleaned.slice(start, i + 1);
+    }
+    return null;
+  };
+
+  const coerceCsv = (val: unknown) => {
+    if (!val) return '';
+    if (Array.isArray(val)) return val.map(v => String(v).trim()).filter(Boolean).join(', ');
+    if (typeof val === 'string') return val;
+    return String(val);
+  };
 
   const editor = useEditor({
     extensions: [
@@ -228,24 +269,116 @@ export default function BlogForm() {
     }
   };
 
-  const handleAIRequest = async (prompt: string) => {
-    setAiLoading(true);
+  const handleAIGenerateFullBlog = async () => {
+    const topic = aiTopic.trim();
+    if (!topic) {
+      toast({ variant: "destructive", title: "Validasi Gagal", description: "Topik wajib diisi." });
+      return;
+    }
+    if (!editor) return;
+
+    setAiBlogLoading(true);
     try {
-      const result = await api.ai.generateContent({ 
-          prompt: `Write a section for a blog post about: ${prompt}. Return in HTML format suitable for a rich text editor.` 
+      const systemPrompt = [
+        "Anda adalah AI penulis artikel blog profesional (Bahasa Indonesia) sekaligus SEO specialist.",
+        "Tugas: dari input topik, buat 1 artikel blog yang SUPER DETAIL, siap terbit, dan siap dipaste ke editor.",
+        "Penulis artikel (metadata): Eka Syarif Maulana.",
+        "",
+        "Aturan wajib:",
+        "- Seluruh bahasa HARUS Bahasa Indonesia.",
+        "- Output HARUS berupa 1 objek JSON valid, tanpa teks tambahan, tanpa markdown codefence.",
+        "- Wajib ada field author dengan nilai tepat: \"Eka Syarif Maulana\".",
+        "- Field 'content_html' HARUS berupa HTML valid (bukan Markdown), gunakan tag: h2, h3, p, ul, ol, li, strong, em, blockquote, pre, code, a.",
+        "- Jangan buat heading bernama \"Intro\" atau \"Pendahuluan\". Mulai langsung dengan paragraf pembuka yang kuat tanpa heading.",
+        "- Jangan menuliskan nama penulis di dalam content_html (nama penulis hanya ada di field author).",
+        "- Jangan menyertakan informasi rahasia, kredensial, atau data pribadi.",
+        "",
+        "Kualitas konten:",
+        "- Struktur rapi, berurutan, mudah dipahami pemula tapi tetap berguna untuk yang advanced.",
+        "- Panjang: target 1800–2600 kata.",
+        "- Wajib ada: pembukaan kuat, definisi/konsep inti, langkah-langkah praktis, contoh nyata, kesalahan umum & cara menghindari, checklist ringkas, FAQ (minimal 6), kesimpulan & CTA.",
+        "- Bila relevan, tambahkan snippet kode atau pseudo-code di <pre><code> (tanpa backticks).",
+        "- Buat tampilan estetik: paragraf ringkas, bullet list, blockquote untuk tips/peringatan, dan struktur heading yang konsisten.",
+        "",
+        "SEO:",
+        "- Buat judul menarik (maks 70 karakter, natural, tidak clickbait berlebihan).",
+        "- Buat slug kebab-case ASCII (tanpa spasi, tanpa karakter aneh).",
+        "- Buat ringkasan (excerpt) 2–3 kalimat.",
+        "- seo_title: 50–60 karakter, mengandung kata kunci utama.",
+        "- seo_description: 140–160 karakter, mengundang klik, mengandung kata kunci.",
+        "- seo_keywords: 10–16 keyword, pisahkan dengan koma atau array.",
+        "- tags: 6–10 tag, relevan.",
+        "",
+        "Skema JSON output:",
+        "{",
+        '  "author": "Eka Syarif Maulana",',
+        '  "title": string,',
+        '  "slug": string,',
+        '  "excerpt": string,',
+        '  "content_html": string,',
+        '  "tags": string[]|string,',
+        '  "seo_title": string,',
+        '  "seo_description": string,',
+        '  "seo_keywords": string[]|string',
+        "}",
+      ].join('\n');
+
+      const userPromptParts = [
+        `Topik: ${topic}`,
+        aiPrimaryKeyword.trim() ? `Kata kunci utama: ${aiPrimaryKeyword.trim()}` : "",
+        "",
+        "Buat artikel sesuai aturan. Pastikan content_html hanya berisi konten artikel (tanpa <html>, <head>, <body>).",
+      ].filter(Boolean);
+
+      const resp = await api.ai.generate({
+        prompt: userPromptParts.join('\n'),
+        systemPrompt,
+        task: 'blog',
       });
-      
-      if (result.content) {
-          editor?.chain().focus().insertContent(result.content).run();
-          toast({ title: "Selesai!", description: "Konten AI telah ditambahkan." });
+
+      const raw = String(resp?.content || resp?.result || resp || '');
+      const jsonStr = extractFirstJsonObject(raw);
+      if (!jsonStr) throw new Error('AI tidak mengembalikan JSON yang valid');
+
+      const parsed = JSON.parse(jsonStr);
+      const validated = aiBlogSchema.safeParse(parsed);
+      if (!validated.success) throw new Error('Format hasil AI tidak sesuai skema');
+
+      const data = validated.data;
+      const finalTitle = data.title.trim();
+      const finalSlug = slugify(data.slug || finalTitle);
+      const finalExcerpt = data.excerpt.trim();
+      const finalSeoTitle = data.seo_title.trim();
+      const finalSeoDesc = data.seo_description.trim();
+      const finalSeoKeywords = coerceCsv(data.seo_keywords);
+      const finalTags = coerceCsv(data.tags);
+
+      setFormData(prev => ({
+        ...prev,
+        title: finalTitle,
+        slug: finalSlug,
+        excerpt: finalExcerpt,
+        tags: finalTags,
+        seo_title: finalSeoTitle,
+        seo_description: finalSeoDesc,
+        seo_keywords: finalSeoKeywords,
+      }));
+
+      editor.commands.setContent(data.content_html);
+      setIsAIBlogModalOpen(false);
+      toast({ title: "Berhasil", description: "Artikel lengkap berhasil dibuat oleh AI." });
+    } catch (error: any) {
+      const status = error?.response?.status;
+      const code = error?.response?.data?.code;
+      if (status === 429 || code === 'AI_RATE_LIMITED') {
+        toast({ variant: "destructive", title: "AI Sedang Penuh", description: "Terlalu banyak permintaan. Coba lagi beberapa menit." });
+      } else if (status === 503 || code === 'AI_UNAVAILABLE') {
+        toast({ variant: "destructive", title: "AI Sedang Tidak Tersedia", description: "Server AI sedang sibuk. Coba lagi nanti." });
       } else {
-          throw new Error("No content generated");
+        toast({ variant: "destructive", title: "Gagal", description: error?.message || "Gagal membuat artikel dengan AI." });
       }
-    } catch (error) {
-      console.error(error);
-      toast({ variant: "destructive", title: "Gagal", description: "AI gagal generate konten. Pastikan API Key dikonfigurasi." });
     } finally {
-      setAiLoading(false);
+      setAiBlogLoading(false);
     }
   };
 
@@ -344,7 +477,8 @@ export default function BlogForm() {
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-20">
-      <div className="flex items-center gap-4">
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" onClick={() => navigate('/admin/blog')}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
@@ -352,7 +486,57 @@ export default function BlogForm() {
           <h2 className="text-3xl font-bold tracking-tight">{id ? 'Edit Artikel' : 'Tulis Artikel Baru'}</h2>
           <p className="text-muted-foreground">Buat konten menarik dengan bantuan AI.</p>
         </div>
+        </div>
+        <Button
+          type="button"
+          variant="outline"
+          className="gap-2"
+          onClick={() => setIsAIBlogModalOpen(true)}
+          disabled={!editor || aiBlogLoading}
+        >
+          {aiBlogLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+          Tulis dengan AI
+        </Button>
       </div>
+
+      <Dialog open={isAIBlogModalOpen} onOpenChange={setIsAIBlogModalOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Tulis Artikel dengan AI</DialogTitle>
+            <DialogDescription>
+              Masukkan topik, lalu AI akan membuat judul, slug, ringkasan, isi konten super detail, dan SEO (Bahasa Indonesia).
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Topik Artikel</Label>
+              <Input
+                value={aiTopic}
+                onChange={(e) => setAiTopic(e.target.value)}
+                placeholder="Contoh: Panduan Lengkap Belajar React untuk Pemula"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Kata Kunci Utama (Opsional)</Label>
+              <Input
+                value={aiPrimaryKeyword}
+                onChange={(e) => setAiPrimaryKeyword(e.target.value)}
+                placeholder="Contoh: belajar react"
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button type="button" variant="outline" onClick={() => setIsAIBlogModalOpen(false)} disabled={aiBlogLoading}>
+                Batal
+              </Button>
+              <Button type="button" onClick={handleAIGenerateFullBlog} disabled={aiBlogLoading || !editor}>
+                {aiBlogLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                Buat Artikel
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
@@ -389,7 +573,11 @@ export default function BlogForm() {
               </div>
 
               <div className="border rounded-md overflow-hidden bg-background">
-                <MenuBar editor={editor} onAIRequest={handleAIRequest} />
+                <div className="px-4 py-3 border-b bg-muted/10">
+                  <div className="font-semibold">Isi Konten</div>
+                  <div className="text-sm text-muted-foreground">Gunakan toolbar untuk format, gambar CDN, dan embed YouTube.</div>
+                </div>
+                <MenuBar editor={editor} />
                 <div className="min-h-[400px]">
                     <EditorContent editor={editor} />
                 </div>
@@ -556,7 +744,7 @@ export default function BlogForm() {
                   </div>
               </div>
 
-              <Button type="submit" className="w-full mt-4" disabled={isSaving || aiLoading}>
+              <Button type="submit" className="w-full mt-4" disabled={isSaving || aiBlogLoading}>
                 {isSaving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
                 Simpan Artikel
               </Button>

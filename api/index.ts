@@ -937,9 +937,56 @@ export default async function handler(req: any, res: any) {
         const apiUrl = process.env.AI_API_URL || 'https://one.apprentice.cyou/api/v1/chat/completions';
         const model = process.env.AI_MODEL || 'gemini-2.5-flash';
 
+        const parseUpstreamError = async (apiRes: any) => {
+            const status = Number(apiRes?.status || 500);
+            const contentType = String(apiRes?.headers?.get?.('content-type') || '');
+            let bodyText = '';
+            try {
+                bodyText = await apiRes.text();
+            } catch {
+                bodyText = '';
+            }
+
+            if (contentType.includes('application/json')) {
+                try {
+                    const parsed = JSON.parse(bodyText);
+                    const msg = String(parsed?.error || parsed?.message || parsed?.details || 'AI upstream error');
+                    return { status, message: msg };
+                } catch {
+                    return { status, message: 'AI upstream error' };
+                }
+            }
+
+            if (bodyText && bodyText.trim().startsWith('{')) {
+                try {
+                    const parsed = JSON.parse(bodyText);
+                    const msg = String(parsed?.error || parsed?.message || parsed?.details || 'AI upstream error');
+                    return { status, message: msg };
+                } catch {
+                    // ignore
+                }
+            }
+
+            if (bodyText && bodyText.toLowerCase().includes('<!doctype html')) {
+                return { status, message: 'AI upstream returned HTML error page' };
+            }
+
+            return { status, message: 'AI upstream error' };
+        };
+
+        const mapUpstreamStatusToResponse = (status: number) => {
+            if (status === 429) return { status: 429, code: 'AI_RATE_LIMITED' };
+            if (status === 503) return { status: 503, code: 'AI_UNAVAILABLE' };
+            if (status === 502 || status === 504) return { status, code: 'AI_UNAVAILABLE' };
+            if (status >= 500) return { status: 503, code: 'AI_UNAVAILABLE' };
+            return { status: 502, code: 'AI_UPSTREAM_ERROR' };
+        };
+
         // Helper to call AI
-        const callAI = async (messages: any[]) => {
+        const callAI = async (messages: any[], opts?: { model?: string; maxTokens?: number }) => {
              if (!apiKey) throw new Error('AI API Key is not configured');
+             const reqModel = opts?.model || model;
+             const maxTokens = typeof opts?.maxTokens === 'number' ? opts.maxTokens : undefined;
              
              const apiRes = await fetch(apiUrl, {
                 method: 'POST',
@@ -948,14 +995,18 @@ export default async function handler(req: any, res: any) {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    model: model,
-                    messages: messages
+                    model: reqModel,
+                    messages: messages,
+                    ...(typeof maxTokens === 'number' ? { max_tokens: Math.max(1, Math.min(8192, Math.floor(maxTokens))) } : {})
                 })
             });
 
             if (!apiRes.ok) {
-                const errorText = await apiRes.text();
-                throw new Error(`AI Provider Error: ${apiRes.status} ${errorText}`);
+                const parsed = await parseUpstreamError(apiRes);
+                const err: any = new Error('AI_UPSTREAM_ERROR');
+                err.upstreamStatus = parsed.status;
+                err.upstreamMessage = parsed.message;
+                throw err;
             }
 
             const data = await apiRes.json();
@@ -976,12 +1027,20 @@ export default async function handler(req: any, res: any) {
                 if (systemPrompt) messages.push({ role: "system", content: systemPrompt });
                 messages.push({ role: "user", content: prompt });
 
-                const content = await callAI(messages);
+                const task = typeof body?.task === 'string' ? body.task : '';
+                const defaultMaxTokens = task === 'blog' ? 3500 : 1200;
+                const maxTokens = typeof body?.maxTokens === 'number' ? body.maxTokens : defaultMaxTokens;
+                const content = await callAI(messages, { maxTokens });
                 return sendJSON(res, 200, { content, result: content }); // Support both formats
 
             } catch (e: any) {
+                const upstreamStatus = Number(e?.upstreamStatus || 0);
+                if (upstreamStatus) {
+                    const mapped = mapUpstreamStatusToResponse(upstreamStatus);
+                    return sendJSON(res, mapped.status, { error: 'AI service unavailable', code: mapped.code });
+                }
                 console.error('AI Handler Error:', e);
-                return sendJSON(res, 500, { error: 'AI Handler Failed', details: e.message });
+                return sendJSON(res, 500, { error: 'AI Handler Failed' });
             }
         }
 
@@ -1046,16 +1105,24 @@ export default async function handler(req: any, res: any) {
                 });
 
                 if (!apiRes.ok) {
-                    const errorText = await apiRes.text();
-                    throw new Error(`AI Provider Error: ${apiRes.status} ${errorText}`);
+                    const parsed = await parseUpstreamError(apiRes);
+                    const err: any = new Error('AI_UPSTREAM_ERROR');
+                    err.upstreamStatus = parsed.status;
+                    err.upstreamMessage = parsed.message;
+                    throw err;
                 }
 
                 const data = await apiRes.json();
                 const content = data.choices?.[0]?.message?.content || "";
                 return sendJSON(res, 200, { content, result: content });
             } catch (e: any) {
+                const upstreamStatus = Number(e?.upstreamStatus || 0);
+                if (upstreamStatus) {
+                    const mapped = mapUpstreamStatusToResponse(upstreamStatus);
+                    return sendJSON(res, mapped.status, { error: 'AI service unavailable', code: mapped.code });
+                }
                 console.error('AI Certificate Image Error:', e);
-                return sendJSON(res, 500, { error: 'AI Image Analysis Failed', details: e.message });
+                return sendJSON(res, 500, { error: 'AI Image Analysis Failed' });
             }
         }
 
@@ -1081,8 +1148,13 @@ export default async function handler(req: any, res: any) {
                 return sendJSON(res, 200, { content, result: content });
 
             } catch (e: any) {
+                const upstreamStatus = Number(e?.upstreamStatus || 0);
+                if (upstreamStatus) {
+                    const mapped = mapUpstreamStatusToResponse(upstreamStatus);
+                    return sendJSON(res, mapped.status, { error: 'AI service unavailable', code: mapped.code });
+                }
                 console.error('AI Github Analysis Error:', e);
-                return sendJSON(res, 500, { error: 'AI Analysis Failed', details: e.message });
+                return sendJSON(res, 500, { error: 'AI Analysis Failed' });
             }
         }
         
