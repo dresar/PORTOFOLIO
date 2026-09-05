@@ -1,0 +1,62 @@
+import axios from 'axios';
+import { useAdminAuthStore } from '../store/adminAuthStore';
+
+const envUrl = import.meta.env.VITE_API_URL;
+const isProd = import.meta.env.PROD;
+const API_URL = isProd
+  ? (envUrl && !/localhost|127\.0\.0\.1/i.test(envUrl) ? envUrl : '/api')
+  : (envUrl || 'http://localhost:3004/api');
+
+const adminApi = axios.create({
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+adminApi.interceptors.request.use(
+  (config) => {
+    const token = useAdminAuthStore.getState().token;
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+adminApi.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 503 && error.response?.data?.code === 'DB_UNAVAILABLE') {
+      window.dispatchEvent(new CustomEvent('admin-db-unavailable'));
+      return Promise.reject(error);
+    }
+    
+    // Auto-refresh token logic (simplified placeholder)
+    // Skip if it's the login request itself to allow handling invalid credentials in the UI
+    if (error.response?.status === 401 && !originalRequest._retry && !originalRequest.url?.includes('/auth/login')) {
+      originalRequest._retry = true;
+      // Here you would call refresh token endpoint
+      // const newToken = await refreshToken();
+      // useAdminAuthStore.getState().login(user, newToken);
+      // return adminApi(originalRequest);
+      
+      // For now, just logout
+      useAdminAuthStore.getState().logout();
+      window.location.href = '/admin/login';
+    }
+
+    // Sanitize error response so we don't crash React with { code, message } object
+    if (error.response?.data?.error && typeof error.response.data.error === 'object') {
+      const errObj = error.response.data.error;
+      error.response.data.error = errObj.message || errObj.code || JSON.stringify(errObj);
+    }
+
+    return Promise.reject(error);
+  }
+);
+
+export default adminApi;
