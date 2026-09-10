@@ -66,7 +66,7 @@ export default function AdminHeader({ onToggleSidebar, onOpenMediaPicker }: Admi
           size="icon"
           className="relative h-9 w-9 rounded-full border-primary/30 hover:border-primary hover:bg-primary/10 transition-colors"
           onClick={onOpenMediaPicker}
-          title="Media Cloudinary"
+          title="Media CDN"
         >
           <ImageIcon className="h-4 w-4 text-primary" />
         </Button>

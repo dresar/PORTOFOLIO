@@ -1,145 +1,114 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Terminal, Code, Cpu, Layers } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { Sparkles, Terminal, Code, Cpu, Layers, CheckCircle2 } from 'lucide-react';
+import React, { useMemo } from 'react';
 
 interface PreloaderProps {
   progress: number;
+  loadedCount?: number;
+  totalCount?: number;
   className?: string;
 }
 
-export const Preloader = ({ progress, className = "" }: PreloaderProps) => {
-  const [statusText, setStatusText] = useState("Menghubungkan ke server...");
+export const Preloader: React.FC<PreloaderProps> = ({ 
+  progress, 
+  loadedCount = 8, 
+  totalCount = 8, 
+  className = "" 
+}) => {
+  const boundedProgress = Math.min(100, Math.max(0, Math.round(progress)));
 
-  // Update status message based on progress percentage
-  useEffect(() => {
-    if (progress < 25) {
-      setStatusText("Mengamankan koneksi & melakukan jabat tangan...");
-    } else if (progress < 50) {
-      setStatusText("Memuat data profil & konfigurasi tema...");
-    } else if (progress < 75) {
-      setStatusText("Mensinkronisasikan riwayat pengalaman & sertifikat...");
-    } else if (progress < 100) {
-      setStatusText("Mengunduh katalog proyek kreatif & keterampilan...");
-    } else {
-      setStatusText("Selesai! Memulai aplikasi...");
+  // Dynamic status text corresponding to download progress
+  const statusInfo = useMemo(() => {
+    if (boundedProgress < 25) {
+      return {
+        text: 'Menghubungkan ke API & verifikasi keamanan...',
+        icon: <Terminal className="w-6 h-6 text-primary animate-pulse" />
+      };
     }
-  }, [progress]);
-
-  // Visual icons that animate as stages progress
-  const getIconForProgress = () => {
-    if (progress < 25) return <Terminal className="w-8 h-8 text-primary animate-pulse" />;
-    if (progress < 50) return <Layers className="w-8 h-8 text-primary animate-pulse" />;
-    if (progress < 75) return <Code className="w-8 h-8 text-primary animate-pulse" />;
-    if (progress < 100) return <Cpu className="w-8 h-8 text-primary animate-pulse" />;
-    return <Sparkles className="w-8 h-8 text-emerald-400 animate-bounce" />;
-  };
+    if (boundedProgress < 50) {
+      return {
+        text: 'Mengunduh profil, tema, & identitas pengembang...',
+        icon: <Layers className="w-6 h-6 text-primary animate-pulse" />
+      };
+    }
+    if (boundedProgress < 75) {
+      return {
+        text: 'Mensinkronkan keahlian, sertifikasi & riwayat kerja...',
+        icon: <Code className="w-6 h-6 text-indigo-400 animate-pulse" />
+      };
+    }
+    if (boundedProgress < 100) {
+      return {
+        text: 'Menyiapkan showcase proyek kreatif & integrasi...',
+        icon: <Cpu className="w-6 h-6 text-purple-400 animate-pulse" />
+      };
+    }
+    return {
+      text: 'Semua data selesai diunduh! Membuka portofolio...',
+      icon: <CheckCircle2 className="w-6 h-6 text-emerald-400" />
+    };
+  }, [boundedProgress]);
 
   return (
     <motion.div
       initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.6, ease: "easeInOut" }}
-      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black overflow-hidden select-none ${className}`}
+      transition={{ duration: 0.35, ease: "easeOut" }}
+      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black/95 backdrop-blur-md overflow-hidden select-none ${className}`}
     >
-      {/* Decorative Rotating Glowing Orbs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-40">
-        <motion.div
-          className="absolute -top-[10%] -left-[10%] w-[50%] h-[50%] rounded-full bg-gradient-to-br from-primary/30 to-purple-600/30 blur-[100px]"
-          animate={{
-            x: [0, 50, 0],
-            y: [0, 100, 0],
-          }}
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        <motion.div
-          className="absolute -bottom-[10%] -right-[10%] w-[50%] h-[50%] rounded-full bg-gradient-to-br from-blue-600/30 to-emerald-500/20 blur-[100px]"
-          animate={{
-            x: [0, -70, 0],
-            y: [0, -50, 0],
-          }}
-          transition={{
-            duration: 12,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
+      {/* Lightweight background ambient glow */}
+      <div className="absolute inset-0 pointer-events-none opacity-25">
+        <div className="absolute top-1/4 left-1/3 w-72 h-72 rounded-full bg-primary/20 blur-[100px]" />
+        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 rounded-full bg-indigo-500/20 blur-[120px]" />
       </div>
 
-      {/* Main Glassmorphic Panel */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.95 }}
-        transition={{ duration: 0.5 }}
-        className="relative z-10 w-[90%] max-w-[480px] p-8 md:p-10 rounded-2xl border border-white/[0.08] bg-black/60 backdrop-blur-xl shadow-2xl flex flex-col items-center gap-6"
-      >
-        {/* Pulsing Outer Neon Ring around Icon */}
-        <div className="relative flex items-center justify-center w-20 h-20 rounded-full border border-white/10 bg-white/[0.03] shadow-inner mb-2">
-          {/* Animated Spinner Border */}
-          <motion.div
-            className="absolute inset-0 rounded-full border border-t-primary border-r-transparent border-b-transparent border-l-transparent"
-            style={{ borderWidth: '3px' }}
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+      {/* Main Glass Card */}
+      <div className="relative z-10 w-[92%] max-w-[420px] p-6 sm:p-8 rounded-2xl border border-white/10 bg-zinc-950/80 backdrop-blur-xl shadow-2xl flex flex-col items-center gap-5">
+        
+        {/* Top Icon Badge */}
+        <div className="relative flex items-center justify-center w-16 h-16 rounded-2xl border border-white/10 bg-white/[0.04] shadow-inner">
+          {/* Subtle spinning accent border */}
+          <div 
+            className="absolute inset-0 rounded-2xl border-2 border-primary/40 border-t-transparent animate-spin"
+            style={{ animationDuration: '2s' }}
           />
-          {/* Central Active Icon */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={progress < 25 ? 0 : progress < 50 ? 1 : progress < 75 ? 2 : progress < 100 ? 3 : 4}
-              initial={{ scale: 0.7, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.7, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              {getIconForProgress()}
-            </motion.div>
-          </AnimatePresence>
+          {statusInfo.icon}
         </div>
 
-        {/* Heading */}
-        <div className="text-center space-y-1.5">
-          <h2 className="text-xl font-bold tracking-tight text-white md:text-2xl">
-            SINKRONISASI PORTFOLIO
+        {/* Title */}
+        <div className="text-center space-y-1">
+          <h2 className="text-base sm:text-lg font-bold tracking-tight text-white flex items-center justify-center gap-2">
+            <span>MEMUAT PORTOFOLIO</span>
+            <Sparkles className="w-4 h-4 text-primary" />
           </h2>
-          <p className="text-xs font-mono text-muted-foreground tracking-widest uppercase">
-            Sistem Sinkronisasi Aset
+          <p className="text-[11px] font-mono text-zinc-400 tracking-wider">
+            SINKRONISASI DATA REAL-TIME
           </p>
         </div>
 
-        {/* Custom Progress Bar */}
-        <div className="w-full space-y-3 mt-4">
-          <div className="flex justify-between items-center text-xs font-mono text-muted-foreground px-0.5">
-            <span className="flex items-center gap-1.5 font-sans">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-ping" />
-              {statusText}
+        {/* Real-time Progress Bar & Stats */}
+        <div className="w-full space-y-2.5">
+          <div className="flex justify-between items-center text-xs font-mono">
+            <span className="text-zinc-300 text-[11px] truncate max-w-[260px] flex items-center gap-1.5">
+              <span className={`w-1.5 h-1.5 rounded-full ${boundedProgress === 100 ? 'bg-emerald-400' : 'bg-primary animate-ping'}`} />
+              {statusInfo.text}
             </span>
-            <span className="text-white font-semibold">{progress}%</span>
+            <span className="text-white font-bold ml-2">{boundedProgress}%</span>
           </div>
 
-          <div className="w-full h-2.5 rounded-full bg-white/[0.05] border border-white/[0.06] overflow-hidden p-[2px]">
-            <motion.div
-              className="h-full rounded-full bg-gradient-to-r from-primary via-purple-500 to-indigo-500 relative"
-              initial={{ width: "0%" }}
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-            >
-              {/* Glow Highlight */}
-              <div className="absolute top-0 right-0 bottom-0 w-8 bg-white/40 blur-[4px] rounded-full animate-pulse" />
-            </motion.div>
+          <div className="w-full h-2 rounded-full bg-zinc-800/80 border border-white/5 overflow-hidden p-[1px]">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-primary via-indigo-500 to-emerald-400 transition-all duration-300 ease-out"
+              style={{ width: `${boundedProgress}%` }}
+            />
+          </div>
+
+          <div className="flex justify-between items-center text-[10px] font-mono text-zinc-400 pt-0.5">
+            <span>Modul: {loadedCount}/{totalCount} Terverifikasi</span>
+            <span className="text-emerald-400/90 font-semibold">CDN & DB Siap</span>
           </div>
         </div>
-
-        {/* Premium Loading Subtext */}
-        <div className="flex items-center gap-2 mt-2">
-          <span className="text-[10px] text-muted-foreground font-mono">SECURE SYNC: ON</span>
-          <span className="text-[10px] text-muted-foreground/30">•</span>
-          <span className="text-[10px] text-muted-foreground font-mono">MEMORI CACHE: AKTIF</span>
-        </div>
-      </motion.div>
+      </div>
     </motion.div>
   );
 };

@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { HeroSection } from '@/components/sections/HeroSection';
@@ -35,7 +36,7 @@ const Index = () => {
   const { isLoading: educationLoading } = useEducation();
   const { isLoading: certificatesLoading } = useCertificates();
 
-  // Combine into loading states
+  // Combine into monitored loading states
   const loadingStates = [
     { key: 'profile', loading: profileLoading },
     { key: 'settings', loading: settingsLoading },
@@ -47,9 +48,39 @@ const Index = () => {
     { key: 'certificates', loading: certificatesLoading },
   ];
 
+  const totalCount = loadingStates.length;
   const loadedCount = loadingStates.filter((s) => !s.loading).length;
-  const progressPercent = Math.round((loadedCount / loadingStates.length) * 100);
-  const isPageLoading = loadedCount < loadingStates.length;
+  const realProgress = Math.round((loadedCount / totalCount) * 100);
+
+  const [displayProgress, setDisplayProgress] = useState(0);
+  const [showPreloader, setShowPreloader] = useState(true);
+
+  // Smoothly increment display progress towards realProgress or 100%
+  useEffect(() => {
+    setDisplayProgress((prev) => Math.max(prev, realProgress));
+  }, [realProgress]);
+
+  // Safety timer to prevent any long hang (max 1.2 seconds)
+  useEffect(() => {
+    // If all data loaded already or cache is hot, close quickly
+    if (loadedCount === totalCount) {
+      setDisplayProgress(100);
+      const closeTimer = setTimeout(() => {
+        setShowPreloader(false);
+      }, 250);
+      return () => clearTimeout(closeTimer);
+    }
+
+    const safetyTimer = setTimeout(() => {
+      setDisplayProgress(100);
+      const closeTimer = setTimeout(() => {
+        setShowPreloader(false);
+      }, 200);
+      return () => clearTimeout(closeTimer);
+    }, 1200);
+
+    return () => clearTimeout(safetyTimer);
+  }, [loadedCount, totalCount]);
 
   return (
     <>
@@ -64,8 +95,12 @@ const Index = () => {
       </Helmet>
 
       <AnimatePresence mode="wait">
-        {isPageLoading && (
-          <Preloader progress={progressPercent} />
+        {showPreloader && (
+          <Preloader 
+            progress={displayProgress} 
+            loadedCount={loadedCount} 
+            totalCount={totalCount} 
+          />
         )}
       </AnimatePresence>
 

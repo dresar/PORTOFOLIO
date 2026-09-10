@@ -60,7 +60,7 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
   const deleteMutation = useMutation({
     mutationFn: (public_id: string) => cloudinaryApi.deleteAsset(public_id, resourceTypeTab),
     onSuccess: () => {
-      toast({ title: '🗑️ Dihapus', description: 'Asset berhasil dihapus dari Cloudinary.' });
+      toast({ title: '🗑️ Dihapus', description: 'Asset berhasil dihapus dari CDN.' });
       qc.invalidateQueries({ queryKey: ['cloudinary-assets'] });
       setConfirmDelete(null);
     },
@@ -107,7 +107,7 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
                   <ImageIcon className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <h2 className="font-semibold">Media Cloudinary</h2>
+                  <h2 className="font-semibold">Media Library (GitHub CDN)</h2>
                   <p className="text-xs text-muted-foreground">{filtered.length} aset tersedia</p>
                 </div>
               </div>
@@ -133,13 +133,16 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
                       key={cfg.id}
                       onClick={() => activateMutation.mutate(cfg.id)}
                       className={cn(
-                        "flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all border",
-                        cfg.is_active
-                          ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                          : "bg-muted/50 text-muted-foreground border-border/50 hover:border-primary/50"
+                        "px-2.5 py-1 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 border",
+                        cfg.is_active 
+                          ? "bg-primary/10 border-primary text-primary shadow-sm" 
+                          : "border-border/50 hover:bg-muted text-muted-foreground"
                       )}
                     >
-                      <CloudUpload className={cn("w-3 h-3", cfg.is_active ? "text-primary-foreground" : "text-muted-foreground")} />
+                      <span className={cn(
+                        "w-1.5 h-1.5 rounded-full",
+                        cfg.is_active ? "bg-primary animate-pulse" : "bg-muted-foreground"
+                      )} />
                       {cfg.label || cfg.cloud_name}
                     </button>
                   ))}
@@ -170,10 +173,10 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
-                  placeholder="Cari berdasarkan nama file..."
+                  placeholder="Cari media berdasarkan nama..."
                   value={search}
-                  onChange={e => setSearch(e.target.value)}
-                  className="pl-9 h-9"
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="pl-9 h-9 text-sm"
                 />
               </div>
             </div>
@@ -183,14 +186,14 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
               {isLoading ? (
                 <div className="flex flex-col items-center justify-center h-48 gap-3">
                   <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                  <p className="text-sm text-muted-foreground">Memuat media dari Cloudinary...</p>
+                  <p className="text-sm text-muted-foreground">Memuat media dari GitHub CDN...</p>
                 </div>
               ) : isError ? (
                 <div className="flex flex-col items-center justify-center h-48 gap-3 text-center">
                   <AlertCircle className="w-8 h-8 text-destructive" />
                   <div>
                     <p className="font-medium text-sm">Gagal memuat media</p>
-                    <p className="text-xs text-muted-foreground mt-1">Pastikan konfigurasi Cloudinary sudah diatur di halaman Media</p>
+                    <p className="text-xs text-muted-foreground mt-1">Periksa koneksi internet dan status repository GitHub</p>
                   </div>
                   <Button size="sm" variant="outline" onClick={() => refetch()}>Coba Lagi</Button>
                 </div>
@@ -200,7 +203,7 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
                   <div>
                     <p className="font-medium text-sm">{search ? 'Tidak ada hasil' : 'Belum ada media'}</p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      {search ? 'Coba kata kunci lain' : 'Upload file pertama kamu ke Cloudinary'}
+                      {search ? 'Coba kata kunci lain' : 'Upload file pertama kamu ke GitHub CDN'}
                     </p>
                   </div>
                   {!search && <Button size="sm" onClick={() => setShowUpload(true)}>Upload Sekarang</Button>}

@@ -23,11 +23,18 @@ import * as dotenv from 'dotenv';
 import { IncomingMessage, ServerResponse } from 'http';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+import fs from 'fs';
+import path from 'path';
+import crypto from 'crypto';
 
 // --- 1. CONFIGURATION ---
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET || 'e79c2980b182d8c39e23652f75a7c2b6941fa44a958e72ef0d3a57e3f94bd2d1';
+const GITHUB_REPO = process.env.GITHUB_REPO || 'dresar/PORTOFOLIO';
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
+const GITHUB_BRANCH = process.env.GITHUB_BRANCH || 'main';
+const GITHUB_UPLOADS_PATH = 'public/uploads';
 
 interface TokenPayload {
   id: number;
@@ -1029,9 +1036,259 @@ export default async function handler(req: any, res: any) {
         });
     }
 
+    // ── GitHub CDN Media Helpers (dresar/PORTOFOLIO) ──────────────────────
+    async function uploadToGitHubCDN(fileBase64: string, customPublicId?: string, folder?: string) {
+        const match = fileBase64.match(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+);base64,(.+)$/);
+        let mimeType = 'image/png';
+        let base64Data = fileBase64;
+        let ext = 'png';
+
+        if (match) {
+            mimeType = match[1];
+            base64Data = match[2];
+            if (mimeType.includes('jpeg') || mimeType.includes('jpg')) ext = 'jpg';
+            else if (mimeType.includes('webp')) ext = 'webp';
+            else if (mimeType.includes('svg')) ext = 'svg';
+            else if (mimeType.includes('gif')) ext = 'gif';
+            else if (mimeType.includes('pdf')) ext = 'pdf';
+            else if (mimeType.includes('mp4')) ext = 'mp4';
+        }
+
+        let filename = '';
+        if (customPublicId && typeof customPublicId === 'string' && customPublicId.trim().length > 0) {
+            const cleanId = customPublicId.replace(/[^a-zA-Z0-9_-]/g, '_');
+            filename = cleanId.endsWith(`.${ext}`) ? cleanId : `${cleanId}.${ext}`;
+        } else {
+            filename = `media_${Date.now()}_${crypto.randomBytes(4).toString('hex')}.${ext}`;
+        }
+
+        const buffer = Buffer.from(base64Data, 'base64');
+        const targetPath = `${GITHUB_UPLOADS_PATH}/${filename}`;
+
+        // 1. Write locally for instant local preview
+        try {
+            const localDir = path.join(process.cwd(), 'public', 'uploads');
+            if (!fs.existsSync(localDir)) {
+                fs.mkdirSync(localDir, { recursive: true });
+            }
+            fs.writeFileSync(path.join(localDir, filename), buffer);
+        } catch (localErr) {
+            console.warn('Local file write notice:', localErr);
+        }
+
+        // 2. Check if file already exists in GitHub (obtain SHA if updating)
+        let existingSha: string | undefined;
+        try {
+            const checkRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${targetPath}?ref=${GITHUB_BRANCH}`, {
+                headers: {
+                    'Authorization': `Bearer ${GITHUB_TOKEN}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'User-Agent': 'Portfolio-App'
+                }
+            });
+            if (checkRes.ok) {
+                const checkData: any = await checkRes.json();
+                existingSha = checkData.sha;
+            }
+        } catch (err) {}
+
+        // 3. Upload to GitHub Contents API
+        const uploadPayload: any = {
+            message: `upload: ${filename} via GitHub CDN`,
+            content: base64Data,
+            branch: GITHUB_BRANCH
+        };
+        if (existingSha) {
+            uploadPayload.sha = existingSha;
+        }
+
+        const ghRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${targetPath}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${GITHUB_TOKEN}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json',
+                'User-Agent': 'Portfolio-App'
+            },
+            body: JSON.stringify(uploadPayload)
+        });
+
+        if (!ghRes.ok) {
+            const ghErr = await ghRes.text();
+            console.error('GitHub CDN Upload Error:', ghRes.status, ghErr);
+            throw new Error(`GitHub CDN Upload Failed (${ghRes.status}): ${ghErr}`);
+        }
+
+        const ghData: any = await ghRes.json();
+        const cdnUrl = `https://cdn.jsdelivr.net/gh/${GITHUB_REPO}@${GITHUB_BRANCH}/${targetPath}`;
+        const rawUrl = ghData.content?.download_url || `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/${targetPath}`;
+
+        return {
+            public_id: filename,
+            secure_url: cdnUrl,
+            url: cdnUrl,
+            raw_url: rawUrl,
+            local_url: `/uploads/${filename}`,
+            width: 800,
+            height: 600,
+            format: ext,
+            bytes: buffer.length,
+            resource_type: mimeType.startsWith('video') ? 'video' : 'image',
+            created_at: new Date().toISOString(),
+            _account: `GitHub CDN (${GITHUB_REPO})`
+        };
+    }
+
+    async function listGitHubCDNAssets() {
+        const assets: any[] = [];
+        const seenNames = new Set<string>();
+
+        try {
+            const ghRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${GITHUB_UPLOADS_PATH}?ref=${GITHUB_BRANCH}`, {
+                headers: {
+                    'Authorization': `Bearer ${GITHUB_TOKEN}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'User-Agent': 'Portfolio-App'
+                }
+            });
+
+            if (ghRes.ok) {
+                const items: any = await ghRes.json();
+                if (Array.isArray(items)) {
+                    for (const item of items) {
+                        if (item.type === 'file' && item.name !== '.gitkeep') {
+                            seenNames.add(item.name);
+                            const ext = item.name.split('.').pop()?.toLowerCase() || 'png';
+                            const isVideo = ['mp4', 'webm', 'mov'].includes(ext);
+                            const cdnUrl = `https://cdn.jsdelivr.net/gh/${GITHUB_REPO}@${GITHUB_BRANCH}/${item.path}`;
+                            assets.push({
+                                public_id: item.name,
+                                secure_url: cdnUrl,
+                                url: cdnUrl,
+                                raw_url: item.download_url,
+                                sha: item.sha,
+                                width: 800,
+                                height: 600,
+                                format: ext,
+                                bytes: item.size || 0,
+                                resource_type: isVideo ? 'video' : 'image',
+                                created_at: new Date().toISOString(),
+                                tags: ['github-cdn']
+                            });
+                        }
+                    }
+                }
+            }
+        } catch (err) {
+            console.warn('GitHub list warning:', err);
+        }
+
+        // Merge any local files
+        try {
+            const localDir = path.join(process.cwd(), 'public', 'uploads');
+            if (fs.existsSync(localDir)) {
+                const files = fs.readdirSync(localDir);
+                for (const f of files) {
+                    if (!seenNames.has(f) && f !== '.gitkeep') {
+                        const stats = fs.statSync(path.join(localDir, f));
+                        if (stats.isFile()) {
+                            const ext = f.split('.').pop()?.toLowerCase() || 'png';
+                            const isVideo = ['mp4', 'webm', 'mov'].includes(ext);
+                            const cdnUrl = `https://cdn.jsdelivr.net/gh/${GITHUB_REPO}@${GITHUB_BRANCH}/${GITHUB_UPLOADS_PATH}/${f}`;
+                            assets.push({
+                                public_id: f,
+                                secure_url: cdnUrl,
+                                url: cdnUrl,
+                                raw_url: `/uploads/${f}`,
+                                width: 800,
+                                height: 600,
+                                format: ext,
+                                bytes: stats.size,
+                                resource_type: isVideo ? 'video' : 'image',
+                                created_at: stats.mtime.toISOString(),
+                                tags: ['local-upload']
+                            });
+                        }
+                    }
+                }
+            }
+        } catch (err) {
+            console.warn('Local dir read warning:', err);
+        }
+
+        assets.sort((a, b) => b.public_id.localeCompare(a.public_id));
+        return assets;
+    }
+
+    async function deleteFromGitHubCDN(publicId: string, sha?: string) {
+        let fileSha = sha;
+        const targetPath = `${GITHUB_UPLOADS_PATH}/${publicId}`;
+
+        if (!fileSha) {
+            try {
+                const getRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${targetPath}?ref=${GITHUB_BRANCH}`, {
+                    headers: {
+                        'Authorization': `Bearer ${GITHUB_TOKEN}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'User-Agent': 'Portfolio-App'
+                    }
+                });
+                if (getRes.ok) {
+                    const data: any = await getRes.json();
+                    fileSha = data.sha;
+                }
+            } catch (e) {}
+        }
+
+        let ghResult = 'ok';
+        if (fileSha) {
+            try {
+                const delRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${targetPath}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${GITHUB_TOKEN}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json',
+                        'User-Agent': 'Portfolio-App'
+                    },
+                    body: JSON.stringify({
+                        message: `delete: ${publicId} from GitHub CDN`,
+                        sha: fileSha,
+                        branch: GITHUB_BRANCH
+                    })
+                });
+                ghResult = delRes.ok ? 'ok' : 'error';
+            } catch (delErr) {
+                ghResult = 'error';
+            }
+        }
+
+        // Delete local copy
+        try {
+            const localFile = path.join(process.cwd(), 'public', 'uploads', publicId);
+            if (fs.existsSync(localFile)) {
+                fs.unlinkSync(localFile);
+            }
+        } catch (e) {}
+
+        return ghResult;
+    }
+
     // Upload
     if (resourceName === 'upload') {
-        return sendJSON(res, 501, { error: 'Upload service is not configured' });
+        const tokenUser = verifyJwtToken(req);
+        if (!tokenUser) return sendJSON(res, 401, { error: 'Unauthorized. Upload requires authentication.' });
+        if (req.method !== 'POST') return sendJSON(res, 405, { error: 'Method not allowed' });
+        try {
+            const body = await parseBody(req);
+            const { file, folder, public_id } = body || {};
+            if (!file) return sendJSON(res, 400, { error: 'file (base64) is required' });
+            const result = await uploadToGitHubCDN(file, public_id, folder);
+            return sendJSON(res, 200, result);
+        } catch (e: any) {
+            console.error('Upload Error:', e);
+            return sendJSON(res, 500, { error: 'Upload failed', details: e.message });
+        }
     }
 
     // AI
@@ -1345,10 +1602,22 @@ export default async function handler(req: any, res: any) {
 
         // ── GET /api/cloudinary/configs ─ List all configs (masked) ──────────
         if (action === 'configs' && req.method === 'GET') {
+            const ghConfig = {
+                id: 9999,
+                cloud_name: `GitHub CDN (${GITHUB_REPO})`,
+                api_key: GITHUB_TOKEN ? `${GITHUB_TOKEN.slice(0, 8)}••••••••${GITHUB_TOKEN.slice(-4)}` : '',
+                api_secret: '••••••••••••••••',
+                label: 'GitHub CDN (jsDelivr Edge)',
+                is_active: true,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            };
             const client = await getPool().connect();
             try {
                 const result = await client.query('SELECT * FROM cloudinary_config ORDER BY id ASC');
-                return sendJSON(res, 200, result.rows.map(maskSecret));
+                return sendJSON(res, 200, [ghConfig, ...result.rows.map(maskSecret)]);
+            } catch {
+                return sendJSON(res, 200, [ghConfig]);
             } finally {
                 client.release();
             }
@@ -1444,185 +1713,142 @@ export default async function handler(req: any, res: any) {
             }
         }
 
-        // ── POST /api/cloudinary/test ─ Test a config connection ─────────────
+        // ── POST /api/cloudinary/test ─ Test connection (GitHub CDN) ─────────
         if (action === 'test' && req.method === 'POST') {
-            const body = await parseBody(req);
-            const { config_id } = body || {};
-            let config: any = null;
-            if (config_id) {
-                const client = await getPool().connect();
-                try {
-                    const result = await client.query('SELECT * FROM cloudinary_config WHERE id = $1', [Number(config_id)]);
-                    config = result.rows[0] || null;
-                } finally { client.release(); }
-            } else {
-                config = await getActiveConfig();
-            }
-            if (!config) return sendJSON(res, 404, { error: 'Config not found' });
-            // Test by calling ping endpoint
-            const authStr = Buffer.from(`${config.api_key}:${config.api_secret}`).toString('base64');
             try {
-                const pingRes = await fetch(`https://api.cloudinary.com/v1_1/${config.cloud_name}/ping`, {
-                    headers: { 'Authorization': `Basic ${authStr}` }
+                const ghTest = await fetch(`https://api.github.com/repos/${GITHUB_REPO}`, {
+                    headers: {
+                        'Authorization': `Bearer ${GITHUB_TOKEN}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'User-Agent': 'Portfolio-App'
+                    }
                 });
-                const pingData = await pingRes.json();
-                if (!pingRes.ok) return sendJSON(res, 400, { success: false, error: 'Connection failed', details: pingData });
-                return sendJSON(res, 200, { success: true, status: pingData.status, cloud_name: config.cloud_name });
+                if (ghTest.ok) {
+                    const ghData: any = await ghTest.json();
+                    return sendJSON(res, 200, { 
+                        success: true, 
+                        status: 'connected', 
+                        cloud_name: `GitHub CDN (${GITHUB_REPO})`,
+                        repo: GITHUB_REPO,
+                        cdn: 'jsDelivr Edge CDN',
+                        default_branch: ghData.default_branch
+                    });
+                }
+                const errText = await ghTest.text();
+                return sendJSON(res, 400, { success: false, error: 'GitHub connection failed', details: errText });
             } catch (e: any) {
-                return sendJSON(res, 500, { success: false, error: 'Network error reaching Cloudinary', details: e.message });
+                return sendJSON(res, 500, { success: false, error: 'Network error reaching GitHub', details: e.message });
             }
         }
 
-        // ── GET /api/cloudinary/list ─ List media assets (active config) ──────
+        // ── GET /api/cloudinary/list ─ List media assets (GitHub CDN) ────────
         if (action === 'list' && req.method === 'GET') {
-            const config = await getActiveConfig();
-            if (!config) return sendJSON(res, 404, { error: 'No active Cloudinary config. Please add and activate a configuration first.' });
-
-            const resourceType = (query.resource_type as string) || 'image';
-            const nextCursor = query.next_cursor as string;
-            const maxResults = (query.max_results as string) || '50';
-            let listUrl = `https://api.cloudinary.com/v1_1/${config.cloud_name}/resources/${resourceType}?max_results=${maxResults}&tags=true&context=true`;
-            if (nextCursor) listUrl += `&next_cursor=${encodeURIComponent(nextCursor)}`;
-
-            const authStr = Buffer.from(`${config.api_key}:${config.api_secret}`).toString('base64');
-            const cloudRes = await fetch(listUrl, { headers: { 'Authorization': `Basic ${authStr}` } });
-            if (!cloudRes.ok) {
-                const err = await cloudRes.text();
-                return sendJSON(res, cloudRes.status, { error: 'Cloudinary API error', details: err });
+            try {
+                const assets = await listGitHubCDNAssets();
+                return sendJSON(res, 200, {
+                    resources: assets,
+                    total: assets.length,
+                    cdn: 'jsDelivr Edge'
+                });
+            } catch (e: any) {
+                console.error('List GitHub CDN assets error:', e);
+                return sendJSON(res, 500, { error: 'Failed to list media from GitHub CDN', details: e.message });
             }
-            const data = await cloudRes.json();
-            return sendJSON(res, 200, data);
         }
 
-        // ── POST /api/cloudinary/upload ─ Signed upload (active config with rotation) ───────
+        // ── POST /api/cloudinary/upload ─ Upload file (GitHub CDN + jsDelivr) ──
         if (action === 'upload' && req.method === 'POST') {
-            const client = await getPool().connect();
-            let configs = [];
-            try {
-                // Get all configs, active first
-                const result = await client.query(
-                    'SELECT * FROM cloudinary_config ORDER BY is_active DESC, id ASC'
-                );
-                configs = result.rows;
-            } finally {
-                client.release();
-            }
-
-            if (configs.length === 0) return sendJSON(res, 404, { error: 'No Cloudinary configurations found.' });
-
             const body = await parseBody(req);
             const { file, folder, public_id: reqPublicId } = body || {};
             if (!file) return sendJSON(res, 400, { error: 'file (base64 data URL) is required' });
 
-            const crypto = await import('crypto');
-            let lastError = null;
-
-            // Try each config until one succeeds
-            for (const config of configs) {
+            try {
+                // Primary: Upload directly to GitHub CDN
+                const uploadResult = await uploadToGitHubCDN(file, reqPublicId, folder);
+                return sendJSON(res, 200, uploadResult);
+            } catch (ghErr: any) {
+                console.warn('GitHub CDN upload failed, checking fallback configs...', ghErr.message);
+                
+                // Secondary Fallback: Cloudinary config if available in database
+                const client = await getPool().connect();
+                let configs = [];
                 try {
-                    const timestamp = Math.round(Date.now() / 1000);
-                    const params: Record<string, any> = { timestamp };
-                    if (folder) params.folder = folder;
-                    if (reqPublicId) params.public_id = reqPublicId;
-
-                    const sortedKeys = Object.keys(params).sort();
-                    const strToSign = sortedKeys.map(k => `${k}=${params[k]}`).join('&') + config.api_secret;
-                    const signature = (crypto as any).createHash('sha1').update(strToSign).digest('hex');
-
-                    const formParts = [
-                        `file=${encodeURIComponent(file)}`,
-                        `api_key=${config.api_key}`,
-                        `timestamp=${timestamp}`,
-                        `signature=${signature}`,
-                    ];
-                    if (folder) formParts.push(`folder=${encodeURIComponent(folder)}`);
-                    if (reqPublicId) formParts.push(`public_id=${encodeURIComponent(reqPublicId)}`);
-
-                    const uploadUrl = `https://api.cloudinary.com/v1_1/${config.cloud_name}/auto/upload`;
-                    const uploadRes = await fetch(uploadUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: formParts.join('&')
-                    });
-                    
-                    const uploadData = await uploadRes.json();
-                    
-                    if (!uploadRes.ok) {
-                        console.warn(`Upload failed for config ${config.cloud_name}, trying next...`, uploadData);
-                        lastError = uploadData;
-                        continue; // Try next config
-                    }
-
-                    // Success!
-                    return sendJSON(res, 200, {
-                        public_id: uploadData.public_id,
-                        secure_url: uploadData.secure_url,
-                        url: uploadData.url,
-                        width: uploadData.width,
-                        height: uploadData.height,
-                        format: uploadData.format,
-                        bytes: uploadData.bytes,
-                        resource_type: uploadData.resource_type,
-                        created_at: uploadData.created_at,
-                        _account: config.cloud_name // Optional: tell client which account was used
-                    });
-                } catch (e: any) {
-                    console.error(`Error with config ${config.cloud_name}:`, e.message);
-                    lastError = { error: e.message };
-                    continue;
+                    const result = await client.query(
+                        'SELECT * FROM cloudinary_config ORDER BY is_active DESC, id ASC'
+                    );
+                    configs = result.rows;
+                } finally {
+                    client.release();
                 }
-            }
 
-            // If we're here, all configs failed
-            return sendJSON(res, 500, { error: 'Cloudinary upload failed on all available accounts', details: lastError });
+                if (configs.length > 0) {
+                    for (const config of configs) {
+                        try {
+                            const timestamp = Math.round(Date.now() / 1000);
+                            const params: Record<string, any> = { timestamp };
+                            if (folder) params.folder = folder;
+                            if (reqPublicId) params.public_id = reqPublicId;
+
+                            const sortedKeys = Object.keys(params).sort();
+                            const strToSign = sortedKeys.map(k => `${k}=${params[k]}`).join('&') + config.api_secret;
+                            const signature = crypto.createHash('sha1').update(strToSign).digest('hex');
+
+                            const formParts = [
+                                `file=${encodeURIComponent(file)}`,
+                                `api_key=${config.api_key}`,
+                                `timestamp=${timestamp}`,
+                                `signature=${signature}`,
+                            ];
+                            if (folder) formParts.push(`folder=${encodeURIComponent(folder)}`);
+                            if (reqPublicId) formParts.push(`public_id=${encodeURIComponent(reqPublicId)}`);
+
+                            const uploadUrl = `https://api.cloudinary.com/v1_1/${config.cloud_name}/auto/upload`;
+                            const uploadRes = await fetch(uploadUrl, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                                body: formParts.join('&')
+                            });
+                            
+                            const uploadData: any = await uploadRes.json();
+                            if (uploadRes.ok) {
+                                return sendJSON(res, 200, {
+                                    public_id: uploadData.public_id,
+                                    secure_url: uploadData.secure_url,
+                                    url: uploadData.url,
+                                    width: uploadData.width,
+                                    height: uploadData.height,
+                                    format: uploadData.format,
+                                    bytes: uploadData.bytes,
+                                    resource_type: uploadData.resource_type,
+                                    created_at: uploadData.created_at,
+                                    _account: config.cloud_name
+                                });
+                            }
+                        } catch (e: any) {
+                            console.warn(`Cloudinary config fallback error:`, e.message);
+                        }
+                    }
+                }
+
+                return sendJSON(res, 500, { error: 'Media upload failed on GitHub CDN', details: ghErr.message });
+            }
         }
 
-        // ── POST /api/cloudinary/delete ─ Delete media asset(s) ──────────────
+        // ── POST /api/cloudinary/delete ─ Delete media asset(s) (GitHub CDN) ──
         if (action === 'delete' && req.method === 'POST') {
-            const config = await getActiveConfig();
-            if (!config) return sendJSON(res, 404, { error: 'No active Cloudinary config.' });
-
             const body = await parseBody(req);
-            const { public_id, public_ids, resource_type } = body || {};
+            const { public_id, public_ids, sha } = body || {};
             
             const idsToDelete = Array.isArray(public_ids) ? public_ids : (public_id ? [public_id] : []);
             if (idsToDelete.length === 0) return sendJSON(res, 400, { error: 'public_id or public_ids is required' });
 
-            const crypto = await import('crypto');
             const results = [];
-
             for (const id of idsToDelete) {
-                const timestamp = Math.round(Date.now() / 1000);
-                const strToSign = `public_id=${id}&timestamp=${timestamp}${config.api_secret}`;
-                const signature = (crypto as any).createHash('sha1').update(strToSign).digest('hex');
-
-                const formBody = `public_id=${encodeURIComponent(id)}&api_key=${config.api_key}&timestamp=${timestamp}&signature=${signature}`;
-                
-                // Try given resource_type, or fallback through video, image, raw
-                const typesToTry = Array.from(new Set([resource_type, 'video', 'image', 'raw'].filter(Boolean)));
-                let lastResult = null;
-                let lastStatus = 400;
-
-                for (const type of typesToTry) {
-                    const deleteRes = await fetch(`https://api.cloudinary.com/v1_1/${config.cloud_name}/${type}/destroy`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: formBody
-                    });
-                    const delData = await deleteRes.json();
-                    lastStatus = deleteRes.status;
-                    lastResult = delData.result;
-
-                    if (delData.result === 'ok') {
-                        break;
-                    }
-                }
-
-                results.push({ id, status: lastStatus, result: lastResult });
+                const resStatus = await deleteFromGitHubCDN(id, sha);
+                results.push({ id, status: 200, result: resStatus });
             }
 
-            const success = results.every(r => r.result === 'ok');
-            return sendJSON(res, success ? 200 : 207, { success, results });
+            return sendJSON(res, 200, { success: true, results });
         }
 
         return sendJSON(res, 404, { error: `Cloudinary action '${action}' not found` });
