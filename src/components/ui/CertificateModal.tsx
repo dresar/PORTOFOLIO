@@ -41,7 +41,7 @@ export const CertificateModal = () => {
                 <Award className="w-8 h-8 text-primary" />
                 </div>
                 <div>
-                <h2 className="text-xl md:text-2xl font-heading font-bold mb-1">{certificateData.title}</h2>
+                <h2 className="text-xl md:text-2xl font-heading font-bold mb-1">{certificateData.name || certificateData.title || t('certificates.title')}</h2>
                 <p className="text-sm text-muted-foreground">{certificateData.issuer}</p>
                 </div>
             </div>
@@ -49,7 +49,9 @@ export const CertificateModal = () => {
             <div className="flex flex-wrap gap-3 mb-6">
                 <div className="px-3 py-1.5 rounded-lg bg-muted/50 border border-border/40">
                 <span className="text-xs text-muted-foreground">{t('common.date')}: </span>
-                <span className="text-sm font-medium">{new Date(certificateData.issueDate).toLocaleDateString()}</span>
+                <span className="text-sm font-medium">
+                  {certificateData.issueDate ? new Date(certificateData.issueDate).toLocaleDateString(t('common.present') === 'Sekarang' ? 'id-ID' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '-'}
+                </span>
                 </div>
                 {certificateData.credentialId && (
                 <div className="px-3 py-1.5 rounded-lg bg-muted/50 border border-border/40">
