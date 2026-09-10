@@ -30,7 +30,7 @@ import crypto from 'crypto';
 // --- 1. CONFIGURATION ---
 dotenv.config();
 
-const JWT_SECRET = process.env.JWT_SECRET || 'e79c2980b182d8c39e23652f75a7c2b6941fa44a958e72ef0d3a57e3f94bd2d1';
+const JWT_SECRET = process.env.JWT_SECRET || '';
 const GITHUB_REPO = process.env.GITHUB_REPO || 'dresar/PORTOFOLIO';
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH || 'main';
@@ -45,6 +45,7 @@ interface TokenPayload {
 
 function verifyJwtToken(req: any): TokenPayload | null {
   try {
+    if (!JWT_SECRET) return null;
     const authHeader = req.headers?.authorization;
     if (!authHeader || typeof authHeader !== 'string') return null;
     const parts = authHeader.trim().split(' ');
