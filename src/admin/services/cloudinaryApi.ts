@@ -4,11 +4,12 @@ export interface CloudinaryConfig {
   id: number;
   cloud_name: string;
   api_key: string;
-  api_secret: string; // always masked from server
+  api_secret: string;
   label: string;
   is_active: boolean;
   created_at: string;
   updated_at: string;
+  provider?: 'github' | 'cloudinary';
 }
 
 export interface CloudinaryAsset {
@@ -22,6 +23,9 @@ export interface CloudinaryAsset {
   resource_type: string;
   created_at: string;
   tags?: string[];
+  provider?: 'github' | 'cloudinary';
+  _account?: string;
+  sha?: string;
 }
 
 export interface CloudinaryListResponse {
@@ -30,6 +34,7 @@ export interface CloudinaryListResponse {
   rate_limit_allowed?: number;
   rate_limit_reset_at?: string;
   rate_limit_remaining?: number;
+  total?: number;
 }
 
 export interface UploadResult {
@@ -42,67 +47,58 @@ export interface UploadResult {
   bytes: number;
   resource_type: string;
   created_at: string;
+  provider?: 'github' | 'cloudinary';
+  _account?: string;
 }
 
-// ── Config Management ─────────────────────────────────────────────────────────
-
 export const cloudinaryApi = {
-  /** List all configs (max 5, api_secret masked) */
   getConfigs: async (): Promise<CloudinaryConfig[]> => {
     const res = await adminApi.get('/cloudinary/configs');
     return res.data;
   },
 
-  /** Add new config */
   addConfig: async (data: { cloud_name: string; api_key: string; api_secret: string; label?: string }): Promise<CloudinaryConfig> => {
     const res = await adminApi.post('/cloudinary/configs', data);
     return res.data;
   },
 
-  /** Update a config (only provided fields are updated) */
   updateConfig: async (id: number, data: Partial<{ cloud_name: string; api_key: string; api_secret: string; label: string }>): Promise<CloudinaryConfig> => {
     const res = await adminApi.put(`/cloudinary/configs?id=${id}`, data);
     return res.data;
   },
 
-  /** Delete a config */
   deleteConfig: async (id: number): Promise<void> => {
     await adminApi.delete(`/cloudinary/configs?id=${id}`);
   },
 
-  /** Set a config as active */
   activateConfig: async (config_id: number): Promise<{ success: boolean; active: CloudinaryConfig }> => {
     const res = await adminApi.post('/cloudinary/activate', { config_id });
     return res.data;
   },
 
-  /** Test a config connection (uses config_id or active config) */
-  testConfig: async (config_id?: number): Promise<{ success: boolean; status?: string; cloud_name?: string; error?: string }> => {
+  testConfig: async (config_id?: number): Promise<{ success: boolean; status?: string; cloud_name?: string; label?: string; repo?: string; cdn?: string; provider?: string; error?: string }> => {
     const res = await adminApi.post('/cloudinary/test', config_id ? { config_id } : {});
     return res.data;
   },
 
-  // ── Media Operations ──────────────────────────────────────────────────────
-
-  /** List assets from the active config */
-  listAssets: async (options?: { resource_type?: string; next_cursor?: string; max_results?: number }): Promise<CloudinaryListResponse> => {
+  listAssets: async (options?: { resource_type?: string; next_cursor?: string; max_results?: number; provider?: 'all' | 'github' | 'cloudinary'; config_id?: number }): Promise<CloudinaryListResponse> => {
     const params = new URLSearchParams();
     if (options?.resource_type) params.set('resource_type', options.resource_type);
     if (options?.next_cursor) params.set('next_cursor', options.next_cursor);
     if (options?.max_results) params.set('max_results', options.max_results.toString());
+    if (options?.provider) params.set('provider', options.provider);
+    if (options?.config_id) params.set('config_id', options.config_id.toString());
     const res = await adminApi.get(`/cloudinary/list${params.toString() ? '?' + params.toString() : ''}`);
     return res.data;
   },
 
-  /** Upload a file (base64 data URL) to active config */
-  uploadFile: async (file: string, options?: { folder?: string; public_id?: string }): Promise<UploadResult> => {
+  uploadFile: async (file: string, options?: { folder?: string; public_id?: string; provider?: 'github' | 'cloudinary'; config_id?: number }): Promise<UploadResult> => {
     const res = await adminApi.post('/cloudinary/upload', { file, ...options });
     return res.data;
   },
 
-  /** Delete asset(s) from active config */
-  deleteAsset: async (public_ids: string | string[], resource_type = 'image'): Promise<{ success: boolean; results?: any[] }> => {
-    const data = Array.isArray(public_ids) ? { public_ids, resource_type } : { public_id: public_ids, resource_type };
+  deleteAsset: async (public_ids: string | string[], resource_type = 'image', provider?: 'github' | 'cloudinary', sha?: string): Promise<{ success: boolean; results?: any[] }> => {
+    const data = Array.isArray(public_ids) ? { public_ids, resource_type, provider, sha } : { public_id: public_ids, resource_type, provider, sha };
     const res = await adminApi.post('/cloudinary/delete', data);
     return res.data;
   },

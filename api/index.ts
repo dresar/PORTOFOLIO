@@ -1811,8 +1811,46 @@ export default async function handler(req: any, res: any) {
             }
         }
 
-        // ── POST /api/cloudinary/test ─ Test connection (GitHub CDN) ─────────
         if (action === 'test' && req.method === 'POST') {
+            const body = await parseBody(req);
+            const { config_id } = body || {};
+
+            if (config_id && Number(config_id) !== 9999) {
+                const client = await getPool().connect();
+                let cfg: any;
+                try {
+                    const resDb = await client.query('SELECT * FROM cloudinary_config WHERE id = $1', [Number(config_id)]);
+                    cfg = resDb.rows[0];
+                } finally {
+                    client.release();
+                }
+
+                if (!cfg) {
+                    return sendJSON(res, 404, { success: false, error: 'Konfigurasi tidak ditemukan' });
+                }
+
+                try {
+                    const auth = Buffer.from(`${cfg.api_key}:${cfg.api_secret}`).toString('base64');
+                    const pingRes = await fetch(`https://api.cloudinary.com/v1_1/${cfg.cloud_name}/ping`, {
+                        headers: { 'Authorization': `Basic ${auth}` }
+                    });
+                    if (pingRes.ok) {
+                        return sendJSON(res, 200, {
+                            success: true,
+                            status: 'connected',
+                            cloud_name: cfg.cloud_name,
+                            label: cfg.label,
+                            provider: 'cloudinary'
+                        });
+                    } else {
+                        const err = await pingRes.text();
+                        return sendJSON(res, 400, { success: false, error: 'Koneksi Cloudinary gagal: credentials tidak valid', details: err });
+                    }
+                } catch (e: any) {
+                    return sendJSON(res, 500, { success: false, error: 'Gagal menghubungi server Cloudinary', details: e.message });
+                }
+            }
+
             try {
                 const ghTest = await fetch(`https://api.github.com/repos/${GITHUB_REPO}`, {
                     headers: {
@@ -1829,7 +1867,8 @@ export default async function handler(req: any, res: any) {
                         cloud_name: `GitHub CDN (${GITHUB_REPO})`,
                         repo: GITHUB_REPO,
                         cdn: 'jsDelivr Edge CDN',
-                        default_branch: ghData.default_branch
+                        default_branch: ghData.default_branch,
+                        provider: 'github'
                     });
                 }
                 const errText = await ghTest.text();
@@ -1839,111 +1878,202 @@ export default async function handler(req: any, res: any) {
             }
         }
 
-        // ── GET /api/cloudinary/list ─ List media assets (GitHub CDN) ────────
         if (action === 'list' && req.method === 'GET') {
-            try {
-                const assets = await listGitHubCDNAssets();
-                return sendJSON(res, 200, {
-                    resources: assets,
-                    total: assets.length,
-                    cdn: 'jsDelivr Edge'
-                });
-            } catch (e: any) {
-                console.error('List GitHub CDN assets error:', e);
-                return sendJSON(res, 500, { error: 'Failed to list media from GitHub CDN', details: e.message });
+            const providerFilter = (urlObj.searchParams.get('provider') || 'all').toLowerCase();
+            const resourceType = urlObj.searchParams.get('resource_type') || 'image';
+            const configIdParam = urlObj.searchParams.get('config_id');
+            const allAssets: any[] = [];
+
+            if (providerFilter === 'all' || providerFilter === 'github') {
+                try {
+                    const ghAssets = await listGitHubCDNAssets();
+                    const filteredGh = ghAssets.filter(a => resourceType === 'all' || a.resource_type === resourceType);
+                    allAssets.push(...filteredGh.map(a => ({ ...a, provider: 'github' })));
+                } catch (e: any) {
+                    console.warn('GitHub CDN list warning:', e.message);
+                }
             }
+
+            if (providerFilter === 'all' || providerFilter === 'cloudinary') {
+                try {
+                    const client = await getPool().connect();
+                    let cldConfigs: any[] = [];
+                    try {
+                        let query = 'SELECT * FROM cloudinary_config';
+                        const params: any[] = [];
+                        if (configIdParam && Number(configIdParam) !== 9999) {
+                            query += ' WHERE id = $1';
+                            params.push(Number(configIdParam));
+                        } else {
+                            query += ' ORDER BY is_active DESC, id ASC';
+                        }
+                        const resDb = await client.query(query, params);
+                        cldConfigs = resDb.rows;
+                    } finally {
+                        client.release();
+                    }
+
+                    const targetConfig = cldConfigs.find(c => c.is_active) || cldConfigs[0];
+                    if (targetConfig) {
+                        const auth = Buffer.from(`${targetConfig.api_key}:${targetConfig.api_secret}`).toString('base64');
+                        const cldType = resourceType === 'video' ? 'video' : 'image';
+                        const cldUrl = `https://api.cloudinary.com/v1_1/${targetConfig.cloud_name}/resources/${cldType}?max_results=50`;
+                        const cldRes = await fetch(cldUrl, {
+                            headers: { 'Authorization': `Basic ${auth}` }
+                        });
+                        if (cldRes.ok) {
+                            const cldData: any = await cldRes.json();
+                            const cldAssets = (cldData.resources || []).map((r: any) => ({
+                                public_id: r.public_id,
+                                secure_url: r.secure_url,
+                                url: r.url,
+                                width: r.width,
+                                height: r.height,
+                                format: r.format,
+                                bytes: r.bytes,
+                                resource_type: r.resource_type || cldType,
+                                created_at: r.created_at,
+                                provider: 'cloudinary',
+                                _account: targetConfig.cloud_name,
+                                tags: r.tags || ['cloudinary']
+                            }));
+                            allAssets.push(...cldAssets);
+                        }
+                    }
+                } catch (cldErr: any) {
+                    console.warn('Cloudinary list warning:', cldErr.message);
+                }
+            }
+
+            return sendJSON(res, 200, {
+                resources: allAssets,
+                total: allAssets.length
+            });
         }
 
-        // ── POST /api/cloudinary/upload ─ Upload file (GitHub CDN + jsDelivr) ──
         if (action === 'upload' && req.method === 'POST') {
             const body = await parseBody(req);
-            const { file, folder, public_id: reqPublicId } = body || {};
+            const { file, folder, public_id: reqPublicId, provider, config_id } = body || {};
             if (!file) return sendJSON(res, 400, { error: 'file (base64 data URL) is required' });
 
-            try {
-                // Primary: Upload directly to GitHub CDN
-                const uploadResult = await uploadToGitHubCDN(file, reqPublicId, folder);
-                return sendJSON(res, 200, uploadResult);
-            } catch (ghErr: any) {
-                console.warn('GitHub CDN upload failed, checking fallback configs...', ghErr.message);
-                
-                // Secondary Fallback: Cloudinary config if available in database
+            const targetProvider = (provider || 'github').toLowerCase();
+
+            if (targetProvider === 'cloudinary') {
                 const client = await getPool().connect();
-                let configs = [];
+                let configToUse: any;
                 try {
-                    const result = await client.query(
-                        'SELECT * FROM cloudinary_config ORDER BY is_active DESC, id ASC'
-                    );
-                    configs = result.rows;
+                    if (config_id && Number(config_id) !== 9999) {
+                        const resDb = await client.query('SELECT * FROM cloudinary_config WHERE id = $1', [Number(config_id)]);
+                        configToUse = resDb.rows[0];
+                    } else {
+                        const resDb = await client.query('SELECT * FROM cloudinary_config WHERE is_active = true LIMIT 1');
+                        configToUse = resDb.rows[0] || (await client.query('SELECT * FROM cloudinary_config ORDER BY id ASC LIMIT 1')).rows[0];
+                    }
                 } finally {
                     client.release();
                 }
 
-                if (configs.length > 0) {
-                    for (const config of configs) {
-                        try {
-                            const timestamp = Math.round(Date.now() / 1000);
-                            const params: Record<string, any> = { timestamp };
-                            if (folder) params.folder = folder;
-                            if (reqPublicId) params.public_id = reqPublicId;
-
-                            const sortedKeys = Object.keys(params).sort();
-                            const strToSign = sortedKeys.map(k => `${k}=${params[k]}`).join('&') + config.api_secret;
-                            const signature = crypto.createHash('sha1').update(strToSign).digest('hex');
-
-                            const formParts = [
-                                `file=${encodeURIComponent(file)}`,
-                                `api_key=${config.api_key}`,
-                                `timestamp=${timestamp}`,
-                                `signature=${signature}`,
-                            ];
-                            if (folder) formParts.push(`folder=${encodeURIComponent(folder)}`);
-                            if (reqPublicId) formParts.push(`public_id=${encodeURIComponent(reqPublicId)}`);
-
-                            const uploadUrl = `https://api.cloudinary.com/v1_1/${config.cloud_name}/auto/upload`;
-                            const uploadRes = await fetch(uploadUrl, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                                body: formParts.join('&')
-                            });
-                            
-                            const uploadData: any = await uploadRes.json();
-                            if (uploadRes.ok) {
-                                return sendJSON(res, 200, {
-                                    public_id: uploadData.public_id,
-                                    secure_url: uploadData.secure_url,
-                                    url: uploadData.url,
-                                    width: uploadData.width,
-                                    height: uploadData.height,
-                                    format: uploadData.format,
-                                    bytes: uploadData.bytes,
-                                    resource_type: uploadData.resource_type,
-                                    created_at: uploadData.created_at,
-                                    _account: config.cloud_name
-                                });
-                            }
-                        } catch (e: any) {
-                            console.warn(`Cloudinary config fallback error:`, e.message);
-                        }
-                    }
+                if (!configToUse) {
+                    return sendJSON(res, 400, { error: 'Tidak ada konfigurasi Cloudinary aktif. Silakan tambahkan konfigurasi atau pilih GitHub CDN.' });
                 }
 
-                return sendJSON(res, 500, { error: 'Media upload failed on GitHub CDN', details: ghErr.message });
+                try {
+                    const timestamp = Math.round(Date.now() / 1000);
+                    const params: Record<string, any> = { timestamp };
+                    if (folder) params.folder = folder;
+                    if (reqPublicId) params.public_id = reqPublicId;
+
+                    const sortedKeys = Object.keys(params).sort();
+                    const strToSign = sortedKeys.map(k => `${k}=${params[k]}`).join('&') + configToUse.api_secret;
+                    const signature = crypto.createHash('sha1').update(strToSign).digest('hex');
+
+                    const formParts = [
+                        `file=${encodeURIComponent(file)}`,
+                        `api_key=${configToUse.api_key}`,
+                        `timestamp=${timestamp}`,
+                        `signature=${signature}`,
+                    ];
+                    if (folder) formParts.push(`folder=${encodeURIComponent(folder)}`);
+                    if (reqPublicId) formParts.push(`public_id=${encodeURIComponent(reqPublicId)}`);
+
+                    const uploadUrl = `https://api.cloudinary.com/v1_1/${configToUse.cloud_name}/auto/upload`;
+                    const uploadRes = await fetch(uploadUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: formParts.join('&')
+                    });
+                    
+                    const uploadData: any = await uploadRes.json();
+                    if (!uploadRes.ok) {
+                        throw new Error(uploadData.error?.message || 'Cloudinary upload rejected');
+                    }
+
+                    return sendJSON(res, 200, {
+                        public_id: uploadData.public_id,
+                        secure_url: uploadData.secure_url,
+                        url: uploadData.url,
+                        width: uploadData.width,
+                        height: uploadData.height,
+                        format: uploadData.format,
+                        bytes: uploadData.bytes,
+                        resource_type: uploadData.resource_type,
+                        created_at: uploadData.created_at,
+                        provider: 'cloudinary',
+                        _account: configToUse.cloud_name
+                    });
+                } catch (cldErr: any) {
+                    console.error('Cloudinary upload error:', cldErr);
+                    return sendJSON(res, 500, { error: 'Upload ke Cloudinary gagal', details: cldErr.message });
+                }
+            }
+
+            try {
+                const uploadResult = await uploadToGitHubCDN(file, reqPublicId, folder);
+                return sendJSON(res, 200, { ...uploadResult, provider: 'github' });
+            } catch (ghErr: any) {
+                console.error('GitHub CDN upload failed:', ghErr);
+                return sendJSON(res, 500, { error: 'Upload ke GitHub CDN gagal', details: ghErr.message });
             }
         }
 
-        // ── POST /api/cloudinary/delete ─ Delete media asset(s) (GitHub CDN) ──
         if (action === 'delete' && req.method === 'POST') {
             const body = await parseBody(req);
-            const { public_id, public_ids, sha } = body || {};
+            const { public_id, public_ids, sha, provider, resource_type } = body || {};
             
             const idsToDelete = Array.isArray(public_ids) ? public_ids : (public_id ? [public_id] : []);
             if (idsToDelete.length === 0) return sendJSON(res, 400, { error: 'public_id or public_ids is required' });
 
             const results = [];
             for (const id of idsToDelete) {
-                const resStatus = await deleteFromGitHubCDN(id, sha);
-                results.push({ id, status: 200, result: resStatus });
+                const isCloudinary = provider === 'cloudinary' || id.includes('/') || (!id.includes('.') && !sha);
+                if (isCloudinary) {
+                    try {
+                        const client = await getPool().connect();
+                        let targetConfig: any;
+                        try {
+                            const resDb = await client.query('SELECT * FROM cloudinary_config WHERE is_active = true LIMIT 1');
+                            targetConfig = resDb.rows[0] || (await client.query('SELECT * FROM cloudinary_config ORDER BY id ASC LIMIT 1')).rows[0];
+                        } finally {
+                            client.release();
+                        }
+
+                        if (targetConfig) {
+                            const auth = Buffer.from(`${targetConfig.api_key}:${targetConfig.api_secret}`).toString('base64');
+                            const cldType = resource_type === 'video' ? 'video' : 'image';
+                            const delUrl = `https://api.cloudinary.com/v1_1/${targetConfig.cloud_name}/resources/${cldType}/upload?public_ids[]=${encodeURIComponent(id)}`;
+                            const delRes = await fetch(delUrl, {
+                                method: 'DELETE',
+                                headers: { 'Authorization': `Basic ${auth}` }
+                            });
+                            results.push({ id, status: delRes.status, provider: 'cloudinary' });
+                        }
+                    } catch (e: any) {
+                        results.push({ id, status: 500, error: e.message, provider: 'cloudinary' });
+                    }
+                } else {
+                    const resStatus = await deleteFromGitHubCDN(id, sha);
+                    results.push({ id, status: 200, result: resStatus, provider: 'github' });
+                }
             }
 
             return sendJSON(res, 200, { success: true, results });

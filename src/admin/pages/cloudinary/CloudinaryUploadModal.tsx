@@ -22,6 +22,7 @@ interface UploadedItem extends UploadResult {
 export function CloudinaryUploadModal({ isOpen, onClose, onInsert }: CloudinaryUploadModalProps) {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [provider, setProvider] = useState<'github' | 'cloudinary'>('github');
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploaded, setUploaded] = useState<UploadedItem[]>([]);
@@ -87,22 +88,20 @@ export function CloudinaryUploadModal({ isOpen, onClose, onInsert }: CloudinaryU
         const base64 = await fileToBase64(queue[i].file);
         setQueue(prev => prev.map((item, idx) => idx === i ? { ...item, progress: 40 } : item));
         
-        const result = await cloudinaryApi.uploadFile(base64, { folder: 'portfolio' });
+        const result = await cloudinaryApi.uploadFile(base64, { folder: 'portfolio', provider });
         
         setQueue(prev => prev.map((item, idx) => idx === i ? { ...item, status: 'success', progress: 100, result } : item));
         setUploaded(prev => [{ ...result }, ...prev]);
         successCount++;
 
-        // Add 2 seconds delay if not the last item
         if (i < queue.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, 2000));
+          await new Promise(resolve => setTimeout(resolve, 1500));
         }
       } catch (err: any) {
         console.error('Upload error:', err);
         const errorMsg = err?.response?.data?.error || err.message || 'Gagal upload';
         setQueue(prev => prev.map((item, idx) => idx === i ? { ...item, status: 'error', error: errorMsg } : item));
         failCount++;
-        // Continue to next file even if one fails
       }
     }
 
@@ -110,11 +109,11 @@ export function CloudinaryUploadModal({ isOpen, onClose, onInsert }: CloudinaryU
     setCurrentIndex(-1);
     
     if (failCount === 0) {
-      toast({ title: '✅ Semua Berhasil!', description: `${successCount} foto berhasil diupload.` });
+      toast({ title: 'Berhasil', description: `${successCount} file berhasil diupload ke ${provider === 'github' ? 'GitHub CDN' : 'Cloudinary'}.` });
     } else {
       toast({ 
         variant: 'destructive', 
-        title: 'Upload Selesai dengan Error', 
+        title: 'Upload selesai dengan catatan', 
         description: `${successCount} berhasil, ${failCount} gagal.` 
       });
     }
@@ -160,14 +159,13 @@ export function CloudinaryUploadModal({ isOpen, onClose, onInsert }: CloudinaryU
           exit={{ scale: 0.9, opacity: 0 }}
           transition={{ type: 'spring', stiffness: 400, damping: 30 }}
         >
-          {/* Header */}
           <div className="flex items-center justify-between p-5 border-b border-border/50">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-primary/15 flex items-center justify-center">
                 <CloudUpload className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <h2 className="font-semibold text-base">Upload ke Cloudinary (Gambar & Video)</h2>
+                <h2 className="font-semibold text-base">Upload Media & Asset CDN</h2>
                 <p className="text-xs text-muted-foreground">Maksimal 100MB per file · Format: Gambar (JPG, PNG, WebP, GIF) & Video (MP4, WebM, MOV)</p>
               </div>
             </div>
@@ -176,8 +174,35 @@ export function CloudinaryUploadModal({ isOpen, onClose, onInsert }: CloudinaryU
             </Button>
           </div>
 
-          <div className="p-5 space-y-5">
-            {/* Drop Zone */}
+          <div className="p-5 space-y-4">
+            <div className="grid grid-cols-2 gap-2 p-1 bg-muted/60 rounded-xl border border-border/50">
+              <button
+                type="button"
+                onClick={() => setProvider('github')}
+                className={cn(
+                  "flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-medium transition-all",
+                  provider === 'github'
+                    ? "bg-background text-foreground shadow-sm border border-border font-semibold"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                GitHub CDN (jsDelivr Edge)
+              </button>
+              <button
+                type="button"
+                onClick={() => setProvider('cloudinary')}
+                className={cn(
+                  "flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-medium transition-all",
+                  provider === 'cloudinary'
+                    ? "bg-background text-foreground shadow-sm border border-border font-semibold"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <span className="w-2 h-2 rounded-full bg-sky-500" />
+                Cloudinary Storage
+              </button>
+            </div>
             {queue.length === 0 ? (
               <div
                 className={cn(
