@@ -1,7 +1,10 @@
-import { Pool } from '@neondatabase/serverless';
+import { Pool, neonConfig } from '@neondatabase/serverless';
 import * as dotenv from 'dotenv';
+import path from 'path';
+import ws from 'ws';
 
-dotenv.config();
+neonConfig.webSocketConstructor = ws;
+dotenv.config({ path: path.join(process.cwd(), '.env') });
 
 const DB_URL = process.env.DATABASE_URL;
 if (!DB_URL) {
@@ -17,12 +20,14 @@ const pool = new Pool({
 async function main() {
   try {
     const res = await pool.query(`
-      SELECT column_name, data_type, udt_name 
+      SELECT column_name, data_type 
       FROM information_schema.columns 
-      WHERE table_name = 'project'
+      WHERE table_name = 'user'
     `);
-    console.log("Project columns database types:");
-    console.log(JSON.stringify(res.rows, null, 2));
+    console.log("User table columns verified:", res.rows.map(r => r.column_name));
+
+    const users = await pool.query(`SELECT id, email, name, "isActive", (pin IS NOT NULL) as has_pin FROM "user"`);
+    console.log("Active users in DB:", users.rows);
   } catch (e) {
     console.error("Failed to query database:", e);
   } finally {
@@ -31,3 +36,5 @@ async function main() {
 }
 
 main();
+
+

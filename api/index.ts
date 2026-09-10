@@ -151,6 +151,7 @@ export const users = pgTable('user', {
   id: serial('id').primaryKey(),
   email: text('email').unique().notNull(),
   password: text('password').notNull(),
+  pin: text('pin'),
   name: text('name'),
   avatar: text('avatar'),
   isActive: boolean('isActive').default(true).notNull(),
@@ -627,7 +628,7 @@ export default async function handler(req: any, res: any) {
             // Check for specific actions or sub-resources
             if (pathParts[1] === 'bulk') {
                 action = 'bulk';
-            } else if (pathParts[1] === 'login' || pathParts[1] === 'register' || pathParts[1] === 'me') {
+            } else if (pathParts[1] === 'login' || pathParts[1] === 'verify-pin' || pathParts[1] === 'register' || pathParts[1] === 'me' || pathParts[1] === 'reset') {
                 action = pathParts[1];
             } else if (!isNaN(Number(pathParts[1]))) {
                 id = pathParts[1];
@@ -878,6 +879,20 @@ export default async function handler(req: any, res: any) {
 
                     if (isPasswordValid) {
                         clearAttempts(ip);
+
+                        if (user.pin) {
+                            const tempToken = jwt.sign(
+                                { id: user.id, email: user.email, stage: 'pin_required' },
+                                JWT_SECRET,
+                                { expiresIn: '5m' }
+                            );
+                            return sendJSON(res, 200, {
+                                requirePin: true,
+                                tempToken,
+                                message: 'Masukkan PIN keamanan 2FA Anda'
+                            });
+                        }
+
                         const token = jwt.sign(
                             { id: user.id, email: user.email, name: user.name, role: 'admin' },
                             JWT_SECRET,
@@ -895,6 +910,68 @@ export default async function handler(req: any, res: any) {
 
             trackFailed(ip);
             return sendJSON(res, 401, { error: 'Invalid credentials' });
+        }
+
+        if (action === 'verify-pin') {
+            if (req.method !== 'POST') return sendJSON(res, 405, { error: 'Method not allowed' });
+            const body = await parseBody(req);
+            const { tempToken, pin } = body || {};
+            if (!tempToken || !pin) return sendJSON(res, 400, { error: 'Token verifikasi dan PIN diperlukan' });
+
+            const ip = getClientIp(req);
+            if (isRateLimited(ip)) return sendJSON(res, 429, { error: 'Terlalu banyak percobaan. Silakan coba lagi nanti.' });
+
+            try {
+                let decoded: any;
+                try {
+                    decoded = jwt.verify(tempToken, JWT_SECRET);
+                } catch (jwtErr) {
+                    return sendJSON(res, 401, { error: 'Sesi verifikasi telah kedaluwarsa. Silakan login kembali.' });
+                }
+
+                if (!decoded || decoded.stage !== 'pin_required' || !decoded.id) {
+                    return sendJSON(res, 401, { error: 'Token verifikasi tidak valid' });
+                }
+
+                const user = await getDb().query.users.findFirst({ where: eq(users.id, Number(decoded.id)) });
+                if (!user || !user.isActive) {
+                    return sendJSON(res, 401, { error: 'Pengguna tidak ditemukan atau nonaktif' });
+                }
+
+                let isPinValid = false;
+                const storedPin = String(user.pin || '');
+                const isBcrypt = storedPin.startsWith('$2a$') || storedPin.startsWith('$2b$') || storedPin.startsWith('$2y$');
+
+                if (isBcrypt) {
+                    isPinValid = await bcrypt.compare(String(pin), storedPin);
+                } else if (storedPin === String(pin)) {
+                    isPinValid = true;
+                    try {
+                        const newHashedPin = await bcrypt.hash(String(pin), 10);
+                        await getDb().update(users).set({ pin: newHashedPin, updatedAt: new Date() }).where(eq(users.id, user.id));
+                    } catch (pinMigrateErr) {
+                        console.error('PIN auto-migration to bcrypt failed:', pinMigrateErr);
+                    }
+                }
+
+                if (isPinValid) {
+                    clearAttempts(ip);
+                    const token = jwt.sign(
+                        { id: user.id, email: user.email, name: user.name, role: 'admin' },
+                        JWT_SECRET,
+                        { expiresIn: '7d' }
+                    );
+                    return sendJSON(res, 200, {
+                        token,
+                        user: { id: user.id, email: user.email, name: user.name, role: 'admin' }
+                    });
+                }
+            } catch (err) {
+                console.error("Verify PIN DB Error:", err);
+            }
+
+            trackFailed(ip);
+            return sendJSON(res, 401, { error: 'PIN tidak valid atau salah' });
         }
 
         if (action === 'register') {
@@ -939,13 +1016,22 @@ export default async function handler(req: any, res: any) {
                             name: users.name,
                             avatar: users.avatar,
                             isActive: users.isActive,
+                            pin: users.pin,
                         })
                         .from(users)
                         .where(eq(users.id, tokenUser.id))
                         .limit(1);
 
                     if (user) {
-                        return sendJSON(res, 200, { ...user, role: 'admin' });
+                        return sendJSON(res, 200, {
+                            id: user.id,
+                            email: user.email,
+                            name: user.name,
+                            avatar: user.avatar,
+                            isActive: user.isActive,
+                            hasPin: Boolean(user.pin),
+                            role: 'admin',
+                        });
                     }
                 } catch (err) {
                     console.error("Auth ME DB Error:", err);
@@ -956,7 +1042,7 @@ export default async function handler(req: any, res: any) {
 
             if (req.method === 'PUT' || req.method === 'PATCH') {
                 const body = await parseBody(req);
-                const { name, email, avatar, password } = body || {};
+                const { name, email, avatar, password, pin } = body || {};
 
                 try {
                     const updateData: any = {
@@ -969,6 +1055,9 @@ export default async function handler(req: any, res: any) {
                     if (typeof password === 'string' && password.length > 0) {
                         updateData.password = await bcrypt.hash(password, 10);
                     }
+                    if (typeof pin === 'string' && pin.trim().length > 0) {
+                        updateData.pin = await bcrypt.hash(pin.trim(), 10);
+                    }
 
                     await getDb().update(users).set(updateData).where(eq(users.id, tokenUser.id));
 
@@ -979,12 +1068,21 @@ export default async function handler(req: any, res: any) {
                             name: users.name,
                             avatar: users.avatar,
                             isActive: users.isActive,
+                            pin: users.pin,
                         })
                         .from(users)
                         .where(eq(users.id, tokenUser.id))
                         .limit(1);
 
-                    return sendJSON(res, 200, { ...updated, role: 'admin' });
+                    return sendJSON(res, 200, {
+                        id: updated.id,
+                        email: updated.email,
+                        name: updated.name,
+                        avatar: updated.avatar,
+                        isActive: updated.isActive,
+                        hasPin: Boolean(updated.pin),
+                        role: 'admin',
+                    });
                 } catch (err) {
                     console.error("Auth UPDATE ME DB Error:", err);
                     return sendJSON(res, 500, { error: 'Failed to update profile' });

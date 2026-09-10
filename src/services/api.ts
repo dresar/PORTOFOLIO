@@ -105,15 +105,21 @@ export interface PaginationParams {
 
 // --- Auth ---
 export interface User {
-  id: string;
-  username: string;
+  id: string | number;
+  name?: string;
+  username?: string;
   email: string;
   avatar?: string;
+  hasPin?: boolean;
+  role?: string;
 }
 
 export interface LoginResponse {
-  token: string;
-  user: User;
+  token?: string;
+  user?: User;
+  requirePin?: boolean;
+  tempToken?: string;
+  message?: string;
 }
 
 // --- Profile ---
@@ -346,6 +352,10 @@ export const api = {
       const response = await apiClient.post<LoginResponse>('/auth/login', credentials);
       return response.data;
     },
+    verifyPin: async (data: { tempToken: string; pin: string }): Promise<LoginResponse> => {
+      const response = await apiClient.post<LoginResponse>('/auth/verify-pin', data);
+      return response.data;
+    },
     register: async (data: any): Promise<User> => {
       const response = await apiClient.post<User>('/auth/register', data);
       return response.data;
@@ -354,7 +364,7 @@ export const api = {
       const response = await apiClient.get<User>('/auth/me');
       return response.data;
     },
-    updateMe: async (data: Partial<User> & { password?: string }): Promise<User> => {
+    updateMe: async (data: Partial<User> & { password?: string; pin?: string }): Promise<User> => {
       const response = await apiClient.put<User>('/auth/me', data);
       return response.data;
     },

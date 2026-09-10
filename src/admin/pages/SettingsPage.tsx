@@ -11,8 +11,8 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
 import { useAdminAuthStore } from '../store/adminAuthStore';
-import { api } from '../services/api'; // Updated import
-import { Loader2, Save, Globe, Shield, Bot, User, Lock, Mail, Edit, X } from 'lucide-react';
+import { api } from '../services/api';
+import { Loader2, Save, Globe, Shield, Bot, User, Lock, Mail, Edit, X, ShieldCheck, KeyRound } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // --- Site Settings Schema ---
@@ -35,6 +35,8 @@ const profileSchema = z.object({
   avatar: z.string().optional(),
   password: z.string().optional(),
   confirmPassword: z.string().optional(),
+  pin: z.string().optional(),
+  confirmPin: z.string().optional(),
 }).refine((data) => {
   if (data.password && data.password !== data.confirmPassword) {
     return false;
@@ -43,6 +45,14 @@ const profileSchema = z.object({
 }, {
   message: "Password tidak cocok",
   path: ["confirmPassword"],
+}).refine((data) => {
+  if (data.pin && data.pin !== data.confirmPin) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Konfirmasi PIN tidak cocok",
+  path: ["confirmPin"],
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -201,6 +211,7 @@ function SiteSettingsForm() {
 function ProfileSettingsForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [hasPin, setHasPin] = useState(false);
   const { toast } = useToast();
 
   const form = useForm<ProfileFormValues>({
@@ -211,6 +222,8 @@ function ProfileSettingsForm() {
       avatar: '',
       password: '',
       confirmPassword: '',
+      pin: '',
+      confirmPin: '',
     },
   });
 
@@ -223,12 +236,15 @@ function ProfileSettingsForm() {
     try {
       const data = await api.auth.getMe();
       if (data) {
+        setHasPin(Boolean((data as any).hasPin));
         form.reset({
           name: data.name || '', 
           email: data.email || '',
           avatar: data.avatar || '',
           password: '',
           confirmPassword: '',
+          pin: '',
+          confirmPin: '',
         });
       }
     } catch (error) {
@@ -248,6 +264,14 @@ function ProfileSettingsForm() {
       toast({ variant: "destructive", title: "Password tidak cocok", description: "Konfirmasi password harus sama." });
       return;
     }
+    if (data.pin && data.pin !== data.confirmPin) {
+      toast({ variant: "destructive", title: "PIN tidak cocok", description: "Konfirmasi PIN harus sama." });
+      return;
+    }
+    if (data.pin && data.pin.length < 4) {
+      toast({ variant: "destructive", title: "PIN Terlalu Pendek", description: "PIN harus minimal 4-8 digit angka." });
+      return;
+    }
 
     setIsLoading(true);
     try {
@@ -259,24 +283,29 @@ function ProfileSettingsForm() {
       if (data.password) {
         payload.password = data.password;
       }
+      if (data.pin) {
+        payload.pin = data.pin;
+      }
       
-      // Use api.auth.updateMe()
       const updatedUser = await api.auth.updateMe(payload);
+      if (updatedUser) {
+        setHasPin(Boolean((updatedUser as any).hasPin));
+      }
       
-      // Update local storage user data to reflect changes immediately
       if (useAdminAuthStore.getState().user) {
-        useAdminAuthStore.getState().updateUser(updatedUser);
+        useAdminAuthStore.getState().updateUser(updatedUser as any);
       }
 
       toast({
         title: "Profil diperbarui",
-        description: "Informasi akun Anda telah disimpan.",
+        description: "Informasi akun dan keamanan Anda telah disimpan.",
       });
       
-      // Clear password fields
       form.setValue('password', '');
       form.setValue('confirmPassword', '');
-      setIsEditing(false); // Exit edit mode
+      form.setValue('pin', '');
+      form.setValue('confirmPin', '');
+      setIsEditing(false);
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -294,7 +323,7 @@ function ProfileSettingsForm() {
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <div className="flex flex-col space-y-1.5">
             <CardTitle className="flex items-center gap-2"><User className="w-5 h-5"/> Informasi Akun Admin</CardTitle>
-            <CardDescription>Perbarui nama, email, dan kata sandi Anda.</CardDescription>
+            <CardDescription>Perbarui nama, email, kata sandi, dan PIN keamanan 2FA Anda.</CardDescription>
           </div>
           {!isEditing ? (
             <Button type="button" variant="outline" size="sm" onClick={() => setIsEditing(true)}>
@@ -304,7 +333,7 @@ function ProfileSettingsForm() {
           ) : (
              <Button type="button" variant="ghost" size="sm" onClick={() => {
                setIsEditing(false);
-               loadProfile(); // Reset form
+               loadProfile();
              }}>
               <X className="mr-2 h-4 w-4" />
               Batal
@@ -360,26 +389,87 @@ function ProfileSettingsForm() {
             <p className="text-xs text-muted-foreground">Link langsung ke gambar profil admin (bukan profil publik).</p>
           </div>
 
+          <div className="flex items-center justify-between rounded-lg border p-4 bg-muted/20">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500 shrink-0">
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="text-sm font-medium flex items-center gap-2">
+                  Autentikasi Dua Langkah (2FA PIN)
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 font-semibold uppercase tracking-wider">
+                    {hasPin ? "Aktif" : "Nonaktif"}
+                  </span>
+                </h4>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {hasPin 
+                    ? "PIN keamanan terpasang. Setiap login setelah kata sandi akan meminta verifikasi PIN."
+                    : "Belum ada PIN yang terpasang pada akun ini."}
+                </p>
+              </div>
+            </div>
+          </div>
+
           {isEditing && (
-            <div className="grid gap-4 md:grid-cols-2 pt-4 border-t animate-in fade-in slide-in-from-top-4 duration-300">
-               <div className="col-span-2">
-                  <h4 className="text-sm font-medium mb-2">Ubah Kata Sandi (Kosongkan jika tidak ingin mengubah)</h4>
-               </div>
-               <div className="space-y-2">
-                <Label htmlFor="password">Kata Sandi Baru</Label>
-                <div className="relative">
-                  <Lock className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input id="password" type="password" className="pl-9" {...form.register('password')} placeholder="******" />
+            <div className="space-y-6 pt-4 border-t animate-in fade-in slide-in-from-top-4 duration-300">
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="col-span-2">
+                  <h4 className="text-sm font-medium mb-1">Ubah Kata Sandi (Kosongkan jika tidak ingin mengubah)</h4>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password">Kata Sandi Baru</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input id="password" type="password" className="pl-9" {...form.register('password')} placeholder="******" />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Konfirmasi Kata Sandi</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input id="confirmPassword" type="password" className="pl-9" {...form.register('confirmPassword')} placeholder="******" />
+                  </div>
+                  {form.formState.errors.confirmPassword && <p className="text-xs text-destructive">{form.formState.errors.confirmPassword.message}</p>}
                 </div>
               </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Konfirmasi Kata Sandi</Label>
-                <div className="relative">
-                  <Lock className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input id="confirmPassword" type="password" className="pl-9" {...form.register('confirmPassword')} placeholder="******" />
+
+              <div className="col-span-2 pt-4 border-t">
+                <h4 className="text-sm font-medium mb-1">Ubah PIN Keamanan 2FA (Kosongkan jika tidak ingin mengubah)</h4>
+                <p className="text-xs text-muted-foreground mb-3">PIN numerik yang wajib dimasukkan saat login setelah kata sandi.</p>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="pin">PIN Baru (Angka)</Label>
+                    <div className="relative">
+                      <KeyRound className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input 
+                        id="pin" 
+                        type="password" 
+                        inputMode="numeric"
+                        maxLength={8}
+                        className="pl-9 font-mono tracking-widest" 
+                        {...form.register('pin')} 
+                        placeholder="Contoh: 280219" 
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="confirmPin">Konfirmasi PIN Baru</Label>
+                    <div className="relative">
+                      <KeyRound className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input 
+                        id="confirmPin" 
+                        type="password" 
+                        inputMode="numeric"
+                        maxLength={8}
+                        className="pl-9 font-mono tracking-widest" 
+                        {...form.register('confirmPin')} 
+                        placeholder="Ulangi PIN baru" 
+                      />
+                    </div>
+                    {form.formState.errors.confirmPin && <p className="text-xs text-destructive">{form.formState.errors.confirmPin.message}</p>}
+                  </div>
                 </div>
-                {form.formState.errors.confirmPassword && <p className="text-xs text-destructive">{form.formState.errors.confirmPassword.message}</p>}
               </div>
             </div>
           )}
@@ -390,7 +480,7 @@ function ProfileSettingsForm() {
         <div className="flex justify-end animate-in fade-in slide-in-from-bottom-4 duration-300">
             <Button type="submit" disabled={isLoading} size="lg">
                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                Simpan Profil
+                Simpan Profil & Keamanan
             </Button>
         </div>
       )}
