@@ -20,6 +20,7 @@ export const ProjectsSection = () => {
   const [summaryProject, setSummaryProject] = useState<any>(null);
   const [summaryIndex, setSummaryIndex] = useState(0);
   const [viewedProjects, setViewedProjects] = useState<number[]>([]);
+  const itemsPerPage = 15;
   const { projects: rawProjects = [], isLoading, isError } = useProjects();
   const { getProjects } = useLocalizedContent();
   const projects = useMemo(() => getProjects(rawProjects), [rawProjects, getProjects]);
