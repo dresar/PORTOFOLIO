@@ -27,7 +27,8 @@
       "Cyber Security",
       "Edukasi Teknologi",
       "Tips Gadget"
-    ]
+    ],
+    "is_published": true
   },
   {
     "id": 72,
@@ -57,7 +58,8 @@
       "Cyber Security",
       "Edukasi Teknologi",
       "Tips Gadget"
-    ]
+    ],
+    "is_published": true
   },
   {
     "id": 73,
@@ -87,7 +89,8 @@
       "Cyber Security",
       "Edukasi Teknologi",
       "Tips Gadget"
-    ]
+    ],
+    "is_published": true
   },
   {
     "id": 74,
@@ -117,7 +120,8 @@
       "Cyber Security",
       "Edukasi Teknologi",
       "Tips Gadget"
-    ]
+    ],
+    "is_published": true
   },
   {
     "id": 75,
@@ -147,7 +151,8 @@
       "Cyber Security",
       "Edukasi Teknologi",
       "Tips Gadget"
-    ]
+    ],
+    "is_published": true
   },
   {
     "id": 76,
@@ -177,7 +182,8 @@
       "Cyber Security",
       "Edukasi Teknologi",
       "Tips Gadget"
-    ]
+    ],
+    "is_published": true
   },
   {
     "id": 77,
@@ -207,7 +213,8 @@
       "Cyber Security",
       "Edukasi Teknologi",
       "Tips Gadget"
-    ]
+    ],
+    "is_published": true
   },
   {
     "id": 78,
@@ -237,7 +244,8 @@
       "Cyber Security",
       "Edukasi Teknologi",
       "Tips Gadget"
-    ]
+    ],
+    "is_published": true
   },
   {
     "id": 79,
@@ -267,7 +275,8 @@
       "Cyber Security",
       "Edukasi Teknologi",
       "Tips Gadget"
-    ]
+    ],
+    "is_published": true
   },
   {
     "id": 80,
@@ -297,7 +306,8 @@
       "Cyber Security",
       "Edukasi Teknologi",
       "Tips Gadget"
-    ]
+    ],
+    "is_published": true
   },
   {
     "id": 81,
@@ -327,7 +337,8 @@
       "Cyber Security",
       "Edukasi Teknologi",
       "Tips Gadget"
-    ]
+    ],
+    "is_published": true
   },
   {
     "id": 82,
@@ -357,7 +368,8 @@
       "Cyber Security",
       "Edukasi Teknologi",
       "Tips Gadget"
-    ]
+    ],
+    "is_published": true
   },
   {
     "id": 83,
@@ -387,7 +399,8 @@
       "Cyber Security",
       "Edukasi Teknologi",
       "Tips Gadget"
-    ]
+    ],
+    "is_published": true
   },
   {
     "id": 84,
@@ -417,7 +430,8 @@
       "Cyber Security",
       "Edukasi Teknologi",
       "Tips Gadget"
-    ]
+    ],
+    "is_published": true
   },
   {
     "id": 85,
@@ -447,7 +461,8 @@
       "Cyber Security",
       "Edukasi Teknologi",
       "Tips Gadget"
-    ]
+    ],
+    "is_published": true
   },
   {
     "id": 86,
@@ -477,7 +492,8 @@
       "Cyber Security",
       "Edukasi Teknologi",
       "Tips Gadget"
-    ]
+    ],
+    "is_published": true
   },
   {
     "id": 87,
@@ -507,7 +523,8 @@
       "Cyber Security",
       "Edukasi Teknologi",
       "Tips Gadget"
-    ]
+    ],
+    "is_published": true
   },
   {
     "id": 88,
@@ -537,7 +554,8 @@
       "Cyber Security",
       "Edukasi Teknologi",
       "Tips Gadget"
-    ]
+    ],
+    "is_published": true
   },
   {
     "id": 89,
@@ -567,7 +585,8 @@
       "Cyber Security",
       "Edukasi Teknologi",
       "Tips Gadget"
-    ]
+    ],
+    "is_published": true
   },
   {
     "id": 90,
@@ -597,6 +616,7 @@
       "Cyber Security",
       "Edukasi Teknologi",
       "Tips Gadget"
-    ]
+    ],
+    "is_published": true
   }
 ]

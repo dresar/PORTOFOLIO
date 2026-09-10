@@ -39,7 +39,7 @@ const BlogList = () => {
   const postsPerPage = 15;
 
   const publishedPosts = useMemo(() => {
-    return posts.filter((post: any) => post.is_published);
+    return posts.filter((post: any) => post.is_published !== false);
   }, [posts]);
 
   // Merge extracted categories from posts with allCategories from API to ensure coverage
@@ -257,7 +257,7 @@ const BlogList = () => {
                             </div>
                             <div className="flex items-center gap-1">
                               <User className="h-3 w-3" />
-                              <span>{post.author?.username || 'Eka Syarif'}</span>
+                              <span>{typeof post.author === 'string' ? post.author : (post.author?.name || post.author?.username || 'Eka Syarif Maulana, S.Kom')}</span>
                             </div>
                           </div>
                           <div className="flex items-center gap-1 text-primary/80 font-medium">

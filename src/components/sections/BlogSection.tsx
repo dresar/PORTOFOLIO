@@ -19,7 +19,7 @@ export const BlogSection = () => {
 
   // Filter only published posts and take first 8
   const latestPosts = posts
-    .filter((post: any) => post.is_published)
+    .filter((post: any) => post.is_published !== false)
     .slice(0, 8);
 
   if (isLoading) {
@@ -68,9 +68,9 @@ export const BlogSection = () => {
                 className="neon-card group rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-card border border-border/50 h-full flex flex-col"
               >
                 <div className="relative aspect-video overflow-hidden shrink-0">
-                  <Link to={`/blog/${post.slug}`} className="block h-full">
+                  <Link to={getLocalizedPath(`/blog/${post.slug}`)} className="block h-full">
                     <img
-                      src={post.coverImage || post.coverImageFile ? normalizeMediaUrl(post.coverImage || post.coverImageFile) : "https://placehold.co/600x400?text=Blog+Post"}
+                      src={normalizeMediaUrl(post.cover_image || post.coverImage || post.coverImageFile || "https://placehold.co/600x400?text=Blog+Post")}
                       alt={post.title}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       onError={(e) => {
@@ -94,7 +94,7 @@ export const BlogSection = () => {
                     </div>
 
                     <h3 className="text-xs sm:text-lg font-bold mb-1.5 leading-snug sm:leading-tight line-clamp-2 group-hover:text-primary transition-colors">
-                      <Link to={`/blog/${post.slug}`} className="focus:outline-none">
+                      <Link to={getLocalizedPath(`/blog/${post.slug}`)} className="focus:outline-none">
                         {post.title}
                       </Link>
                     </h3>
