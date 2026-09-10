@@ -49,7 +49,17 @@ export default defineConfig(({ mode }) => ({
         ],
         globIgnores: ['uploads/**'],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
-        navigateFallbackDenylist: [/^\/admin\/.*/, /^\/api\/.*/],
+        navigateFallbackDenylist: [
+          /^\/admin\/.*/,
+          /^\/api\/.*/,
+          /\.xml$/,
+          /\.txt$/,
+          /\.json$/,
+          /^\/sitemap\.xml$/,
+          /^\/robots\.txt$/,
+          /^\/llms\.txt$/,
+          /^\/llms-full\.txt$/
+        ],
         runtimeCaching: [
           {
             urlPattern: ({ url }) => url.origin === self.location.origin && url.pathname.includes('/assets/'),

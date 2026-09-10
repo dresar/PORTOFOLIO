@@ -18,6 +18,11 @@ export const LanguageRouteSync = () => {
         localStorage.setItem('i18nextLng', normalized);
       }
     } else {
+      // If it looks like a static file (e.g. sitemap.xml, robots.txt), bypass SPA redirect
+      if (normalized.includes('.') || normalized === 'sitemap' || normalized === 'robots' || normalized === 'llms') {
+        window.location.replace(location.pathname);
+        return;
+      }
       // Invalid language prefix, redirect to default /id
       navigate('/id', { replace: true });
     }
