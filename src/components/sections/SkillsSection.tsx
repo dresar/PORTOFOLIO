@@ -155,10 +155,13 @@ export const SkillsSection = () => {
                   <div className="flex flex-col items-center text-center gap-2 mb-3">
                     {skill.logo_url ? (
                       <img
-                        src={normalizeMediaUrl(skill.logo_url)}
+                        src={normalizeMediaUrl(skill.logo_url, { width: 96 })}
                         alt={skill.name}
+                        width={48}
+                        height={48}
                         className="h-12 w-12 object-contain cursor-pointer hover:scale-110 active:scale-95 transition-all duration-200"
                         loading="lazy"
+                        decoding="async"
                         onClick={() => setSelectedSkill(skill)}
                         onError={(e) => {
                           e.currentTarget.src = 'https://placehold.co/64x64/png?text=Logo';
@@ -174,7 +177,7 @@ export const SkillsSection = () => {
                         })()}
                       </div>
                     )}
-                    <h4 className="font-semibold text-base">{skill.name}</h4>
+                    <h3 className="font-semibold text-base">{skill.name}</h3>
                     <span className="inline-block px-2 py-1 text-xs rounded-full bg-muted text-muted-foreground">
                       {(() => {
                         if (typeof skill.category === 'object' && skill.category !== null) return skill.category.name || 'Unknown';
@@ -232,7 +235,7 @@ export const SkillsSection = () => {
                 <div className="w-40 h-40 flex items-center justify-center bg-muted/30 p-4 rounded-2xl mb-5 border border-border/30">
                   {selectedSkill.logo_url ? (
                     <img 
-                      src={normalizeMediaUrl(selectedSkill.logo_url)} 
+                      src={normalizeMediaUrl(selectedSkill.logo_url, { width: 160 })} 
                       alt={selectedSkill.name} 
                       className="max-w-full max-h-full object-contain hover:scale-105 transition-transform duration-300"
                       onError={(e) => {
@@ -249,7 +252,7 @@ export const SkillsSection = () => {
                   )}
                 </div>
 
-                <h4 className="font-bold text-lg mb-1">{selectedSkill.name}</h4>
+                <h3 className="font-bold text-lg mb-1">{selectedSkill.name}</h3>
                 <div className="flex gap-2 items-center justify-center text-xs text-muted-foreground">
                   <span className="px-2 py-0.5 rounded-full bg-muted border border-border/40">
                     {(() => {

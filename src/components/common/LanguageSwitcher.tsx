@@ -32,13 +32,13 @@ export const LanguageSwitcher = () => {
       onClick={toggleLanguage}
       className="relative inline-flex items-center gap-1.5 h-8 px-2.5 rounded-lg border border-border/60 bg-secondary/40 hover:bg-secondary/80 text-foreground transition-all duration-200 active:scale-95 cursor-pointer select-none"
       title={isEn ? 'Klik untuk beralih ke Bahasa Indonesia' : 'Click to switch to English'}
-      aria-label="Toggle language"
+      aria-label={isEn ? 'Switch to Indonesian language' : 'Ganti ke Bahasa Indonesia'}
     >
       <Globe className="h-3.5 w-3.5 text-primary" />
       <div className="flex items-center text-[11px] font-bold tracking-wider">
-        <span className={!isEn ? 'text-primary' : 'text-muted-foreground/60'}>ID</span>
-        <span className="mx-0.5 text-muted-foreground/40 font-normal">/</span>
-        <span className={isEn ? 'text-primary' : 'text-muted-foreground/60'}>EN</span>
+        <span className={!isEn ? 'text-primary' : 'text-foreground/80 font-medium'}>ID</span>
+        <span className="mx-0.5 text-foreground/50 font-normal">/</span>
+        <span className={isEn ? 'text-primary' : 'text-foreground/80 font-medium'}>EN</span>
       </div>
     </button>
   );

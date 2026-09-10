@@ -152,10 +152,11 @@ export const ProjectsSection = () => {
                 {/* Image */}
                 <div className="relative aspect-video overflow-hidden">
                   <img
-                    src={normalizeMediaUrl(project.coverImage || project.thumbnail || project.image)}
+                    src={normalizeMediaUrl(project.coverImage || project.thumbnail || project.image, { width: 600 })}
                     alt={project.title}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     loading="lazy"
+                    decoding="async"
                   />
                   
                   {/* AI Summary Button - Top Right */}

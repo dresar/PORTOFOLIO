@@ -8,20 +8,74 @@ export function cn(...inputs: ClassValue[]) {
 
 const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL || "https://server1-etech.vercel.app";
 
-export function normalizeMediaUrl(raw?: string | null) {
+export interface MediaUrlOptions {
+  width?: number;
+  quality?: number;
+  format?: 'auto' | 'webp' | 'avif' | 'png' | 'jpg';
+}
+
+export function normalizeMediaUrl(raw?: string | null, options?: MediaUrlOptions): string {
   if (!raw) return "";
   let url = raw.trim();
   if (!url) return "";
-  
+
+  const width = options?.width;
+  const quality = options?.quality || 80;
+
+  // Articles images in public/uploads/articles are served via GitHub / jsDelivr CDN
+  if (url.includes('uploads/articles')) {
+    const cleanPath = url.startsWith('/') ? url : `/${url}`;
+    const directUrl = `https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public${cleanPath}`;
+    if (!directUrl.endsWith('.svg')) {
+      const w = width || 600;
+      return `https://wsrv.nl/?url=${directUrl.replace(/^https?:\/\//, '')}&w=${w}&output=webp&q=${quality}`;
+    }
+    return directUrl;
+  }
+
+  // Cloudinary optimization (f_auto, q_auto, width resizing)
+  if (url.includes('res.cloudinary.com') && url.includes('/image/upload/')) {
+    if (!url.includes('/image/upload/f_auto') && !url.includes('/image/upload/q_auto')) {
+      const w = width || 800;
+      const transform = `f_auto,q_auto,c_limit,w_${w}`;
+      url = url.replace('/image/upload/', `/image/upload/${transform}/`);
+    }
+    return url;
+  }
+
+  // ImageKit optimization (tr:w-*, q-*, f-auto)
+  if (url.includes('ik.imagekit.io')) {
+    if (!url.includes('tr=') && !url.includes('/tr:')) {
+      const w = width || 800;
+      const sep = url.includes('?') ? '&' : '?';
+      return `${url}${sep}tr=w-${w},q-${quality},f-auto`;
+    }
+    return url;
+  }
+
+  // Unsplash images
+  if (url.includes('images.unsplash.com')) {
+    if (width) {
+      const sep = url.includes('?') ? '&' : '?';
+      return `${url}${sep}w=${width}&auto=format&q=${quality}`;
+    }
+    return url;
+  }
+
+  // Heavy third-party images (Wikimedia, Vecteezy, Google Content) proxy via wsrv.nl
+  if (
+    (url.startsWith('http://') || url.startsWith('https://')) &&
+    !url.endsWith('.svg') &&
+    !url.includes('.svg?') &&
+    (url.includes('upload.wikimedia.org') || url.includes('vecteezy.com') || url.includes('googleusercontent.com'))
+  ) {
+    const w = width || 600;
+    return `https://wsrv.nl/?url=${url.replace(/^https?:\/\//, '')}&w=${w}&output=webp&q=${quality}`;
+  }
+
   // If it's already a full URL (http:// or https://)
   if (url.startsWith('http://') || url.startsWith('https://')) {
      return url;
-  }
-
-  // Articles images in public/uploads/articles are served directly via fast jsDelivr CDN from GitHub
-  if (url.includes('uploads/articles')) {
-    const cleanPath = url.startsWith('/') ? url : `/${url}`;
-    return `https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public${cleanPath}`;
   }
 
   if (import.meta.env.VITE_BACKEND_URL && url.startsWith(import.meta.env.VITE_BACKEND_URL)) {

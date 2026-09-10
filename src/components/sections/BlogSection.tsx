@@ -71,10 +71,11 @@ export const BlogSection = () => {
                 <div className="relative aspect-[3/4] overflow-hidden shrink-0 bg-muted/20">
                   <Link to={getLocalizedPath(`/blog/${post.slug}`)} className="block h-full">
                     <img
-                      src={normalizeMediaUrl(post.cover_image || post.coverImage || post.coverImageFile || "https://placehold.co/600x400?text=Blog+Post")}
+                      src={normalizeMediaUrl(post.cover_image || post.coverImage || post.coverImageFile || "https://placehold.co/600x400?text=Blog+Post", { width: 450 })}
                       alt={post.title}
                       className="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-105"
                       loading="lazy"
+                      decoding="async"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src = "https://placehold.co/600x400?text=Blog+Post";

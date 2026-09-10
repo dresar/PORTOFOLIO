@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin, Send, Github, Linkedin, Twitter, Instagram, Loader2, Facebook, Youtube, Globe, Link as LinkIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -67,6 +67,24 @@ export const ContactSection = () => {
       message: formData.message,
     });
   };
+
+  const [showMap, setShowMap] = useState(false);
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!mapContainerRef.current) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setShowMap(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '200px' }
+    );
+    observer.observe(mapContainerRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   // Default Medan Map URL if not provided in backend
   const defaultMapUrl = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d254832.505334234!2d98.50467742924397!3d3.642614143767466!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x303131cc1c3eb2fd%3A0x23d431c8a6908262!2sMedan%2C%20Kota%20Medan%2C%20Sumatera%20Utara!5e0!3m2!1sid!2sid!4v1769453045591!5m2!1sid!2sid";
@@ -249,10 +267,11 @@ export const ContactSection = () => {
               </div>
 
              {/* Google Maps Embed */}
-            <div className="neon-card rounded-2xl overflow-hidden h-[300px] md:h-[320px] relative">
-               {isValidMapUrl ? (
+            <div ref={mapContainerRef} className="neon-card rounded-2xl overflow-hidden h-[300px] md:h-[320px] relative">
+               {isValidMapUrl && showMap ? (
                  <iframe 
                   key={mapUrl}
+                  title="Peta Lokasi Eka Syarif Maulana - Medan, Sumatera Utara"
                   src={safeUrl(mapUrl)}
                   width="100%" 
                   height="100%" 
@@ -263,15 +282,15 @@ export const ContactSection = () => {
                   className="absolute inset-0 w-full h-full"
                 />
                ) : (
-                 <div className="w-full h-full flex items-center justify-center bg-muted text-muted-foreground">
-                    Map unavailable
+                 <div className="w-full h-full flex items-center justify-center bg-muted/40 text-muted-foreground text-sm">
+                    {isValidMapUrl ? "Memuat peta lokasi..." : "Map unavailable"}
                  </div>
                )}
             </div>
 
             {/* Social Links */}
             <div className="neon-card p-6 rounded-2xl">
-              <h4 className="text-lg font-bold mb-4">{t('contact.follow_me')}</h4>
+              <h3 className="text-lg font-bold mb-4">{t('contact.follow_me')}</h3>
               <div className="flex flex-wrap gap-3">
                 {normalizedSocialLinks.map((link) => {
                   return (

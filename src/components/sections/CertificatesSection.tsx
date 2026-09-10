@@ -148,8 +148,10 @@ export const CertificatesSection = () => {
                   <div className="relative aspect-video sm:h-48 bg-muted overflow-hidden">
                     {cert.image ? (
                       <img
-                        src={normalizeMediaUrl(cert.image)}
+                        src={normalizeMediaUrl(cert.image, { width: 450 })}
                         alt={cert.name}
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                       />
                     ) : (
@@ -179,6 +181,7 @@ export const CertificatesSection = () => {
                           rel="noopener noreferrer"
                           className="hidden sm:flex items-center gap-1 text-xs text-primary hover:underline font-medium"
                           onClick={(e) => e.stopPropagation()}
+                          aria-label={`Verifikasi kredensial sertifikat ${cert.name}`}
                         >
                           <ExternalLink className="w-3.5 h-3.5" />
                           {t('certificates.verify')}

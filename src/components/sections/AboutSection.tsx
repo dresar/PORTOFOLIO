@@ -50,7 +50,7 @@ export const AboutSection = () => {
 
   // About Image logic
   const rawAboutImage = profile?.aboutImageFile || profile?.aboutImage;
-  const aboutImage = normalizeMediaUrl(rawAboutImage);
+  const aboutImage = normalizeMediaUrl(rawAboutImage, { width: 600 });
 
   // Calculate years of experience
   const startYear = experiences.length > 0 
@@ -105,6 +105,7 @@ export const AboutSection = () => {
                     alt={profile?.fullName || "About Profile"} 
                     className="w-full h-full object-cover object-top"
                     loading="lazy"
+                    decoding="async"
                    />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-muted-foreground bg-card">

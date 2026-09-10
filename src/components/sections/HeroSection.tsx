@@ -66,7 +66,7 @@ export const HeroSection = () => {
   
   // Hero Image logic
   const heroImageRaw = profile?.heroImageFile || profile?.heroImage;
-  const heroImage = normalizeMediaUrl(heroImageRaw);
+  const heroImage = normalizeMediaUrl(heroImageRaw, { width: 600 });
 
   // Calculate years of experience
   const startYear = experiences.length > 0 
@@ -118,7 +118,7 @@ export const HeroSection = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-text-shimmer bg-[length:200%_100%]">
+              <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
                 {profile?.fullName || "Eka Syarif Maulana, S.Kom"}
               </span>
             </motion.h1>
@@ -239,9 +239,11 @@ export const HeroSection = () => {
                   <img
                     src={heroImage}
                     alt={profile?.fullName || "Foto profil Eka Syarif Maulana"}
+                    width={290}
+                    height={362}
                     className="w-full h-full object-cover object-top"
                     loading="eager"
-                    fetchpriority="high"
+                    fetchPriority="high"
                     decoding="async"
                   />
                 ) : (

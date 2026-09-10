@@ -61,4 +61,4 @@ Disallow: /private/
 
 # Sitemaps & LLM Context Discovery
 Sitemap: https://inka.my.id/sitemap.xml
-LLMs-Txt: https://inka.my.id/llms.txt
+# LLMs-Txt: https://inka.my.id/llms.txt
