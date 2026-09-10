@@ -82,11 +82,11 @@ import { AdminLayout } from "./admin/components/AdminLayout";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      // In development, data is always stale (0). In production, it stays fresh for 30s, allowing background updates
-      staleTime: import.meta.env.DEV ? 0 : 30000, 
-      gcTime: 24 * 60 * 60 * 1000, // Keep in memory for 24 hours
-      refetchOnWindowFocus: import.meta.env.DEV, // Refetch on focus in dev
-      refetchOnMount: true, // Always sync in background on mount
+      // 5 minutes staleTime for instant zero-loading rendering from cache
+      staleTime: 5 * 60 * 1000, 
+      gcTime: 24 * 60 * 60 * 1000, // Keep in memory/localStorage for 24 hours
+      refetchOnWindowFocus: false,
+      refetchOnMount: false, // Instant mount without triggering loading states
       refetchOnReconnect: true,
       retry: 1,
     },

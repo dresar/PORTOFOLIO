@@ -26,7 +26,59 @@ import { Preloader } from '@/components/ui/Preloader';
 import { AnimatePresence } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 
+// Strictly check if public cache is already present or if page was reloaded
+const isPublicCacheReady = (): boolean => {
+  try {
+    if (typeof window === 'undefined') return true;
+
+    // 1. DILARANG KERAS munculkan animasi loading saat reload (F5 / browser refresh)
+    if (window.performance) {
+      const navEntries = window.performance.getEntriesByType?.('navigation');
+      if (navEntries && navEntries.length > 0) {
+        const nav = navEntries[0] as PerformanceNavigationTiming;
+        if (nav && nav.type === 'reload') {
+          return true; // Reload -> Zero Loading!
+        }
+      }
+      if ((window.performance as any).navigation?.type === 1) {
+        return true; // Reload legacy -> Zero Loading!
+      }
+    }
+
+    // 2. Jika sudah pernah sync data di session ini -> Zero Loading!
+    if (sessionStorage.getItem('portfolio_public_synced') === 'true') {
+      return true;
+    }
+
+    // 3. Jika cache public localStorage sudah terunduh -> Zero Loading!
+    if (localStorage.getItem('portfolio_public_downloaded') === 'true') {
+      return true;
+    }
+
+    // 4. Jika salah satu cache public utama sudah ada di storage -> Zero Loading!
+    if (
+      localStorage.getItem('profile_cache') ||
+      localStorage.getItem('settings_cache') ||
+      localStorage.getItem('projects_cache') ||
+      localStorage.getItem('REACT_QUERY_OFFLINE_CACHE')
+    ) {
+      sessionStorage.setItem('portfolio_public_synced', 'true');
+      localStorage.setItem('portfolio_public_downloaded', 'true');
+      return true;
+    }
+
+    // 5. Hanya pertama kali unduh tanpa cache yang menampilkan preloader
+    return false;
+  } catch {
+    return true;
+  }
+};
+
 const Index = () => {
+  // Initialize to false if reload or public cache exists (ZERO LOADING)
+  const [showPreloader, setShowPreloader] = useState<boolean>(() => !isPublicCacheReady());
+  const [displayProgress, setDisplayProgress] = useState(showPreloader ? 0 : 100);
+
   const { isLoading: profileLoading } = useProfile();
   const { isLoading: settingsLoading } = useSettings();
   const { isLoading: linksLoading } = useSocialLinks();
@@ -52,35 +104,35 @@ const Index = () => {
   const loadedCount = loadingStates.filter((s) => !s.loading).length;
   const realProgress = Math.round((loadedCount / totalCount) * 100);
 
-  const [displayProgress, setDisplayProgress] = useState(0);
-  const [showPreloader, setShowPreloader] = useState(true);
-
-  // Smoothly increment display progress towards realProgress or 100%
+  // Smoothly increment display progress towards realProgress or 100% only on first-time preloader
   useEffect(() => {
+    if (!showPreloader) return;
     setDisplayProgress((prev) => Math.max(prev, realProgress));
-  }, [realProgress]);
+  }, [realProgress, showPreloader]);
 
-  // Safety timer to prevent any long hang (max 1.2 seconds)
+  // First-time download completion and safety timer
   useEffect(() => {
-    // If all data loaded already or cache is hot, close quickly
-    if (loadedCount === totalCount) {
+    if (!showPreloader) return;
+
+    const finishPreloader = () => {
+      try {
+        sessionStorage.setItem('portfolio_public_synced', 'true');
+        localStorage.setItem('portfolio_public_downloaded', 'true');
+      } catch (e) {}
       setDisplayProgress(100);
-      const closeTimer = setTimeout(() => {
-        setShowPreloader(false);
-      }, 250);
+      setShowPreloader(false);
+    };
+
+    // If all data loaded, close quickly
+    if (loadedCount === totalCount) {
+      const closeTimer = setTimeout(finishPreloader, 200);
       return () => clearTimeout(closeTimer);
     }
 
-    const safetyTimer = setTimeout(() => {
-      setDisplayProgress(100);
-      const closeTimer = setTimeout(() => {
-        setShowPreloader(false);
-      }, 200);
-      return () => clearTimeout(closeTimer);
-    }, 1200);
-
+    // Safety timer for initial download (max 1.2 seconds)
+    const safetyTimer = setTimeout(finishPreloader, 1200);
     return () => clearTimeout(safetyTimer);
-  }, [loadedCount, totalCount]);
+  }, [loadedCount, totalCount, showPreloader]);
 
   return (
     <>
