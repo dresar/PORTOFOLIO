@@ -47,6 +47,8 @@ export default defineConfig(({ mode }) => ({
         globPatterns: [
           '**/*.{js,css,html,svg,png,ico,txt,woff2}'
         ],
+        globIgnores: ['uploads/**'],
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         navigateFallbackDenylist: [/^\/admin\/.*/, /^\/api\/.*/],
         runtimeCaching: [
           {

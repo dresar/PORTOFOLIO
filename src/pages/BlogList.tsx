@@ -4,10 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { useBlogPosts, useBlogCategories } from '@/hooks/useBlog';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
-import { normalizeMediaUrl } from '@/lib/utils';
+import { normalizeMediaUrl, formatCompactNumber } from '@/lib/utils';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
-import { Calendar, User, Search, ArrowRight, AlertCircle, Filter, SortAsc, SortDesc } from 'lucide-react';
+import { Calendar, User, Search, ArrowRight, AlertCircle, Filter, SortAsc, SortDesc, Eye } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
@@ -93,10 +93,12 @@ const BlogList = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Helmet>
-        <title>Blog & Artikel - Eka Syarif Maulana, S.Kom</title>
-        <meta name="description" content="Kumpulan artikel teknologi, panduan pemrograman, dan wawasan industri oleh Eka Syarif Maulana, S.Kom (Sarjana Komputer)." />
-        <meta property="og:title" content="Blog & Artikel - Eka Syarif Maulana, S.Kom" />
-        <meta property="og:description" content="Kumpulan artikel teknologi dan panduan pemrograman oleh Eka Syarif Maulana, S.Kom." />
+        <title>Blog & Edukasi Teknologi - Eka Syarif Maulana</title>
+        <meta name="description" content="Kumpulan artikel edukasi teknologi, keamanan siber, privasi digital, dan panduan perangkat oleh Eka Syarif Maulana (Founder Inka.tech)." />
+        <meta name="author" content="Eka Syarif Maulana" />
+        <link rel="canonical" href={typeof window !== 'undefined' ? window.location.href : 'https://ekasyarif.my.id/blog'} />
+        <meta property="og:title" content="Blog & Edukasi Teknologi - Eka Syarif Maulana" />
+        <meta property="og:description" content="Kumpulan artikel edukasi teknologi, keamanan siber, dan panduan perangkat oleh Eka Syarif Maulana (Founder Inka.tech)." />
       </Helmet>
       <Header />
       
@@ -247,14 +249,20 @@ const BlogList = () => {
                       </div>
                       
                       <div className="p-5 flex flex-col flex-grow">
-                        <div className="flex items-center gap-4 text-xs text-muted-foreground mb-3">
-                          <div className="flex items-center gap-1">
-                            <Calendar className="h-3 w-3" />
-                            <span>{format(new Date(post.published_at || post.created_at), 'dd MMM yyyy', { locale: id })}</span>
+                        <div className="flex items-center justify-between text-xs text-muted-foreground mb-3">
+                          <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-1">
+                              <Calendar className="h-3 w-3" />
+                              <span>{format(new Date(post.published_at || post.created_at), 'dd MMM yyyy', { locale: id })}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <User className="h-3 w-3" />
+                              <span>{post.author?.username || 'Eka Syarif'}</span>
+                            </div>
                           </div>
-                          <div className="flex items-center gap-1">
-                            <User className="h-3 w-3" />
-                            <span>{post.author?.username || 'Admin'}</span>
+                          <div className="flex items-center gap-1 text-primary/80 font-medium">
+                            <Eye className="h-3.5 w-3.5" />
+                            <span>{formatCompactNumber(post.views || 0)}</span>
                           </div>
                         </div>
                         

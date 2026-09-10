@@ -71,7 +71,8 @@ export function sanitizeHtmlContent(raw?: string | null): string {
     ALLOWED_TAGS: [
       'p', 'b', 'i', 'em', 'strong', 'a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
       'ul', 'ol', 'li', 'code', 'pre', 'blockquote', 'img', 'span', 'div', 'hr',
-      'table', 'thead', 'tbody', 'tr', 'th', 'td', 'br', 'sub', 'sup', 'figure', 'figcaption'
+      'table', 'thead', 'tbody', 'tr', 'th', 'td', 'br', 'sub', 'sup', 'figure', 'figcaption',
+      'section', 'article', 'aside', 'header', 'footer', 'details', 'summary', 'dl', 'dt', 'dd', 'mark', 'kbd'
     ],
     ALLOWED_ATTR: [
       'href', 'target', 'rel', 'src', 'alt', 'class', 'style', 'width', 'height', 'title', 'loading'

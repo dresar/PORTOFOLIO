@@ -24,6 +24,10 @@ import { toast } from 'sonner';
 import { useProfile } from '@/hooks/useProfile';
 import { getLocalizedPath } from '@/lib/i18nNavigation';
 import { useLocalizedContent } from '@/hooks/useLocalizedContent';
+import { useTheme } from 'next-themes';
+import MDEditor from '@uiw/react-md-editor';
+import '@uiw/react-md-editor/markdown-editor.css';
+import '@uiw/react-markdown-preview/markdown.css';
 
 const BlogDetail = () => {
   const { t } = useTranslation();
@@ -38,6 +42,7 @@ const BlogDetail = () => {
   const queryClient = useQueryClient();
   const { profile } = useProfile();
   const { openImagePreviewModal } = useModalStore();
+  const { resolvedTheme } = useTheme();
   
   const { data: rawPost, isLoading, isError } = useBlogPostBySlug(slug || '');
   const { getBlogPost } = useLocalizedContent();
@@ -233,16 +238,46 @@ const BlogDetail = () => {
         <div className="container mx-auto px-4 max-w-6xl">
           {/* Breadcrumb / Back */}
           <Helmet>
-            <title>{post.seo_title || post.title} - Eka Syarif Maulana, S.Kom</title>
+            <title>{post.seo_title || post.title} - Eka Syarif Maulana</title>
             <meta name="description" content={post.seo_description || post.excerpt} />
+            <meta name="author" content="Eka Syarif Maulana" />
+            <link rel="canonical" href={window.location.href} />
             {post.seo_keywords && post.seo_keywords.length > 0 && (
               <meta name="keywords" content={Array.isArray(post.seo_keywords) ? post.seo_keywords.join(', ') : post.seo_keywords} />
             )}
-            <meta property="og:title" content={`${post.seo_title || post.title} - Eka Syarif Maulana, S.Kom`} />
+            <meta property="og:title" content={`${post.seo_title || post.title} - Eka Syarif Maulana`} />
             <meta property="og:description" content={post.seo_description || post.excerpt} />
+            <meta property="og:type" content="article" />
+            <meta property="article:author" content="Eka Syarif Maulana" />
             {(post.coverImageFile || post.coverImage) && (
               <meta property="og:image" content={normalizeMediaUrl(post.coverImageFile || post.coverImage)} />
             )}
+            <script type="application/ld+json">
+              {JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "BlogPosting",
+                "headline": post.title,
+                "description": post.excerpt,
+                "image": post.coverImage ? normalizeMediaUrl(post.coverImage) : undefined,
+                "datePublished": post.published_at || post.created_at,
+                "dateModified": post.updated_at || post.created_at,
+                "author": {
+                  "@type": "Person",
+                  "name": "Eka Syarif Maulana",
+                  "jobTitle": "Senior Fullstack Developer & AI Engineer",
+                  "url": "https://ekasyarif.my.id"
+                },
+                "publisher": {
+                  "@type": "Organization",
+                  "name": "Inka.tech",
+                  "url": "https://ekasyarif.my.id"
+                },
+                "mainEntityOfPage": {
+                  "@type": "WebPage",
+                  "@id": typeof window !== 'undefined' ? window.location.href : undefined
+                }
+              })}
+            </script>
           </Helmet>
 
           <div className="mb-8">
@@ -260,13 +295,21 @@ const BlogDetail = () => {
             <article className="lg:col-span-2">
               {/* Header */}
               <header className="mb-8">
-                <div className="flex items-center gap-3 mb-6">
-                    <Badge variant="secondary" className="text-sm">
+                <div className="flex flex-wrap items-center gap-4 mb-6 text-sm text-muted-foreground">
+                    <Badge variant="secondary" className="text-sm font-medium">
                         {post.category?.name || t('blog.default_category')}
                     </Badge>
-                    <span className="text-muted-foreground text-sm flex items-center">
-                        <Calendar className="w-4 h-4 mr-1" />
+                    <span className="flex items-center">
+                        <Calendar className="w-4 h-4 mr-1.5" />
                         {format(new Date(post.published_at || post.created_at), 'd MMMM yyyy', { locale: idLocale })}
+                    </span>
+                    <span className="flex items-center text-foreground font-medium">
+                        <User className="w-4 h-4 mr-1.5 text-primary" />
+                        Eka Syarif Maulana
+                    </span>
+                    <span className="flex items-center font-medium text-primary">
+                        <Eye className="w-4 h-4 mr-1.5" />
+                        {formatCompactNumber(post.views || 0)} views
                     </span>
                 </div>
 
@@ -305,9 +348,18 @@ const BlogDetail = () => {
 
               {/* Content */}
               <div 
-                className="html-theme-responsive prose prose-lg dark:prose-invert max-w-none mb-12"
-                dangerouslySetInnerHTML={{ __html: sanitizeHtmlContent(post.content) }}
-              />
+                className="html-theme-responsive prose prose-lg dark:prose-invert max-w-none mb-12 [&_img]:rounded-xl [&_img]:shadow-md [&_img]:border [&_img]:border-border/50 [&_img]:mx-auto [&_img]:my-6 [&_blockquote]:border-l-4 [&_blockquote]:border-primary [&_blockquote]:bg-primary/5 [&_blockquote]:p-4 [&_blockquote]:rounded-r-lg"
+                data-color-mode={resolvedTheme === 'dark' ? 'dark' : 'light'}
+              >
+                {post.content && post.content.trim().startsWith('<') && !post.content.includes('# ') && !post.content.includes('![') ? (
+                  <div dangerouslySetInnerHTML={{ __html: sanitizeHtmlContent(post.content) }} />
+                ) : (
+                  <MDEditor.Markdown 
+                    source={post.content || ''} 
+                    style={{ backgroundColor: 'transparent', color: 'inherit', fontSize: 'inherit', fontFamily: 'inherit' }} 
+                  />
+                )}
+              </div>
 
               {/* Tags */}
               <div className="border-t pt-8 mb-8">
