@@ -454,7 +454,7 @@ const BlogDetail = () => {
               {/* Author Profile */}
               <div className="bg-card border border-border/70 rounded-xl p-4 sm:p-5 shadow-xs my-5">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                  <div className="w-13 h-13 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden border border-border/50">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 min-w-[48px] min-h-[48px] max-w-[56px] max-h-[56px] rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden border border-border/50">
                     {profile?.aboutImage || profile?.heroImage ? (
                       <img src={normalizeMediaUrl(profile.aboutImage || profile.heroImage)} alt="Author" className="w-full h-full object-cover object-top" />
                     ) : (

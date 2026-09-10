@@ -104,30 +104,12 @@ const BlogList = () => {
       
       <main className="flex-grow pt-24 pb-16">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-500"
-            >
-              {t('blog.title')}
-            </motion.h1>
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-muted-foreground text-lg max-w-2xl mx-auto"
-            >
-              {t('blog.description')}
-            </motion.p>
-          </div>
-
           {/* Search and Filter Controls */}
           <div className="mb-8 max-w-6xl mx-auto">
-             <div className="bg-card border rounded-xl p-4 shadow-sm flex flex-col md:flex-row gap-4 items-center justify-between">
+             <div className="bg-card border rounded-xl p-3.5 sm:p-4 shadow-sm flex flex-col md:flex-row gap-3 sm:gap-4 items-stretch md:items-center justify-between">
                 
                 {/* Search */}
-                <div className="relative w-full md:w-96">
+                <div className="relative w-full md:w-80 lg:w-96">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder={t('blog.search_placeholder')}
