@@ -95,7 +95,7 @@ const queryClient = new QueryClient({
 
 const persister = createSyncStoragePersister({
   storage: window.localStorage,
-  key: 'REACT_QUERY_OFFLINE_CACHE_V2',
+  key: 'REACT_QUERY_OFFLINE_CACHE_V4',
 });
 
 const App = () => {
@@ -105,9 +105,13 @@ const App = () => {
     // Purge legacy obsolete caches so stale demo articles never appear
     try {
       localStorage.removeItem('REACT_QUERY_OFFLINE_CACHE');
+      localStorage.removeItem('REACT_QUERY_OFFLINE_CACHE_V2');
+      localStorage.removeItem('REACT_QUERY_OFFLINE_CACHE_V3');
       Object.keys(localStorage).forEach(key => {
-        if (key.startsWith('portfolio_cache_blog')) {
-          localStorage.removeItem(key);
+        if (key.startsWith('portfolio_cache_blog') || key.includes('blog-post') || key.includes('REACT_QUERY_OFFLINE_CACHE')) {
+          if (key !== 'REACT_QUERY_OFFLINE_CACHE_V4') {
+            localStorage.removeItem(key);
+          }
         }
       });
     } catch {
@@ -116,7 +120,7 @@ const App = () => {
 
     const checkCache = () => {
       const hasLegacyCache = Object.keys(localStorage).some(key => key.startsWith('portfolio_cache_'));
-      const hasQueryCache = localStorage.getItem('REACT_QUERY_OFFLINE_CACHE_V2');
+      const hasQueryCache = localStorage.getItem('REACT_QUERY_OFFLINE_CACHE_V4');
       
       if (hasLegacyCache || hasQueryCache) {
         setIsLoading(false);

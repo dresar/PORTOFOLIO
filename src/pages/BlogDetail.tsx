@@ -1,7 +1,8 @@
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useBlogPostBySlug } from '@/hooks/useBlog';
+import staticPosts from '@/data/blogPosts.json';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { BlogSlidePlayer } from '@/components/blog/BlogSlidePlayer';
@@ -48,7 +49,30 @@ const BlogDetail = () => {
   
   const { data: rawPost, isLoading, isError } = useBlogPostBySlug(slug || '');
   const { getBlogPost } = useLocalizedContent();
-  const post = getBlogPost(rawPost);
+  const post = useMemo(() => {
+    const staticPost = (staticPosts as any[]).find((p: any) => p.slug === slug);
+    const base = staticPost || rawPost;
+    if (!base) return null;
+
+    let content = base.content || '';
+    // Clean all inline images and slide-card previews from text body
+    content = content.replace(/<div class="slide-card[^"]*"[\s\S]*?<\/div>\s*<\/div>/gi, '');
+    content = content.replace(/<div class="slide-card[^"]*"[\s\S]*?<\/div>/gi, '');
+    content = content.replace(/<img[^>]*>/gi, '');
+    content = content.replace(/!\[.*?\]\(.*?\)/gi, '');
+    // Clean any author-byline or Founder Inka.tech mentions
+    content = content.replace(/<div class="author-byline[^"]*"[\s\S]*?<\/div>/gi, '');
+    content = content.replace(/Founder Inka\.tech/gi, 'Senior Fullstack Web & Mobile Developer & AI Systems Engineer');
+
+    const sanitized = {
+      ...base,
+      content,
+      author: 'Eka Syarif Maulana, S.Kom',
+      author_role: 'Senior Fullstack Web & Mobile Developer & AI Systems Engineer',
+    };
+
+    return getBlogPost(sanitized);
+  }, [rawPost, slug, getBlogPost]);
   
   const [commentName, setCommentName] = useState('');
   const [commentEmail, setCommentEmail] = useState('');
@@ -236,8 +260,8 @@ const BlogDetail = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
       
-      <main className="flex-grow pt-24 pb-16">
-        <div className="container mx-auto px-4 max-w-6xl">
+      <main className="flex-grow pt-20 pb-12">
+        <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
           {/* Breadcrumb / Back */}
           <Helmet>
             <title>{post.seo_title || post.title} - Eka Syarif Maulana</title>
@@ -289,10 +313,10 @@ const BlogDetail = () => {
             </script>
           </Helmet>
 
-          <div className="mb-6">
+          <div className="mb-4">
             <Link 
               to={getLocalizedPath('/blog')} 
-              className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-1 px-3 rounded-lg hover:bg-muted/50 w-fit"
+              className="inline-flex items-center text-xs sm:text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-1 px-2.5 rounded-lg hover:bg-muted/50 w-fit"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               {t('blog.back_to_blog')}
@@ -300,30 +324,30 @@ const BlogDetail = () => {
           </div>
 
           {/* Article Title & Metadata Header */}
-          <header className="mb-8 max-w-4xl">
-            <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-4 text-xs sm:text-sm text-muted-foreground">
-              <Badge variant="secondary" className="font-semibold tracking-wide uppercase px-2.5 py-0.5">
+          <header className="mb-6 max-w-5xl">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2.5 text-xs text-muted-foreground">
+              <Badge variant="secondary" className="font-semibold tracking-wide uppercase px-2 py-0.5 text-[11px]">
                 {post.category?.name || t('blog.default_category')}
               </Badge>
               <span className="flex items-center">
-                <Calendar className="w-3.5 h-3.5 mr-1.5 text-primary" />
+                <Calendar className="w-3.5 h-3.5 mr-1 text-primary" />
                 {format(new Date(post.published_at || post.created_at), 'd MMMM yyyy', { locale: idLocale })}
               </span>
               <span className="flex items-center text-foreground font-medium">
-                <User className="w-3.5 h-3.5 mr-1.5 text-primary" />
+                <User className="w-3.5 h-3.5 mr-1 text-primary" />
                 Eka Syarif Maulana, S.Kom
               </span>
               <span className="flex items-center font-medium text-primary">
-                <Eye className="w-3.5 h-3.5 mr-1.5" />
+                <Eye className="w-3.5 h-3.5 mr-1" />
                 {formatCompactNumber(post.views || 0)} views
               </span>
             </div>
 
-            <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold mb-5 leading-tight tracking-tight text-foreground">
+            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-[32px] font-bold mb-3 leading-snug tracking-tight text-foreground">
               {post.title}
             </h1>
 
-            <p className="text-base sm:text-xl text-muted-foreground leading-relaxed border-l-4 border-primary/60 pl-4 py-1">
+            <p className="text-sm sm:text-[15px] text-muted-foreground leading-relaxed border-l-2 border-primary/70 pl-3 py-0.5">
               {post.excerpt}
             </p>
           </header>
@@ -332,30 +356,30 @@ const BlogDetail = () => {
               Desktop: Left is Rich Content (col-span-7/8), Right is Sticky Slide Carousel (col-span-5/4)
               Mobile: Slide Carousel is at the TOP (order-1), Article content is below (order-2)
           */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
             {/* Left Column: Article Rich Technical Guide */}
             <div className="order-2 lg:order-1 lg:col-span-7 xl:col-span-8 min-w-0">
               <article className="w-full">
                 {/* Content with Image Click-to-Zoom Handler */}
                 <motion.div 
-                  initial={{ opacity: 0, y: 16 }}
+                  initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4 }}
-                  className="html-theme-responsive prose prose-lg dark:prose-invert max-w-none mb-12 
-                    [&_h2]:text-2xl sm:[&_h2]:text-3xl [&_h2]:font-bold [&_h2]:tracking-tight [&_h2]:mt-10 [&_h2]:mb-4 [&_h2]:text-foreground [&_h2]:border-b [&_h2]:border-border/40 [&_h2]:pb-2.5
-                    [&_h3]:text-xl sm:[&_h3]:text-2xl [&_h3]:font-semibold [&_h3]:mt-6 [&_h3]:mb-3 [&_h3]:text-foreground
-                    [&_p]:text-muted-foreground [&_p]:leading-relaxed [&_p]:text-base sm:[&_p]:text-lg
-                    [&_ul]:space-y-2 [&_ul]:list-disc [&_ul]:list-inside [&_ul]:text-muted-foreground
-                    [&_ol]:space-y-2 [&_ol]:list-decimal [&_ol]:list-inside [&_ol]:text-muted-foreground
-                    [&_table]:w-full [&_table]:text-sm [&_table]:border-collapse [&_table]:my-6
-                    [&_th]:bg-muted/60 [&_th]:p-3 [&_th]:border [&_th]:border-border [&_th]:text-left [&_th]:font-semibold [&_th]:text-foreground
-                    [&_td]:p-3 [&_td]:border [&_td]:border-border/60 [&_td]:text-muted-foreground
-                    [&_pre]:bg-muted/70 [&_pre]:p-4 [&_pre]:rounded-xl [&_pre]:border [&_pre]:border-border/50 [&_pre]:overflow-x-auto
-                    [&_code]:text-xs [&_code]:font-mono [&_code]:bg-muted/60 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:border [&_code]:border-border/40
-                    [&_.direct-answer-box]:p-6 [&_.direct-answer-box]:rounded-2xl [&_.direct-answer-box]:border [&_.direct-answer-box]:border-primary/30 [&_.direct-answer-box]:bg-primary/5 [&_.direct-answer-box]:shadow-xs [&_.direct-answer-box]:my-6
-                    [&_.checklist-box]:p-6 [&_.checklist-box]:rounded-2xl [&_.checklist-box]:border [&_.checklist-box]:border-emerald-500/30 [&_.checklist-box]:bg-emerald-500/5 [&_.checklist-box]:shadow-xs [&_.checklist-box]:my-8
-                    [&_.author-attribution-card]:p-6 [&_.author-attribution-card]:rounded-2xl [&_.author-attribution-card]:border [&_.author-attribution-card]:border-border/60 [&_.author-attribution-card]:bg-muted/20 [&_.author-attribution-card]:my-8
-                    [&_blockquote]:border-l-4 [&_blockquote]:border-primary [&_blockquote]:bg-primary/5 [&_blockquote]:p-4 [&_blockquote]:rounded-r-lg"
+                  transition={{ duration: 0.3 }}
+                  className="html-theme-responsive text-foreground text-sm sm:text-[15px] leading-relaxed max-w-none mb-8
+                    [&_h2]:text-lg sm:[&_h2]:text-xl [&_h2]:font-bold [&_h2]:tracking-tight [&_h2]:mt-6 [&_h2]:mb-2.5 [&_h2]:text-foreground [&_h2]:border-b [&_h2]:border-border/40 [&_h2]:pb-2
+                    [&_h3]:text-base sm:[&_h3]:text-lg [&_h3]:font-semibold [&_h3]:mt-4 [&_h3]:mb-2 [&_h3]:text-foreground
+                    [&_p]:text-foreground/90 [&_p]:leading-relaxed [&_p]:mb-3
+                    [&_ul]:space-y-1.5 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:text-foreground/90 [&_ul]:mb-3
+                    [&_ol]:space-y-1.5 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:text-foreground/90 [&_ol]:mb-3
+                    [&_table]:w-full [&_table]:text-xs sm:[&_table]:text-sm [&_table]:border-collapse [&_table]:my-4
+                    [&_th]:bg-muted/70 [&_th]:p-2.5 [&_th]:border [&_th]:border-border [&_th]:text-left [&_th]:font-semibold [&_th]:text-foreground
+                    [&_td]:p-2.5 [&_td]:border [&_td]:border-border/60 [&_td]:text-foreground/85
+                    [&_pre]:bg-muted/80 [&_pre]:p-3.5 [&_pre]:rounded-xl [&_pre]:border [&_pre]:border-border/50 [&_pre]:overflow-x-auto [&_pre]:my-3
+                    [&_code]:text-xs [&_code]:font-mono [&_code]:bg-muted/70 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:border [&_code]:border-border/40
+                    [&_.direct-answer-box]:p-4 sm:[&_.direct-answer-box]:p-5 [&_.direct-answer-box]:rounded-xl [&_.direct-answer-box]:border [&_.direct-answer-box]:border-primary/30 [&_.direct-answer-box]:bg-primary/5 [&_.direct-answer-box]:shadow-xs [&_.direct-answer-box]:my-4
+                    [&_.checklist-box]:p-4 sm:[&_.checklist-box]:p-5 [&_.checklist-box]:rounded-xl [&_.checklist-box]:border [&_.checklist-box]:border-emerald-500/30 [&_.checklist-box]:bg-emerald-500/5 [&_.checklist-box]:shadow-xs [&_.checklist-box]:my-5
+                    [&_.author-attribution-card]:p-4 sm:[&_.author-attribution-card]:p-5 [&_.author-attribution-card]:rounded-xl [&_.author-attribution-card]:border [&_.author-attribution-card]:border-border/60 [&_.author-attribution-card]:bg-muted/20 [&_.author-attribution-card]:my-5
+                    [&_blockquote]:border-l-3 [&_blockquote]:border-primary [&_blockquote]:bg-primary/5 [&_blockquote]:p-3 [&_blockquote]:rounded-r-lg"
                   data-color-mode={resolvedTheme === 'dark' ? 'dark' : 'light'}
                   onClick={(e) => {
                     const target = e.target as HTMLElement;
@@ -374,7 +398,7 @@ const BlogDetail = () => {
                     }
                   }}
                 >
-                  {post.content && post.content.trim().startsWith('<') && !post.content.includes('# ') && !post.content.includes('![') ? (
+                  {post.content && (post.content.includes('blog-rich-content') || post.content.trim().startsWith('<')) ? (
                     <div dangerouslySetInnerHTML={{ __html: sanitizeHtmlContent(post.content) }} />
                   ) : (
                     <MDEditor.Markdown 
@@ -385,10 +409,10 @@ const BlogDetail = () => {
                 </motion.div>
 
                 {/* Tags */}
-                <div className="border-t border-border pt-8 mb-4">
+                <div className="border-t border-border/60 pt-5 mb-4">
                   <div className="flex flex-wrap gap-2">
                     {post.tags && Array.isArray(post.tags) && post.tags.map((tag: string, i: number) => (
-                      <Badge key={i} variant="outline" className="text-muted-foreground">
+                      <Badge key={i} variant="outline" className="text-xs text-muted-foreground px-2 py-0.5">
                         # {tag}
                       </Badge>
                     ))}
@@ -397,20 +421,21 @@ const BlogDetail = () => {
               </article>
 
               {/* Interaction & Share Bar */}
-              <div className="border-t border-b border-border py-6 my-8 flex flex-wrap items-center justify-between gap-4 bg-muted/10 px-6 rounded-2xl">
-                <div className="flex items-center gap-4">
+              <div className="border-t border-b border-border py-3.5 px-4 my-5 flex flex-wrap items-center justify-between gap-3 bg-muted/10 rounded-xl">
+                <div className="flex items-center gap-3">
                   <Button 
                     variant="outline" 
                     onClick={handleLike}
-                    className={`flex items-center gap-2 rounded-full ${likeMutation.isPending ? 'opacity-50' : ''} hover:text-red-500`}
+                    size="sm"
+                    className={`flex items-center gap-1.5 rounded-full ${likeMutation.isPending ? 'opacity-50' : ''} hover:text-red-500`}
                   >
-                    <Heart className={`w-4 h-4 ${post.likes ? 'fill-red-500 text-red-500' : ''}`} />
-                    <span className="font-semibold">{formatCompactNumber(post.likes || 0)}</span>
-                    <span className="text-xs text-muted-foreground">Suka</span>
+                    <Heart className={`w-3.5 h-3.5 ${post.likes ? 'fill-red-500 text-red-500' : ''}`} />
+                    <span className="font-semibold text-xs">{formatCompactNumber(post.likes || 0)}</span>
+                    <span className="text-[11px] text-muted-foreground">Suka</span>
                   </Button>
 
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground px-3.5 py-1.5 rounded-full bg-background border border-border/50">
-                    <Eye className="w-4 h-4 text-blue-500" />
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground px-3 py-1 rounded-full bg-background border border-border/50">
+                    <Eye className="w-3.5 h-3.5 text-blue-500" />
                     <span>{formatCompactNumber(post.views || 0)} Dilihat</span>
                   </div>
                 </div>
@@ -427,22 +452,22 @@ const BlogDetail = () => {
               </div>
 
               {/* Author Profile */}
-              <div className="bg-card border border-border rounded-2xl p-6 sm:p-8 shadow-sm my-10">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
-                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden border border-border/50">
+              <div className="bg-card border border-border/70 rounded-xl p-4 sm:p-5 shadow-xs my-5">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                  <div className="w-13 h-13 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden border border-border/50">
                     {profile?.aboutImage || profile?.heroImage ? (
                       <img src={normalizeMediaUrl(profile.aboutImage || profile.heroImage)} alt="Author" className="w-full h-full object-cover" />
                     ) : (
-                      <span className="font-bold text-primary text-2xl">{profile?.fullName?.charAt(0) || 'E'}</span>
+                      <span className="font-bold text-primary text-xl">{profile?.fullName?.charAt(0) || 'E'}</span>
                     )}
                   </div>
                   <div className="flex-1">
-                    <div className="flex flex-wrap items-center gap-2 mb-1">
-                      <h3 className="font-bold text-lg text-foreground">{profile?.fullName || 'Eka Syarif Maulana, S.Kom'}</h3>
-                      <Badge variant="secondary" className="text-xs font-normal">Senior Fullstack Web & Mobile Developer & AI Systems Engineer</Badge>
+                    <div className="flex flex-wrap items-center gap-2 mb-0.5">
+                      <h3 className="font-bold text-base text-foreground">{profile?.fullName || 'Eka Syarif Maulana, S.Kom'}</h3>
+                      <Badge variant="secondary" className="text-[11px] font-normal">Senior Fullstack Web & Mobile Developer & AI Systems Engineer</Badge>
                     </div>
-                    <p className="text-xs text-primary font-medium mb-2">Sarjana Komputer (S.Kom), Universitas Muhammadiyah Sumatera Utara</p>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
+                    <p className="text-xs text-primary font-medium mb-1">Sarjana Komputer (S.Kom), Universitas Muhammadiyah Sumatera Utara</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
                       {profile?.shortBio || profile?.bio || 'Praktisi rekayasa perangkat lunak fullstack, kecerdasan buatan, dan riset keamanan siber.'}
                     </p>
                   </div>
@@ -450,19 +475,19 @@ const BlogDetail = () => {
               </div>
 
             {/* Comments Section (Di Bawah Artikel) */}
-            <div className="bg-card border border-border rounded-2xl p-6 sm:p-8 shadow-sm my-10">
-               <h3 className="font-bold text-lg mb-6 flex items-center gap-2">
-                 <MessageCircle className="w-5 h-5 text-primary" />
+            <div className="bg-card border border-border/70 rounded-xl p-4 sm:p-5 shadow-xs my-5">
+               <h3 className="font-bold text-base mb-4 flex items-center gap-2 text-foreground">
+                 <MessageCircle className="w-4 h-4 text-primary" />
                  Diskusi & Komentar ({comments?.length || 0})
                </h3>
                
-               <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar mb-8">
+               <div className="space-y-3 max-h-[360px] overflow-y-auto pr-2 custom-scrollbar mb-5">
                   {commentsLoading ? (
-                      <div className="text-center py-4 text-muted-foreground text-xs">Memuat komentar...</div>
+                      <div className="text-center py-3 text-muted-foreground text-xs">Memuat komentar...</div>
                   ) : comments.length > 0 ? (
                       comments.map((comment: any) => (
-                          <div key={comment.id} className="flex gap-3">
-                             <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center shrink-0 overflow-hidden">
+                          <div key={comment.id} className="flex gap-2.5">
+                             <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center shrink-0 overflow-hidden">
                                {comment.avatar ? (
                                    <img src={comment.avatar} alt={comment.name} className="w-full h-full object-cover" />
                                ) : (
@@ -470,9 +495,9 @@ const BlogDetail = () => {
                                )}
                              </div>
                              <div className="flex-1">
-                                <div className="bg-muted/30 p-3.5 rounded-xl rounded-tl-none border border-border/30">
+                                <div className="bg-muted/30 p-3 rounded-lg rounded-tl-none border border-border/30">
                                    <div className="flex justify-between items-start mb-1">
-                                     <p className="text-sm font-bold">{comment.name}</p>
+                                     <p className="text-xs font-bold">{comment.name}</p>
                                      <span className="text-[10px] text-muted-foreground">
                                          {format(new Date(comment.createdAt), 'd MMM yyyy', { locale: idLocale })}
                                      </span>
@@ -483,20 +508,20 @@ const BlogDetail = () => {
                           </div>
                       ))
                   ) : (
-                      <div className="text-center py-4 text-muted-foreground text-xs">
+                      <div className="text-center py-3 text-muted-foreground text-xs">
                           Belum ada komentar. Jadilah yang pertama memberikan tanggapan!
                       </div>
                   )}
                </div>
                
-               <div className="pt-6 border-t border-border">
-                  <form onSubmit={handleCommentSubmit} className="space-y-4">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+               <div className="pt-4 border-t border-border/50">
+                  <form onSubmit={handleCommentSubmit} className="space-y-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                         <Input 
                           placeholder="Nama Anda *" 
                           value={commentName}
                           onChange={(e) => setCommentName(e.target.value)}
-                          className="text-sm"
+                          className="text-xs h-9"
                           required
                         />
                         <Input 
@@ -504,25 +529,25 @@ const BlogDetail = () => {
                           type="email"
                           value={commentEmail}
                           onChange={(e) => setCommentEmail(e.target.value)}
-                          className="text-sm"
+                          className="text-xs h-9"
                         />
                       </div>
-                      <div className="flex gap-3">
+                      <div className="flex gap-2.5">
                          <Textarea 
                             placeholder="Tulis tanggapan atau pertanyaan Anda..." 
                             value={commentContent}
                             onChange={(e) => setCommentContent(e.target.value)}
-                            className="flex-1 text-sm min-h-[90px] resize-none"
+                            className="flex-1 text-xs min-h-[72px] resize-none"
                             required
                          />
                          <Button 
                             type="submit" 
                             variant="default" 
-                            className="h-[90px] px-5 flex flex-col items-center justify-center gap-1"
+                            className="h-[72px] px-4 flex flex-col items-center justify-center gap-1 text-xs"
                             disabled={isSubmitting}
                          >
-                            {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
-                            <span className="text-xs">Kirim</span>
+                            {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                            <span>Kirim</span>
                          </Button>
                       </div>
                   </form>
@@ -531,18 +556,18 @@ const BlogDetail = () => {
             </div>
 
             {/* Right Column: Interactive Slide Player (Sticky on Desktop, Top Hero on Mobile) */}
-            <div className="order-1 lg:order-2 lg:col-span-5 xl:col-span-4 lg:sticky lg:top-24 space-y-4">
+            <div className="order-1 lg:order-2 lg:col-span-5 xl:col-span-4 lg:sticky lg:top-20 space-y-3">
               <BlogSlidePlayer 
                 slug={slug || ''} 
                 title={post.title} 
               />
 
-              <div className="p-4 rounded-xl border border-border/50 bg-muted/20 text-xs text-muted-foreground space-y-1.5 shadow-xs">
-                <div className="font-semibold text-foreground flex items-center gap-1.5">
+              <div className="p-3 rounded-xl border border-border/50 bg-muted/20 text-xs text-muted-foreground space-y-1 shadow-xs">
+                <div className="font-semibold text-foreground flex items-center gap-1.5 text-xs">
                   <span>💡 Navigasi Visual</span>
                 </div>
-                <p className="leading-relaxed">
-                  Semua infografis 6 slide artikel ini dapat Anda zoom layar penuh dengan menekan gambar. Penjelasan teknis komprehensif, arsitektur data, dan mitigasi dapat dibaca lengkap di kolom artikel.
+                <p className="leading-relaxed text-[11px]">
+                  Semua infografis 6 slide artikel ini dapat di-zoom layar penuh dengan mengklik gambar. Penjelasan teknis komprehensif, arsitektur data, dan mitigasi disajikan lengkap di kolom samping.
                 </p>
               </div>
             </div>

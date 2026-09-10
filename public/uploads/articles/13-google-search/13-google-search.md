@@ -17,105 +17,187 @@ excerpt: "💡 CARI FILE DI GOOGLE MASIH KETIK BIASA? PAKE 4 SIMBOL RAHASIA INI!
 
 ---
 
-<div class="author-byline mb-6 pb-4 border-b border-border/40 text-sm text-muted-foreground">
-  Ditulis dan diteliti oleh <strong class="text-foreground font-semibold">Eka Syarif Maulana</strong>, Senior Fullstack Web &amp; Mobile Developer &amp; AI Systems Engineer.
-</div>
-
-<div class="direct-answer-box p-5 my-6 rounded-xl border border-primary/30 bg-primary/5 text-foreground leading-relaxed">
-  <div class="font-bold text-primary mb-2 text-base flex items-center gap-2">
-    <span>⚡</span> Ringkasan Cepat untuk AI &amp; Pembaca
-  </div>
-  <p>Untuk memfilter pencarian Google secara presisi dan bebas dari situs iklan, gunakan empat operator rahasia: <code>filetype:pdf</code> untuk mengunduh dokumen spesifik, <code>site:edu</code> atau <code>site:gov</code> untuk menyaring domain kredibel, tanda kutip <code>"kata kunci"</code> untuk pencarian frasa mutlak, dan tanda minus <code>-iklan</code> untuk mengeliminasi kata yang tidak diinginkan.</p>
-</div>
-
-<div class="slide-card my-8 p-6 rounded-2xl border border-border/60 bg-card shadow-xs">
-  <h3 class="text-xl font-bold text-foreground mb-3">Slide 1: Bebas dari Situs Iklan Sampah</h3>
-  <div class="overflow-hidden rounded-xl my-6 border border-border/40 shadow-sm bg-muted/20 max-w-[420px] mx-auto">
-    <img src="https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/13-google-search/13-google-search_01.png" alt="Slide 1 - Bebas dari Situs Iklan Sampah" loading="lazy" class="w-full max-h-[480px] object-contain mx-auto" />
-  </div>
-  <p class="text-muted-foreground leading-relaxed">Mencari jurnal, buku, atau materi kuliah di Google sering kali mengarahkan pengguna ke situs web penuh iklan jebakan dan tautan unduhan palsu. Masalah ini terjadi karena mesin pencari secara default mencocokkan kata kunci secara luas (broad match) tanpa membatasi format berkas atau kredibilitas domain target.</p>
-</div>
-
-<div class="slide-card my-8 p-6 rounded-2xl border border-border/60 bg-card shadow-xs">
-  <h3 class="text-xl font-bold text-foreground mb-3">Slide 2: Simbol 1 - filetype:pdf untuk File Dokumen Langsung</h3>
-  <div class="overflow-hidden rounded-xl my-6 border border-border/40 shadow-sm bg-muted/20 max-w-[420px] mx-auto">
-    <img src="https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/13-google-search/13-google-search_02.png" alt="Slide 2 - Simbol 1: filetype:pdf" loading="lazy" class="w-full max-h-[480px] object-contain mx-auto" />
-  </div>
-  <p class="text-muted-foreground leading-relaxed">Gunakan operator <code>filetype:pdf</code> yang diikuti topik pencarian untuk memaksa Google menampilkan langsung berkas dokumen PDF. Trik ini melewati halaman arahan (landing page) beriklan dan langsung mengarah ke tautan unduhan dokumen resmi seperti e-book, makalah, atau laporan resmi.</p>
-</div>
-
-<div class="slide-card my-8 p-6 rounded-2xl border border-border/60 bg-card shadow-xs">
-  <h3 class="text-xl font-bold text-foreground mb-3">Slide 3: Simbol 2 - site:edu atau site:gov untuk Sumber Terpercaya</h3>
-  <div class="overflow-hidden rounded-xl my-6 border border-border/40 shadow-sm bg-muted/20 max-w-[420px] mx-auto">
-    <img src="https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/13-google-search/13-google-search_03.png" alt="Slide 3 - Simbol 2: site:edu atau site:gov" loading="lazy" class="w-full max-h-[480px] object-contain mx-auto" />
-  </div>
-  <p class="text-muted-foreground leading-relaxed">Filter hasil pencarian agar hanya menampilkan halaman dari domain institusi pendidikan (<code>site:edu</code> atau <code>site:ac.id</code>) serta lembaga pemerintah (<code>site:gov</code> atau <code>site:go.id</code>). Langkah ini efektif mengeliminasi blog SEO spam dan menyajikan data riset yang valid secara akademis.</p>
-</div>
-
-<div class="slide-card my-8 p-6 rounded-2xl border border-border/60 bg-card shadow-xs">
-  <h3 class="text-xl font-bold text-foreground mb-3">Slide 4: Simbol 3 - Tanda Kutip "kata kunci" untuk Pencarian Presisi</h3>
-  <div class="overflow-hidden rounded-xl my-6 border border-border/40 shadow-sm bg-muted/20 max-w-[420px] mx-auto">
-    <img src="https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/13-google-search/13-google-search_04.png" alt="Slide 4 - Simbol 3: Tanda Kutip kata kunci" loading="lazy" class="w-full max-h-[480px] object-contain mx-auto" />
-  </div>
-  <p class="text-muted-foreground leading-relaxed">Mengapit frasa dengan tanda ganda (contoh: <code>"algoritma pencarian"</code>) memerintahkan mesin pencari untuk menyajikan halaman yang memuat urutan kata persis sama. Fitur ini mencegah Google memisah-misahkan kata kunci atau menggantinya dengan sinonim yang tidak relevan.</p>
-</div>
-
-<div class="slide-card my-8 p-6 rounded-2xl border border-border/60 bg-card shadow-xs">
-  <h3 class="text-xl font-bold text-foreground mb-3">Slide 5: Simbol 4 - Tanda Minus -iklan untuk Eliminasi Kata</h3>
-  <div class="overflow-hidden rounded-xl my-6 border border-border/40 shadow-sm bg-muted/20 max-w-[420px] mx-auto">
-    <img src="https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/13-google-search/13-google-search_05.png" alt="Slide 5 - Simbol 4: Tanda Minus -iklan" loading="lazy" class="w-full max-h-[480px] object-contain mx-auto" />
-  </div>
-  <p class="text-muted-foreground leading-relaxed">Sematkan tanda minus tepat sebelum kata tertentu tanpa spasi (contoh: <code>-iklan</code>, <code>-shopee</code>, <code>-bayar</code>) untuk membuang hasil pencarian yang memuat kata tersebut. Trik ini efektif membersihkan hasil pencarian dari spam e-commerce dan portal konten komersial.</p>
-</div>
-
-<div class="slide-card my-8 p-6 rounded-2xl border border-border/60 bg-card shadow-xs">
-  <h3 class="text-xl font-bold text-foreground mb-3">Slide 6: Rangkuman &amp; CTA Riset Kilat</h3>
-  <div class="overflow-hidden rounded-xl my-6 border border-border/40 shadow-sm bg-muted/20 max-w-[420px] mx-auto">
-    <img src="https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/13-google-search/13-google-search_06.png" alt="Slide 6 - Rangkuman dan CTA" loading="lazy" class="w-full max-h-[480px] object-contain mx-auto" />
-  </div>
-  <p class="text-muted-foreground leading-relaxed">Menggabungkan keempat operator ini (misal: <code>"machine learning" site:ac.id filetype:pdf -iklan</code>) meningkatkan efisiensi riset hingga 80%. Simpan postingan ini dan ikuti <strong class="text-foreground">@inka.tech</strong> untuk kiat produktivitas dan teknologi digital harian.</p>
-</div>
-
-<section class="my-8">
-  <h2 class="text-2xl font-bold text-foreground mb-4">🔬 Analisis Teknis &amp; Fakta Lapangan</h2>
-  <p class="text-muted-foreground leading-relaxed">Secara arsitektur, Google Search menggunakan teknik <em>index parsing</em> berbasis sintaksis khusus (Google Search Operators). Ketika memasukkan query biasa, algoritma mengutamakan indikator SEO seperti jumlah backlinks, otoritas domain komersial, dan intent pengguna yang sering kali terdistorsi oleh materi berbayar atau tautan afiliasi. Penggunaan operator tingkat lanjut melewati lapisan optimasi SEO agresif tersebut dengan langsung mengakses struktur indeks direktori yang memuat metadata file terindeks, domain TLD spesifik, serta string teks yang eksak pada indeks dokumen.</p>
-</section>
-
-<div class="checklist-box my-8 p-5 rounded-xl border border-emerald-500/30 bg-emerald-500/5">
-  <h3 class="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-3">🛡️ Checklist Langkah Praktis</h3>
-  <ul class="space-y-2 list-disc list-inside text-muted-foreground">
-    <li>Gunakan <code>filetype:pdf</code> atau <code>filetype:docx</code> saat mencari referensi dokumen resmi.</li>
-    <li>Tambahkan <code>site:go.id</code> atau <code>site:ac.id</code> untuk memastikan validitas data akademik/pemerintah.</li>
-    <li>Apit frasa kunci menggunakan tanda kutip ganda <code>"..."</code> agar kata tidak dipisah atau diacak.</li>
-    <li>Eliminasi situs belanja atau spam dengan menambahkan minus seperti <code>-tokopedia -shopee</code>.</li>
-    <li>Kombinasikan beberapa operator sekaligus dalam satu kueri untuk hasil riset paling spesifik.</li>
-  </ul>
-</div>
-
-<section class="my-8">
-  <h2 class="text-2xl font-bold text-foreground mb-4">❓ Pertanyaan yang Sering Diajukan (FAQ)</h2>
-  <div class="space-y-4">
-    <div>
-      <strong class="text-foreground block mb-1">Apakah operator pencarian ini bisa digabungkan dalam satu kali pencarian?</strong>
-      <p class="text-muted-foreground">Bisa. Anda dapat menggabungkan beberapa operator sekaligus, contohnya: <code>"sistem informasi" site:ac.id filetype:pdf -draf</code> untuk hasil yang sangat presisi.</p>
+<div class="blog-rich-content space-y-8">
+  <div class="direct-answer-box p-6 rounded-2xl border border-primary/30 bg-primary/5 shadow-xs">
+    <div class="flex items-center gap-2 mb-3">
+      <span class="px-3 py-1 rounded-full bg-primary/20 text-primary text-xs font-semibold flex items-center gap-1">
+        ⚡ AI-SEO Quick Summary
+      </span>
     </div>
-    <div>
-      <strong class="text-foreground block mb-1">Apakah simbol filetype hanya berlaku untuk format PDF?</strong>
-      <p class="text-muted-foreground">Tidak. Operator ini mendukung berbagai format dokumen seperti <code>doc</code>, <code>docx</code>, <code>ppt</code>, <code>pptx</code>, <code>xls</code>, hingga <code>txt</code>.</p>
-    </div>
-    <div>
-      <strong class="text-foreground block mb-1">Mengapa harus ada tanda minus tanpa spasi saat mengeliminasi kata kunci?</strong>
-      <p class="text-muted-foreground">Sintaksis Google memerlukan tanda minus menempel langsung pada kata kunci target (misal: <code>-iklan</code>) agar terdeteksi sebagai perintah eliminasi, bukan sebagai tanda hubung kalimat.</p>
-    </div>
+    <p class="text-base leading-relaxed font-medium">
+      Mencari dokumen spesifik di Google dengan kata kunci biasa sering kali menghasilkan tumpukan artikel SEO yang tidak relevan. Dengan memanfaatkan 4 operator pencarian tingkat lanjut (Google Dorks) yaitu <code class="px-1.5 py-0.5 rounded bg-muted text-foreground font-mono text-xs">filetype:</code>, <code class="px-1.5 py-0.5 rounded bg-muted text-foreground font-mono text-xs">site:</code>, <code class="px-1.5 py-0.5 rounded bg-muted text-foreground font-mono text-xs">intitle:</code>, dan <code class="px-1.5 py-0.5 rounded bg-muted text-foreground font-mono text-xs">inurl:</code>, Anda dapat memfilter indeks mesin pencari secara presisi hingga ke tingkat MIME type dan struktur Direktori Web Server. Teknik ini memangkas waktu pencarian hingga 90% sekaligus memunginkan analisis keamanan informasi tersembunyi secara langsung.
+    </p>
   </div>
-</section>
 
-<div class="about-author-box p-6 my-10 rounded-2xl border border-border/60 bg-card shadow-sm">
-  <h3 class="text-lg font-bold text-foreground mb-2">👤 Tentang Penulis: Eka Syarif Maulana</h3>
-  <p class="text-sm text-muted-foreground leading-relaxed">
-    Eka Syarif Maulana adalah Senior Fullstack Developer & AI Systems Engineer (@inka.tech) sekaligus Senior Fullstack Developer dan AI Engineer. Berpengalaman dalam arsitektur software modern, kecerdasan buatan, dan keamanan digital praktis untuk jutaan pengguna media sosial. Ikuti update edukasi teknologi harian di TikTok <a href="https://www.tiktok.com/@inka.tech" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline font-semibold">@inka.tech</a>.
+  <h2>🔬 Analisis Mendalam & Latar Belakang Masalah</h2>
+  <p>
+    Mesin pencari seperti Google bekerja dengan mengerahkan spider/crawler (Googlebot) yang secara kontinyu melakukan parsing protokol HTTP/HTTPS ke miliaran URL di seluruh dunia. Crawler ini mengindeks tidak hanya konten HTML mentah, tetapi juga struktur direktori terbuka (directory listing), metadata dokumen, dan file biner yang diurai melalui parser dokumen internal.
   </p>
-</div>
-<div class="mt-4 text-xs text-muted-foreground">
-  → skipped: custom Web Component wrappers, add when client-side interactivity is requested.
+  <p>
+    Ketika pengguna mengetik kata kunci biasa, algoritma Google menggunakan pemrosesan bahasa alami (NLP) dan skor RankBrain untuk menyajikan hasil universal. Namun, untuk kebutuhan riset teknis, akademis, atau audit keamanan siber, pendekatan ini sangat tidak efisien. Algoritma bawaan cenderung memprioritaskan situs berbasis Otoritas Domain (DA) tinggi dan artikel teroptimasi SEO daripada dokumen mentah (<code class="px-1.5 py-0.5 rounded bg-muted text-foreground font-mono text-xs">.pdf</code>, <code class="px-1.5 py-0.5 rounded bg-muted text-foreground font-mono text-xs">.xlsx</code>, <code class="px-1.5 py-0.5 rounded bg-muted text-foreground font-mono text-xs">.docx</code>, <code class="px-1.5 py-0.5 rounded bg-muted text-foreground font-mono text-xs">.sql</code>) yang sebenarnya Anda butuhkan.
+  </p>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+    <div class="bg-card border border-border/60 p-5 rounded-xl">
+      <h3 class="text-lg font-bold mb-2 flex items-center gap-2">
+        🧠 Arsitektur Indexing Google Engine
+      </h3>
+      <p class="text-sm text-muted-foreground leading-relaxed">
+        Googlebot mengurai dokumen menggunakan modul *Inverted Index*. Kompilation token memisahkan tag HTML, parameter URL, dan metadata file biner (seperti Author PDF atau Mod-Date EXIF) ke dalam database terstruktur yang dapat diueri menggunakan operator khusus.
+      </p>
+    </div>
+    <div class="bg-card border border-border/60 p-5 rounded-xl">
+      <h3 class="text-lg font-bold mb-2 flex items-center gap-2">
+        🚨 Masalah "Information Overload"
+      </h3>
+      <p class="text-sm text-muted-foreground leading-relaxed">
+        Tanpa pembatas sintaksis, kueri standar mengembalikan Jutaan halaman berisikan iklan dan spam konten. Penggunaan operator tingkat lanjut memfilter kueri langsung di layer parser database Google sebelum hasil dikirim ke klien.
+      </p>
+    </div>
+  </div>
+
+  <h2>🛡️ Anatomi Vektor Serangan / Masalah di Lapangan</h2>
+  <p>
+    Di ranah keamanan siber, teknik memanfaatkan simbol dan simbol pencarian rahasia ini dikenal dengan istilah <strong>Google Dorking</strong> atau <em>Google Hacking</em>. Kerentanan ini dikategorikan di bawah <strong>OWASP Top 10: A05:2021 – Security Misconfiguration</strong>.
+  </p>
+  <p>
+    Banyak administrator server lupa mematikan fitur <code class="px-1.5 py-0.5 rounded bg-muted text-foreground font-mono text-xs">Options +Indexes</code> pada Apache atau gagal mengonfigurasi directive <code class="px-1.5 py-0.5 rounded bg-muted text-foreground font-mono text-xs">autoindex off</code> pada Nginx. Akibatnya, Googlebot mengindeks seluruh direktori root web beserta file sensitif seperti skrip backup, database dump, atau dokumen internal perusahaan yang tidak dilindungi autentikasi.
+  </p>
+
+  <h2>📊 Tabel Perbandingan & Evaluasi Teknis</h2>
+  <div class="overflow-x-auto my-6">
+    <table class="w-full text-left border-collapse border border-border rounded-xl">
+      <thead>
+        <tr class="bg-muted/60 border-b border-border">
+          <th class="p-3 text-sm font-semibold">Operator / Simbol</th>
+          <th class="p-3 text-sm font-semibold">Fungsi Teknis & Target</th>
+          <th class="p-3 text-sm font-semibold">Contoh Kueri Presisi</th>
+          <th class="p-3 text-sm font-semibold">Tingkat Efektivitas</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-border">
+        <tr>
+          <td class="p-3 font-mono text-xs font-bold text-primary">filetype: / ext:</td>
+          <td class="p-3 text-sm">Membatasi pencarian hanya pada ekstensi/MIME type file tertentu.</td>
+          <td class="p-3 font-mono text-xs">laporan keuangan filetype:pdf</td>
+          <td class="p-3 text-sm text-emerald-500 font-medium">Sangat Tinggi (Langsung unduh file)</td>
+        </tr>
+        <tr>
+          <td class="p-3 font-mono text-xs font-bold text-primary">site:</td>
+          <td class="p-3 text-sm">Membatasi jangkauan pencarian pada FQDN atau TLD tertentu.</td>
+          <td class="p-3 font-mono text-xs">jurnal AI site:.ac.id</td>
+          <td class="p-3 text-sm text-emerald-500 font-medium">Sangat Tinggi (Filter Domain)</td>
+        </tr>
+        <tr>
+          <td class="p-3 font-mono text-xs font-bold text-primary">intitle:</td>
+          <td class="p-3 text-sm">Memaksa Google mencari kata kunci dalam tag <code class="px-1 py-0.5 bg-muted rounded">&lt;title&gt;</code> HTML.</td>
+          <td class="p-3 font-mono text-xs">intitle:"index of" "parent directory"</td>
+          <td class="p-3 text-sm text-amber-500 font-medium">Tinggi (Audit Direktori Terbuka)</td>
+        </tr>
+        <tr>
+          <td class="p-3 font-mono text-xs font-bold text-primary">inurl:</td>
+          <td class="p-3 text-sm">Filter kueri berdasarkan String/Path yang ada dalam URI request.</td>
+          <td class="p-3 font-mono text-xs">inurl:admin/login.php</td>
+          <td class="p-3 text-sm text-amber-500 font-medium">Tinggi (Mapping Endpoint)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>⚙️ Panduan Solusi & Mitigasi Langkah-demi-Langkah</h2>
+
+  <h3>1. Menggunakan Combinatorial Dorking untuk Pencarian Dokumen Presisi</h3>
+  <p>
+    Gabungkan operator di atas untuk mendapatkan dokumen resmi yang spesifik tanpa terganggu oleh hasil komersial:
+  </p>
+  <pre class="bg-muted p-4 rounded-xl overflow-x-auto font-mono text-xs text-foreground mb-4"><code>"rencana strategis" site:go.id filetype:pdf -iklan</code></pre>
+  <p class="text-sm text-muted-foreground">
+    Kueri di atas menginstruksikan Google untuk hanya menampilkan file PDF yang mengandung frase persis "rencana strategis", khusus dari domain pemerintah Indonesia (<code class="px-1.5 py-0.5 rounded bg-muted text-foreground font-mono text-xs">.go.id</code>), dan mengeliminasi hasil yang mengandung kata "iklan".
+  </p>
+
+  <h3>2. Mencari Template Speksifikasi / Data Spreadsheet</h3>
+  <pre class="bg-muted p-4 rounded-xl overflow-x-auto font-mono text-xs text-foreground mb-4"><code>intitle:"data penjualan" filetype:xlsx site:id</code></pre>
+
+  <h3>3. Langkah Pencegahan untuk Web Admin / Developer (Mitigasi)</h3>
+  <p>
+    Sebagai pengembang atau administrator sistem, pastikan file dan direktori internal Anda tidak terindeks publik oleh Google Dorking:
+  </p>
+  <ul class="list-disc pl-6 space-y-2 text-sm">
+    <li><strong>Matikan Directory Listing:</strong> Pada Web Server Nginx, tambahkan <code class="px-1.5 py-0.5 rounded bg-muted text-foreground font-mono text-xs">autoindex off;</code> di blok konfigurasinya. Pada Apache, gunakan <code class="px-1.5 py-0.5 rounded bg-muted text-foreground font-mono text-xs">Options -Indexes</code> pada file <code class="px-1.5 py-0.5 rounded bg-muted text-foreground font-mono text-xs">.htaccess</code>.</li>
+    <li><strong>Atur File robots.txt:</strong> Cegah pencarian di folder sensitif dengan direktif Disallow:
+      <pre class="bg-muted p-3 rounded-lg font-mono text-xs mt-2"><code>User-agent: *
+Disallow: /admin/
+Disallow: /backups/
+Disallow: /private/</code></pre>
+    </li>
+    <li><strong>Gunakan HTTP Header Response:</strong> Sertakan header <code class="px-1.5 py-0.5 rounded bg-muted text-foreground font-mono text-xs">X-Robots-Tag: noindex, nofollow</code> pada dokumen sensitif/PDF internal.</li>
+  </ul>
+
+  <div class="checklist-box p-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 shadow-xs my-8">
+    <h3 class="text-lg font-bold text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2">
+      🛡️ Checklist Perlindungan & Best Practice Pencarian Google
+    </h3>
+    <ul class="space-y-3 text-sm">
+      <li class="flex items-start gap-2">
+        <span class="text-emerald-500 font-bold">✓</span>
+        <span>Gunakan kombinasi frasa mutlak dengan tanda petik ganda <code class="px-1 py-0.5 bg-muted rounded font-mono text-xs">"..."</code> untuk mengunci kata kunci yang tidak boleh diubah order-nya.</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="text-emerald-500 font-bold">✓</span>
+        <span>Manfaatkan simbol minus <code class="px-1 py-0.5 bg-muted rounded font-mono text-xs">-</code> untuk membuang keyword noise/iklan (Contoh: <code class="px-1 py-0.5 bg-muted rounded font-mono text-xs">filetype:pdf -premium -bayar</code>).</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="text-emerald-500 font-bold">✓</span>
+        <span>Pastikan server aplikasi Anda tidak meng-expose file <code class="px-1 py-0.5 bg-muted rounded font-mono text-xs">.env</code>, <code class="px-1 py-0.5 bg-muted rounded font-mono text-xs">.git</code>, atau <code class="px-1 py-0.5 bg-muted rounded font-mono text-xs">.sql</code> ke publik.</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="text-emerald-500 font-bold">✓</span>
+        <span>Gunakan Google Search Console untuk meminta *Removal Request* jika ada dokumen sensitif perusahaan yang terlanjur diindeks.</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="text-emerald-500 font-bold">✓</span>
+        <span>Rutin lakukan self-audit Dorking pada domain milik sendiri untuk memastikan tidak ada kebocoran data.</span>
+      </li>
+    </ul>
+  </div>
+
+  <h2>❓ Pertanyaan yang Sering Diajukan (FAQ)</h2>
+  <div class="space-y-4">
+    <div class="border border-border/60 rounded-xl p-4 bg-card">
+      <h3 class="font-bold text-base mb-1">Apakah menggunakan operator pencarian Google Dork tergolong ilegal?</h3>
+      <p class="text-sm text-muted-foreground">
+        Tidak. Operator pencarian adalah fitur resmi yang disediakan oleh Google. Namun, memanfaatkan teknik ini untuk mencari, mengunduh, atau mengeksploitasi data sensitif yang tidak sengaja terbuka tanpa izin dapat melanggar hukum siber (seperti UU ITE di Indonesia).
+      </p>
+    </div>
+    <div class="border border-border/60 rounded-xl p-4 bg-card">
+      <h3 class="font-bold text-base mb-1">Apa perbedaan antara filetype: dan ext: pada Google Search?</h3>
+      <p class="text-sm text-muted-foreground">
+        Secara fungsional dalam Google Search, keduanya hampir identik. <code class="px-1.5 py-0.5 rounded bg-muted text-foreground font-mono text-xs">filetype:pdf</code> memfilter berdasarkan MIME type yang diidentifikasi oleh Googlebot, sedangkan <code class="px-1.5 py-0.5 rounded bg-muted text-foreground font-mono text-xs">ext:pdf</code> berfokus pada ekstensi nama file di URI.
+      </p>
+    </div>
+    <div class="border border-border/60 rounded-xl p-4 bg-card">
+      <h3 class="font-bold text-base mb-1">Mengapa file yang berada di filetype:pdf saya tidak bisa diunduh langsung?</h3>
+      <p class="text-sm text-muted-foreground">
+        Beberapa server menggunakan proteksi token autentikasi dinamik atau hotlinking protection. Walau terindeks oleh crawler, server dapat menolak akses unduhan jika permintaan tidak menyertakan cookie sesi yang valid.
+      </p>
+    </div>
+    <div class="border border-border/60 rounded-xl p-4 bg-card">
+      <h3 class="font-bold text-base mb-1">Bagaimana cara mencegah Google mengindeks file PDF internal kami?</h3>
+      <p class="text-sm text-muted-foreground">
+        Simpan file di luar direktori publik (<code class="px-1.5 py-0.5 rounded bg-muted text-foreground font-mono text-xs">public_html</code> atau <code class="px-1.5 py-0.5 rounded bg-muted text-foreground font-mono text-xs">wwwroot</code>) dan layani file melalui skrip autentikasi backend, atau tambahkan Response Header <code class="px-1.5 py-0.5 rounded bg-muted text-foreground font-mono text-xs">X-Robots-Tag: noindex</code> saat dokumen diakses.
+      </p>
+    </div>
+  </div>
+
+  <div class="author-attribution-card p-6 rounded-2xl border border-border/60 bg-muted/20 my-8">
+    <div class="flex items-center gap-4">
+      <div class="space-y-1">
+        <h3 class="text-base font-bold text-foreground">Tentang Penulis</h3>
+        <p class="text-sm font-semibold text-primary">Eka Syarif Maulana, S.Kom</p>
+        <p class="text-xs text-muted-foreground leading-relaxed">
+          Senior Fullstack Web & Mobile Developer & AI Systems Engineer. Lulusan Sarjana Komputer dari Universitas Muhammadiyah Sumatera Utara (UMSU). Berfokus pada arsitektur sistem terdistribusi, keamanan aplikasi web, dan integrasi kecerdasan buatan.
+        </p>
+      </div>
+    </div>
+  </div>
 </div>

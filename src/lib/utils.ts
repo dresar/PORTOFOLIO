@@ -18,6 +18,12 @@ export function normalizeMediaUrl(raw?: string | null) {
      return url;
   }
 
+  // Articles images in public/uploads/articles are static frontend / CDN assets
+  if (url.includes('uploads/articles')) {
+    const cleanPath = url.startsWith('/') ? url : `/${url}`;
+    return cleanPath;
+  }
+
   if (import.meta.env.VITE_BACKEND_URL && url.startsWith(import.meta.env.VITE_BACKEND_URL)) {
       url = url.replace(import.meta.env.VITE_BACKEND_URL, "");
   }
@@ -30,9 +36,6 @@ export function normalizeMediaUrl(raw?: string | null) {
     url = url.substring(1);
   }
 
-  // If path doesn't start with known prefixes, assume it needs one (optional, based on backend)
-  // But usually backend returns "uploads/..." or "media/..."
-  
   return `${baseUrl}/${url}`;
 }
 

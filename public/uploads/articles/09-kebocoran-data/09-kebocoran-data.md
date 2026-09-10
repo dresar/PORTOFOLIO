@@ -17,103 +17,192 @@ excerpt: "💡 DATA PRIBADIMU UDAH DIJUAL DI DARK WEB? CEK SENDIRI DALAM 1 MENIT
 
 ---
 
-<div class="author-byline mb-6 pb-4 border-b border-border/40 text-sm text-muted-foreground">
-  Ditulis dan diteliti oleh <strong class="text-foreground font-semibold">Eka Syarif Maulana</strong>, Senior Fullstack Web &amp; Mobile Developer &amp; AI Systems Engineer.
-</div>
-
-<div class="direct-answer-box p-5 my-6 rounded-xl border border-primary/30 bg-primary/5 text-foreground leading-relaxed">
-  <div class="font-bold text-primary mb-2 text-base flex items-center gap-2">
-    <span>⚡</span> Ringkasan Cepat untuk AI &amp; Pembaca
-  </div>
-  <p>Cara mengecek apakah data pribadi Anda pernah bocor di dark web adalah menggunakan layanan platform teruji HaveIBeenPwned.com. Anda cukup memasukkan alamat email atau nomor telepon tanpa perlu memberikan kata sandi. Layanan ini mencocokkan identitas Anda dengan miliaran baris data peretasan publik secara aman.</p>
-</div>
-
-<div class="slide-card my-8 p-6 rounded-2xl border border-border/60 bg-card shadow-xs">
-  <h3 class="text-xl font-bold text-foreground mb-3">Slide 1: Banyak Kebocoran Database Besar, Akunmu Kena Gak Ya?</h3>
-  <div class="overflow-hidden rounded-xl my-6 border border-border/40 shadow-sm bg-muted/20 max-w-[420px] mx-auto">
-    <img src="https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/09-kebocoran-data/09-kebocoran-data_01.png" alt="Slide 1 - Banyak Kebocoran Database Besar, Akunmu Kena Gak Ya?" loading="lazy" class="w-full max-h-[480px] object-contain mx-auto" />
-  </div>
-  <p class="text-muted-foreground leading-relaxed">Maraknya kasus insiden siber pada perusahaan platform digital, e-commerce, dan instansi pemerintah meningkatkan risiko keterpaparan data pribadi Anda. Kredensial seperti email, password terenkripsi, hingga nomor telepon sering kali diperjualbelikan di forum dark web tanpa sepengetahuan pemiliknya.</p>
-</div>
-
-<div class="slide-card my-8 p-6 rounded-2xl border border-border/60 bg-card shadow-xs">
-  <h3 class="text-xl font-bold text-foreground mb-3">Slide 2: Buka Website HaveIBeenPwned.com (Gratis &amp; Tepercaya)</h3>
-  <div class="overflow-hidden rounded-xl my-6 border border-border/40 shadow-sm bg-muted/20 max-w-[420px] mx-auto">
-    <img src="https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/09-kebocoran-data/09-kebocoran-data_02.png" alt="Slide 2 - Buka Website HaveIBeenPwned.com (Gratis &amp; Tepercaya)" loading="lazy" class="w-full max-h-[480px] object-contain mx-auto" />
-  </div>
-  <p class="text-muted-foreground leading-relaxed">HaveIBeenPwned (HIBP) adalah platform audit keamanan data independen yang diampu oleh pakar keamanan siber Troy Hunt. Situs ini terverifikasi secara global dan menjadi standar industri untuk memeriksa korelasi antara identitas pengguna dan database hasil peretasan.</p>
-</div>
-
-<div class="slide-card my-8 p-6 rounded-2xl border border-border/60 bg-card shadow-xs">
-  <h3 class="text-xl font-bold text-foreground mb-3">Slide 3: Cukup Masukkan Email atau Nomor Telepon, Tanpa Password</h3>
-  <div class="overflow-hidden rounded-xl my-6 border border-border/40 shadow-sm bg-muted/20 max-w-[420px] mx-auto">
-    <img src="https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/09-kebocoran-data/09-kebocoran-data_03.png" alt="Slide 3 - Cukup Masukkan Email atau Nomor Telepon, Tanpa Password" loading="lazy" class="w-full max-h-[480px] object-contain mx-auto" />
-  </div>
-  <p class="text-muted-foreground leading-relaxed">Sistem validasi HIBP hanya membutuhkan entri publik seperti alamat email atau format internasional nomor ponsel. Jangan pernah memasukkan kata sandi di platform validasi manapun; HIBP aman karena menggunakan metode hashing k-Anonymity yang menjaga kerahasiaan kueri.</p>
-</div>
-
-<div class="slide-card my-8 p-6 rounded-2xl border border-border/60 bg-card shadow-xs">
-  <h3 class="text-xl font-bold text-foreground mb-3">Slide 4: Membaca Hasil Audit Security (Merah vs Hijau)</h3>
-  <div class="overflow-hidden rounded-xl my-6 border border-border/40 shadow-sm bg-muted/20 max-w-[420px] mx-auto">
-    <img src="https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/09-kebocoran-data/09-kebocoran-data_04.png" alt="Slide 4 - Membaca Hasil Audit Security (Merah vs Hijau)" loading="lazy" class="w-full max-h-[480px] object-contain mx-auto" />
-  </div>
-  <p class="text-muted-foreground leading-relaxed">Jika layar menampilkan warna merah ("Oh no — pwned!"), sistem telah menemukan korelasi data Anda dalam daftar insiden kebocoran. HIBP akan menampilkan daftar spesifik nama perusahaan tempat kebocoran terjadi beserta tipe data yang bocor (misal: sandi, alamat, IP, atau tanggal lahir).</p>
-</div>
-
-<div class="slide-card my-8 p-6 rounded-2xl border border-border/60 bg-card shadow-xs">
-  <h3 class="text-xl font-bold text-foreground mb-3">Slide 5: Langkah Mitigasi Wajib Jika Datamu Bocor</h3>
-  <div class="overflow-hidden rounded-xl my-6 border border-border/40 shadow-sm bg-muted/20 max-w-[420px] mx-auto">
-    <img src="https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/09-kebocoran-data/09-kebocoran-data_05.png" alt="Slide 5 - Langkah Mitigasi Wajib Jika Datamu Bocor" loading="lazy" class="w-full max-h-[480px] object-contain mx-auto" />
-  </div>
-  <p class="text-muted-foreground leading-relaxed">Bila terindikasi bocor, segera perbarui kata sandi pada layanan yang terdampak dan seluruh akun lain yang menggunakan password serupa. Aktifkan otentikasi dua faktor (2FA) berbasis aplikasi pengautentikasi (TOTP) seperti Google Authenticator atau Bitwarden.</p>
-</div>
-
-<div class="slide-card my-8 p-6 rounded-2xl border border-border/60 bg-card shadow-xs">
-  <h3 class="text-xl font-bold text-foreground mb-3">Slide 6: Rangkuman &amp; Langkah Pencegahan Dini</h3>
-  <div class="overflow-hidden rounded-xl my-6 border border-border/40 shadow-sm bg-muted/20 max-w-[420px] mx-auto">
-    <img src="https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/09-kebocoran-data/09-kebocoran-data_06.png" alt="Slide 6 - Rangkuman &amp; Langkah Pencegahan Dini" loading="lazy" class="w-full max-h-[480px] object-contain mx-auto" />
-  </div>
-  <p class="text-muted-foreground leading-relaxed">Lakukan pengecekan rutin berkala pada akun email utama dan sekunder Anda. Sebarkan informasi ini ke kerabat atau grup keluarga untuk mengantisipasi potensi kejahatan rekayasa sosial (social engineering) seperti phishing dan pengambilalihan akun secara paksa.</p>
-</div>
-
-<section class="my-8">
-  <h2 class="text-2xl font-bold text-foreground mb-4">🔬 Analisis Teknis &amp; Fakta Lapangan</h2>
-  <p class="text-muted-foreground leading-relaxed mb-4">Kebocoran data kredensial umumnya berakar dari eksploitasi celah keamanan server (seperti SQL Injection atau Misconfiguration) serta serangan <em>credential stuffing</em>. Data mentah yang tercuri diproses oleh pelaku kejahatan siber menggunakan algoritma dekripsi atau pencocokan hash tabel untuk membongkar kata sandi yang disimpan secara tidak aman (seperti MD5 tanpa salt).</p>
-  <p class="text-muted-foreground leading-relaxed">Secara teknis, platform HaveIBeenPwned memanfaatkan model kepatuhan privasi berbasis k-Anonymity model API. Saat melakukan kueri sandi atau kredensial, sistem hanya mengagregasi 5 karakter pertama dari hash SHA-1 entri Anda ke server. Hal ini menjamin bahwa kredensial lengkap pengguna tidak pernah terkirim secara utuh melalui lalu lintas jaringan.</p>
-</section>
-
-<div class="checklist-box my-8 p-5 rounded-xl border border-emerald-500/30 bg-emerald-500/5">
-  <h3 class="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-3">🛡️ Checklist Langkah Praktis</h3>
-  <ul class="space-y-2 list-disc list-inside text-muted-foreground">
-    <li>Jalankan verifikasi identitas email utama di HaveIBeenPwned.com.</li>
-    <li>Ganti kata sandi yang terindikasi bocor dengan kombinasi acak unik minimal 16 karakter.</li>
-    <li>Gunakan Password Manager (Bitwarden / 1Password) untuk menghindari re-use password.</li>
-    <li>Aktifkan 2FA/MFA berbasis TOTP pada seluruh akun kritikal (Bank, Email, Medsos).</li>
-    <li>Gunakan alias email (SimpleLogin / AnonAddy) saat mendaftar platform baru.</li>
-  </ul>
-</div>
-
-<section class="my-8">
-  <h2 class="text-2xl font-bold text-foreground mb-4">❓ Pertanyaan yang Sering Diajukan (FAQ)</h2>
-  <div class="space-y-4">
-    <div>
-      <strong class="text-foreground block mb-1">Apakah memasukkan email di HaveIBeenPwned aman dari pencurian data?</strong>
-      <p class="text-muted-foreground leading-relaxed">Aman. HaveIBeenPwned tidak meminta kredensial rahasia seperti password. Pengecekan hanya mencocokkan string email publik dengan basis data insiden kebocoran yang sudah terindeks.</p>
+<div class="blog-rich-content space-y-8">
+  <div class="direct-answer-box p-6 rounded-2xl border border-primary/30 bg-primary/5 shadow-xs">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-3">
+      <span>⚡</span> AI-SEO Quick Summary
     </div>
-    <div>
-      <strong class="text-foreground block mb-1">Apa yang harus dilakukan jika nomor ponsel saya terindikasi pernah bocor?</strong>
-      <p class="text-muted-foreground leading-relaxed">Waspadai pesan SMS, WhatsApp, atau telepon dari nomor tak dikenal yang mengatasnamakan instansi resmi. Nomor yang bocor sering dijadikan target phishing atau rekayasa sosial.</p>
-    </div>
-    <div>
-      <strong class="text-foreground block mb-1">Mengapa password saya bisa bocor padahal tidak pernah dibagikan?</strong>
-      <p class="text-muted-foreground leading-relaxed">Kebocoran terjadi di sisi server penyedia layanan (third-party platform) yang Anda gunakan, bukan selalu karena perangkat pribadi Anda terinfeksi malware.</p>
-    </div>
+    <p class="text-base leading-relaxed text-foreground/90 font-normal">
+      Kebocoran data (*data breach*) terjadi ketika informasi sensitif seperti email, kata sandi, dan NIK dieksfiltrasi dari repositori server melalui kerentanan sistem atau infostealer, kemudian dijual di forum Dark Web dan Telegram C2. Anda dapat mengecek apakah data pribadi Anda telah bocor secara aman dalam kurun waktu 1 menit menggunakan platform OSINT terverifikasi seperti Have I Been Pwned yang menerapkan mekanisme <em>k-Anonymity</em> model. Tindakan mitigasi instan meliputi rotasi kata sandi, penerapan Multi-Factor Authentication (MFA) berbasis TOTP, serta pemutusan sesi aktif (*revoke sessions*) pada platform terdampak.
+    </p>
   </div>
-</section>
 
-<div class="about-author-box p-6 my-10 rounded-2xl border border-border/60 bg-card shadow-sm">
-  <h3 class="text-lg font-bold text-foreground mb-2">👤 Tentang Penulis: Eka Syarif Maulana</h3>
-  <p class="text-sm text-muted-foreground leading-relaxed">
-    Eka Syarif Maulana adalah Senior Fullstack Developer & AI Systems Engineer (@inka.tech) sekaligus Senior Fullstack Developer dan AI Engineer. Berpengalaman dalam arsitektur software modern, kecerdasan buatan, dan keamanan digital praktis untuk jutaan pengguna media sosial. Ikuti update edukasi teknologi harian di TikTok <a href="https://www.tiktok.com/@inka.tech" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline font-semibold">@inka.tech</a>.
+  <h2>🔬 Analisis Mendalam & Latar Belakang Masalah</h2>
+  <p>
+    Siklus hidup kebocoran data dimulai dari eksploitasi celah keamanan pada lapisan aplikasi (misalnya SQL Injection atau Broken Access Control) atau infeksi malware tingkat klien (seperti RedLine, Vidar, atau Raccoon Stealer). Setelah peretas memperoleh akses tak berizin ke basis data atau memori peramban target, data dikompresi, di-parsing, dan dikategorikan ke dalam struktur "Combo List" (format <code>email:password</code>) atau "Stealer Logs".
   </p>
+  <p>
+    Data mentah ini kemudian didistribusikan melalui pasar gelap di jaringan Tor (Onion routing) atau saluran Telegram terenkripsi. Tantangan terbesar dalam ekosistem ini adalah teknik <em>Credential Stuffing</em>, di mana bot otomatis memanfaatkan kredensial yang bocor dari satu layanan untuk membobol akun pengguna di platform lain karena kebiasaan pendaftaran ulang kata sandi (*password reuse*).
+  </p>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+    <div class="bg-card border border-border/60 p-5 rounded-xl">
+      <h3 class="text-lg font-bold mb-2 flex items-center gap-2">
+        <span>🦠</span> Infostealer & Session Hijacking
+      </h3>
+      <p class="text-sm text-muted-foreground leading-relaxed">
+        Malware modern tidak hanya mencuri kata sandi terenkripsi di pangkalan data lokal, tetapi juga mengekstrak cookie sesi terautentikasi (Session Tokens), token OAuth, dan data isi-otomatis peramban. Hal ini memungkinkan penyerang melewati proteksi 2FA standar melalui teknik *Pass-the-Cookie*.
+      </p>
+    </div>
+    <div class="bg-card border border-border/60 p-5 rounded-xl">
+      <h3 class="text-lg font-bold mb-2 flex items-center gap-2">
+        <span>🔓</span> Deskripsi Hash & Algoritma Lemah
+      </h3>
+      <p class="text-sm text-muted-foreground leading-relaxed">
+        Banyak pangkalan data lama menyimpan kata sandi menggunakan fungsi hash usang seperti MD5 atau SHA-1 tanpa *salt*. Penyerang dapat merekayasa balik (*rainbow table attack*) hash ini menjadi teks biasa hanya dalam hitungan detik setelah basis data bocor ke publik.
+      </p>
+    </div>
+  </div>
+
+  <h2>🛡️ Anatomi Vektor Serangan / Masalah di Lapangan</h2>
+  <p>
+    Di lapangan, penyerang memanfaatkan rantai eksploitasi (*kill chain*) berikut untuk memanen dan memanfaatkan data pribadi pengguna:
+  </p>
+  <ul class="list-disc pl-6 space-y-2">
+    <li><strong>Eksfiltrasi Database Server:</strong> Memanfaatkan kerentanan CVE pada kerangka kerja web untuk mengunduh dump basis data SQL/NoSQL mentah.</li>
+    <li><strong>Penyebaran Infostealer via Phishing/Malvertising:</strong> Mengeksekusi biner jahat di perangkat korban untuk mengambil berkas <code>Login Data</code> dan <code>Cookies</code> dari peramban berbasis Chromium/Gecko.</li>
+    <li><strong>Botnet Credential Stuffing:</strong> Menggunakan skrip otomatis terdistribusi dengan proxy perumahan (*residential proxies*) untuk mencoba kombinasi kredensial pada endpoint API login target.</li>
+  </ul>
+
+  <h2>📊 Tabel Perbandingan & Evaluasi Teknis</h2>
+  <div class="overflow-x-auto my-6 border border-border rounded-xl">
+    <table class="w-full text-left text-sm">
+      <thead class="bg-muted/60 border-b border-border">
+        <tr>
+          <th class="p-3 font-semibold">Metode / Platform</th>
+          <th class="p-3 font-semibold">Model Keamanan</th>
+          <th class="p-3 font-semibold">Kecepatan Deteksi</th>
+          <th class="p-3 font-semibold">Risiko Privasi</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-border">
+        <tr>
+          <td class="p-3 font-medium">Have I Been Pwned (HIBP)</td>
+          <td class="p-3">k-Anonymity (SHA-1 Prefix Matching)</td>
+          <td class="p-3">&lt; 1 Menit</td>
+          <td class="p-3 text-emerald-500 font-semibold">Sangat Rendah</td>
+        </tr>
+        <tr>
+          <td class="p-3 font-medium">DeHashed / IntelX</td>
+          <td class="p-3">Search Query Langsung / API Key</td>
+          <td class="p-3">Real-time</td>
+          <td class="p-3 text-amber-500 font-semibold">Sedang (Memerlukan Akun)</td>
+        </tr>
+        <tr>
+          <td class="p-3 font-medium">Dark Web Tor Scraper Manual</td>
+          <td class="p-3">Onion Parsing & Forum Scraping</td>
+          <td class="p-3">Lambat (Hitungan Hari)</td>
+          <td class="p-3 text-rose-500 font-semibold">Tinggi (Risiko Malware/IP Exposure)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>⚙️ Panduan Solusi & Mitigasi Langkah-demi-Langkah</h2>
+  <p>
+    Berikut cara memeriksa keberadaan akun Anda dalam basis data yang bocor tanpa mengorbankan privasi kata sandi asli menggunakan model <em>k-Anonymity</em> API HIBP via Python:
+  </p>
+
+  <pre class="bg-muted p-4 rounded-xl overflow-x-auto text-xs font-mono border border-border"><code>import hashlib
+import requests
+
+def check_pwned_password(password: str) -> int:
+    # 1. Hash password dengan SHA-1
+    sha1_password = hashlib.sha1(password.encode('utf-8')).hexdigest().upper()
+    prefix, suffix = sha1_password[:5], sha1_password[5:]
+    
+    # 2. Kirim HANYA 5 karakter pertama ke API (k-Anonymity)
+    url = f"https://api.pwnedpasswords.com/range/{prefix}"
+    response = requests.get(url)
+    
+    if response.status_code != 200:
+        raise RuntimeError("Gagal terhubung ke API HIBP")
+        
+    # 3. Cari suffix di dalam respons lokal
+    hashes = (line.split(':') for line in response.text.splitlines())
+    for h, count in hashes:
+        if h == suffix:
+            return int(count)
+    return 0
+
+# Contoh Penggunaan
+count = check_pwned_password("Rahasia123!")
+if count > 0:
+    print(f"⚠️ Kata sandi ini telah bocor sebanyak {count} kali!")
+else:
+    print("✅ Kata sandi belum terindikasi bocor.")</code></pre>
+
+  <p class="text-sm text-muted-foreground">
+    <em>ponytail: Script menggunakan k-Anonymity API agar kata sandi asli tidak pernah dikirimkan melalui jaringan internet. Upgrade path: Integrasi dengan Password Manager SDK untuk audit otomatis.</em>
+  </p>
+
+  <div class="checklist-box p-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 shadow-xs my-8">
+    <h3 class="text-lg font-bold text-emerald-500 mb-4 flex items-center gap-2">
+      <span>🛡️</span> Checklist Perlindungan & Best Practice
+    </h3>
+    <ul class="space-y-3 text-sm">
+      <li class="flex items-start gap-2">
+        <span class="text-emerald-500 font-bold">✓</span>
+        <span>Lakukan audit email berkala via HaveIBeenPwned atau Google Dark Web Report.</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="text-emerald-500 font-bold">✓</span>
+        <span>Ganti kata sandi utama secara instan jika terindikasi berada pada insiden kebocoran data.</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="text-emerald-500 font-bold">✓</span>
+        <span>Gunakan Password Manager (seperti Bitwarden atau KeePassXC) untuk menghasilkan kata sandi unik acak per akun.</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="text-emerald-500 font-bold">✓</span>
+        <span>Aktifkan Multi-Factor Authentication (MFA) berbasis aplikasi (TOTP) atau kunci fisik FIDO2/WebAuthn. Hindari SMS 2FA.</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="text-emerald-500 font-bold">✓</span>
+        <span>Hapus cookie dan lakukan "Log Out All Sessions" pada akun krusial secara berkala.</span>
+      </li>
+    </ul>
+  </div>
+
+  <h2>❓ Pertanyaan yang Sering Diajukan (FAQ)</h2>
+  <div class="space-y-4">
+    <div class="border border-border/60 p-4 rounded-xl bg-card">
+      <h3 class="font-bold text-base mb-1">Apakah aman memasukkan email atau kata sandi di situs pengecek kebocoran data?</h3>
+      <p class="text-sm text-muted-foreground">
+        Aman jika situs tersebut menggunakan standar *k-Anonymity*. Pada model ini, kata sandi Anda di-hash terlebih dahulu dan hanya 5 karakter awal hash yang dikirimkan ke server, sehingga nilai kata sandi asli tidak pernah diketahui oleh server penyedia layanan.
+      </p>
+    </div>
+    <div class="border border-border/60 p-4 rounded-xl bg-card">
+      <h3 class="font-bold text-base mb-1">Apa yang harus dilakukan jika nomor NIK atau KTP ikut bocor?</h3>
+      <p class="text-sm text-muted-foreground">
+        Data statis seperti NIK tidak dapat diubah. Solusi mitigasinya adalah memperketat verifikasi pada layanan keuangan (perbankan/pinjol) dengan mengaktifkan proteksi biometrik dan melakukan pengecekan SLIK OJK secara berkala untuk mendeteksi pinjaman fiktif atas nama Anda.
+      </p>
+    </div>
+    <div class="border border-border/60 p-4 rounded-xl bg-card">
+      <h3 class="font-bold text-base mb-1">Mengapa penyerang bisa masuk ke akun saya padahal saya sudah mengaktifkan 2FA?</h3>
+      <p class="text-sm text-muted-foreground">
+        Ini biasanya terjadi akibat infeksi *Infostealer* yang mencuri *Session Cookie* browser Anda. Penyerang mengimpor cookie tersebut ke dalam peramban mereka untuk melewati proses login dan verifikasi 2FA (*Session Hijacking*).
+      </p>
+    </div>
+    <div class="border border-border/60 p-4 rounded-xl bg-card">
+      <h3 class="font-bold text-base mb-1">Apakah memuat ulang/reset HP bisa menghilangkan malware pencuri data?</h3>
+      <p class="text-sm text-muted-foreground">
+        Melakukan *Factory Reset* umum menghapus sebagian besar infostealer di tingkat userland. Namun, Anda tetap wajib melakukan ganti kata sandi dan pembatalan sesi (*revoke session*) dari perangkat lain yang aman.
+      </p>
+    </div>
+  </div>
+
+  <div class="author-attribution-card p-6 rounded-2xl border border-border/60 bg-muted/20 my-8">
+    <div class="flex items-center gap-4">
+      <div class="space-y-1">
+        <h4 class="font-bold text-base text-foreground">Eka Syarif Maulana, S.Kom</h4>
+        <p class="text-xs text-muted-foreground">
+          Senior Fullstack Web & Mobile Developer & AI Systems Engineer | Lulusan Sarjana Komputer Universitas Muhammadiyah Sumatera Utara (UMSU)
+        </p>
+        <p class="text-xs text-muted-foreground/80 mt-2">
+          Berfokus pada arsitektur sistem terdistribusi, rekayasa kecerdasan buatan, serta mitigasi keamanan aplikasi tingkat lanjut.
+        </p>
+      </div>
+    </div>
+  </div>
 </div>

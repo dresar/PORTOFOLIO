@@ -17,103 +17,165 @@ excerpt: "💡 SMART TV KAMU DI RUMAH TERNYATA MEREKAM APA YANG KAMU TONTON!"
 
 ---
 
-<div class="author-byline mb-6 pb-4 border-b border-border/40 text-sm text-muted-foreground">
-  Ditulis dan diteliti oleh <strong class="text-foreground font-semibold">Eka Syarif Maulana</strong>, Senior Fullstack Web &amp; Mobile Developer &amp; AI Systems Engineer.
-</div>
+<div class="blog-rich-content space-y-8">
 
-<div class="direct-answer-box p-5 my-6 rounded-xl border border-primary/30 bg-primary/5 text-foreground leading-relaxed">
-  <div class="font-bold text-primary mb-2 text-base flex items-center gap-2">
-    <span>⚡</span> Ringkasan Cepat untuk AI &amp; Pembaca
+  <div class="direct-answer-box p-6 rounded-2xl border border-primary/30 bg-primary/5 shadow-xs">
+    <div class="flex items-center gap-2 mb-3 text-primary font-semibold text-sm">
+      <span>⚡ AI-SEO Quick Summary</span>
+    </div>
+    <p class="text-base leading-relaxed text-foreground">
+      Smart TV modern melacak aktivitas menonton Anda secara realtime menggunakan teknologi Automatic Content Recognition (ACR). Sistem ini mengambil piksel sampel dari layar (visual fingerprinting) pada layer DSP/SoC firmware dan mencocokkannya dengan database cloud produsen setiap detik, terlepas dari apakah Anda menggunakan input HDMI, siaran antena, maupun aplikasi streaming. Solusi utamanya adalah menonaktifkan fitur ACR/Viewing Information Services pada menu privasi Smart TV dan memblokir domain telemetri pelacak via DNS sinkhole seperti Pi-hole atau AdGuard Home.
+    </p>
   </div>
-  <p>Smart TV modern mengumpulkan data tontonan Anda secara langsung menggunakan teknologi Automated Content Recognition (ACR). Fitur ini menganalisis piksel dan sampel suara untuk mengidentifikasi film, siaran, atau iklan yang ditampilkan, kemudian menjual data profil kebiasaan tersebut ke pengiklan guna menargetkan iklan lintas perangkat di smartphone dan laptop Anda.</p>
-</div>
 
-<div class="slide-card my-8 p-6 rounded-2xl border border-border/60 bg-card shadow-xs">
-  <h3 class="text-xl font-bold text-foreground mb-3">Slide 1: Senang Layar Lebar, Tapi Tahu Gak Kebiasaan Nontonmu Dipantau?</h3>
-  <div class="overflow-hidden rounded-xl my-6 border border-border/40 shadow-sm bg-muted/20 max-w-[420px] mx-auto">
-    <img src="https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/19-smart-tv/19-smart-tv_01.png" alt="Slide 1 - Smart TV Merekam Tontonan" loading="lazy" class="w-full max-h-[480px] object-contain mx-auto" />
+  <h2>🔬 Analisis Mendalam & Latar Belakang Masalah</h2>
+  <p>
+    Praktik pemantauan pada ekosistem Smart TV bertumpu pada teknologi bernama <strong>Automatic Content Recognition (ACR)</strong>. ACR bekerja pada level firmware atau Operating System (webOS, Tizen, Android TV/Google TV, atau Roku OS). Secara teknis, komponen Digital Signal Processor (DSP) pada chipset sistem (SoC) melakukan ekstraksi sampel piksel visual atau sinyal audio dari buffer frame render (Application/Presentation Layer pada model OSI).
+  </p>
+  <p>
+    Proses ini menghasilkan enkapsulasi hash matematis (visual/audio fingerprint) berukuran kecil yang dikirimkan secara berkala (setiap 1-5 detik) melalui protokol HTTPS (TCP port 443) ke server telemetri vendor. Karena pemrosesan sampel terjadi langsung pada frame buffer pengontrol display SoC sebelum output disajikan ke panel TV, ACR dapat mengidentifikasi konten apa pun yang muncul di layar—termasuk konsol game, laptop via HDMI, dekoder TV kabel, hingga siaran terestrial analog/digital.
+  </p>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+    <div class="bg-card border border-border/60 p-5 rounded-xl">
+      <h3 class="text-lg font-bold mb-2">Anatomi Ekstraksi ACR (Firmware Level)</h3>
+      <p class="text-sm text-muted-foreground leading-relaxed">
+        SoC mengambil sampel matriks piksel dari lokasi koordinat tertentu pada kerangka gambar. Hash dihasilkan dari histogram warna dan kontras, lalu dikirimkan via payload TLS terenkripsi bersama ID Perangkat (Advertising ID/MAC) tanpa mengganggu framerate tayangan.
+      </p>
+    </div>
+    <div class="bg-card border border-border/60 p-5 rounded-xl">
+      <h3 class="text-lg font-bold mb-2">Ekosistem Monetisasi Data</h3>
+      <p class="text-sm text-muted-foreground leading-relaxed">
+        Data sidik jari dikorelasi dengan alamat IP publik penggunanya. Produsen memperjualbelikan profil kebiasaan menonton (DMP/Data Management Platform) ke pihak ketiga untuk penargetan iklan lintas perangkat (Cross-Device Targeting) di smartphone atau laptop dalam satu jaringan Wi-Fi.
+      </p>
+    </div>
   </div>
-  <p class="text-muted-foreground leading-relaxed">Membeli Smart TV berlayar lebar memberikan pengalaman menonton yang memuaskan. Namun, mayoritas pengguna tidak menyadari bahwa di balik kenyamanan tersebut, sistem operasi TV bekerja secara aktif melacak setiap konten yang tampil di layar Anda tanpa henti.</p>
-</div>
 
-<div class="slide-card my-8 p-6 rounded-2xl border border-border/60 bg-card shadow-xs">
-  <h3 class="text-xl font-bold text-foreground mb-3">Slide 2: Mengenal Teknologi ACR (Automated Content Recognition)</h3>
-  <div class="overflow-hidden rounded-xl my-6 border border-border/40 shadow-sm bg-muted/20 max-w-[420px] mx-auto">
-    <img src="https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/19-smart-tv/19-smart-tv_02.png" alt="Slide 2 - Teknologi ACR" loading="lazy" class="w-full max-h-[480px] object-contain mx-auto" />
-  </div>
-  <p class="text-muted-foreground leading-relaxed">ACR adalah fitur tingkat sistem operasi pada Smart TV yang mengambil sampel cuplikan piksel visual atau bingkai suara dari layar, lalu mencocokkannya dengan database cloud global secara realtime untuk mengenali konten secara akurat.</p>
-</div>
-
-<div class="slide-card my-8 p-6 rounded-2xl border border-border/60 bg-card shadow-xs">
-  <h3 class="text-xl font-bold text-foreground mb-3">Slide 3: Apa Saja Data yang Dicatat oleh Smart TV?</h3>
-  <div class="overflow-hidden rounded-xl my-6 border border-border/40 shadow-sm bg-muted/20 max-w-[420px] mx-auto">
-    <img src="https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/19-smart-tv/19-smart-tv_03.png" alt="Slide 3 - Data yang Dicatat" loading="lazy" class="w-full max-h-[480px] object-contain mx-auto" />
-  </div>
-  <p class="text-muted-foreground leading-relaxed">Sistem merekam judul film, siaran konsol game, saluran TV kabel, durasi menonton, hingga durasi iklan yang Anda lewati. Perekaman ini tidak terbatas pada aplikasi bawaan, melainkan berlaku untuk semua masukan port HDMI.</p>
-</div>
-
-<div class="slide-card my-8 p-6 rounded-2xl border border-border/60 bg-card shadow-xs">
-  <h3 class="text-xl font-bold text-foreground mb-3">Slide 4: Ke Mana Data Tersebut Bermuara?</h3>
-  <div class="overflow-hidden rounded-xl my-6 border border-border/40 shadow-sm bg-muted/20 max-w-[420px] mx-auto">
-    <img src="https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/19-smart-tv/19-smart-tv_04.png" alt="Slide 4 - Tujuan Pengumpulan Data" loading="lazy" class="w-full max-h-[480px] object-contain mx-auto" />
-  </div>
-  <p class="text-muted-foreground leading-relaxed">Data perilaku dikompilasi bersama alamat IP jaringan rumah. Informasi ini dijual ke pialang data dan platform iklan untuk menjalankan kampanye ad-targeting lintas perangkat di smartphone, tablet, dan laptop dalam jaringan Wi-Fi yang sama.</p>
-</div>
-
-<div class="slide-card my-8 p-6 rounded-2xl border border-border/60 bg-card shadow-xs">
-  <h3 class="text-xl font-bold text-foreground mb-3">Slide 5: Cara Mematikan Fitur Pelacakan ACR</h3>
-  <div class="overflow-hidden rounded-xl my-6 border border-border/40 shadow-sm bg-muted/20 max-w-[420px] mx-auto">
-    <img src="https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/19-smart-tv/19-smart-tv_05.png" alt="Slide 5 - Cara Mematikan ACR" loading="lazy" class="w-full max-h-[480px] object-contain mx-auto" />
-  </div>
-  <p class="text-muted-foreground leading-relaxed">Buka Pengaturan (Settings) &gt; Privasi (Privacy / Terms &amp; Policy) pada Smart TV Anda. Cari opsi "Viewing Data", "Live Plus", "ACR", atau "Interest-Based Ads", kemudian ubah statusnya menjadi Nonaktif (Disable).</p>
-</div>
-
-<div class="slide-card my-8 p-6 rounded-2xl border border-border/60 bg-card shadow-xs">
-  <h3 class="text-xl font-bold text-foreground mb-3">Slide 6: Nonton Tenang Tanpa Dimata-matai!</h3>
-  <div class="overflow-hidden rounded-xl my-6 border border-border/40 shadow-sm bg-muted/20 max-w-[420px] mx-auto">
-    <img src="https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/19-smart-tv/19-smart-tv_06.png" alt="Slide 6 - Rangkuman dan CTA" loading="lazy" class="w-full max-h-[480px] object-contain mx-auto" />
-  </div>
-  <p class="text-muted-foreground leading-relaxed">Privasi digital adalah hak dasar pengguna. Dengan menonaktifkan fitur ACR, Anda dapat menikmati hiburan tanpa perlu khawatir riwayat tontonan dijual. Bagikan informasi ini ke grup keluarga dan teman Anda!</p>
-</div>
-
-<section class="my-8">
-  <h2 class="text-2xl font-bold text-foreground mb-4">🔬 Analisis Teknis &amp; Fakta Lapangan</h2>
-  <p class="text-muted-foreground leading-relaxed mb-4">Secara arsitektur software, sistem operasi seperti Tizen OS, webOS, Android TV, dan Roku TV mengintegrasikan modul daemon ACR di tingkat kernel layanan media. Mesin ACR melakukan ekstraksi sampel (fingerprinting) berupa potongan kecil data gambar atau audio beberapa kali per detik, lalu mengirimkan hash data tersebut melalui protokol HTTPS terenkripsi ke server telemetri produsen TV.</p>
-  <p class="text-muted-foreground leading-relaxed">Riset keamanan siber menunjukkan bahwa bisnis Smart TV modern beralih dari margin penjualan perangkat keras menuju monetisasi data berkelanjutan (AdTech). Produsen memanfaatkan alamat IP publik router untuk menghubungkan profil kebiasaan menonton TV dengan identitas perangkat seluler pengguna melalui mekanisme Cross-Device Tracking (CDT).</p>
-</section>
-
-<div class="checklist-box my-8 p-5 rounded-xl border border-emerald-500/30 bg-emerald-500/5">
-  <h3 class="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-3">🛡️ Checklist Langkah Praktis</h3>
-  <ul class="space-y-2 list-disc list-inside text-muted-foreground">
-    <li>Masuk ke Pengaturan Sistem &gt; Privasi, matikan opsi Viewing Information / ACR / Live Plus.</li>
-    <li>Matikan fitur Personalized Advertising atau Advertising ID Reset pada TV.</li>
-    <li>Gunakan DNS sinkhole tingkat jaringan seperti Pi-hole atau AdGuard Home untuk memblokir domain telemetri produsen TV.</li>
-    <li>Gunakan perangkat streaming terpisah (seperti Apple TV atau Android TV Stick bersih) jika ingin membatasi pelacakan bawaan TV.</li>
-    <li>Tinjau dan cabut izin akses mikrofon serta kamera pada aplikasi Smart TV yang tidak relevan.</li>
+  <h2>🛡️ Anatomi Vektor Serangan / Masalah di Lapangan</h2>
+  <p>
+    Pelanggaran privasi ini bukan sekadar teori, melainkan mekanisme bisnis aktif terintegrasi. Beberapa analisis jaringan (packet capture) mengungkapkan vektor data yang ditransmisikan oleh berbagai vendor:
+  </p>
+  <ul>
+    <li><strong>Telemetri Tanpa Enkripsi Mutlak / Exfiltration Risk:</strong> Beberapa vendor TV kelas bawah mengirimkan log identifikasi melalui HTTP tanpa enkripsi SSL/TLS, memungkinkan serangan Man-in-the-Middle (MitM) di jaringan lokal.</li>
+    <li><strong>CVE-2017-2993 & Kasus Vizio (FTC Enforcement):</strong> Vizio pernah didenda oleh FTC karena mengaktifkan ACR secara default tanpa persetujuan (opt-in) user dan menjual data spesifik hingga tingkat detik.</li>
+    <li><strong>Cross-Device Tracking (CDT):</strong> Pialang data menggabungkan IP jaringan rumah TV dengan Identitas Iklan Seluler (GAID/IDFA) dari smartphone yang tersambung pada router yang sama.</li>
   </ul>
-</div>
 
-<section class="my-8">
-  <h2 class="text-2xl font-bold text-foreground mb-4">❓ Pertanyaan yang Sering Diajukan (FAQ)</h2>
+  <h2>📊 Tabel Perbandingan & Evaluasi Teknis</h2>
+  <div class="overflow-x-auto border border-border rounded-xl my-6">
+    <table class="w-full text-left text-sm">
+      <thead class="bg-muted/60 text-foreground font-semibold">
+        <tr>
+          <th class="p-3 border-b border-border">Merek / Platform OS</th>
+          <th class="p-3 border-b border-border">Nama Fitur Pelacak (ACR)</th>
+          <th class="p-3 border-b border-border">Metode Sampling</th>
+          <th class="p-3 border-b border-border">Tingkat Penyerapan Data</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-border">
+        <tr>
+          <td class="p-3 font-medium">Samsung (Tizen OS)</td>
+          <td class="p-3">Viewing Information Services / ACR</td>
+          <td class="p-3">Video Frame Fingerprinting</td>
+          <td class="p-3">Tinggi (Konten HDMI + App)</td>
+        </tr>
+        <tr>
+          <td class="p-3 font-medium">LG (webOS)</td>
+          <td class="p-3">Live Plus / Advertising & Viewing Data</td>
+          <td class="p-3">Visual & Audio Fingerprinting</td>
+          <td class="p-3">Sangat Tinggi (Layar & Iklan)</td>
+        </tr>
+        <tr>
+          <td class="p-3 font-medium">Android TV / Google TV</td>
+          <td class="p-3">Usage & Diagnostics / Samba TV (Bawaan Vendor)</td>
+          <td class="p-3">App Metrics & DSP Frame Analysis</td>
+          <td class="p-3">Sedang - Tinggi (Tersegmentasi)</td>
+        </tr>
+        <tr>
+          <td class="p-3 font-medium">Roku TV</td>
+          <td class="p-3">More Ways to Watch (ACR)</td>
+          <td class="p-3">Visual Fingerprinting via SoC</td>
+          <td class="p-3">Tinggi (Input HDMI + Antena)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>⚙️ Panduan Solusi & Mitigasi Langkah-demi-Langkah</h2>
+  <p>
+    Untuk menghentikan pengiriman data pelacakan dari Smart TV Anda, lakukan dua pendekatan: mitigasi dari menu bawaan dan pemblokiran tingkat jaringan (DNS Sinkhole).
+  </p>
+
+  <h3>Langkah 1: Matikan Fitur ACR via Settings TV</h3>
+  <ul>
+    <li><strong>Samsung Smart TV:</strong> Buka <em>Settings</em> &rarr; <em>Terms & Privacy</em> &rarr; Matikan <strong>Viewing Information Services</strong> dan <strong>Interest-Based Advertising</strong>.</li>
+    <li><strong>LG webOS:</strong> Buka <em>All Settings</em> &rarr; <em>General</em> &rarr; <em>System</em> &rarr; <em>Additional Settings</em> &rarr; Matikan <strong>Live Plus</strong> dan <strong>User Agreements</strong> (opsi Viewing Data).</li>
+    <li><strong>Android TV / Google TV:</strong> Buka <em>Settings</em> &rarr; <em>Privacy</em> &rarr; <em>Usage & Diagnostics</em> &rarr; Pilih <strong>Off</strong>.</li>
+  </ul>
+
+  <h3>Langkah 2: Blokir Domain Telemetri via Pi-hole / AdGuard Home / Router DNS</h3>
+  <p>
+    Tambahkan entri domain berikut ke dalam daftar blokir (blacklists) DNS filter Anda untuk memutuskan komunikasi Smart TV ke server pelacak:
+  </p>
+  <pre class="bg-muted p-4 rounded-xl overflow-x-auto text-xs font-mono"><code># Vendor Telemetri & ACR Blocklist
+samba.tv
+*.samba.tv
+log-ingestion.samba.tv
+ibis.lgappstv.com
+ngs.lge.com
+samsungads.com
+*.samsungcloudsolution.com
+ads.samsungcom.com
+logs.roku.com
+d3gi38fi88813a.cloudfront.net</code></pre>
+
+  <div class="checklist-box p-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 shadow-xs my-8">
+    <h3 class="text-lg font-bold text-emerald-600 dark:text-emerald-400 mb-3">🛡️ Checklist Perlindungan & Best Practice</h3>
+    <ul class="space-y-2 text-sm">
+      <li>✅ Nonaktifkan fitur ACR (Viewing Information Services / Live Plus) dari menu privasi TV.</li>
+      <li>✅ Reset Advertising ID pada Smart TV secara berkala.</li>
+      <li>✅ Gunakan DNS terenkripsi (DoH/DoT) dengan AdGuard DNS atau NextDNS di tingkat router.</li>
+      <li>✅ Jangan hubungkan Smart TV ke Wi-Fi utama; gunakan VLAN terisolasi (Guest Network).</li>
+      <li>✅ Gunakan STB/Streamer eksternal (seperti Apple TV atau Android Box) jika ingin kontrol privasi lebih baik dibanding Smart TV bawaan.</li>
+      <li>✅ Perbarui firmware TV secara teratur untuk menutup kerentanan keamanan lokal (CVE).</li>
+    </ul>
+  </div>
+
+  <h2>❓ Pertanyaan yang Sering Diajukan (FAQ)</h2>
   <div class="space-y-4">
     <div>
-      <strong class="text-foreground block mb-1">Apakah menonaktifkan ACR membuat Smart TV tidak bisa digunakan?</strong>
-      <p class="text-muted-foreground leading-relaxed">Tidak. Fungsi utama Smart TV untuk pemutaran video, aplikasi streaming, dan masukan HDMI tetap berjalan normal tanpa gangguan.</p>
+      <h3 class="font-bold text-base">Apakah ACR tetap merekam saat saya menonton dari perangkat HDMI seperti PlayStation atau Laptop?</h3>
+      <p class="text-sm text-muted-foreground mt-1">
+        Ya. Karena ACR beroperasi di tingkat DSP SoC sebelum sinyal diproyeksikan ke layar, teknologi ini tidak peduli dari mana sumber input berasal, termasuk HDMI, USB, maupun antena analog.
+      </p>
     </div>
     <div>
-      <strong class="text-foreground block mb-1">Apakah ACR juga merekam saat menggunakan perangkat luar seperti STB atau Konsol Game?</strong>
-      <p class="text-muted-foreground leading-relaxed">Ya. Karena ACR bekerja dengan menganalisis piksel gambar dari panel layar, materi dari kabel HDMI tetap dapat dianalisis oleh modul ACR TV.</p>
+      <h3 class="font-bold text-base">Apakah mematikan Wi-Fi di Smart TV menyelesaikan masalah?</h3>
+      <p class="text-sm text-muted-foreground mt-1">
+        Mematikan koneksi internet TV secara total menghentikan pengiriman data telemetri. Namun, fungsi Smart TV seperti aplikasi streaming bawaan tidak akan dapat digunakan.
+      </p>
     </div>
     <div>
-      <strong class="text-foreground block mb-1">Mengapa produsen Smart TV mengaktifkan fitur ini secara default?</strong>
-      <p class="text-muted-foreground leading-relaxed">Monetisasi data dari iklan dan analisis pasar merupakan sumber pendapatan berkelanjutan yang menutupi efisiensi harga jual perangkat keras TV.</p>
+      <h3 class="font-bold text-base">Mengapa produsen TV memasang teknologi pelacak ini?</h3>
+      <p class="text-sm text-muted-foreground mt-1">
+        Margin keuntungan dari penjualan hardware TV makin tipis. Produsen mengompensasinya dengan menjual data kebiasaan menonton dan ruang iklan terintegrasi di dalam OS TV.
+      </p>
+    </div>
+    <div>
+      <h3 class="font-bold text-base">Apakah pemblokiran domain telemetri akan merusak fungsi update OS TV?</h3>
+      <p class="text-sm text-muted-foreground mt-1">
+        Tidak, jika Anda hanya memblokir domain spesifik pelacak/ACR (seperti domain iklan Samba TV atau LGE/Samsung Ads) dan tetap mengizinkan domain server update resmi vendor.
+      </p>
     </div>
   </div>
-</section>
 
-<div class="about-author-box p-6 my-10 rounded-2xl border border-border/60 bg-card shadow-sm">
-  <h3 class="text-lg font-bold text-foreground mb-2">👤 Tentang Penulis: Eka Syarif Maulana</h3>
-  <p class="text-sm text-muted-foreground leading-relaxed">
-    Eka Syarif Maulana adalah Senior Fullstack Developer & AI Systems Engineer (@inka.tech) sekaligus Senior Fullstack Developer dan AI Engineer. Berpengalaman dalam arsitektur software modern, kecerdasan buatan, dan keamanan digital praktis untuk jutaan pengguna media sosial. Ikuti update edukasi teknologi harian di TikTok <a href="https://www.tiktok.com/@inka.tech" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline font-semibold">@inka.tech</a>.
-  </p>
+  <div class="author-attribution-card p-6 rounded-2xl border border-border/60 bg-muted/20 my-8 flex items-start gap-4">
+    <div>
+      <h4 class="font-bold text-base">Tentang Penulis</h4>
+      <p class="text-sm text-muted-foreground mt-1">
+        <strong>Eka Syarif Maulana, S.Kom</strong> adalah Senior Fullstack Web & Mobile Developer & AI Systems Engineer lulusan Sarjana Komputer UMSU. Berfokus pada arsitektur sistem terdistribusi, keamanan perangkat edge/IoT, dan implementasi infrastruktur kecerdasan buatan.
+      </p>
+    </div>
+  </div>
+
 </div>

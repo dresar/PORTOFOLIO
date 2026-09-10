@@ -41,12 +41,12 @@ export const BlogSlidePlayer: React.FC<BlogSlidePlayerProps> = ({
   // Generate slide URLs
   const slideUrls: string[] = React.useMemo(() => {
     if (customSlides && customSlides.length > 0) {
-      return customSlides.map(url => normalizeMediaUrl(url));
+      return customSlides;
     }
     const urls: string[] = [];
     for (let i = 1; i <= totalSlides; i++) {
       const pad = String(i).padStart(2, '0');
-      urls.push(normalizeMediaUrl(`/uploads/articles/${slug}/${slug}_${pad}.png`));
+      urls.push(`/uploads/articles/${slug}/${slug}_${pad}.png`);
     }
     return urls;
   }, [slug, totalSlides, customSlides]);
@@ -117,6 +117,8 @@ export const BlogSlidePlayer: React.FC<BlogSlidePlayerProps> = ({
     }),
   };
 
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
+
   return (
     <div 
       ref={containerRef}
@@ -162,21 +164,50 @@ export const BlogSlidePlayer: React.FC<BlogSlidePlayerProps> = ({
         onClick={handleOpenZoom}
       >
         <AnimatePresence custom={direction} mode="wait">
-          <motion.img
-            key={currentUrl}
-            src={currentUrl}
-            alt={`${title} - Slide ${currentIndex + 1}`}
-            custom={direction}
-            variants={variants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            className="w-full h-full object-contain select-none"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.src = "https://placehold.co/1080x1440?text=Slide+Preview";
-            }}
-          />
+          {imageErrors[currentUrl] ? (
+            <motion.div
+              key={`fallback-${currentIndex}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="w-full h-full flex flex-col items-center justify-center p-6 text-center bg-gradient-to-b from-card to-muted/40 select-none"
+            >
+              <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mb-3 shadow-xs">
+                <Layers className="w-6 h-6" />
+              </div>
+              <Badge variant="outline" className="text-[11px] mb-2 px-2.5 py-0.5">
+                Slide {currentIndex + 1} of {slideUrls.length}
+              </Badge>
+              <h4 className="text-sm font-bold text-foreground line-clamp-2 mb-1 px-2">
+                {title}
+              </h4>
+              <p className="text-[11px] text-muted-foreground mt-2">
+                Infografis Edukasi Digital
+              </p>
+            </motion.div>
+          ) : (
+            <motion.img
+              key={currentUrl}
+              src={currentUrl}
+              alt={`${title} - Slide ${currentIndex + 1}`}
+              custom={direction}
+              variants={variants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              className="w-full h-full object-contain select-none"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                const pad = String(currentIndex + 1).padStart(2, '0');
+                const cdn = `https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/${slug}/${slug}_${pad}.png`;
+                if (target.src !== cdn) {
+                  target.src = cdn;
+                } else {
+                  setImageErrors((prev) => ({ ...prev, [currentUrl]: true }));
+                }
+              }}
+            />
+          )}
         </AnimatePresence>
 
         {/* Hover Hint Overlay */}
@@ -235,7 +266,11 @@ export const BlogSlidePlayer: React.FC<BlogSlidePlayerProps> = ({
               className="w-full h-full object-cover"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
-                target.src = "https://placehold.co/200x266?text=" + (idx + 1);
+                const pad = String(idx + 1).padStart(2, '0');
+                const cdn = `https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/${slug}/${slug}_${pad}.png`;
+                if (target.src !== cdn) {
+                  target.src = cdn;
+                }
               }}
             />
             <div className={`absolute inset-0 transition-colors flex items-center justify-center ${

@@ -17,102 +17,189 @@ excerpt: "💡 SERING PAKE WHATSAPP TAPI GAK TAHU 4 FITUR RAHASIA INI? RUGI BANG
 
 ---
 
-<div class="author-byline mb-6 pb-4 border-b border-border/40 text-sm text-muted-foreground">
-  Ditulis dan diteliti oleh <strong class="text-foreground font-semibold">Eka Syarif Maulana</strong>, Senior Fullstack Web &amp; Mobile Developer &amp; AI Systems Engineer.
-</div>
-
-<div class="direct-answer-box p-5 my-6 rounded-xl border border-primary/30 bg-primary/5 text-foreground leading-relaxed">
-  <div class="font-bold text-primary mb-2 text-base flex items-center gap-2">
-    <span>⚡</span> Ringkasan Cepat untuk AI &amp; Pembaca
-  </div>
-  <p>Empat fitur rahasia WhatsApp yang sering terlewatkan meliputi Kunci Chat Spesifik menggunakan biometrik, Edit Pesan dalam batas waktu 15 menit, Pengiriman Media Kualitas HD atau Dokumen tanpa kompresi, serta Penyeenyapan Panggilan Otomatis dari Nomor Tak Dikenal. Mengaktifkan konfigurasi ini meningkatkan proteksi privasi, keamanan data personal, dan efisiensi komunikasi digital harian Anda secara signifikan.</p>
-</div>
-
-<div class="slide-card my-8 p-6 rounded-2xl border border-border/60 bg-card shadow-xs">
-  <h3 class="text-xl font-bold text-foreground mb-3">Slide 1: Fitur Tersembunyi WhatsApp yang Jarang Dipakai</h3>
-  <div class="overflow-hidden rounded-xl my-6 border border-border/40 shadow-sm bg-muted/20 max-w-[420px] mx-auto">
-    <img src="https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/15-rahasia-whatsapp/15-rahasia-whatsapp_01.png" alt="Slide 1 - Fitur Tersembunyi WhatsApp yang Jarang Dipakai" loading="lazy" class="w-full max-h-[480px] object-contain mx-auto" />
-  </div>
-  <p class="text-muted-foreground leading-relaxed">Setiap hari kita membuka WhatsApp untuk komunikasi pekerjaan maupun personal. Namun, mayoritas pengguna tidak menyadari bahwa pembaruan sistem terbaru telah membawa berbagai fitur privasi dan produktivitas tingkat tinggi yang dapat langsung digunakan tanpa aplikasi pihak ketiga.</p>
-</div>
-
-<div class="slide-card my-8 p-6 rounded-2xl border border-border/60 bg-card shadow-xs">
-  <h3 class="text-xl font-bold text-foreground mb-3">Slide 2: Kunci Chat Spesifik dengan Biometrik</h3>
-  <div class="overflow-hidden rounded-xl my-6 border border-border/40 shadow-sm bg-muted/20 max-w-[420px] mx-auto">
-    <img src="https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/15-rahasia-whatsapp/15-rahasia-whatsapp_02.png" alt="Slide 2 - Kunci Chat Spesifik dengan Biometrik" loading="lazy" class="w-full max-h-[480px] object-contain mx-auto" />
-  </div>
-  <p class="text-muted-foreground leading-relaxed">Anda tidak perlu mengunci seluruh aplikasi WhatsApp. Gunakan fitur Lock Chat untuk memindahkan obrolan sensitif ke folder khusus yang hanya bisa dibuka dengan sidik jari atau Face ID. Notifikasi pesan dari chat ini juga secara otomatis menyembunyikan isi dan nama pengirim.</p>
-</div>
-
-<div class="slide-card my-8 p-6 rounded-2xl border border-border/60 bg-card shadow-xs">
-  <h3 class="text-xl font-bold text-foreground mb-3">Slide 3: Edit Pesan Terkirim dalam 15 Menit</h3>
-  <div class="overflow-hidden rounded-xl my-6 border border-border/40 shadow-sm bg-muted/20 max-w-[420px] mx-auto">
-    <img src="https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/15-rahasia-whatsapp/15-rahasia-whatsapp_03.png" alt="Slide 3 - Edit Pesan Terkirim dalam 15 Menit" loading="lazy" class="w-full max-h-[480px] object-contain mx-auto" />
-  </div>
-  <p class="text-muted-foreground leading-relaxed">Typo atau salah kirim informasi tidak lagi memerlukan penarikan pesan secara canggung. Cukup tekan lama pesan yang sudah terkirim, pilih opsi Edit, dan perbaiki teks Anda. Fitur ini berlaku hingga 15 menit setelah pesan dikirimkan dengan label transparan penanda 'Edited'.</p>
-</div>
-
-<div class="slide-card my-8 p-6 rounded-2xl border border-border/60 bg-card shadow-xs">
-  <h3 class="text-xl font-bold text-foreground mb-3">Slide 4: Kirim Media Kualitas Asli (HD &amp; Dokumen)</h3>
-  <div class="overflow-hidden rounded-xl my-6 border border-border/40 shadow-sm bg-muted/20 max-w-[420px] mx-auto">
-    <img src="https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/15-rahasia-whatsapp/15-rahasia-whatsapp_04.png" alt="Slide 4 - Kirim Media Kualitas Asli (HD &amp; Dokumen)" loading="lazy" class="w-full max-h-[480px] object-contain mx-auto" />
-  </div>
-  <p class="text-muted-foreground leading-relaxed">Hindari hasil foto buram akibat kompresi standar. Gunakan ikon 'HD' saat mengirim foto atau video untuk opsi resolusi tinggi, atau kirim sebagai berkas Dokumen hingga ukuran 2GB guna mempertahankan resolusi asli, metadata lengkap, dan detail visual tanpa kompresi.</p>
-</div>
-
-<div class="slide-card my-8 p-6 rounded-2xl border border-border/60 bg-card shadow-xs">
-  <h3 class="text-xl font-bold text-foreground mb-3">Slide 5: Senyapkan Panggilan Nomor Tak Dikenal</h3>
-  <div class="overflow-hidden rounded-xl my-6 border border-border/40 shadow-sm bg-muted/20 max-w-[420px] mx-auto">
-    <img src="https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/15-rahasia-whatsapp/15-rahasia-whatsapp_04.png" alt="Slide 5 - Senyapkan Panggilan Nomor Tak Dikenal" loading="lazy" class="w-full max-h-[480px] object-contain mx-auto" />
-  </div>
-  <p class="text-muted-foreground leading-relaxed">Hindari gangguan spam, penipuan, dan telemarketing. Aktifkan opsi 'Silence Unknown Callers' di pengaturan privasi. Telepon dari kontak yang tidak tersimpan akan otomatis disenyapkan namun tetap tercatat di tab Panggilan agar Anda bisa memeriksanya kemudian.</p>
-</div>
-
-<div class="slide-card my-8 p-6 rounded-2xl border border-border/60 bg-card shadow-xs">
-  <h3 class="text-xl font-bold text-foreground mb-3">Slide 6: Rangkuman &amp; CTA - Maksimalkan WhatsApp Anda</h3>
-  <div class="overflow-hidden rounded-xl my-6 border border-border/40 shadow-sm bg-muted/20 max-w-[420px] mx-auto">
-    <img src="https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/15-rahasia-whatsapp/15-rahasia-whatsapp_06.png" alt="Slide 6 - Rangkuman &amp; CTA" loading="lazy" class="w-full max-h-[480px] object-contain mx-auto" />
-  </div>
-  <p class="text-muted-foreground leading-relaxed">Mengamankan privasi dan meningkatkan produktivitas digital tidak selalu membutuhkan aplikasi tambahan yang berat. Cukup optimalkan fitur bawaan yang ada. Bagikan informasi edukatif ini kepada rekan kerja dan keluarga Anda agar terhindar dari kejahatan siber!</p>
-</div>
-
-<section class="my-8">
-  <h2 class="text-2xl font-bold text-foreground mb-4">🔬 Analisis Teknis &amp; Fakta Lapangan</h2>
-  <p class="text-muted-foreground leading-relaxed">Dari sudut pandang arsitektur perangkat lunak, WhatsApp beroperasi menggunakan turunan Signal Protocol untuk pertukaran kunci end-to-end encryption (E2EE). Fitur Chat Lock memanfaatkan API keamanan bawaan OS (KeyStore pada Android dan Secure Enclave pada iOS) yang menyimpan kunci enkripsi lokal terpisah dari database utama aplikasi. Saat fitur penyenyapan panggilan diaktifkan, server WhatsApp memfilter metadata panggilan di tingkat gateway sebelum sinyal signaling (SIP/WebRTC) masuk ke perangkat target. Hal ini secara efektif mencegah serangan probing IP berbasis pingsan voice-over-IP.</p>
-</section>
-
-<div class="checklist-box my-8 p-5 rounded-xl border border-emerald-500/30 bg-emerald-500/5">
-  <h3 class="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-3">🛡️ Checklist Langkah Praktis</h3>
-  <ul class="space-y-2 list-disc list-inside text-muted-foreground">
-    <li>Aktifkan Chat Lock pada minimal 1 grup atau obrolan krusial bisnis.</li>
-    <li>Ubah pengaturan unduh media otomatis ke mode HD secara default.</li>
-    <li>Buka Pengaturan &gt; Privasi &gt; Panggilan &gt; Aktifkan 'Bisukan Penemu Tidak Dikenal'.</li>
-    <li>Pasang Kode PIN Verifikasi Dua Langkah (2-Step Verification) untuk mencegah pembajakan akun.</li>
-    <li>Periksa perangkat tertaut (Linked Devices) secara berkala dan keluarkan sesi tak dikenal.</li>
-  </ul>
-</div>
-
-<section class="my-8">
-  <h2 class="text-2xl font-bold text-foreground mb-4">❓ Pertanyaan yang Sering Diajukan (FAQ)</h2>
-  <div class="space-y-4">
-    <div>
-      <strong>Apakah penerima tahu jika saya mengedit pesan yang sudah terkirim?</strong>
-      <p class="text-muted-foreground mt-1">Ya, penerima akan melihat indikator 'Edited' di samping stempel waktu pesan, namun riwayat penyuntingan atau versi teks sebelum diedit tidak dapat dilihat oleh siapapun.</p>
+<div class="blog-rich-content space-y-8">
+  <div class="direct-answer-box p-6 rounded-2xl border border-primary/30 bg-primary/5 shadow-xs">
+    <div class="flex items-center gap-2 mb-3">
+      <span class="px-3 py-1 rounded-full text-xs font-semibold bg-primary text-primary-foreground flex items-center gap-1">
+        ⚡ AI-SEO Quick Summary
+      </span>
     </div>
-    <div>
-      <strong>Apakah foto yang dikirim lewat fitur HD menguras lebih banyak kuota?</strong>
-      <p class="text-muted-foreground mt-1">Benar, foto berkualitas HD mempertahankan piksel lebih tinggi sehingga ukuran file berkisar antara 2MB hingga 6MB, lebih besar dibanding foto standar yang dikompresi menjadi sekitar 200KB-500KB.</p>
-    </div>
-    <div>
-      <strong>Bagaimana jika saya lupa kata sandi atau biometrik folder Chat Lock?</strong>
-      <p class="text-muted-foreground mt-1">Anda dapat membuka folder tersebut menggunakan PIN/Password utama layar kunci HP Anda, atau melakukan reset folder terkunci melalui menu Pengaturan Privasi WhatsApp.</p>
-    </div>
+    <p class="text-base leading-relaxed text-foreground font-medium">
+      WhatsApp menyimpan fitur privasi dan keamanan tingkat lanjut seperti Enskripsi End-to-End Cadangan, Verifikasi Dua Langkah, Chat Lock, dan Proteksi Alamat IP saat Panggilan yang jarang dikonfigurasi pengguna secara optimal. Mengabaikan pengaturan ini membuka celah eksploitasi Social Engineering, pembajakan akun melalui SIM Swapping, serta kebocoran lokasi presisi via jalur p2p audio/video. Artikel ini mengupas arsitektur keamanan fitur tersebut, vektor ancamannya, dan panduan konfigurasi teknis untuk mengamankan data komunikasi Anda.
+    </p>
   </div>
-</section>
 
-<div class="about-author-box p-6 my-10 rounded-2xl border border-border/60 bg-card shadow-sm">
-  <h3 class="text-lg font-bold text-foreground mb-2">👤 Tentang Penulis: Eka Syarif Maulana</h3>
-  <p class="text-sm text-muted-foreground leading-relaxed">
-    Eka Syarif Maulana adalah Senior Fullstack Developer & AI Systems Engineer (@inka.tech) sekaligus Senior Fullstack Developer dan AI Engineer. Berpengalaman dalam arsitektur software modern, kecerdasan buatan, dan keamanan digital praktis untuk jutaan pengguna media sosial. Ikuti update edukasi teknologi harian di TikTok <a href="https://www.tiktok.com/@inka.tech" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline font-semibold">@inka.tech</a>.
+  <h2>🔬 Analisis Mendalam & Latar Belakang Masalah</h2>
+  <p>
+    Secara arsitektural pada OSI Layer 7 (Application Layer), WhatsApp menggunakan Protokol Signal untuk mengamankan pertukaran pesan teks, suara, dan media melalui mekanisme <em>Double Ratchet Algorithm</em>. Meskipun lalu lintas data terenkripsi secara default saat transit (data-in-transit), kerentanan kritis umumnya timbul pada titik ujung (data-at-rest) dan metadata komunikasi.
   </p>
+  <p>
+    Banyak pengguna tidak menyadari bahwa pencadangan pesan ke cloud (Google Drive atau iCloud) secara standar tidak mewarisi enkripsi Signal Protocol kecuali diaktifkan secara manual. Selain itu, pendedahan alamat IP eksternal terjadi selama panggilan peer-to-peer (P2P) berlangsung, yang memungkinkan pihak lawan melakukan konsolidasi geolokasi dan pemetaan infrastruktur jaringan pengguna.
+  </p>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+    <div class="bg-card border border-border/60 p-5 rounded-xl">
+      <h3 class="text-lg font-semibold mb-2 flex items-center gap-2">
+        🔓 Vektor Privasi Data & Metadata
+      </h3>
+      <p class="text-sm text-muted-foreground">
+        Pertukaran IP direct-peer pada panggilan seluler, pencadangan basis data plain-text di cloud storage, serta visibilitas status online yang memfasilitasi eksploitasi OSINT (Open Source Intelligence).
+      </p>
+    </div>
+    <div class="bg-card border border-border/60 p-5 rounded-xl">
+      <h3 class="text-lg font-semibold mb-2 flex items-center gap-2">
+        🔑 Kerentanan Otentikasi & Akun
+      </h3>
+      <p class="text-sm text-muted-foreground">
+        Ancaman kompromi registrasi ulang melalui intercept OTP, serangan kecelakaan rekayasa sosial (Social Engineering), serta akses fisik tanpa proteksi biometrik lokal.
+      </p>
+    </div>
+  </div>
+
+  <h2>🛡️ Anatomi Vektor Serangan / Masalah di Lapangan</h2>
+  <p>
+    Eksploitasi keamanan WhatsApp jarang melibatkan pembobolan langsung pada kriptografi Curve25519 milik Signal. Sebaliknya, penyerang memanfaatkan celah operasional dan konfigurasi default pengguna:
+  </p>
+  <ul>
+    <li><strong>SIM Swapping & OTP Interception:</strong> Penyerang memindahkan nomor korban ke SIM card baru melalui rekayasa sosial ke operator seluler, lalu meminta kode OTP WhatsApp via SMS/Panggilan. Tanpa PIN Verifikasi Dua Langkah, akun dapat diambil alih sepenuhnya.</li>
+    <li><strong>Cloud Backup Extraction:</strong> Penyerang yang mendapatkan akses ke akun Google/iCloud korban dapat mengunduh berkas basis data <code>msgstore.db.crypt14</code>. Tanpa Password E2EE Backup, berkas ini dapat didekripsi menggunakan tools otomasi.</li>
+    <li><strong>P2P IP Reconnaissance:</strong> Saat melakukan panggilan WhatsApp standar, koneksi terjalin secara P2P untuk mengurangi latensi server. Penyerang dapat menganalisis paket data (Wireshark/network sniffer) untuk mendapatkan IP publik korban.</li>
+  </ul>
+
+  <h2>📊 Tabel Perbandingan & Evaluasi Teknis</h2>
+  <div class="overflow-x-auto border border-border rounded-xl my-6">
+    <table class="w-full text-left text-sm">
+      <thead class="bg-muted/60 text-foreground border-b border-border">
+        <tr>
+          <th class="p-3 font-semibold">Fitur Keamanan</th>
+          <th class="p-3 font-semibold">Mekanisme Kerja Teknis</th>
+          <th class="p-3 font-semibold">Risiko Tanpa Fitur</th>
+          <th class="p-3 font-semibold">Tingkat Proteksi</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-border">
+        <tr>
+          <td class="p-3 font-medium">Verifikasi 2 Langkah</td>
+          <td class="p-3">PIN 6-digit kustom + Hash server-side</td>
+          <td class="p-3">Pengambilalihan akun via SIM Swap / OTP Leak</td>
+          <td class="p-3 text-emerald-600 font-semibold">Kritis (Tinggi)</td>
+        </tr>
+        <tr>
+          <td class="p-3 font-medium">Encrypted Cloud Backup</td>
+          <td class="p-3">AES-256-GCM dengan Kunci 64-digit / Password</td>
+          <td class="p-3">Ekstraksi pesan via Google Drive / iCloud Hack</td>
+          <td class="p-3 text-emerald-600 font-semibold">Kritis (Tinggi)</td>
+        </tr>
+        <tr>
+          <td class="p-3 font-medium">Protect IP Address in Calls</td>
+          <td class="p-3">Relay trafik panggilan via Server WhatsApp (TURN)</td>
+          <td class="p-3">Kebocoran Alamat IP & Lokasi fisik korban</td>
+          <td class="p-3 text-blue-600 font-semibold">Sedang - Tinggi</td>
+        </tr>
+        <tr>
+          <td class="p-3 font-medium">Chat Lock & Biometric</td>
+          <td class="p-3">Enkripsi vault lokal via hardware Enclave/Keystore</td>
+          <td class="p-3">Akses fisik langsung oleh pihak tak berwenang</td>
+          <td class="p-3 text-blue-600 font-semibold">Sedang</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>⚙️ Panduan Solusi & Mitigasi Langkah-demi-Langkah</h2>
+  <p>Lakukan pengerasan keamanan (hardening) pada aplikasi WhatsApp Anda mengikuti langkah teknis berikut:</p>
+
+  <h3>1. Aktifkan Enkripsi End-to-End pada Cadangan Chat</h3>
+  <p>Langkah ini memastikan cadangan pesan Anda terenkripsi AES-256 sebelum diunggah ke cloud storage.</p>
+  <ol class="list-decimal pl-6 space-y-2">
+    <li>Buka <strong>Pengaturan (Settings)</strong> &gt; <strong>Chat</strong> &gt; <strong>Cadangan Chat (Chat Backup)</strong>.</li>
+    <li>Pilih <strong>End-to-end Encrypted Backup</strong>.</li>
+    <li>Ketuk <strong>Nyalakan (Turn On)</strong>, lalu buat kata sandi atau gunakan kunci enkripsi 64-digit. Simpan kunci ini di Password Manager.</li>
+  </ol>
+
+  <h3>2. Konfigurasi Verifikasi Dua Langkah (Two-Step Verification)</h3>
+  <ol class="list-decimal pl-6 space-y-2">
+    <li>Buka <strong>Pengaturan</strong> &gt; <strong>Akun (Account)</strong> &gt; <strong>Verifikasi Dua Langkah</strong>.</li>
+    <li>Ketuk <strong>Nyalakan</strong>, masukkan 6 digit PIN acak yang kuat.</li>
+    <li>Tambahkan alamat email pemulihan yang valid untuk mencegah terkunci permanen.</li>
+  </ol>
+
+  <h3>3. Aktifkan Pelindung Alamat IP Saat Panggilan</h3>
+  <ol class="list-decimal pl-6 space-y-2">
+    <li>Buka <strong>Pengaturan</strong> &gt; <strong>Privasi (Privacy)</strong> &gt; <strong>Lanjutan (Advanced)</strong>.</li>
+    <li>Aktifkan sakelar <strong>Lindungi Alamat IP dalam Panggilan (Protect IP address in calls)</strong>.</li>
+  </ol>
+
+  <h3>4. Kunci Chat Sensitif (Chat Lock) dengan Kode Rahasia</h3>
+  <ol class="list-decimal pl-6 space-y-2">
+    <li>Buka profil kontak/grup yang ingin diamankan.</li>
+    <li>Gulir ke bawah dan aktifkan <strong>Kunci Chat (Chat Lock)</strong> dengan biometrik.</li>
+    <li>Masuk ke folder <strong>Chat yang Dikunci</strong>, buka Pengaturan Chat Lock, lalu buat <strong>Kode Rahasia (Secret Code)</strong> untuk menyembunyikan folder tersebut dari bilah pencarian utama.</li>
+  </ol>
+
+  <div class="checklist-box p-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 shadow-xs my-8">
+    <h3 class="text-lg font-bold text-emerald-600 dark:text-emerald-400 mb-4 flex items-center gap-2">
+      🛡️ Checklist Perlindungan &amp; Best Practice
+    </h3>
+    <ul class="space-y-2 text-sm text-foreground">
+      <li class="flex items-start gap-2">
+        <span class="text-emerald-500">✓</span> PIN Verifikasi Dua Langkah telah aktif dan disatukan dengan email recovery valid.
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="text-emerald-500">✓</span> Cadangan Cloud (Google Drive/iCloud) telah menggunakan Enkripsi End-to-End.
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="text-emerald-500">✓</span> Opsi "Protect IP Address in Calls" dalam kondisi ON.
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="text-emerald-500">✓</span> Pembungkaman nomor tidak dikenal (Silence Unknown Callers) diaktifkan.
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="text-emerald-500">✓</span> Perangkat tertaut (WhatsApp Web/Desktop) diperiksa dan dikaji ulang secara berkala.
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="text-emerald-500">✓</span> Penguncian aplikasi berbasis biometrik lokal aktif pada sistem operasi.
+      </li>
+    </ul>
+  </div>
+
+  <h2>❓ Pertanyaan yang Sering Diajukan (FAQ)</h2>
+  <div class="space-y-4">
+    <div class="border border-border rounded-xl p-4">
+      <h3 class="font-semibold text-base mb-2">Apakah mengaktifkan 'Protect IP Address in Calls' menurunkan kualitas panggilan?</h3>
+      <p class="text-sm text-muted-foreground">
+        Ya, mungkin ada sedikit peningkatan latensi karena lalu lintas audio/video dialihkan melalui server relay WhatsApp alih-alih koneksi langsung P2P. Namun, dampaknya minimal pada koneksi internet modern.
+      </p>
+    </div>
+    <div class="border border-border rounded-xl p-4">
+      <h3 class="font-semibold text-base mb-2">Apa yang terjadi jika saya lupa Password Encrypted Backup?</h3>
+      <p class="text-sm text-muted-foreground">
+        WhatsApp tidak menyimpan kunci enkripsi Anda. Jika Anda lupa kata sandi atau kunci 64-digit dan kehilangan perangkat, data cadangan tersebut tidak dapat dipulihkan sama sekali.
+      </p>
+    </div>
+    <div class="border border-border rounded-xl p-4">
+      <h3 class="font-semibold text-base mb-2">Apakah Verifikasi Dua Langkah sama dengan OTP SMS?</h3>
+      <p class="text-sm text-muted-foreground">
+        Tidak. OTP SMS adalah otentikasi faktor pertama saat pendaftaran nomor. Verifikasi Dua Langkah adalah PIN statis tambahan (Faktor Kedua) yang wajib dimasukkan setiap kali nomor Anda didaftarkan ulang pada perangkat baru.
+      </p>
+    </div>
+    <div class="border border-border rounded-xl p-4">
+      <h3 class="font-semibold text-base mb-2">Bagaimana cara mengetahui jika ada perangkat lain yang mengintai WhatsApp saya?</h3>
+      <p class="text-sm text-muted-foreground">
+        Periksa menu <strong>Pengaturan</strong> &gt; <strong>Perangkat Tertaut (Linked Devices)</strong>. Jika ada sesi aktif dari browser atau lokasi yang tidak Anda kenali, segera ketuk sesi tersebut dan pilih <strong>Keluar (Log Out)</strong>.
+      </p>
+    </div>
+  </div>
+
+  <div class="author-attribution-card p-6 rounded-2xl border border-border/60 bg-muted/20 my-8">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+      <div>
+        <h3 class="text-lg font-bold text-foreground">Eka Syarif Maulana, S.Kom</h3>
+        <p class="text-sm text-muted-foreground font-medium">Senior Fullstack Web &amp; Mobile Developer &amp; AI Systems Engineer</p>
+        <p class="text-xs text-muted-foreground mt-2 leading-relaxed">
+          Lulusan Sarjana Komputer Universitas Muhammadiyah Sumatera Utara (UMSU). Berfokus pada pengembangan arsitektur aplikasi skala besar, keamanan sistem siber, dan integrasi kecerdasan buatan berbasis infrastruktur enterprise.
+        </p>
+      </div>
+    </div>
+  </div>
 </div>

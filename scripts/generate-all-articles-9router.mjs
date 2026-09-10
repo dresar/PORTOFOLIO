@@ -3,7 +3,7 @@ import path from 'path';
 
 const API_BASE = 'https://9router.serverinka.cloud/v1';
 const API_KEY = 'sk-7016dd129191d903-u8emvi-c0b721b9';
-const MODELS = ['gemini/gemini-3.6-flash', 'cbai/deepseek-v4-flash', 'kr/deepseek-3.2'];
+const MODELS = ['gemini/gemini-3.6-flash'];
 
 const blogPostsPath = path.resolve('src/data/blogPosts.json');
 const articlesDir = path.resolve('public/uploads/articles');
@@ -25,6 +25,7 @@ async function call9Router(prompt, modelIdx = 0) {
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.7,
     }),
+    signal: AbortSignal.timeout(90000),
   });
 
   if (!res.ok) {
@@ -43,6 +44,14 @@ async function call9Router(prompt, modelIdx = 0) {
       } catch {}
     }
   }
+
+  if (!full) {
+    try {
+      const json = JSON.parse(text);
+      full = json.choices?.[0]?.message?.content || '';
+    } catch {}
+  }
+
   return full.trim();
 }
 
@@ -60,18 +69,20 @@ function cleanHtml(raw) {
 }
 
 async function generateArticleWithRetry(post, index, total) {
-  // Check if post already has rich deep content (> 7000 chars and no Founder Inka)
-  if (
+  // Check if post already has rich deep content without any inline slide images
+  const isClean = 
     post.content && 
-    post.content.length > 7000 && 
-    post.content.includes('Eka Syarif Maulana, S.Kom') && 
-    !post.content.includes('Founder Inka')
-  ) {
-    console.log(`⏩ [${index + 1}/${total}] ${post.slug} already has rich content (${post.content.length} chars). Skipping.`);
+    post.content.includes('blog-rich-content') &&
+    !post.content.includes('slide-card') &&
+    !post.content.includes('<img') &&
+    post.content.includes('Eka Syarif Maulana, S.Kom');
+
+  if (isClean) {
+    console.log(`⏩ [${index + 1}/${total}] ${post.slug} already clean and rich. Skipping.`);
     return true;
   }
 
-  console.log(`⏳ [${index + 1}/${total}] Generating: ${post.slug} (${post.title})...`);
+  console.log(`⏳ [${index + 1}/${total}] Generating clean rich content for: ${post.slug} (${post.title})...`);
 
   const prompt = `Anda adalah Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer, Sarjana Komputer UMSU).
 Tuliskan artikel edukasi teknologi dan keamanan siber yang SUPER LENGKAP, MENDALAM, SANGAT DETAIL, DAN CANTIK dalam format HTML semantik (langsung dibuka dengan <div class="blog-rich-content space-y-8"> tanpa wrapper html/head/body).
@@ -107,11 +118,11 @@ ATURAN WAJIB & STRICT:
       - Tentang Penulis: Eka Syarif Maulana, S.Kom | Senior Fullstack Web & Mobile Developer & AI Systems Engineer lulusan Sarjana Komputer UMSU.
 4. Output HANYA kode HTML mentah di dalam <div class="blog-rich-content space-y-8">...</div> tanpa markdown backticks \`\`\`html.`;
 
-  for (let attempt = 0; attempt < 3; attempt++) {
+  for (let attempt = 0; attempt < 4; attempt++) {
     try {
       if (attempt > 0) {
-        console.log(`🔄 Retry attempt ${attempt + 1} for ${post.slug}...`);
-        await sleep(2500 * attempt);
+        console.log(`🔄 Retry attempt ${attempt + 1} for ${post.slug} (waiting ${6000 * attempt}ms)...`);
+        await sleep(6000 * attempt);
       }
 
       const raw = await call9Router(prompt, attempt);
@@ -167,17 +178,16 @@ async function main() {
   console.log(`Running resilient sequential generation for ${rawPosts.length} articles...`);
 
   for (let i = 0; i < rawPosts.length; i++) {
-    const post = rawPosts[i];
-    await generateArticleWithRetry(post, i, rawPosts.length);
-
-    // Save checkpoint after each article
-    fs.writeFileSync(blogPostsPath, JSON.stringify(rawPosts, null, 2), 'utf8');
-
-    // Politeness delay
-    await sleep(1200);
+    const ok = await generateArticleWithRetry(rawPosts[i], i, rawPosts.length);
+    if (ok) {
+      // Incremental save so no progress is ever lost
+      fs.writeFileSync(blogPostsPath, JSON.stringify(rawPosts, null, 2), 'utf8');
+    }
+    await sleep(4000);
   }
 
-  console.log('🎉 All 20 articles process finished!');
+  fs.writeFileSync(blogPostsPath, JSON.stringify(rawPosts, null, 2), 'utf8');
+  console.log('🎉 All 20 articles process finished and saved to blogPosts.json!');
 }
 
 main();

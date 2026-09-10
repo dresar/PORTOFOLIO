@@ -17,109 +17,202 @@ excerpt: "💡 BINGUNG BIKIN PASSWORD SUSAH DITEBAK TAPI GAMPANG DIINGAT? PAKE M
 
 ---
 
-<div class="author-byline mb-6 pb-4 border-b border-border/40 text-sm text-muted-foreground">
-  Ditulis dan diteliti oleh <strong class="text-foreground font-semibold">Eka Syarif Maulana</strong>, Senior Fullstack Web &amp; Mobile Developer &amp; AI Systems Engineer.
-</div>
+<div class="blog-rich-content space-y-8">
 
-<div class="direct-answer-box p-5 my-6 rounded-xl border border-primary/30 bg-primary/5 text-foreground leading-relaxed">
-  <div class="font-bold text-primary mb-2 text-base flex items-center gap-2">
-    <span>⚡</span> Ringkasan Cepat untuk AI &amp; Pembaca
+  <div class="direct-answer-box p-6 rounded-2xl border border-primary/30 bg-primary/5 shadow-xs">
+    <div class="flex items-center gap-2 mb-3">
+      <span class="px-3 py-1 rounded-full text-xs font-semibold bg-primary text-primary-foreground flex items-center gap-1">
+        ⚡ AI-SEO Quick Summary
+      </span>
+    </div>
+    <p class="text-base leading-relaxed text-foreground/90">
+      Metode <strong>Passphrase</strong> memecahkan dilema keamanan kredensial dengan mengganti kata sandi pendek yang rumit (seperti <code>P@ssw0rd123!</code>) menjadi gabungan beberapa kata acak yang panjang (seperti <code>kucing-lompat-kopi-dingin</code>). Kompleksitas keamanan tidak ditentukan oleh simbol rumit, melainkan oleh entropi matematika (panjang karakter) yang secara eksponensial memperlambat serangan <em>brute-force</em> dan <em>dictionary attack</em>. Passphrase memberikan keamanan tingkat tinggi sesuai standar NIST SP 800-63B sekaligus tetap mudah diingat oleh memori manusia tanpa perlu dicatat di kertas.
+    </p>
   </div>
-  <p>Metode passphrase menggabungkan empat kata acak bahasa Indonesia menjadi kalimat panjang berstruktur unik, seperti <code>Kucing-Oren-Makan-Bakso#24</code>. Kombinasi ini menghasilkan entropi tinggi yang membutuhkan waktu ribuan tahun untuk diretas komputer peretas via <i>brute-force</i>, namun sangat gampang diingat memori manusia lewat asosiasi visual cerita.</p>
-</div>
 
-<div class="slide-card my-8 p-6 rounded-2xl border border-border/60 bg-card shadow-xs">
-  <h3 class="text-xl font-bold text-foreground mb-3">Slide 1: Dilema Password Pendek vs Karakter Acak</h3>
-  <div class="overflow-hidden rounded-xl my-6 border border-border/40 shadow-sm bg-muted/20 max-w-[420px] mx-auto">
-    <img src="https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/18-password-kuat/18-password-kuat_01.png" alt="Slide 1 - Dilema Password Pendek vs Karakter Acak" loading="lazy" class="w-full max-h-[480px] object-contain mx-auto" />
-  </div>
-  <p class="text-muted-foreground leading-relaxed">Password pendek sangat gampang ditebak oleh skrip otomatis peretas. Sebaliknya, password rumit seperti <code>x7#Q9!</code> sangat sulit diingat oleh otak manusia sehingga orang cenderung mencatatnya di tempat yang tidak aman atau menggunakan fitur pemicu reset password berulang kali.</p>
-</div>
-
-<div class="slide-card my-8 p-6 rounded-2xl border border-border/60 bg-card shadow-xs">
-  <h3 class="text-xl font-bold text-foreground mb-3">Slide 2: Solusi Cerdas: Metode Passphrase</h3>
-  <div class="overflow-hidden rounded-xl my-6 border border-border/40 shadow-sm bg-muted/20 max-w-[420px] mx-auto">
-    <img src="https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/18-password-kuat/18-password-kuat_02.png" alt="Slide 2 - Solusi Cerdas: Metode Passphrase" loading="lazy" class="w-full max-h-[480px] object-contain mx-auto" />
-  </div>
-  <p class="text-muted-foreground leading-relaxed">Passphrase adalah teknik keamanan berbasis gabungan 4 kata acak bahasa Indonesia yang membentuk sebuah kalimat cerita. Dibandingkan mengandalkan simbol rumit yang pendek, penambahan panjang karakter memberikan perlindungan kriptografi jauh lebih kuat.</p>
-</div>
-
-<div class="slide-card my-8 p-6 rounded-2xl border border-border/60 bg-card shadow-xs">
-  <h3 class="text-xl font-bold text-foreground mb-3">Slide 3: Contoh Penerapan Passphrase Idealnya</h3>
-  <div class="overflow-hidden rounded-xl my-6 border border-border/40 shadow-sm bg-muted/20 max-w-[420px] mx-auto">
-    <img src="https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/18-password-kuat/18-password-kuat_03.png" alt="Slide 3 - Contoh Penerapan Passphrase Idealnya" loading="lazy" class="w-full max-h-[480px] object-contain mx-auto" />
-  </div>
-  <p class="text-muted-foreground leading-relaxed">Gunakan susunan seperti <code>Kucing-Oren-Makan-Bakso#24</code>. String ini memiliki panjang 26 karakter, menggabungkan huruf kapital, tanda hubung, simbol khusus, dan angka di akhir untuk memenuhi seluruh standar regulasi keamanan sistem modern.</p>
-</div>
-
-<div class="slide-card my-8 p-6 rounded-2xl border border-border/60 bg-card shadow-xs">
-  <h3 class="text-xl font-bold text-foreground mb-3">Slide 4: Mengapa Passphrase Super Kuat Secara Matematik?</h3>
-  <div class="overflow-hidden rounded-xl my-6 border border-border/40 shadow-sm bg-muted/20 max-w-[420px] mx-auto">
-    <img src="https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/18-password-kuat/18-password-kuat_04.png" alt="Slide 4 - Mengapa Passphrase Super Kuat Secara Matematik?" loading="lazy" class="w-full max-h-[480px] object-contain mx-auto" />
-  </div>
-  <p class="text-muted-foreground leading-relaxed">Komputer peretas menggunakan serangan <i>brute-force</i> yang menguji kombinasi per detik. Setiap penambahan satu karakter meningkatkan ruang pencarian secara eksponensial. Kalimat sepanjang 26 karakter membutuhkan waktu hingga ribuan tahun untuk dipecahkan superkomputer.</p>
-</div>
-
-<div class="slide-card my-8 p-6 rounded-2xl border border-border/60 bg-card shadow-xs">
-  <h3 class="text-xl font-bold text-foreground mb-3">Slide 5: Kemudahan Retensi Memori Manusia</h3>
-  <div class="overflow-hidden rounded-xl my-6 border border-border/40 shadow-sm bg-muted/20 max-w-[420px] mx-auto">
-    <img src="https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/18-password-kuat/18-password-kuat_05.png" alt="Slide 5 - Kemudahan Retensi Memori Manusia" loading="lazy" class="w-full max-h-[480px] object-contain mx-auto" />
-  </div>
-  <p class="text-muted-foreground leading-relaxed">Otak manusia bekerja berdasarkan imajinasi spasial dan narasi visual. Mengingat adegan unik "kucing oren sedang makan bakso" jauh lebih mudah dan bertahan lama dalam memori jangka panjang dibanding menghafal acak urutan kode unik tanpa arti.</p>
-</div>
-
-<div class="slide-card my-8 p-6 rounded-2xl border border-border/60 bg-card shadow-xs">
-  <h3 class="text-xl font-bold text-foreground mb-3">Slide 6: Rangkuman &amp; Aksi Sekarang</h3>
-  <div class="overflow-hidden rounded-xl my-6 border border-border/40 shadow-sm bg-muted/20 max-w-[420px] mx-auto">
-    <img src="https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/18-password-kuat/18-password-kuat_06.png" alt="Slide 6 - Rangkuman &amp; Aksi Sekarang" loading="lazy" class="w-full max-h-[480px] object-contain mx-auto" />
-  </div>
-  <p class="text-muted-foreground leading-relaxed">Keamanan digital tidak harus membingungkan. Terapkan metode passphrase pada akun utama seperti email, perbankan, dan media sosial Anda sekarang juga. Simpan panduan ini dan bagikan ke rekan terdekat demi keamanan bersama.</p>
-</div>
-
-<section class="my-8">
-  <h2 class="text-2xl font-bold text-foreground mb-4">🔬 Analisis Teknis &amp; Fakta Lapangan</h2>
-  <p class="text-muted-foreground leading-relaxed mb-4">
-    Kekuatan kriptografik sebuah kata sandi diukur berdasarkan statistik entropi (satuan bit). Password acak 8 karakter standar seperti <code>x7#Q9!aA</code> hanya memiliki sekitar 45-50 bit entropi. Mesin peretas modern dengan GPU Nvidia RTX cluster mampu memproses miliaran kombinasi per detik, sehingga password 8 karakter dapat dibobol dalam hitungan menit hingga jam via serangan <i>dictionary attack</i> yang disesuaikan.
+  <h2>🔬 Analisis Mendalam & Latar Belakang Masalah</h2>
+  <p>
+    Kelemahan utama autentikasi berbasis kata sandi tradisional terletak pada keterbatasan kapasitas memori kerja manusia (<em>working memory Limit</em>) yang berbenturan dengan matematika ruang pencarian kredensial (<em>keyspace entropy</em>). Pada tingkat protokol aplikasi (Layer 7 OSI), mekanisme verifikasi identitas bergantung pada hash kriptografi seperti bcrypt, Argon2, atau PBKDF2. Ketika pengguna dipaksa membuat kata sandi dengan substitusi karakter khusus (<em>leetspeak</em> seperti 'a' jadi '@'), mereka cenderung menggunakan pola terprediksi.
   </p>
-  <p class="text-muted-foreground leading-relaxed">
-    Sebaliknya, passphrase sepanjang 26 karakter dengan kombinasi kata acak dan karakter khusus menghasilkan nilai entropi di atas 100 bit. Secara teknis, ini memperluas ruang pencarian menjadi $2^{100}$ kemungkinan. Berdasarkan investigasi lapangan insiden keamanan, kebocoran akun lebih sering terjadi akibat reutilisasi password (<i>credential stuffing</i>) ketimbang tebakan langsung pada passphrase panjang.
+  <p>
+    Kekuatan matematis sebuah kredensial dihitung menggunakan rumus entropi Shannon:
+    <br>
+    <code>E = log2(R^L)</code>
+    <br>
+    Di mana <code>R</code> adalah jumlah himpunan karakter (pool size) dan <code>L</code> adalah panjang karakter (length).
+    Menambah panjang karakter (<code>L</code>) memberikan dampak eksponensial jauh lebih besar terhadap waktu komputasi peretasan dibandingkan hanya memperbesar himpunan karakter (<code>R</code>).
   </p>
-</section>
 
-<div class="checklist-box my-8 p-5 rounded-xl border border-emerald-500/30 bg-emerald-500/5">
-  <h3 class="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-3">🛡️ Checklist Langkah Praktis</h3>
-  <ul class="space-y-2 list-disc list-inside text-muted-foreground">
-    <li>Pilih 4 kata acak bahasa Indonesia yang tidak saling berhubungan secara langsung.</li>
-    <li>Gabungkan kata-kata tersebut menggunakan karakter pemisah seperti tanda hubung (<code>-</code>) atau titik (<code>.</code>).</li>
-    <li>Tambahkan minimal satu huruf kapital, satu angka acak, dan satu simbol unik.</li>
-    <li>Gunakan passphrase yang berbeda untuk setiap akun kritikal (Email utama, M-Banking, Media Sosial).</li>
-    <li>Aktifkan Autentikasi Dua Faktor (2FA) berbasis aplikasi authenticator sebagai lapisan pertahanan ganda.</li>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+    <div class="bg-card border border-border/60 p-5 rounded-xl">
+      <h3 class="text-lg font-bold mb-2 flex items-center gap-2">
+        🔑 Anatomi Password Pendek Rumit
+      </h3>
+      <p class="text-sm text-muted-foreground">
+        Contoh: <code>Tr0p!k4#8</code> (9 karakter). Himpunan karakter R ≈ 94. Entropi = 9 * log2(94) ≈ 59. North-side GPU cluster (RTX 4090 x8) dapat memproses ratusan miliar hash per detik, menembus kata sandi ini dalam hitungan jam menggunakan teknik <em>hybrid dictionary-mask attack</em>.
+      </p>
+    </div>
+    <div class="bg-card border border-border/60 p-5 rounded-xl">
+      <h3 class="text-lg font-bold mb-2 flex items-center gap-2">
+        🛡️ Anatomi Passphrase Panjang Acak
+      </h3>
+      <p class="text-sm text-muted-foreground">
+        Contoh: <code>domba-kuning-lari-pantai</code> (24 karakter). Menggunakan kata kamus EFF (7.776 kata). Entropi = 4 * log2(7776) ≈ 51.6 bit entropi kata acak murni, setara dengan entropi karakter jauh lebih tinggi tanpa pola penggantian yang bisa ditebak parser Hashcat. Waktu retas mencapai ribuan tahun.
+      </p>
+    </div>
+  </div>
+
+  <h2>🛡️ Anatomi Vektor Serangan / Masalah di Lapangan</h2>
+  <p>
+    Sistem keamanan modern menghadapi tiga vektor serangan kredensial utama di tingkat infrastruktur dan protokol:
+  </p>
+  <ul class="list-disc pl-6 space-y-2">
+    <li>
+      <strong>Credential Stuffing & Hashcat Rule-based Attacks:</strong> Penyerang tidak menguji kombinasi acak murni. Mereka menggunakan aturan transformasi (rule files) yang memetakan pola umum manusia, seperti mengubah <code>password</code> menjadi <code>P@ssw0rd2024!</code>. Kata sandi rumit pendek langsung hancur oleh aturan ini.
+    </li>
+  <li>
+      <strong>Offline Hash Cracking (Bocornya Database):</strong> Jika database terkompromi dan hash tersimpan menggunakan algoritma cepat (MD5/SHA256 tanpa salt atau work-factor rendah), peretas menjalankan kalkulasi GPU secara paralel tanpa batasan rate-limiting HTTP.
+    </li>
+    <li>
+      <strong>Human Cognitive Fatigue:</strong> Aturan pergantian kata sandi 90 hari membuat pengguna membuat pola serial (misal: <code>Januari2024!</code>, <code>Februari2024!</code>), menciptakan pola prediktif yang mudah dieksploitasi melalui OSINT dan analisis statistik.
+    </li>
   </ul>
-</div>
 
-<section class="my-8">
-  <h2 class="text-2xl font-bold text-foreground mb-4">❓ Pertanyaan yang Sering Diajukan (FAQ)</h2>
+  <h2>📊 Tabel Perbandingan & Evaluasi Teknis</h2>
+  <div class="border border-border rounded-xl overflow-x-auto my-6">
+    <table class="w-full text-left text-sm">
+      <thead class="bg-muted/60 border-b border-border">
+        <tr>
+          <th class="p-3 font-semibold">Metrik Evaluasi</th>
+          <th class="p-3 font-semibold">Password Kompleks Pendek (8-10 Char)</th>
+          <th class="p-3 font-semibold">Passphrase Acak (4-5 Kata)</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-border">
+        <tr>
+          <td class="p-3 font-medium">Panjang Karakter (L)</td>
+          <td class="p-3">8 - 10 Karakter</td>
+          <td class="p-3 font-semibold text-emerald-600">20 - 30 Karakter</td>
+        </tr>
+        <tr>
+          <td class="p-3 font-medium">Estimasi Entropi Realistis</td>
+          <td class="p-3">~35 - 45 Bits (Terdegradasi oleh pola)</td>
+          <td class="p-3 font-semibold text-emerald-600">~60 - 80 Bits (Sangat Tinggi)</td>
+        </tr>
+        <tr>
+          <td class="p-3 font-medium">Ketahanan GPU Brute-Force</td>
+          <td class="p-3 text-red-500 font-medium">Rendah (Menit - Jam)</td>
+          <td class="p-3 text-emerald-600 font-medium">Sangat Tinggi (Abad/Ribuan Tahun)</td>
+        </tr>
+        <tr>
+          <td class="p-3 font-medium">Memorabilitas Manusia</td>
+          <td class="p-3 text-red-500">Buruk (Sering Lupa / Dicatat)</td>
+          <td class="p-3 text-emerald-600">Sangat Tinggi (Visualisasikan cerita)</td>
+        </tr>
+        <tr>
+          <td class="p-3 font-medium">Sesuai Standar NIST 800-63B</td>
+          <td class="p-3 text-red-500">Tidak Direkomendasikan</td>
+          <td class="p-3 text-emerald-600">Sangat Direkomendasikan</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>⚙️ Panduan Solusi & Mitigasi Langkah-demi-Langkah</h2>
+  <p>
+    Implementasikan pembuatan Passphrase aman menggunakan metode standar industri <strong>DiceWare</strong>:
+  </p>
+
+  <ol class="list-decimal pl-6 space-y-4">
+    <li>
+      <strong>Gunakan Dadu Fisik atau PRNG Terenkripsi:</strong> Kocok dadu 6 sisi sebanyak 5 kali untuk mendapatkan kode 5-digit (misal: <code>2-4-1-6-3</code>). Jangan gunakan imajinasi kepala karena otak manusia buruk dalam menghasilkan keacakan sejati.
+    </li>
+    <li>
+      <strong>Cocokkan dengan Daftar Kata EFF (Electronic Frontier Foundation):</strong> Cari angka <code>24163</code> di Wordlist Resmi EFF untuk mendapatkan satu kata acak.
+    </li>
+    <li>
+      <strong>Ulangi Proses Minimal 4 hingga 5 Kali:</strong> Gabungkan kata-kata tersebut menggunakan pemisah berupa tanda hubung (<code>-</code>) atau spasi.
+    </li>
+    <li>
+      <strong>Gunakan Password Manager untuk Penyimpanan Kredensial:</strong> Simpan Passphrase ke dalam aplikasi Password Manager terenkripsi end-to-end (AES-256-GCM / Argon2id).
+    </li>
+  </ol>
+
+  <p class="mt-4 font-semibold">Contoh Script Python Sederhana Generate Passphrase Berdasar Entropi Kriptografis (Cryptographically Secure PRNG):</p>
+  <pre class="bg-muted p-4 rounded-xl overflow-x-auto text-xs font-mono border border-border"><code>import secrets
+
+# Contoh daftar kata terisolasi
+wordlist = ["kucing", "sepeda", "awan", "kopi", "kertas", "hujan", "pantai", "domba", "roket", "pohon"]
+
+def generate_passphrase(word_count=4):
+    # Menggunakan secrets module (CSPRNG) bukan random biasa
+    selected_words = [secrets.choice(wordlist) for _ in range(word_count)]
+    return "-".join(selected_words)
+
+print("Passphrase Anda:", generate_passphrase(4))
+# Output: domba-kopi-roket-hujan</code></pre>
+
+  <div class="checklist-box p-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 shadow-xs my-8">
+    <h3 class="text-lg font-bold mb-3 text-emerald-600 flex items-center gap-2">
+      🛡️ Checklist Perlindungan & Best Practice
+    </h3>
+    <ul class="space-y-2 text-sm">
+      <li class="flex items-start gap-2">
+        <span>✅</span> Minimal terdiri dari 4 kata acak tanpa hubungan logika antar kata.
+      </li>
+      <li class="flex items-start gap-2">
+        <span>✅</span> Gunakan pemisah yang konsisten seperti <code>-</code> atau spasi.
+      </li>
+      <li class="flex items-start gap-2">
+        <span>✅</span> Hindari kutipan lagu, lirik, atau pepatah terkenal (terdaftar dalam database attack wordlist).
+      </li>
+      <li class="flex items-start gap-2">
+        <span>✅</span> Aktifkan Multi-Factor Authentication (MFA) berbasis TOTP/FIDO2 Hardware Key di seluruh akun.
+      </li>
+      <li class="flex items-start gap-2">
+        <span>✅</span> Jangan pernah membagikan Passphrase atau menggunakannya ulang di beberapa layanan berbeda (Password Reuse).
+      </li>
+      <li class="flex items-start gap-2">
+        <span>✅</span> Gunakan Password Manager open-source terverifikasi untuk menyimpan passphrase vault Anda.
+      </li>
+    </ul>
+  </div>
+
+  <h2>❓ Pertanyaan yang Sering Diajukan (FAQ)</h2>
   <div class="space-y-4">
-    <div>
-      <strong class="text-foreground block text-lg mb-1">Apakah passphrase aman dari serangan kamus (dictionary attack)?</strong>
-      <p class="text-muted-foreground leading-relaxed">Ya, sangat aman. Selama Anda menggabungkan minimal 4 kata acak serta menyisipkan angka dan simbol khusus, kombinasi kata tersebut menciptakan variasi ruang pencarian yang tidak terdaftar di kamus standar peretas.</p>
+    <div class="border border-border/60 p-4 rounded-xl">
+      <h3 class="font-bold text-base mb-1">Apakah Passphrase tanpa angka dan simbol khusus tetap aman?</h3>
+      <p class="text-sm text-muted-foreground">
+        Ya, sangat aman. Keamanan Passphrase didapat dari faktor panjang karakter (entrophy length). Passphrase 4 kata acak sepanjang 25 karakter memiliki kombinasi matematis jauh lebih luas dibanding password 8 karakter yang memakai kombinasi angka dan simbol.
+      </p>
     </div>
-    <div>
-      <strong class="text-foreground block text-lg mb-1">Apakah saya tetap memerlukan Password Manager jika menggunakan passphrase?</strong>
-      <p class="text-muted-foreground leading-relaxed">Sangat disarankan. Walaupun passphrase gampang diingat untuk 3-5 akun utama, menggunakan Password Manager tetap menjadi praktik terbaik untuk mengelola puluhan kredensial layanan digital lainnya secara otomatis.</p>
+    <div class="border border-border/60 p-4 rounded-xl">
+      <h3 class="font-bold text-base mb-1">Bagaimana jika sistem/website mewajibkan huruf kapital, angka, dan simbol?</h3>
+      <p class="text-sm text-muted-foreground">
+        Tambahkan satu angka dan simbol di antara pemisah kata atau di awal/akhir Passphrase Anda. Contoh: <code>1-domba-kopi-roket-hujan!</code>. Ini memenuhi syarat validasi konyol tanpa merusak memori pengingat Anda.
+      </p>
     </div>
-    <div>
-      <strong class="text-foreground block text-lg mb-1">Berapa panjang minimal passphrase yang direkomendasikan?</strong>
-      <p class="text-muted-foreground leading-relaxed">Panjang minimal yang direkomendasikan adalah 16 hingga 20 karakter. Semakin panjang passphrase yang digunakan, secara matematis semakin eksponensial ketahanannya terhadap metode peretasan otomatis.</p>
+    <div class="border border-border/60 p-4 rounded-xl">
+      <h3 class="font-bold text-base mb-1">Apakah boleh menggunakan kalimat atau pepatah terkenal?</h3>
+      <p class="text-sm text-muted-foreground">
+        Tidak boleh. Penyerang menggunakan daftar kata dari buku, lirik lagu, dan pepatah populer dalam serangan kamus (Dictionary Attack). Kata-kata dalam Passphrase harus dipilih secara acak murni tanpa keterkaitan makna.
+      </p>
+    </div>
+    <div class="border border-border/60 p-4 rounded-xl">
+      <h3 class="font-bold text-base mb-1">Apakah Passphrase masih perlu diganti secara berkala setiap 90 hari?</h3>
+      <p class="text-sm text-muted-foreground">
+        Menurut standar NIST SP 800-63B terbaru, pergantian kredensial secara berkala tidak lagi direkomendasikan kecuali ada indikasi kebocoran data (breach). Pergantian rutin justru menurunkan kualitas keamanan karena pengguna cenderung membuat pola baru yang mudah ditebak.
+      </p>
     </div>
   </div>
-</section>
 
-<div class="about-author-box p-6 my-10 rounded-2xl border border-border/60 bg-card shadow-sm">
-  <h3 class="text-lg font-bold text-foreground mb-2">👤 Tentang Penulis: Eka Syarif Maulana</h3>
-  <p class="text-sm text-muted-foreground leading-relaxed">
-    Eka Syarif Maulana adalah Senior Fullstack Developer & AI Systems Engineer (@inka.tech) sekaligus Senior Fullstack Developer dan AI Engineer. Berpengalaman dalam arsitektur software modern, kecerdasan buatan, dan keamanan digital praktis untuk jutaan pengguna media sosial. Ikuti update edukasi teknologi harian di TikTok <a href="https://www.tiktok.com/@inka.tech" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline font-semibold">@inka.tech</a>.
-  </p>
+  <div class="author-attribution-card p-6 rounded-2xl border border-border/60 bg-muted/20 my-8 flex items-center gap-4">
+    <div>
+      <h3 class="text-base font-bold">Tentang Penulis</h3>
+      <p class="text-sm text-muted-foreground mt-1">
+        <strong>Eka Syarif Maulana, S.Kom</strong> — Senior Fullstack Web & Mobile Developer & AI Systems Engineer. Lulusan Sarjana Komputer Universitas Muhammadiyah Sumatera Utara (UMSU) yang berfokus pada arsitektur sistem aman, kriptografi terapan, dan pengerasan infrastruktur aplikasi digital.
+      </p>
+    </div>
+  </div>
+
 </div>
-
-→ skipped: Password strength interactive testing widget, add when user requests interactive tools.
