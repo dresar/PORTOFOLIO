@@ -349,7 +349,6 @@ function ProfileSettingsForm() {
                 id="name" 
                 className="pl-9" 
                 {...form.register('name')} 
-                placeholder="Nama Admin" 
                 readOnly={!isEditing}
               />
             </div>
@@ -364,7 +363,6 @@ function ProfileSettingsForm() {
                 id="email" 
                 className="pl-9" 
                 {...form.register('email')} 
-                placeholder="eka.ckp16799@gmail.com" 
                 readOnly={!isEditing}
               />
             </div>
@@ -377,7 +375,6 @@ function ProfileSettingsForm() {
                 <Input 
                   id="avatar" 
                   {...form.register('avatar')} 
-                  placeholder="https://..." 
                   readOnly={!isEditing}
                 />
                 {form.watch('avatar') && (
@@ -420,7 +417,7 @@ function ProfileSettingsForm() {
                   <Label htmlFor="password">Kata Sandi Baru</Label>
                   <div className="relative">
                     <Lock className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input id="password" type="password" className="pl-9" {...form.register('password')} placeholder="******" />
+                    <Input id="password" type="password" className="pl-9" {...form.register('password')} />
                   </div>
                 </div>
                 
@@ -428,7 +425,7 @@ function ProfileSettingsForm() {
                   <Label htmlFor="confirmPassword">Konfirmasi Kata Sandi</Label>
                   <div className="relative">
                     <Lock className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input id="confirmPassword" type="password" className="pl-9" {...form.register('confirmPassword')} placeholder="******" />
+                    <Input id="confirmPassword" type="password" className="pl-9" {...form.register('confirmPassword')} />
                   </div>
                   {form.formState.errors.confirmPassword && <p className="text-xs text-destructive">{form.formState.errors.confirmPassword.message}</p>}
                 </div>
@@ -449,7 +446,6 @@ function ProfileSettingsForm() {
                         maxLength={8}
                         className="pl-9 font-mono tracking-widest" 
                         {...form.register('pin')} 
-                        placeholder="Contoh: 280219" 
                       />
                     </div>
                   </div>
@@ -464,7 +460,6 @@ function ProfileSettingsForm() {
                         maxLength={8}
                         className="pl-9 font-mono tracking-widest" 
                         {...form.register('confirmPin')} 
-                        placeholder="Ulangi PIN baru" 
                       />
                     </div>
                     {form.formState.errors.confirmPin && <p className="text-xs text-destructive">{form.formState.errors.confirmPin.message}</p>}
