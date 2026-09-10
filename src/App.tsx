@@ -83,11 +83,10 @@ import { AdminLayout } from "./admin/components/AdminLayout";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      // 5 minutes staleTime for instant zero-loading rendering from cache
       staleTime: 5 * 60 * 1000, 
-      gcTime: 24 * 60 * 60 * 1000, // Keep in memory/localStorage for 24 hours
+      gcTime: 24 * 60 * 60 * 1000,
       refetchOnWindowFocus: false,
-      refetchOnMount: false, // Instant mount without triggering loading states
+      refetchOnMount: 'always',
       refetchOnReconnect: true,
       retry: 1,
     },
@@ -96,23 +95,32 @@ const queryClient = new QueryClient({
 
 const persister = createSyncStoragePersister({
   storage: window.localStorage,
+  key: 'REACT_QUERY_OFFLINE_CACHE_V2',
 });
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check if we have cached data for critical endpoints
+    // Purge legacy obsolete caches so stale demo articles never appear
+    try {
+      localStorage.removeItem('REACT_QUERY_OFFLINE_CACHE');
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('portfolio_cache_blog')) {
+          localStorage.removeItem(key);
+        }
+      });
+    } catch {
+      // ignore
+    }
+
     const checkCache = () => {
-      // Check for React Query cache or legacy DataManager cache
       const hasLegacyCache = Object.keys(localStorage).some(key => key.startsWith('portfolio_cache_'));
-      const hasQueryCache = localStorage.getItem('REACT_QUERY_OFFLINE_CACHE');
+      const hasQueryCache = localStorage.getItem('REACT_QUERY_OFFLINE_CACHE_V2');
       
       if (hasLegacyCache || hasQueryCache) {
-        // Fast load for returning visitors
         setIsLoading(false);
       } else {
-        // Immediate load for first-time visitors (removed artificial delay)
         setIsLoading(false);
       }
     };

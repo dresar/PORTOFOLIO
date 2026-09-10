@@ -240,8 +240,8 @@ const BlogDetail = () => {
           <Helmet>
             <title>{post.seo_title || post.title} - Eka Syarif Maulana</title>
             <meta name="description" content={post.seo_description || post.excerpt} />
-            <meta name="author" content="Eka Syarif Maulana" />
-            <link rel="canonical" href={window.location.href} />
+            <meta name="author" content="Eka Syarif Maulana, S.Kom" />
+            <link rel="canonical" href={typeof window !== 'undefined' ? window.location.href : `https://etech.my.id/id/blog/${slug}`} />
             {post.seo_keywords && post.seo_keywords.length > 0 && (
               <meta name="keywords" content={Array.isArray(post.seo_keywords) ? post.seo_keywords.join(', ') : post.seo_keywords} />
             )}
@@ -249,8 +249,14 @@ const BlogDetail = () => {
             <meta property="og:description" content={post.seo_description || post.excerpt} />
             <meta property="og:type" content="article" />
             <meta property="article:author" content="Eka Syarif Maulana" />
-            {(post.coverImageFile || post.coverImage) && (
-              <meta property="og:image" content={normalizeMediaUrl(post.coverImageFile || post.coverImage)} />
+            {(post.coverImageFile || post.coverImage || post.cover_image) && (
+              <meta property="og:image" content={normalizeMediaUrl(post.coverImageFile || post.coverImage || post.cover_image)} />
+            )}
+            <meta name="twitter:card" content="summary_large_image" />
+            <meta name="twitter:title" content={`${post.seo_title || post.title} - Eka Syarif Maulana`} />
+            <meta name="twitter:description" content={post.seo_description || post.excerpt} />
+            {(post.coverImageFile || post.coverImage || post.cover_image) && (
+              <meta name="twitter:image" content={normalizeMediaUrl(post.coverImageFile || post.coverImage || post.cover_image)} />
             )}
             <script type="application/ld+json">
               {JSON.stringify({
@@ -258,23 +264,23 @@ const BlogDetail = () => {
                 "@type": "BlogPosting",
                 "headline": post.title,
                 "description": post.excerpt,
-                "image": post.coverImage ? normalizeMediaUrl(post.coverImage) : undefined,
+                "image": (post.coverImage || post.cover_image) ? normalizeMediaUrl(post.coverImage || post.cover_image) : undefined,
                 "datePublished": post.published_at || post.created_at,
                 "dateModified": post.updated_at || post.created_at,
                 "author": {
                   "@type": "Person",
-                  "name": "Eka Syarif Maulana",
-                  "jobTitle": "Senior Fullstack Developer & AI Engineer",
-                  "url": "https://ekasyarif.my.id"
+                  "name": "Eka Syarif Maulana, S.Kom",
+                  "jobTitle": "Founder Inka.tech | Senior Fullstack Developer & AI Engineer",
+                  "url": "https://etech.my.id"
                 },
                 "publisher": {
                   "@type": "Organization",
                   "name": "Inka.tech",
-                  "url": "https://ekasyarif.my.id"
+                  "url": "https://etech.my.id"
                 },
                 "mainEntityOfPage": {
                   "@type": "WebPage",
-                  "@id": typeof window !== 'undefined' ? window.location.href : undefined
+                  "@id": typeof window !== 'undefined' ? window.location.href : `https://etech.my.id/id/blog/${slug}`
                 }
               })}
             </script>

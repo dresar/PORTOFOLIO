@@ -1,12 +1,9 @@
-User-agent: *
-Allow: /
-Disallow: /admin/
-Disallow: /api/
-Disallow: /login/
-Disallow: /dashboard/
-Disallow: /private/
+# ==============================================================================
+# Robots.txt for Eka Syarif Maulana Portfolio & Inka.tech Knowledge Base
+# Standard: RFC 9309 & AI Search Optimization (GEO / AEO) Standard
+# ==============================================================================
 
-# Specific Bots
+# Search Engine Web Crawlers
 User-agent: Googlebot
 Allow: /
 
@@ -19,5 +16,49 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
-# Sitemap
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: TelegramBot
+Allow: /
+
+# AI Search & LLM Retrieval Crawlers (Explicitly Allowed for Citation & AEO)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+# General Policy
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /login/
+Disallow: /dashboard/
+Disallow: /private/
+
+# Sitemaps & LLM Context Discovery
 Sitemap: https://etech.my.id/sitemap.xml
+LLMs-Txt: https://etech.my.id/llms.txt
