@@ -11,10 +11,13 @@ import { useProjects } from '@/hooks/useProjects';
 import { normalizeMediaUrl, sanitizeHtmlContent, safeUrl } from '@/lib/utils';
 import { useExperience } from '@/hooks/useExperience';
 import { SocialIcon } from '@/components/ui/SocialIcon';
+import { useLocalizedContent } from '@/hooks/useLocalizedContent';
 
 export const HeroSection = () => {
   const { t, i18n } = useTranslation();
-  const { profile, isLoading: profileLoading } = useProfile();
+  const { profile: rawProfile, isLoading: profileLoading } = useProfile();
+  const { getProfile } = useLocalizedContent();
+  const profile = getProfile(rawProfile);
   const { socialLinks = [], isLoading: linksLoading } = useSocialLinks();
   const { projects = [] } = useProjects();
   const { experiences = [] } = useExperience();

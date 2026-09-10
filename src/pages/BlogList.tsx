@@ -22,10 +22,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Helmet } from 'react-helmet-async';
+import { getLocalizedPath } from '@/lib/i18nNavigation';
+import { useLocalizedContent } from '@/hooks/useLocalizedContent';
 
 const BlogList = () => {
   const { t } = useTranslation();
-  const { posts, isLoading, isError, error } = useBlogPosts();
+  const { posts: rawPosts, isLoading, isError, error } = useBlogPosts();
+  const { getBlogPosts } = useLocalizedContent();
+  const posts = useMemo(() => getBlogPosts(rawPosts), [rawPosts, getBlogPosts]);
   const { categories: allCategories } = useBlogCategories();
   
   const [searchQuery, setSearchQuery] = useState('');
@@ -221,7 +225,7 @@ const BlogList = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-[1400px] mx-auto">
               {currentPosts.map((post: any, index: number) => (
                 <div key={post.id} className="relative group">
-                  <Link to={`/blog/${post.slug}`} className="block h-full">
+                  <Link to={getLocalizedPath(`/blog/${post.slug}`)} className="block h-full">
                     <motion.div 
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}

@@ -21,6 +21,8 @@ import { useModalStore } from '@/store/modalStore';
 import MDEditor from '@uiw/react-md-editor';
 import '@uiw/react-md-editor/markdown-editor.css';
 import '@uiw/react-markdown-preview/markdown.css';
+import { getLocalizedPath } from '@/lib/i18nNavigation';
+import { useLocalizedContent } from '@/hooks/useLocalizedContent';
 
 const ProjectDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -32,7 +34,8 @@ const ProjectDetail = () => {
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
   }, [id]);
-  const { projects, isLoading, isError } = useProjects();
+  const { projects: rawProjects, isLoading, isError } = useProjects();
+  const { getProject } = useLocalizedContent();
   const { resolvedTheme } = useTheme();
   const { t } = useTranslation();
   const [aiModalOpen, setAiModalOpen] = useState(false);
@@ -40,9 +43,10 @@ const ProjectDetail = () => {
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
   const project = useMemo(() => {
-    if (!projects || !id) return null;
-    return projects.find((p: any) => p.id === Number(id));
-  }, [projects, id]);
+    if (!rawProjects || !id) return null;
+    const found = rawProjects.find((p: any) => p.id === Number(id));
+    return getProject(found);
+  }, [rawProjects, id, getProject]);
 
   const allImages = useMemo(() => {
     if (!project) return [];
@@ -154,7 +158,7 @@ const ProjectDetail = () => {
         <main className="flex-grow flex items-center justify-center">
             <div className="text-center">
                 <h1 className="text-2xl font-bold mb-2">{t('projects.not_found')}</h1>
-                <Button onClick={() => navigate('/')} variant="outline">
+                <Button onClick={() => navigate(getLocalizedPath('/'))} variant="outline">
                     {t('projects.back_to_home')}
                 </Button>
             </div>
@@ -183,7 +187,7 @@ const ProjectDetail = () => {
           </Helmet>
 
           <Link 
-            to="/" 
+            to={getLocalizedPath('/')} 
             className="inline-flex items-center text-muted-foreground hover:text-primary mb-8 transition-colors"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />

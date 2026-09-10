@@ -59,13 +59,8 @@ export default function BlogList() {
   const { data: categories = [] } = useQuery({
     queryKey: ['blog-categories'],
     queryFn: api.blog.categories.getAll,
-    // Stale time handled globally in App.tsx (Infinity)
   });
 
-  // Removed loader
-  // const isLoading = isPostsLoading;
-
-  // Derived state for filtering
   const filteredPosts = (posts || []).filter((post: any) => {
     const matchesSearch = !searchQuery || 
       (post.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -81,7 +76,6 @@ export default function BlogList() {
     setDeleteAlert({ isOpen: true, id, isBulk: false });
   };
 
-  // Pagination Logic
   const totalPages = Math.ceil(filteredPosts.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -112,15 +106,15 @@ export default function BlogList() {
     try {
       if (deleteAlert.isBulk) {
         await api.blogPosts.bulkDelete(selectedIds);
-        toast({ title: "Berhasil", description: `${selectedIds.length} artikel dihapus.` });
+        toast({ title: "✓ Terhapus!", description: `${selectedIds.length} artikel dihapus.` });
         setSelectedIds([]);
       } else if (deleteAlert.id) {
         await api.blogPosts.delete(deleteAlert.id);
-        toast({ title: "Berhasil", description: "Artikel dihapus." });
+        toast({ title: "✓ Terhapus!" });
       }
       await queryClient.invalidateQueries({ queryKey: ['blog-posts'] });
     } catch (error) {
-      toast({ variant: "destructive", title: "Gagal", description: "Gagal menghapus artikel." });
+      toast({ variant: "destructive", title: "Gagal!" });
     } finally {
       setIsDeleting(false);
       setDeleteAlert({ isOpen: false });
@@ -183,7 +177,6 @@ export default function BlogList() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {/* Loader removed */}
         {currentItems.map((post) => (
           <Card key={post.id} className={`overflow-hidden hover:shadow-lg transition-all flex flex-col group ${selectedIds.includes(post.id) ? 'ring-2 ring-primary' : ''}`}>
             <div className="aspect-video bg-muted relative overflow-hidden">

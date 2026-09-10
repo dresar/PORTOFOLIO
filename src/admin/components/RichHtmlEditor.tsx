@@ -74,15 +74,13 @@ Berikut adalah informasi/deskripsi saya yang ingin dibuatkan format HTML cantikn
     
     navigator.clipboard.writeText(promptText);
     setIsCopied(true);
-    toast({ title: "Prompt ChatGPT Disalin!", description: "Tinggal paste ke ChatGPT dan tambahkan deskripsi Anda di bawahnya." });
+    toast({ title: "✓ Disalin!" });
     setTimeout(() => setIsCopied(false), 3000);
   };
 
   return (
     <div className="border border-border/80 rounded-xl overflow-hidden bg-card shadow-sm">
-      {/* Header Controls */}
       <div className="flex flex-wrap items-center justify-between gap-2 p-2 bg-muted/40 border-b border-border/60">
-        {/* Mode Switcher Tabs */}
         <div className="flex items-center gap-1 bg-muted/80 p-1 rounded-lg">
           <Button
             type="button"
@@ -104,7 +102,6 @@ Berikut adalah informasi/deskripsi saya yang ingin dibuatkan format HTML cantikn
           </Button>
         </div>
 
-        {/* Action Buttons */}
         <div className="flex items-center gap-1.5">
           <Button
             type="button"
@@ -132,7 +129,6 @@ Berikut adalah informasi/deskripsi saya yang ingin dibuatkan format HTML cantikn
         </div>
       </div>
 
-      {/* HTML Quick Snippets Toolbar (Shown in Code View) */}
       {activeTab === 'html' && (
         <div className="flex flex-wrap items-center gap-1.5 px-3 py-2 bg-muted/20 border-b border-border/40 text-xs">
           <span className="text-muted-foreground mr-1 text-[11px] font-medium">Quick Snippets:</span>
@@ -202,7 +198,6 @@ Berikut adalah informasi/deskripsi saya yang ingin dibuatkan format HTML cantikn
         </div>
       )}
 
-      {/* Body Area */}
       <div className="p-3 min-h-[180px] bg-background">
         {activeTab === 'html' ? (
           <Textarea

@@ -22,6 +22,8 @@ import { GlobalModal } from '@/components/GlobalModal';
 import { useModalStore } from '@/store/modalStore';
 import { toast } from 'sonner';
 import { useProfile } from '@/hooks/useProfile';
+import { getLocalizedPath } from '@/lib/i18nNavigation';
+import { useLocalizedContent } from '@/hooks/useLocalizedContent';
 
 const BlogDetail = () => {
   const { t } = useTranslation();
@@ -37,7 +39,9 @@ const BlogDetail = () => {
   const { profile } = useProfile();
   const { openImagePreviewModal } = useModalStore();
   
-  const { data: post, isLoading, isError } = useBlogPostBySlug(slug || '');
+  const { data: rawPost, isLoading, isError } = useBlogPostBySlug(slug || '');
+  const { getBlogPost } = useLocalizedContent();
+  const post = getBlogPost(rawPost);
   
   const [commentName, setCommentName] = useState('');
   const [commentEmail, setCommentEmail] = useState('');
@@ -211,7 +215,7 @@ const BlogDetail = () => {
         <main className="flex-grow flex items-center justify-center">
             <div className="text-center">
                 <h1 className="text-2xl font-bold mb-2">{t('blog.not_found')}</h1>
-                <Button onClick={() => navigate('/blog')} variant="outline">
+                <Button onClick={() => navigate(getLocalizedPath('/blog'))} variant="outline">
                     {t('blog.back_to_blog')}
                 </Button>
             </div>
@@ -243,7 +247,7 @@ const BlogDetail = () => {
 
           <div className="mb-8">
             <Link 
-              to="/blog" 
+              to={getLocalizedPath('/blog')} 
               className="inline-flex items-center text-muted-foreground hover:text-primary transition-colors"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />

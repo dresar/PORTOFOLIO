@@ -1,0 +1,366 @@
+{
+  "profile": {
+    "greeting": "Hello",
+    "role": [
+      "Senior Fullstack Developer",
+      "System Analyst",
+      "Artificial Intelligence (AI) Engineer"
+    ],
+    "shortBio": "Helping businesses grow through the right technology",
+    "bio": "I am a graduate of the Information Technology program at Universitas Muhammadiyah Sumatera Utara (UMSU) with a strong interest in technology, software development, and digital transformation. I have skills in web and mobile application development, database management, and leveraging technology to solve various problems. I am a disciplined, responsible, quick learner, capable of working independently or in a team, and have good adaptability. I am always eager to continue developing my skills, learning new technologies, and making positive contributions through ideas, creativity, and useful solutions for organizations and society."
+  },
+  "projects": {
+    "17": {
+      "title": "Eka Syarif Maulana - Portfolio Website",
+      "description": "My portfolio is a static front-end web platform designed aesthetically to represent Eka Syarif Maulana's professional profile, programming skills, academic/personal project history, and certification achievements. Combining modern responsive design, scroll transition animations, and interactive gallery modals, this website provides a highly smooth and engaging user experience (UX) for potential recruiters and tech industry collaborators."
+    },
+    "18": {
+      "title": "Portfolio / Landing Page Template (Static Front-End UI)",
+      "description": "A landing page / portfolio template built as static front-end but using Node.js with Gulp for efficient development workflow including SCSS compilation, asset minification, and build automation."
+    },
+    "21": {
+      "title": "Ovix — Enterprise-Grade",
+      "description": "Ovix is a modern HTML5 creative portfolio and digital agency web template styled with CSS3/SCSS and Bootstrap 5. It is tailored for digital agencies, developers, designers, and creative freelancers who want to present their works through a visually stunning, high-performance, and fully responsive showcase.\n\nOvix is an enterprise-grade HTML5 creative portfolio and digital agency website template styled with CSS3/SCSS and Bootstrap 5. It is tailored for digital agencies, developers, designers, and creative freelancers who want to present their works through a visually stunning, high-performance, and fully responsive showcase."
+    },
+    "22": {
+      "title": "Real Factory",
+      "description": "Real Factory is a professional, feature-rich HTML template designed specifically for the industrial sector, factories, construction, engineering, logistics, and related fields. This template offers various homepage options, portfolio gallery layouts, blog article varieties, and dozens of ready-to-use UI components tailored for modern industrial business needs."
+    },
+    "23": {
+      "title": "PromptStudio AI ",
+      "description": "PromptStudio AI is a cross-platform application for creating professional prompts using AI Groq Cloud, providing structured generators for educational content, affiliate ads, cinematic quotes, digital products, and logos with automatic API Key rotation features."
+    },
+    "24": {
+      "title": "AI Poster Prompt Studio - Full-Stack Project Portfolio Documentation",
+      "description": "AI Poster Prompt Studio is an intelligent full-stack application ecosystem that helps content creators and digital marketers generate highly optimized and visually consistent promotional poster image prompts. Combining Flutter, React, Express, and Google Gemini AI technologies, this platform addresses AI image generator inconsistency challenges and presents a robust API Key rotation system along with a self-credit voucher system."
+    },
+    "25": {
+      "title": "Promptix 📸 — AI Metadata Cleaner & Image Optimizer",
+      "description": "Promptix is a Flutter-based mobile & web application for image size optimization and 100% local metadata cleaning. Promptix protects your privacy by tracking and removing AI signatures (like Midjourney, DALL-E, etc.) and provenance metadata (C2PA) at raw binary byte level, while offering advanced EXIF Spoofing capabilities."
+    },
+    "26": {
+      "title": "Dynamic Web Portfolio with CMS",
+      "description": "A modern, interactive, and fully dynamic web portfolio platform built to elegantly display professional identity. This project features a specialized content management system (CMS) that allows administrators to manage profile data, projects, skills, and blog articles in real-time without touching the code."
+    },
+    "27": {
+      "title": "BrevetAI – AI Tax Learning Platform",
+      "description": "An AI-powered Brevet Tax A & B learning platform offering interactive learning experiences through curriculum roadmaps, structured materials, case studies, adaptive quizzes, admin dashboards, and AI Assistants to help understand Indonesian tax regulations more easily and modernly."
+    },
+    "28": {
+      "title": "Pesantren Hub – Integrated Pesantren Management System",
+      "description": "Pesantren Hub is a modern pesantren management platform integrating profile websites, pesantren administration, KMI academics, finance, new student admissions (PSB), scholarly publications, and operational dashboards into a single responsive, secure, and user-friendly web-based system."
+    },
+    "29": {
+      "title": "AI Workflow Studio",
+      "description": "An intelligent AI workspace management and generator platform that transforms product ideas into structured PRDs, visual node-based architecture diagrams, tech stack recommendations, and automatically composes Vibe Coding Super Prompts for precise AI Coder execution."
+    },
+    "30": {
+      "title": "SIRA Report Hub (Student Academic Report Information System)",
+      "description": "SIRA Report Hub (Student Academic Report Information System) is an integrated cloud-based web platform for academic data management, dynamic weighted grading, skill/moral aspect evaluations, and automatic PDF Report generation for educational/pesantren institutions."
+    }
+  },
+  "experiences": {
+    "13": {
+      "role": "Secretary & Treasurer of the Student Organization (OPPM)",
+      "company": "Pondok Pesantren Modern Raudhatussalam Mahato",
+      "description": "Mengelola administrasi organisasi serta memastikan dokumentasi kegiatan berjalan rapi dan terstruktur.\n\nBertanggung jawab atas pencatatan dan pengelolaan keuangan organisasi secara transparan.\n\nMengkoordinasikan berbagai kegiatan santri dan berkontribusi dalam menyukseskan program besar pesantren.\n\nMelatih kemampuan kepemimpinan, komunikasi, dan manajemen waktu dalam lingkungan organisasi."
+    },
+    "14": {
+      "role": "TikTok & Shopee Affiliate Specialist",
+      "company": "TikTok & Shopee",
+      "description": "Mengelola strategi pemasaran digital melalui platform TikTok dan Shopee Affiliate.\n\nMembuat konten promosi yang menarik untuk meningkatkan traffic dan konversi penjualan.\n\nMenganalisis tren pasar serta mengoptimalkan performa campaign.\n\nBerhasil membangun pengalaman kuat di bidang digital marketing dan personal branding."
+    },
+    "15": {
+      "role": "Academic Freelancer (Journal Writing, PPT, Thesis, etc.)",
+      "company": "Etech.my.id",
+      "description": "Membantu penyusunan jurnal, presentasi, dan karya tulis akademik dengan standar yang terstruktur.\n\nMelakukan riset materi untuk memastikan kualitas dan akurasi konten.\n\nMengembangkan kemampuan analisis, penulisan, serta penyampaian informasi secara efektif.\n\nDipercaya oleh berbagai klien untuk menyelesaikan pekerjaan secara tepat waktu."
+    },
+    "16": {
+      "role": "Web Developer Intern",
+      "company": "PT Pertamina Hulu Rokan – Rantau Field 1, Aceh Tamiang",
+      "description": "<div style=\"font-family:Segoe UI,Arial,sans-serif;line-height:1.8;color:inherit;\">\n\n<h2 style=\"margin:0;color:#38bdf8;\">\n💻 Web Developer Intern\n</h2>\n\n<div style=\"margin-top:6px;font-size:14px;opacity:.8;\">\nPT Pertamina Hulu Rokan – Rantau Field 1, Aceh Tamiang\n</div>\n\n<div style=\"margin-top:18px;\">\n\n<span style=\"display:inline-block;background:rgba(59,130,246,.15);color:#60a5fa;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:600;margin:3px;\">🚀 Kerja Praktik</span>\n\n<span style=\"display:inline-block;background:rgba(34,197,94,.15);color:#4ade80;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:600;margin:3px;\">PHP Native</span>\n\n<span style=\"display:inline-block;background:rgba(245,158,11,.15);color:#fbbf24;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:600;margin:3px;\">MySQL</span>\n\n<span style=\"display:inline-block;background:rgba(236,72,153,.15);color:#f472b6;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:600;margin:3px;\">Web Development</span>\n\n</div>\n\n<hr style=\"border:none;border-top:1px solid rgba(148,163,184,.2);margin:18px 0;\">\n\n<div style=\"background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.18);border-radius:12px;padding:18px;\">\n\n<h3 style=\"margin-top:0;color:#38bdf8;\">\n📖 Ringkasan\n</h3>\n\n<p style=\"margin-bottom:0;color:inherit;\">\nSelama menjalani program Kerja Praktik di PT Pertamina Hulu Rokan – Rantau Field 1, saya berpartisipasi dalam pengembangan aplikasi web internal berbasis <strong>PHP Native</strong> dan <strong>MySQL</strong> yang digunakan untuk membantu proses pengelolaan data aset barang perusahaan. Saya terlibat mulai dari perancangan antarmuka, implementasi fitur backend sederhana, pengelolaan database, pengujian sistem, hingga proses debugging agar aplikasi berjalan dengan baik, responsif, dan mudah digunakan oleh pengguna.\n</p>\n\n</div>\n\n<hr style=\"border:none;border-top:1px solid rgba(148,163,184,.2);margin:18px 0;\">\n\n<h3 style=\"color:#38bdf8;margin-bottom:12px;\">\n🎯 Tanggung Jawab\n</h3>\n\n<ul style=\"padding-left:22px;line-height:2;color:inherit;\">\n\n<li>Mengembangkan antarmuka website menggunakan HTML5, CSS3, JavaScript, dan Bootstrap.</li>\n\n<li>Membangun fitur backend sederhana menggunakan PHP Native.</li>\n\n<li>Merancang struktur database MySQL beserta relasi antar tabel.</li>\n\n<li>Mengimplementasikan operasi CRUD (Create, Read, Update, Delete) pada setiap modul aplikasi.</li>\n\n<li>Mengembangkan modul Login, Dashboard, Data Aset Barang, Data Kategori, dan Laporan.</li>\n\n<li>Melakukan pengujian aplikasi, debugging, dan perbaikan bug selama proses pengembangan.</li>\n\n<li>Mengoptimalkan tampilan website agar responsif pada berbagai ukuran perangkat.</li>\n\n<li>Mendokumentasikan proses pengembangan dan berkoordinasi dengan pembimbing lapangan mengenai kebutuhan sistem.</li>\n\n</ul>\n\n<hr style=\"border:none;border-top:1px solid rgba(148,163,184,.2);margin:18px 0;\">\n\n<h3 style=\"color:#38bdf8;\">\n🛠 Teknologi yang Digunakan\n</h3>\n\n<div style=\"margin-top:12px;\">\n\n<span style=\"display:inline-block;background:rgba(239,68,68,.15);color:#f87171;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;margin:4px;\">HTML5</span>\n\n<span style=\"display:inline-block;background:rgba(14,165,233,.15);color:#38bdf8;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;margin:4px;\">CSS3</span>\n\n<span style=\"display:inline-block;background:rgba(245,158,11,.15);color:#fbbf24;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;margin:4px;\">JavaScript</span>\n\n<span style=\"display:inline-block;background:rgba(34,197,94,.15);color:#4ade80;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;margin:4px;\">PHP Native</span>\n\n<span style=\"display:inline-block;background:rgba(168,85,247,.15);color:#c084fc;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;margin:4px;\">MySQL</span>\n\n<span style=\"display:inline-block;background:rgba(59,130,246,.15);color:#60a5fa;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;margin:4px;\">Bootstrap</span>\n\n<span style=\"display:inline-block;background:rgba(148,163,184,.15);color:#94a3b8;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;margin:4px;\">Git</span>\n\n</div>\n\n<hr style=\"border:none;border-top:1px solid rgba(148,163,184,.2);margin:18px 0;\">\n\n<h3 style=\"color:#38bdf8;\">\n📌 Modul yang Dikembangkan\n</h3>\n\n<ul style=\"padding-left:22px;line-height:2;color:inherit;\">\n\n<li>🔐 Sistem Login Authentication</li>\n\n<li>📊 Dashboard Monitoring</li>\n\n<li>📦 Manajemen Data Aset Barang</li>\n\n<li>🏷 Manajemen Kategori Barang</li>\n\n<li>📈 Laporan Data Aset</li>\n\n<li>👤 Manajemen Data Pengguna</li>\n\n</ul>\n\n<hr style=\"border:none;border-top:1px solid rgba(148,163,184,.2);margin:18px 0;\">\n\n<div style=\"background:rgba(14,165,233,.10);border-left:4px solid #0ea5e9;padding:16px;border-radius:10px;\">\n\n<h3 style=\"margin-top:0;color:#38bdf8;\">\n🏆 Kompetensi yang Diperoleh\n</h3>\n\n<p style=\"margin-bottom:0;color:inherit;\">\n\n✔ Pengembangan Website Berbasis PHP Native<br>\n\n✔ Perancangan Database MySQL<br>\n\n✔ Implementasi CRUD Application<br>\n\n✔ Responsive Web Design<br>\n\n✔ HTML5, CSS3, JavaScript, Bootstrap<br>\n\n✔ Software Testing & Debugging<br>\n\n✔ Problem Solving<br>\n\n✔ Team Collaboration<br>\n\n✔ System Documentation<br>\n\n✔ Basic UI/UX Development\n\n</p>\n\n</div>\n\n<hr style=\"border:none;border-top:1px solid rgba(148,163,184,.2);margin:18px 0;\">\n\n<div style=\"background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.18);padding:18px;border-radius:12px;\">\n\n<h3 style=\"margin-top:0;color:#4ade80;\">\n🚀 Hasil yang Dicapai\n</h3>\n\n<p style=\"margin-bottom:0;color:inherit;\">\nBerhasil membantu mengembangkan aplikasi web pengelolaan aset barang berbasis PHP dan MySQL yang mampu mendukung proses pencatatan, pengelolaan, pencarian, dan pelaporan data aset secara lebih terstruktur. Pengalaman ini memberikan pemahaman mengenai siklus pengembangan perangkat lunak, implementasi database relasional, pengembangan fitur berbasis CRUD, debugging aplikasi, serta kolaborasi dalam lingkungan kerja profesional menggunakan standar pengembangan web modern.\n</p>\n\n</div>\n\n</div>"
+    }
+  },
+  "educations": {
+    "1": {
+      "degree": "Bachelor of Computer Science",
+      "field": "Information Technology"
+    },
+    "2": {
+      "degree": "",
+      "field": "Natural Sciences"
+    },
+    "3": {
+      "degree": "",
+      "field": "Natural Sciences"
+    },
+    "4": {
+      "degree": "",
+      "field": ""
+    }
+  },
+  "certificates": {
+    "1": {
+      "name": "Computer Operator Training Certificate",
+      "issuer": "LPKS Berkat Mandiri"
+    },
+    "2": {
+      "name": "Smart AI, Smart Student: Implementing AI Tools and Prompting Techniques in Academic World",
+      "issuer": "Perpustakaan Universitas Muhammadiyah Sumatera Utara (UMSU)"
+    },
+    "3": {
+      "name": "Pintu Talk – Campus Edition: Introduction to Crypto & Web3",
+      "issuer": "Pintu Talk – Campus Edition"
+    },
+    "6": {
+      "name": "EKA SYARIF MAULANA",
+      "issuer": "Digital and LKP Borju Komputer"
+    },
+    "7": {
+      "name": "EKA SYARIF MAULANA",
+      "issuer": "BELAJAR SKILL"
+    },
+    "8": {
+      "name": "Online Skill Learning Program",
+      "issuer": "Skillpedia"
+    },
+    "9": {
+      "name": "Certificate of Course Completion",
+      "issuer": "MySkill"
+    },
+    "10": {
+      "name": "CERTIFICATE OF SKILL COMPETENCE",
+      "issuer": "BELAJAR SKILL"
+    },
+    "11": {
+      "name": "Online Skill Learning Program",
+      "issuer": "SKILL PEDIA"
+    },
+    "12": {
+      "name": "Canva Desktop Design Class",
+      "issuer": "Skillpedia (Skillpedia.id)"
+    },
+    "13": {
+      "name": "ChatGPT Class on Smartphone",
+      "issuer": "Skillpedia (Skillpedia.id)"
+    },
+    "14": {
+      "name": "WhatsApp Business Class on Smartphone",
+      "issuer": "Skillpedia (Skillpedia.id)"
+    },
+    "15": {
+      "name": "Introduction to ChatGPT OpenAI",
+      "issuer": "Belajar Skill"
+    },
+    "16": {
+      "name": "Python Data Analytics",
+      "issuer": "Meta (via Coursera)"
+    },
+    "17": {
+      "name": "Introduction to Data Management",
+      "issuer": "Meta (via Coursera)"
+    },
+    "18": {
+      "name": "Statistics Foundations",
+      "issuer": "Meta (via Coursera)"
+    },
+    "19": {
+      "name": "Data Analysis with Spreadsheets and SQL",
+      "issuer": "Meta (via Coursera)"
+    },
+    "20": {
+      "name": "Introduction to Data Analytics",
+      "issuer": "Meta (via Coursera)"
+    },
+    "21": {
+      "name": "HTML, CSS, and Javascript for Web Developers",
+      "issuer": "Johns Hopkins University (via Coursera)"
+    },
+    "22": {
+      "name": "Use Canva to Create Desktop and Mobile-friendly Web Pages",
+      "issuer": "Coursera Project Network"
+    },
+    "23": {
+      "name": "Ask Questions to Make Data-Driven Decisions",
+      "issuer": "Google (via Coursera)"
+    },
+    "24": {
+      "name": "Ask Questions to Make Data-Driven Decisions",
+      "issuer": "Google (via Coursera)"
+    },
+    "25": {
+      "name": "Foundations: Data, Data, Everywhere",
+      "issuer": "Google (via Coursera)"
+    },
+    "26": {
+      "name": "Coursera Project Network",
+      "issuer": "coursera"
+    },
+    "27": {
+      "name": "Learn Basic AI",
+      "issuer": "Dicoding Indonesia"
+    }
+  },
+  "blog_posts": {
+    "20": {
+      "title": "Building Modern Web Applications with Next.js 14",
+      "excerpt": "Next.js 14 brings significant changes for web development. Let's explore its new features like Server Actions and Partial Prerendering."
+    },
+    "21": {
+      "title": "Why Tailwind CSS is Becoming the New Standard?",
+      "excerpt": "This utility-first CSS framework is changing how we design UIs. Is Tailwind CSS really better than conventional methods?"
+    },
+    "22": {
+      "title": "Comprehensive Guide to TypeScript for Beginners",
+      "excerpt": "TypeScript is not just a hype, but a necessity for large-scale applications. Learn its basics in this article."
+    },
+    "23": {
+      "title": "Dockerizing Your Node.js Application",
+      "excerpt": "Practical steps to wrap your Node.js application into a Docker container for easy deployment anywhere."
+    },
+    "24": {
+      "title": "Getting to Know Zustand: Minimalist React State Management",
+      "excerpt": "Redux might be too heavy for your project. Meet Zustand, a lightweight and fast state management solution."
+    },
+    "25": {
+      "title": "AI in Web Development: Threat or Opportunity?",
+      "excerpt": "With the rapid development of GitHub Copilot and ChatGPT, what's the future of web developers?"
+    },
+    "26": {
+      "title": "Website Performance Optimization: Core Web Vitals",
+      "excerpt": "Google is very concerned with Core Web Vitals. Learn these important metrics to improve SEO and user experience."
+    },
+    "27": {
+      "title": "Migrating from REST API to GraphQL",
+      "excerpt": "When is the right time to leave REST and switch to using GraphQL? Let's discuss its advantages and disadvantages."
+    },
+    "28": {
+      "title": "Understanding Clean Architecture in Node.js",
+      "excerpt": "A messy Node.js project structure will become a nightmare in the future. Let's apply Clean Architecture principles."
+    },
+    "29": {
+      "title": "Why React Server Components (RSC) is the Future?",
+      "excerpt": "The RSC concept is changing the rendering paradigm in React. Understand how this affects your application's performance."
+    },
+    "30": {
+      "title": "Getting to Know Astro.js: Framework for Super Fast Websites",
+      "excerpt": "Astro comes with Islands Architecture concept that makes websites very lightweight. Find out why this framework is becoming more popular."
+    },
+    "31": {
+      "title": "Bun: JavaScript Runtime Claimed to Be Much Faster",
+      "excerpt": "Bun offers much better performance compared to Node.js with built-in bundler and package manager. Is it ready for production?"
+    },
+    "32": {
+      "title": "Why Many Developers Are Switching to Rust for Backend?",
+      "excerpt": "Rust is known for performance comparable to C++ but much safer. Find out why Rust is becoming more popular for backend development."
+    },
+    "33": {
+      "title": "WebAssembly: Running Native Code in the Browser",
+      "excerpt": "WebAssembly allows languages like C, C++, and Rust to run in the browser with near-native performance. Here's an explanation."
+    },
+    "34": {
+      "title": "Micro Frontend: Solution for Large Teams Working in Parallel",
+      "excerpt": "When one frontend application is worked on by many teams, micro frontend architecture can be a solution. Understand the concept and its challenges."
+    },
+    "35": {
+      "title": "Modern Testing with Vitest: Faster than Jest",
+      "excerpt": "Vitest comes as a test runner integrated with Vite and offers much faster execution speed."
+    },
+    "36": {
+      "title": "Building CI/CD Pipeline with GitHub Actions",
+      "excerpt": "Automating testing and deployment processes is very important in modern development. Learn the basics of GitHub Actions."
+    },
+    "37": {
+      "title": "Kubernetes Basics for Web Developers",
+      "excerpt": "Kubernetes can look scary to beginners. This article discusses the basic concepts that need to be understood before diving deeper."
+    },
+    "38": {
+      "title": "Redis: Improving Application Performance with Caching",
+      "excerpt": "Slow database queries can be addressed with caching strategies using Redis. Learn the concepts and implementation examples."
+    },
+    "39": {
+      "title": "Building Real-Time Features with WebSocket",
+      "excerpt": "Chat, notifications, and live updates require two-way real-time communication. WebSocket is the technology for this."
+    },
+    "40": {
+      "title": "Progressive Web App: Web Applications that Feel Like Native",
+      "excerpt": "PWA allows websites to have a native-like experience, including offline capabilities and installation on the homescreen."
+    },
+    "41": {
+      "title": "The Importance of Accessibility (a11y) in Web Development",
+      "excerpt": "A good website should be accessible to everyone, including people with disabilities. Learn the basic principles of web accessibility."
+    },
+    "42": {
+      "title": "Building Consistent Design Systems for Digital Products",
+      "excerpt": "Design systems help design and development teams work more harmoniously. Learn the important components in building one."
+    },
+    "43": {
+      "title": "Managing Monorepo with Turborepo",
+      "excerpt": "Managing many packages in one repository can be complex. Turborepo is here to speed up builds and simplify workflows."
+    },
+    "44": {
+      "title": "Server-Sent Events: Lightweight Alternative for Real-Time Updates",
+      "excerpt": "Not all real-time needs require WebSocket. Server-Sent Events can be a simpler solution."
+    },
+    "45": {
+      "title": "Edge Computing: Running Code Closer to Users",
+      "excerpt": "Edge functions allow code to run at the location of the server closest to the user. Learn the benefits and applications."
+    },
+    "46": {
+      "title": "Prisma vs Drizzle: Choosing the Right ORM for Your Project",
+      "excerpt": "Two popular ORMs in the TypeScript ecosystem have different philosophies. Compare Prisma and Drizzle before choosing."
+    },
+    "47": {
+      "title": "Implementing Authentication with NextAuth.js",
+      "excerpt": "Building an authentication system from scratch takes time and is prone to security vulnerabilities. NextAuth.js is here to simplify the process."
+    },
+    "48": {
+      "title": "Implementing Rate Limiting to Protect Your API",
+      "excerpt": "Without rate limiting, your API is vulnerable to abuse and brute force attacks. Learn the strategies and implementations."
+    },
+    "49": {
+      "title": "GraphQL Federation: Combining Many Schemas into One",
+      "excerpt": "When teams grow, a large GraphQL schema can become difficult to manage. GraphQL Federation offers a distributed architecture solution."
+    },
+    "50": {
+      "title": "Understanding XSS and CSRF Attacks and How to Prevent Them",
+      "excerpt": "Web security is an aspect that must not be ignored. Understand these two common types of attacks and their prevention strategies."
+    },
+    "51": {
+      "title": "Getting to Know Svelte 5 and the Runes Concept",
+      "excerpt": "Svelte 5 introduces a new reactivity system called Runes. Learn what's changed and why it's important."
+    },
+    "52": {
+      "title": "Vue 3 Composition API: Writing More Organized Logic",
+      "excerpt": "Composition API changes how Vue components are written to be more flexible than Options API. Learn its basic concepts."
+    },
+    "53": {
+      "title": "Solid.js: Fast Reactivity Without Virtual DOM",
+      "excerpt": "Solid.js offers very competitive performance with a fine-grained reactivity approach. Learn its advantages here."
+    },
+    "54": {
+      "title": "Web Components: Building Reusable Components Across Frameworks",
+      "excerpt": "Web Components are a native browser standard for creating custom reusable elements across frameworks. Learn the basics."
+    },
+    "55": {
+      "title": "Serverless Functions: Running Backend Without Managing Servers",
+      "excerpt": "Serverless allows developers to focus on code without worrying about server infrastructure. Learn the concepts and benefits."
+    },
+    "56": {
+      "title": "Database Indexing: Key to Faster Queries",
+      "excerpt": "Slow database queries are often caused by improper indexing. Learn how indexing works and the strategies."
+    },
+    "57": {
+      "title": "CDN and Caching Strategies for Faster Websites",
+      "excerpt": "Proper CDN and caching can drastically improve website loading times. Learn the strategies that can be applied."
+    },
+    "58": {
+      "title": "HTTP/3 and QUIC: The Future of Internet Protocol",
+      "excerpt": "HTTP/3 is built on the QUIC protocol, which promises faster and more stable connections. Learn what makes it different."
+    },
+    "59": {
+      "title": "Best Git Workflow for Team Collaboration",
+      "excerpt": "An unclear Git workflow can cause conflicts and confusion within a team. Learn some popular branching strategies."
+    }
+  }
+}

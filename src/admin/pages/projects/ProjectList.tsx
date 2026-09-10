@@ -53,14 +53,10 @@ export default function ProjectList() {
     queryFn: api.projectCategories.getAll,
   });
 
-  // Removed loader
-  // const isLoading = isProjLoading;
-
   const handleDelete = (id: number) => {
     setDeleteAlert({ isOpen: true, id, isBulk: false });
   };
 
-  // Pagination Logic
   const filteredProjects = selectedCategory === "all" 
       ? projects 
       : projects.filter(p => p.categoryId?.toString() === selectedCategory);
@@ -93,15 +89,15 @@ export default function ProjectList() {
     try {
       if (deleteAlert.isBulk) {
         await api.projects.bulkDelete(selectedIds);
-        toast({ title: "Berhasil", description: `${selectedIds.length} proyek dihapus.` });
+        toast({ title: "✓ Terhapus!", description: `${selectedIds.length} proyek dihapus.` });
         setSelectedIds([]);
       } else if (deleteAlert.id) {
         await api.projects.delete(deleteAlert.id);
-        toast({ title: "Berhasil", description: "Proyek dihapus." });
+        toast({ title: "✓ Terhapus!" });
       }
       await queryClient.invalidateQueries({ queryKey: ['projects'] });
     } catch (error) {
-      toast({ variant: "destructive", title: "Gagal", description: "Gagal menghapus proyek." });
+      toast({ variant: "destructive", title: "Gagal!" });
     } finally {
       setIsDeleting(false);
       setDeleteAlert({ isOpen: false });

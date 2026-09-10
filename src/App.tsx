@@ -50,6 +50,7 @@ import BlogList from "./pages/BlogList";
 import BlogDetail from "./pages/BlogDetail";
 import ProjectDetail from "./pages/ProjectDetail";
 import NotFound from "./pages/NotFound";
+import { LanguageRouteSync, RootLanguageRedirect } from "@/components/common/LanguageRouteSync";
 
 // Admin Pages
 const LoginPage = lazyRetry(() => import("./admin/pages/LoginPage"));
@@ -185,7 +186,18 @@ const App = () => {
                   <Route path="/*" element={
                     <MaintenanceGuard>
                       <Routes>
-                        <Route path="/" element={<Index />} />
+                        {/* Root redirect to active language (/id or /en) */}
+                        <Route path="/" element={<RootLanguageRedirect />} />
+
+                        {/* Localized routes: /id, /en */}
+                        <Route path="/:lang" element={<LanguageRouteSync />}>
+                          <Route index element={<Index />} />
+                          <Route path="blog" element={<BlogList />} />
+                          <Route path="blog/:slug" element={<BlogDetail />} />
+                          <Route path="project/:id" element={<ProjectDetail />} />
+                        </Route>
+
+                        {/* Legacy fallback routes (redirects / loads seamlessly) */}
                         <Route path="/blog" element={<BlogList />} />
                         <Route path="/blog/:slug" element={<BlogDetail />} />
                         <Route path="/project/:id" element={<ProjectDetail />} />

@@ -7,10 +7,14 @@ import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { getLocalizedPath } from '@/lib/i18nNavigation';
+import { useLocalizedContent } from '@/hooks/useLocalizedContent';
 
 export const BlogSection = () => {
   const { t } = useTranslation();
-  const { posts, isLoading } = useBlogPosts();
+  const { posts: rawPosts, isLoading } = useBlogPosts();
+  const { getBlogPosts } = useLocalizedContent();
+  const posts = getBlogPosts(rawPosts);
   const navigate = useNavigate();
 
   // Filter only published posts and take first 8
@@ -101,7 +105,7 @@ export const BlogSection = () => {
                   </div>
 
                   <div className="pt-2 sm:pt-3 border-t border-border/40 mt-auto flex justify-end">
-                    <Link to={`/blog/${post.slug}`} className="block w-full sm:w-auto">
+                    <Link to={getLocalizedPath(`/blog/${post.slug}`)} className="flex-1">
                       <span className="relative group/btn overflow-hidden rounded-lg sm:rounded-xl p-[1.5px] transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] shadow-sm hover:shadow-primary/30 cursor-pointer block text-center">
                         <span 
                           className="absolute inset-[-1000%] animate-[spin_3.5s_linear_infinite]"
@@ -124,7 +128,7 @@ export const BlogSection = () => {
 
         <div className="mt-8 sm:mt-12 text-center">
           <Button 
-            onClick={() => navigate('/blog')}
+            onClick={() => navigate(getLocalizedPath('/blog'))}
             size="lg"
             variant="outline"
             className="group text-xs sm:text-sm px-4 py-2 sm:px-6 sm:py-3"

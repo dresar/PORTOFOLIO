@@ -44,7 +44,7 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['cloudinary-configs'] });
       qc.invalidateQueries({ queryKey: ['cloudinary-assets'] });
-      toast({ title: 'Akun Cloudinary diganti' });
+      toast({ title: '✓ Diganti!' });
     }
   });
 
@@ -67,12 +67,12 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
   const deleteMutation = useMutation({
     mutationFn: (asset: CloudinaryAsset) => cloudinaryApi.deleteAsset(asset.public_id, resourceTypeTab, asset.provider, asset.sha),
     onSuccess: () => {
-      toast({ title: 'Aset Dihapus' });
+      toast({ title: '✓ Dihapus!' });
       qc.invalidateQueries({ queryKey: ['cloudinary-assets'] });
       setConfirmDelete(null);
     },
     onError: (err: any) => {
-      toast({ variant: 'destructive', title: 'Gagal hapus', description: err?.response?.data?.error || err.message });
+      toast({ variant: 'destructive', title: 'Gagal!', description: err?.response?.data?.error || err.message });
     }
   });
 
@@ -80,12 +80,12 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
     await navigator.clipboard.writeText(url);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
-    toast({ title: 'Link CDN Disalin' });
+    toast({ title: '✓ Disalin!' });
   };
 
   const handleSelect = (url: string) => {
     onSelect?.(url);
-    toast({ title: 'Media Dipilih' });
+    toast({ title: '✓ Dipilih!' });
     onClose();
   };
 
@@ -113,8 +113,8 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
                   <ImageIcon className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <h2 className="font-semibold text-base">Media Library (GitHub CDN & Cloudinary)</h2>
-                  <p className="text-xs text-muted-foreground">{filtered.length} aset siap digunakan</p>
+                  <h2 className="font-semibold text-base">Media Library</h2>
+                  <p className="text-xs text-muted-foreground">{filtered.length} aset</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -243,7 +243,7 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
                       {search ? 'Coba kata kunci lain' : 'Upload file pertama kamu'}
                     </p>
                   </div>
-                  {!search && <Button size="sm" onClick={() => setShowUpload(true)}>Upload Sekarang</Button>}
+                  {!search && <Button size="sm" onClick={() => setShowUpload(true)}>Upload</Button>}
                 </div>
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
@@ -304,7 +304,7 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
                           onClick={() => handleCopy(asset.secure_url, asset.public_id)}
                         >
                           {copiedId === asset.public_id ? <Check className="w-3 h-3 text-green-500" /> : <Copy className="w-3 h-3" />}
-                          Salin URL
+                          Salin
                         </Button>
                         {confirmDelete === asset.public_id ? (
                           <div className="flex gap-1 w-full">
@@ -371,7 +371,7 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
                 <div className="flex items-center gap-2">
                   <Button size="sm" variant="secondary" className="h-8 gap-1.5 text-primary text-xs" onClick={() => handleCopy(previewImage.secure_url, previewImage.public_id)}>
                     {copiedId === previewImage.public_id ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
-                    <span>Salin Link CDN</span>
+                    <span>Salin</span>
                   </Button>
                   <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full hover:bg-destructive/10 hover:text-destructive" onClick={() => setPreviewImage(null)}>
                     <X className="w-4 h-4" />

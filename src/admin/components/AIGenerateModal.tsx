@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Sparkles, Loader2, RefreshCw } from 'lucide-react';
+import { Sparkles, Loader2 } from 'lucide-react';
 import { api } from '@/admin/services/api';
 import { useToast } from '@/components/ui/use-toast';
 import { sanitizeHtmlContent } from '@/lib/utils';
@@ -46,8 +46,6 @@ export function AIGenerateModal({ isOpen, onClose, onGenerate, contextData }: AI
         7. DILARANG menggunakan simbol markdown tebal/miring (**bold**/*italic*) atau header (###). Gunakan plain text dengan bullet points (-).
       `;
 
-      // Call AI Service (We'll reuse project summary endpoint or create new one)
-      // For now, assuming we use a generic AI endpoint
       const response = await api.ai.generateContent({ 
         prompt: fullPrompt,
         systemInstruction: "Kamu adalah penulis CV profesional. Tugasmu hanya menulis isi deskripsi pengalaman kerja secara langsung tanpa basa-basi."
@@ -56,9 +54,9 @@ export function AIGenerateModal({ isOpen, onClose, onGenerate, contextData }: AI
       const cleanContent = sanitizeHtmlContent(response.content);
       onGenerate(cleanContent);
       onClose();
-      toast({ title: "Berhasil", description: "Deskripsi berhasil dibuat oleh AI." });
+      toast({ title: "✓ Selesai!" });
     } catch (error) {
-      toast({ variant: "destructive", title: "Gagal", description: "Gagal men-generate konten." });
+      toast({ variant: "destructive", title: "Gagal!" });
     } finally {
       setIsLoading(false);
     }
@@ -70,24 +68,24 @@ export function AIGenerateModal({ isOpen, onClose, onGenerate, contextData }: AI
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-purple-500" />
-            Generate Deskripsi dengan AI
+            Generate AI
           </DialogTitle>
           <DialogDescription>
-            Masukkan instruksi tambahan untuk membantu AI membuat deskripsi pekerjaan yang lebih akurat.
+            Instruksi tambahan untuk AI.
           </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label>Instruksi untuk AI (Opsional)</Label>
+            <Label>Instruksi (Opsional)</Label>
             <Textarea 
-              placeholder="Contoh: Fokuskan pada pengalaman saya memimpin tim 5 orang dan meningkatkan omzet 20%..." 
+              placeholder="Instruksi" 
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               className="min-h-[100px]"
             />
             <p className="text-xs text-muted-foreground">
-              Kosongkan jika ingin AI membuatkan deskripsi umum berdasarkan posisi dan perusahaan.
+              Kosongkan untuk deskripsi umum.
             </p>
           </div>
         </div>
@@ -97,11 +95,11 @@ export function AIGenerateModal({ isOpen, onClose, onGenerate, contextData }: AI
           <Button onClick={handleGenerate} disabled={isLoading} className="bg-purple-600 hover:bg-purple-700">
             {isLoading ? (
                 <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sedang Berpikir...
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Memproses...
                 </>
             ) : (
                 <>
-                    <Sparkles className="mr-2 h-4 w-4" /> Generate Sekarang
+                    <Sparkles className="mr-2 h-4 w-4" /> Generate
                 </>
             )}
           </Button>

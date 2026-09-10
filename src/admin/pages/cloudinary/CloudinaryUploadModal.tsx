@@ -1,8 +1,8 @@
 import { useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  X, Upload, ImageIcon, Copy, Check, Loader2, AlertCircle,
-  CloudUpload, FileImage, Trash2, ZoomIn, Video
+  X, Upload, ImageIcon, Copy, Check, Loader2,
+  CloudUpload, FileImage, Trash2, Video
 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { cloudinaryApi, fileToBase64, formatBytes, type UploadResult } from '../../services/cloudinaryApi';
@@ -45,18 +45,18 @@ export function CloudinaryUploadModal({ isOpen, onClose, onInsert }: CloudinaryU
       const isImage = file.type.startsWith('image/');
       const isVideo = file.type.startsWith('video/');
       if (!isImage && !isVideo) {
-        toast({ variant: 'destructive', title: 'Format tidak didukung', description: `${file.name} bukan gambar atau video.` });
+        toast({ variant: 'destructive', title: 'Gagal!', description: `${file.name} format tidak didukung.` });
         return false;
       }
       if (file.size > 100 * 1024 * 1024) {
-        toast({ variant: 'destructive', title: 'File terlalu besar', description: `${file.name} melebihi 100MB.` });
+        toast({ variant: 'destructive', title: 'Gagal!', description: `${file.name} melebihi 100MB.` });
         return false;
       }
       return true;
     });
 
     if (queue.length + newFiles.length > 30) {
-      toast({ variant: 'destructive', title: 'Terlalu banyak file', description: 'Maksimal 30 file sekaligus.' });
+      toast({ variant: 'destructive', title: 'Gagal!', description: 'Maksimal 30 file.' });
       const remaining = 30 - queue.length;
       if (remaining <= 0) return;
       newFiles.splice(remaining);
@@ -98,7 +98,6 @@ export function CloudinaryUploadModal({ isOpen, onClose, onInsert }: CloudinaryU
           await new Promise(resolve => setTimeout(resolve, 1500));
         }
       } catch (err: any) {
-        console.error('Upload error:', err);
         const errorMsg = err?.response?.data?.error || err.message || 'Gagal upload';
         setQueue(prev => prev.map((item, idx) => idx === i ? { ...item, status: 'error', error: errorMsg } : item));
         failCount++;
@@ -109,11 +108,11 @@ export function CloudinaryUploadModal({ isOpen, onClose, onInsert }: CloudinaryU
     setCurrentIndex(-1);
     
     if (failCount === 0) {
-      toast({ title: 'Berhasil', description: `${successCount} file berhasil diupload ke ${provider === 'github' ? 'GitHub CDN' : 'Cloudinary'}.` });
+      toast({ title: '✓ Terunggah!', description: `${successCount} file terunggah.` });
     } else {
       toast({ 
         variant: 'destructive', 
-        title: 'Upload selesai dengan catatan', 
+        title: 'Upload Selesai', 
         description: `${successCount} berhasil, ${failCount} gagal.` 
       });
     }
@@ -127,12 +126,12 @@ export function CloudinaryUploadModal({ isOpen, onClose, onInsert }: CloudinaryU
     await navigator.clipboard.writeText(url);
     setUploaded(prev => prev.map((item, i) => i === idx ? { ...item, copied: true } : item));
     setTimeout(() => setUploaded(prev => prev.map((item, i) => i === idx ? { ...item, copied: false } : item)), 2000);
-    toast({ title: 'Link disalin!', description: url.substring(0, 50) + '...' });
+    toast({ title: '✓ Disalin!' });
   };
 
   const handleInsert = (url: string) => {
     onInsert?.(url);
-    toast({ title: 'Link dimasukkan!' });
+    toast({ title: '✓ Dipilih!' });
     handleClose();
   };
 
@@ -146,7 +145,6 @@ export function CloudinaryUploadModal({ isOpen, onClose, onInsert }: CloudinaryU
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
       >
-        {/* Backdrop */}
         <motion.div
           className="absolute inset-0 bg-black/70 backdrop-blur-sm"
           onClick={handleClose}
@@ -165,8 +163,8 @@ export function CloudinaryUploadModal({ isOpen, onClose, onInsert }: CloudinaryU
                 <CloudUpload className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <h2 className="font-semibold text-base">Upload Media & Asset CDN</h2>
-                <p className="text-xs text-muted-foreground">Maksimal 100MB per file · Format: Gambar (JPG, PNG, WebP, GIF) & Video (MP4, WebM, MOV)</p>
+                <h2 className="font-semibold text-base">Upload Media</h2>
+                <p className="text-xs text-muted-foreground">Pilih file gambar atau video untuk diunggah.</p>
               </div>
             </div>
             <Button variant="ghost" size="icon" onClick={handleClose} className="rounded-full hover:bg-destructive/10 hover:text-destructive">
@@ -187,7 +185,7 @@ export function CloudinaryUploadModal({ isOpen, onClose, onInsert }: CloudinaryU
                 )}
               >
                 <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                GitHub CDN (jsDelivr Edge)
+                GitHub CDN
               </button>
               <button
                 type="button"
@@ -200,7 +198,7 @@ export function CloudinaryUploadModal({ isOpen, onClose, onInsert }: CloudinaryU
                 )}
               >
                 <span className="w-2 h-2 rounded-full bg-sky-500" />
-                Cloudinary Storage
+                Cloudinary
               </button>
             </div>
             {queue.length === 0 ? (
@@ -229,14 +227,13 @@ export function CloudinaryUploadModal({ isOpen, onClose, onInsert }: CloudinaryU
                     <FileImage className={cn('w-8 h-8 transition-colors', isDragging ? 'text-primary' : 'text-muted-foreground')} />
                   </div>
                   <div>
-                    <p className="font-medium text-sm">Drag & drop gambar atau video di sini</p>
-                    <p className="text-xs text-muted-foreground mt-1">atau klik untuk pilih file (Maks 30 file sekaligus)</p>
+                    <p className="font-medium text-sm">Drag & drop file di sini</p>
+                    <p className="text-xs text-muted-foreground mt-1">atau klik untuk memilih file.</p>
                   </div>
                 </div>
               </div>
             ) : (
               <div className="space-y-4">
-                {/* Queue List */}
                 <div className="max-h-[40vh] overflow-y-auto space-y-2 pr-1 custom-scrollbar">
                   {queue.map((item, idx) => (
                     <div key={idx} className={cn(
@@ -285,7 +282,7 @@ export function CloudinaryUploadModal({ isOpen, onClose, onInsert }: CloudinaryU
                         
                         {item.status === 'success' && (
                           <p className="text-[10px] text-green-500 mt-0.5 flex items-center gap-1">
-                            <Check className="w-2.5 h-2.5" /> Berhasil diupload
+                            <Check className="w-2.5 h-2.5" /> Terunggah
                           </p>
                         )}
                       </div>
@@ -317,22 +314,15 @@ export function CloudinaryUploadModal({ isOpen, onClose, onInsert }: CloudinaryU
                   )}
                   <Button onClick={handleUpload} disabled={uploading || queue.every(i => i.status === 'success')} className="flex-[2] gap-2">
                     {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-                    {uploading ? `Mengupload (${currentIndex + 1}/${queue.length})...` : 'Mulai Upload Massal'}
+                    {uploading ? 'Mengunggah...' : 'Upload'}
                   </Button>
                 </div>
-                
-                {uploading && (
-                  <p className="text-[10px] text-center text-muted-foreground animate-pulse">
-                    Mohon tunggu, ada delay 2 detik antar foto untuk stabilitas...
-                  </p>
-                )}
               </div>
             )}
 
-            {/* Uploaded Results */}
             {uploaded.length > 0 && (
               <div className="space-y-2">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Hasil Upload Session Ini</p>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Hasil Upload</p>
                 <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
                   {uploaded.map((item, idx) => (
                     <motion.div
@@ -354,7 +344,7 @@ export function CloudinaryUploadModal({ isOpen, onClose, onInsert }: CloudinaryU
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-medium truncate">{item.public_id.split('/').pop()}</p>
                         <p className="text-xs text-muted-foreground">
-                          {item.resource_type === 'video' ? 'Video CDN' : `${item.width || ''}×${item.height || ''}`} · {formatBytes(item.bytes)} · {(item.format || 'file').toUpperCase()}
+                          {item.resource_type === 'video' ? 'Video' : `${item.width || ''}×${item.height || ''}`} · {formatBytes(item.bytes)} · {(item.format || 'file').toUpperCase()}
                         </p>
                         <p className="text-xs text-primary/80 truncate mt-0.5">{item.secure_url}</p>
                       </div>
@@ -364,7 +354,7 @@ export function CloudinaryUploadModal({ isOpen, onClose, onInsert }: CloudinaryU
                           variant="ghost"
                           className="w-7 h-7"
                           onClick={() => handleCopy(item.secure_url, idx)}
-                          title="Salin Link"
+                          title="Salin"
                         >
                           {item.copied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
                         </Button>
@@ -375,7 +365,7 @@ export function CloudinaryUploadModal({ isOpen, onClose, onInsert }: CloudinaryU
                             className="h-7 text-xs px-2"
                             onClick={() => handleInsert(item.secure_url)}
                           >
-                            Sisipkan
+                            Pilih
                           </Button>
                         )}
                       </div>

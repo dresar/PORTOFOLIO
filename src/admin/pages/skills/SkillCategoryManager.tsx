@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
@@ -29,7 +28,7 @@ import { api } from '../../services/api';
 import { SkillCategory } from '@/types';
 
 const categorySchema = z.object({
-    name: z.string().min(1, "Nama kategori wajib diisi"),
+    name: z.string().min(1, "Wajib diisi"),
     slug: z.string().optional(),
     order: z.coerce.number().optional().default(0),
 });
@@ -64,16 +63,10 @@ export function SkillCategoryManager() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['skillCategories'] });
             form.reset({ name: '', slug: '', order: 0 });
-            toast({ title: "Berhasil", description: "Kategori skill berhasil dibuat." });
+            toast({ title: "✓ Tersimpan!", description: "Kategori dibuat." });
         },
         onError: (error: any) => {
-             const message = error.response?.data?.error || error.message;
-             if (message?.includes('unique constraint') || message?.includes('already exists')) {
-                 toast({ variant: "destructive", title: "Gagal", description: "Nama kategori sudah ada. Gunakan nama lain." });
-                 form.setError('name', { type: 'manual', message: 'Nama kategori sudah digunakan' });
-            } else {
-                 toast({ variant: "destructive", title: "Gagal", description: "Gagal membuat kategori skill." });
-            }
+            toast({ variant: "destructive", title: "Gagal!", description: "Gagal membuat kategori." });
         }
     });
 
@@ -83,16 +76,10 @@ export function SkillCategoryManager() {
             queryClient.invalidateQueries({ queryKey: ['skillCategories'] });
             setEditingId(null);
             form.reset({ name: '', slug: '', order: 0 });
-            toast({ title: "Berhasil", description: "Kategori skill berhasil diperbarui." });
+            toast({ title: "✓ Tersimpan!", description: "Kategori diperbarui." });
         },
         onError: (error: any) => {
-             const message = error.response?.data?.error || error.message;
-             if (message?.includes('unique constraint') || message?.includes('already exists')) {
-                 toast({ variant: "destructive", title: "Gagal", description: "Nama kategori sudah ada. Gunakan nama lain." });
-                 form.setError('name', { type: 'manual', message: 'Nama kategori sudah digunakan' });
-            } else {
-                 toast({ variant: "destructive", title: "Gagal", description: "Gagal memperbarui kategori skill." });
-            }
+            toast({ variant: "destructive", title: "Gagal!", description: "Gagal memperbarui kategori." });
         }
     });
 
@@ -100,9 +87,9 @@ export function SkillCategoryManager() {
         mutationFn: api.skillCategories.delete,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['skillCategories'] });
-            toast({ title: "Terhapus", description: "Kategori skill berhasil dihapus." });
+            toast({ title: "✓ Dihapus!", description: "Kategori dihapus." });
         },
-        onError: () => toast({ variant: "destructive", title: "Gagal", description: "Gagal menghapus kategori skill." })
+        onError: () => toast({ variant: "destructive", title: "Gagal!", description: "Gagal menghapus kategori." })
     });
 
     const onSubmit = (data: CategoryFormValues) => {
@@ -142,23 +129,22 @@ export function SkillCategoryManager() {
             </DialogTrigger>
             <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>Manajemen Kategori Skill</DialogTitle>
+                    <DialogTitle>Kategori Skill</DialogTitle>
                     <DialogDescription>
-                        Tambah, ubah, atau hapus kategori skill.
+                        Daftar kategori keahlian.
                     </DialogDescription>
                 </DialogHeader>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
-                    {/* Form Section */}
                     <div className="md:col-span-1 space-y-4">
                         <div className="p-4 border rounded-lg bg-card">
                             <h3 className="font-medium mb-4">{editingId ? 'Edit Kategori' : 'Tambah Kategori'}</h3>
                             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="name">Nama Kategori</Label>
+                                    <Label htmlFor="name">Nama</Label>
                                     <Input 
                                         id="name" 
-                                        placeholder="Contoh: Frontend" 
+                                        placeholder="Nama" 
                                         {...form.register('name')} 
                                     />
                                     {form.formState.errors.name && (
@@ -167,14 +153,14 @@ export function SkillCategoryManager() {
                                 </div>
                                 
                                 <div className="space-y-2">
-                                    <Label htmlFor="slug">Slug (Opsional)</Label>
+                                    <Label htmlFor="slug">Slug</Label>
                                     <Input 
                                         id="slug" 
-                                        placeholder="frontend" 
+                                        placeholder="Slug" 
                                         {...form.register('slug')} 
                                     />
                                     <p className="text-xs text-muted-foreground">
-                                        Akan dibuat otomatis jika kosong.
+                                        Otomatis jika kosong.
                                     </p>
                                 </div>
 
@@ -183,11 +169,11 @@ export function SkillCategoryManager() {
                                     <Input 
                                         id="order" 
                                         type="number"
-                                        placeholder="0" 
+                                        placeholder="Urutan" 
                                         {...form.register('order')} 
                                     />
                                     <p className="text-xs text-muted-foreground">
-                                        Urutan tampilan (angka terkecil tampil lebih dulu).
+                                        Urutan tampil (0, 1, 2...).
                                     </p>
                                 </div>
 
@@ -206,7 +192,7 @@ export function SkillCategoryManager() {
                                         <Button 
                                             type="button" 
                                             variant="outline" 
-                                            size="icon"
+                                            size="icon" 
                                             onClick={handleCancel}
                                         >
                                             <X className="h-4 w-4" />
@@ -217,7 +203,6 @@ export function SkillCategoryManager() {
                         </div>
                     </div>
 
-                    {/* List Section */}
                     <div className="md:col-span-2">
                         <div className="border rounded-lg overflow-hidden">
                             <Table>
@@ -239,7 +224,7 @@ export function SkillCategoryManager() {
                                     ) : categories.length === 0 ? (
                                         <TableRow>
                                             <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
-                                                Belum ada kategori.
+                                                Belum ada data
                                             </TableCell>
                                         </TableRow>
                                     ) : (
@@ -252,16 +237,16 @@ export function SkillCategoryManager() {
                                                     <div className="flex justify-end gap-2">
                                                         <Button 
                                                             variant="ghost" 
-                                                            size="icon"
+                                                            size="icon" 
                                                             onClick={() => handleEdit(category)}
                                                         >
                                                             <Pencil className="h-4 w-4 text-blue-500" />
                                                         </Button>
                                                         <Button 
                                                             variant="ghost" 
-                                                            size="icon"
+                                                            size="icon" 
                                                             onClick={() => {
-                                                                if (confirm('Yakin ingin menghapus kategori ini?')) {
+                                                                if (confirm('Hapus kategori ini?')) {
                                                                     deleteMutation.mutate(category.id!);
                                                                 }
                                                             }}

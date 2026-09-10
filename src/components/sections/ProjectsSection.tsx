@@ -8,6 +8,8 @@ import { useProjectCategories } from '@/hooks/useProjectCategories';
 import { Button } from '@/components/ui/button';
 import { AISummaryModal } from '@/components/ui/AISummaryModal';
 import { normalizeMediaUrl, safeUrl } from '@/lib/utils';
+import { getLocalizedPath } from '@/lib/i18nNavigation';
+import { useLocalizedContent } from '@/hooks/useLocalizedContent';
 
 export const ProjectsSection = () => {
   const { t } = useTranslation();
@@ -18,8 +20,9 @@ export const ProjectsSection = () => {
   const [summaryProject, setSummaryProject] = useState<any>(null);
   const [summaryIndex, setSummaryIndex] = useState(0);
   const [viewedProjects, setViewedProjects] = useState<number[]>([]);
-  const itemsPerPage = 15; // Show 15 projects per page with pagination
-  const { projects = [], isLoading, isError } = useProjects();
+  const { projects: rawProjects = [], isLoading, isError } = useProjects();
+  const { getProjects } = useLocalizedContent();
+  const projects = useMemo(() => getProjects(rawProjects), [rawProjects, getProjects]);
 
   const filters = useMemo(() => [
     { id: 'all', label: t('projects.all_projects') },
@@ -105,9 +108,6 @@ export const ProjectsSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <span className="inline-block px-4 py-1 text-sm font-medium rounded-full bg-primary/10 text-primary mb-3">
-            {t('nav.projects')}
-          </span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold mb-3">
             {t('sections.projects.title')}
           </h2>
@@ -201,14 +201,14 @@ export const ProjectsSection = () => {
                   )}
 
                   {/* Overlay with Detail Button */}
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3 z-10 cursor-pointer" onClick={() => navigate(`/project/${project.id}`)}>
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3 z-10 cursor-pointer" onClick={() => navigate(getLocalizedPath(`/project/${project.id}`))}>
                     <Button
                       size="icon"
                       variant="secondary"
                       className="rounded-full hover:bg-primary hover:text-white transition-colors h-10 w-10"
                       onClick={(e) => {
                          e.stopPropagation();
-                         navigate(`/project/${project.id}`);
+                         navigate(getLocalizedPath(`/project/${project.id}`));
                       }}
                       title={t('projects.view_details')}
                     >
@@ -292,7 +292,7 @@ export const ProjectsSection = () => {
                     </div>
 
                     <button
-                      onClick={() => navigate(`/project/${project.id}`)}
+                      onClick={() => navigate(getLocalizedPath(`/project/${project.id}`))}
                       className="relative group/btn overflow-hidden rounded-xl p-[1.5px] transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] shadow-md hover:shadow-primary/30 cursor-pointer flex-1 ml-auto"
                     >
                       {/* Rotating Neon Conic Gradient Beam */}

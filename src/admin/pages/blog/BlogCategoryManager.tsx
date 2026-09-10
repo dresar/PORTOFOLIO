@@ -27,7 +27,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { api } from '../../services/api';
 
 const categorySchema = z.object({
-    name: z.string().min(1, "Category name is required"),
+    name: z.string().min(1, "Wajib diisi"),
     slug: z.string().optional(),
 });
 
@@ -57,9 +57,9 @@ export function BlogCategoryManager() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['blog-categories'] });
             form.reset();
-            toast({ title: "Success", description: "Category created successfully." });
+            toast({ title: "✓ Tersimpan!", description: "Kategori dibuat." });
         },
-        onError: () => toast({ variant: "destructive", title: "Error", description: "Failed to create category." })
+        onError: () => toast({ variant: "destructive", title: "Gagal!", description: "Gagal membuat kategori." })
     });
 
     const updateMutation = useMutation({
@@ -68,18 +68,18 @@ export function BlogCategoryManager() {
             queryClient.invalidateQueries({ queryKey: ['blog-categories'] });
             setEditingId(null);
             form.reset();
-            toast({ title: "Success", description: "Category updated successfully." });
+            toast({ title: "✓ Tersimpan!", description: "Kategori diperbarui." });
         },
-        onError: () => toast({ variant: "destructive", title: "Error", description: "Failed to update category." })
+        onError: () => toast({ variant: "destructive", title: "Gagal!", description: "Gagal memperbarui kategori." })
     });
 
     const deleteMutation = useMutation({
         mutationFn: api.blog.categories.delete,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['blog-categories'] });
-            toast({ title: "Deleted", description: "Category deleted successfully." });
+            toast({ title: "✓ Dihapus!", description: "Kategori dihapus." });
         },
-        onError: () => toast({ variant: "destructive", title: "Error", description: "Failed to delete category." })
+        onError: () => toast({ variant: "destructive", title: "Gagal!", description: "Gagal menghapus kategori." })
     });
 
     const onSubmit = (data: CategoryFormValues) => {
@@ -107,24 +107,24 @@ export function BlogCategoryManager() {
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
                 <Button variant="outline" size="sm">
-                    <Plus className="w-4 h-4 mr-2" /> Manage Categories
+                    <Plus className="w-4 h-4 mr-2" /> Kategori
                 </Button>
             </DialogTrigger>
             <DialogContent className="max-w-md">
                 <DialogHeader>
-                    <DialogTitle>Blog Categories</DialogTitle>
+                    <DialogTitle>Kategori</DialogTitle>
                     <DialogDescription>
-                        Add, edit, or remove blog categories.
+                        Daftar kategori artikel.
                     </DialogDescription>
                 </DialogHeader>
 
                 <div className="space-y-4 my-4">
                     <form onSubmit={form.handleSubmit(onSubmit)} className="flex gap-2 items-end">
                         <div className="grid w-full gap-1.5">
-                            <Label htmlFor="name">{editingId ? 'Edit Category' : 'New Category'}</Label>
+                            <Label htmlFor="name">{editingId ? 'Edit Kategori' : 'Kategori Baru'}</Label>
                             <Input 
                                 id="name" 
-                                placeholder="Category Name" 
+                                placeholder="Nama" 
                                 {...form.register('name')} 
                             />
                         </div>
@@ -155,14 +155,14 @@ export function BlogCategoryManager() {
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>Name</TableHead>
-                                    <TableHead className="text-right">Actions</TableHead>
+                                    <TableHead>Nama</TableHead>
+                                    <TableHead className="text-right">Aksi</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {categories.length === 0 ? (
                                     <TableRow>
-                                        <TableCell colSpan={2} className="text-center text-muted-foreground">No categories found.</TableCell>
+                                        <TableCell colSpan={2} className="text-center text-muted-foreground">Belum ada data</TableCell>
                                     </TableRow>
                                 ) : (
                                     categories.map((cat: any) => (
@@ -181,7 +181,7 @@ export function BlogCategoryManager() {
                                                         size="icon" 
                                                         className="text-destructive hover:bg-destructive/10"
                                                         onClick={() => {
-                                                            if (confirm('Delete this category?')) deleteMutation.mutate(cat.id);
+                                                            if (confirm('Hapus kategori ini?')) deleteMutation.mutate(cat.id);
                                                         }}
                                                     >
                                                         <Trash2 className="w-3 h-3" />

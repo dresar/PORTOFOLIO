@@ -553,16 +553,15 @@ export default function SkillList() {
         <DialogContent className="sm:max-w-3xl w-full p-6 max-h-[90vh] overflow-y-auto">
           <DialogHeader className="pb-3 border-b">
             <DialogTitle className="text-xl font-bold">
-              {currentSkill ? 'Edit Skill' : 'Tambah Skill Baru'}
+              {currentSkill ? 'Edit Skill' : 'Tambah Skill'}
             </DialogTitle>
             <DialogDescription>
-              {currentSkill ? 'Perbarui informasi dan urutan ID skill yang sudah ada.' : 'Tambahkan skill baru dengan menentukan ID dan detail keahlian.'}
+              {currentSkill ? 'Perbarui data keahlian.' : 'Tambah keahlian baru.'}
             </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSubmit} className="space-y-6 pt-2">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Left Column: ID, Name, Category, Proficiency */}
               <div className="space-y-4">
                 <div className="grid grid-cols-3 gap-3">
                   <div className="col-span-1 space-y-1.5">
@@ -572,7 +571,7 @@ export default function SkillList() {
                       type="number"
                       value={formData.id !== undefined ? formData.id : ''}
                       onChange={(e) => setFormData({ ...formData, id: e.target.value ? Number(e.target.value) : undefined })}
-                      placeholder="1"
+                      placeholder="ID"
                       required
                       className="font-mono text-sm"
                     />
@@ -583,7 +582,7 @@ export default function SkillList() {
                       id="name" 
                       value={formData.name} 
                       onChange={(e) => setFormData({...formData, name: e.target.value})} 
-                      placeholder="Contoh: HTML5, React.js"
+                      placeholder="Nama"
                       required 
                     />
                   </div>
@@ -596,7 +595,7 @@ export default function SkillList() {
                     onValueChange={(val) => setFormData({...formData, categoryId: Number(val)})}
                   >
                     <SelectTrigger id="category">
-                      <SelectValue placeholder="Pilih Kategori" />
+                      <SelectValue placeholder="Kategori" />
                     </SelectTrigger>
                     <SelectContent>
                       {categories.map((c: any) => (
@@ -626,7 +625,6 @@ export default function SkillList() {
                 </div>
               </div>
 
-              {/* Right Column: Logo & Builtin Icon Selector */}
               <div className="space-y-4">
                 <div className="space-y-1.5">
                   <Label htmlFor="logo_url" className="font-semibold text-xs uppercase tracking-wider text-muted-foreground">Logo URL</Label>
@@ -635,7 +633,7 @@ export default function SkillList() {
                       id="logo_url"
                       value={formData.logo_url}
                       onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })}
-                      placeholder="https://cdn.jsdelivr.net/gh/.../react.svg"
+                      placeholder="URL"
                       className="flex-1"
                     />
                     {formData.logo_url && (
@@ -655,12 +653,12 @@ export default function SkillList() {
 
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
-                    <Label className="font-semibold text-xs uppercase tracking-wider text-muted-foreground">Pilih Icon Bawaan (Opsional)</Label>
+                    <Label className="font-semibold text-xs uppercase tracking-wider text-muted-foreground">Pilih Icon (Opsional)</Label>
                     <span className="text-[11px] text-muted-foreground">Preset Devicon</span>
                   </div>
                   <Input
                     type="text"
-                    placeholder="Cari icon... (misal: HTML, React, Node, Python, DB)"
+                    placeholder="Cari"
                     value={iconSearch}
                     onChange={(e) => setIconSearch(e.target.value)}
                     className="h-8 text-xs"
@@ -686,7 +684,7 @@ export default function SkillList() {
                       icon.name.toLowerCase().includes(iconSearch.toLowerCase())
                     ).length === 0 && (
                       <div className="col-span-5 text-center text-xs text-muted-foreground py-4">
-                        Tidak ada icon ditemukan
+                        Icon tidak ditemukan
                       </div>
                     )}
                   </div>

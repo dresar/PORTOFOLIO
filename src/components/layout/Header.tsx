@@ -45,7 +45,8 @@ export const Header = () => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
 
-      if (location.pathname === '/') {
+      const isHome = location.pathname === '/' || location.pathname === '/id' || location.pathname === '/en';
+      if (isHome) {
         // Update active section based on scroll position
         const sections = navItems.map(item => item.href.slice(1));
         for (const section of sections.reverse()) {
@@ -67,9 +68,11 @@ export const Header = () => {
 
   const scrollToSection = (href: string) => {
     setIsMobileMenuOpen(false);
+    const currentLang = i18n.language === 'en' ? 'en' : 'id';
+    const isHome = location.pathname === '/' || location.pathname === '/id' || location.pathname === '/en';
     
-    if (location.pathname !== '/') {
-      navigate('/');
+    if (!isHome) {
+      navigate(`/${currentLang}`);
       // Delay to allow navigation to complete
       setTimeout(() => {
         const element = document.getElementById(href.slice(1));
@@ -87,8 +90,10 @@ export const Header = () => {
 
   const handleLogoClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (location.pathname !== '/') {
-      navigate('/');
+    const currentLang = i18n.language === 'en' ? 'en' : 'id';
+    const isHome = location.pathname === '/' || location.pathname === '/id' || location.pathname === '/en';
+    if (!isHome) {
+      navigate(`/${currentLang}`);
     } else {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }

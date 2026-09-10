@@ -115,9 +115,6 @@ export const SkillsSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <span className="inline-block px-4 py-1 text-sm font-medium rounded-full bg-primary/10 text-primary mb-3">
-            {t('nav.skills')}
-          </span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold mb-3">
             {t('sections.skills.title')}
           </h2>

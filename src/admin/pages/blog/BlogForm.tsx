@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,16 +7,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/use-toast';
-import { Calendar } from '@/components/ui/calendar';
 import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Slider } from '@/components/ui/slider';
-import { cn } from '@/lib/utils';
 import { api } from '../../services/api';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Loader2, Save, ArrowLeft, Image as ImageIcon, Sparkles, Youtube, Code, Trash2, MessageCircle, Plus, Calendar as CalendarIcon, Copy, Check } from 'lucide-react';
-import { useEditor, EditorContent } from '@tiptap/react';
+import { Loader2, Save, ArrowLeft, Image as ImageIcon, Sparkles, Youtube, Code, Trash2, MessageCircle, Plus, Copy, Check } from 'lucide-react';
+import { useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
 import YoutubeExtension from '@tiptap/extension-youtube';
@@ -31,70 +27,19 @@ import html from 'highlight.js/lib/languages/xml';
 import python from 'highlight.js/lib/languages/python';
 import 'highlight.js/styles/github-dark.css';
 import { BlogCategoryManager } from './BlogCategoryManager';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ModernLoader } from '@/components/ui/ModernLoader';
 import { RichHtmlEditor } from '@/admin/components/RichHtmlEditor';
-import { normalizeMediaUrl, formatCompactNumber } from '@/lib/utils';
 import { format } from 'date-fns';
 import { id as idLocale } from 'date-fns/locale';
 import { z } from 'zod';
 
-// Setup Lowlight
 const lowlight = createLowlight(common);
 lowlight.register('html', html);
 lowlight.register('css', css);
 lowlight.register('js', js);
 lowlight.register('ts', ts);
 lowlight.register('python', python);
-
-const MenuBar = ({ editor }: { editor: any }) => {
-  if (!editor) {
-    return null;
-  }
-
-  const addImage = () => {
-    const url = window.prompt('URL Gambar (CDN):');
-    if (url) {
-      editor.chain().focus().setImage({ src: url }).run();
-    }
-  };
-
-  const addYoutube = () => {
-    const url = window.prompt('URL YouTube:');
-    if (url) {
-      editor.commands.setYoutubeVideo({ src: url });
-    }
-  };
-
-  return (
-    <div className="border-b p-2 flex flex-wrap gap-1 bg-muted/20 sticky top-0 z-10 backdrop-blur-sm">
-      <Button variant={editor.isActive('bold') ? "default" : "ghost"} size="sm" onClick={() => editor.chain().focus().toggleBold().run()}>
-        B
-      </Button>
-      <Button variant={editor.isActive('italic') ? "default" : "ghost"} size="sm" onClick={() => editor.chain().focus().toggleItalic().run()}>
-        I
-      </Button>
-      <Button variant={editor.isActive('heading', { level: 2 }) ? "default" : "ghost"} size="sm" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}>
-        H2
-      </Button>
-      <Button variant={editor.isActive('heading', { level: 3 }) ? "default" : "ghost"} size="sm" onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}>
-        H3
-      </Button>
-      <Button variant={editor.isActive('bulletList') ? "default" : "ghost"} size="sm" onClick={() => editor.chain().focus().toggleBulletList().run()}>
-        List
-      </Button>
-      <Button variant={editor.isActive('codeBlock') ? "default" : "ghost"} size="sm" onClick={() => editor.chain().focus().toggleCodeBlock().run()}>
-        <Code className="h-4 w-4" />
-      </Button>
-      <Button variant="ghost" size="sm" onClick={addImage}>
-        <ImageIcon className="h-4 w-4" />
-      </Button>
-      <Button variant="ghost" size="sm" onClick={addYoutube}>
-        <Youtube className="h-4 w-4" />
-      </Button>
-    </div>
-  );
-};
 
 export default function BlogForm() {
   const { id } = useParams();
@@ -108,14 +53,12 @@ export default function BlogForm() {
   const [aiPrimaryKeyword, setAiPrimaryKeyword] = useState('');
   const [aiBlogLoading, setAiBlogLoading] = useState(false);
 
-  // AI Image Prompt State
   const [isAIPromptModalOpen, setIsAIPromptModalOpen] = useState(false);
   const [numImages, setNumImages] = useState(5);
   const [aiPromptLoading, setAiPromptLoading] = useState(false);
   const [generatedPrompts, setGeneratedPrompts] = useState<{ scene: string; prompt: string }[]>([]);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
-  // Comments State
   const [newCommentName, setNewCommentName] = useState('Admin');
   const [newCommentContent, setNewCommentContent] = useState('');
   const [isAddingComment, setIsAddingComment] = useState(false);
@@ -144,7 +87,8 @@ export default function BlogForm() {
     is_published: false,
     published_at: undefined as Date | undefined,
     views: 0,
-    likes: 0
+    likes: 0,
+    content: ''
   });
 
   const aiBlogSchema = z.object({
@@ -178,25 +122,29 @@ export default function BlogForm() {
       const ch = cleaned[i];
       if (ch === '{') depth += 1;
       if (ch === '}') depth -= 1;
-      if (depth === 0) return cleaned.slice(start, i + 1);
+      if (depth === 0) {
+        return cleaned.slice(start, i + 1);
+      }
     }
     return null;
   };
 
-  const coerceCsv = (val: unknown) => {
-    if (!val) return '';
-    if (Array.isArray(val)) return val.map(v => String(v).trim()).filter(Boolean).join(', ');
-    if (typeof val === 'string') return val;
-    return String(val);
+  const coerceCsv = (value: unknown): string => {
+    if (Array.isArray(value)) {
+      return value.map((v) => String(v).trim()).filter(Boolean).join(', ');
+    }
+    if (typeof value === 'string') {
+      return value.trim();
+    }
+    return '';
   };
 
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
-        codeBlock: false, // Disable default codeBlock to use CodeBlockLowlight
-        // Disable conflicting extensions
-        // @ts-ignore - StarterKit might include Link in some versions
-        link: false,
+        heading: {
+          levels: [2, 3],
+        },
       }),
       Image,
       Link.configure({ openOnClick: false }),
@@ -217,7 +165,6 @@ export default function BlogForm() {
     }
   }, [id]);
 
-  // Helper to safe parse JSON or array strings
   const safeParseTags = (tags: any): string => {
     if (!tags) return '';
     if (Array.isArray(tags)) return tags.join(', ');
@@ -225,9 +172,9 @@ export default function BlogForm() {
       try {
         const parsed = JSON.parse(tags);
         if (Array.isArray(parsed)) return parsed.join(', ');
-        return tags; // If string but not array, just return string
+        return tags;
       } catch (e) {
-        return tags; // Return raw string if parse fails
+        return tags;
       }
     }
     return '';
@@ -236,12 +183,10 @@ export default function BlogForm() {
   const loadPost = async (postId: number) => {
     setIsLoading(true);
     try {
-      // Fallback if getById is missing (HMR issue?)
       let postData;
       if (typeof api.blog.posts.getById === 'function') {
         postData = await api.blog.posts.getById(postId);
       } else {
-        console.warn('api.blog.posts.getById is missing, falling back to getAll');
         const allPosts = await api.blog.posts.getAll();
         postData = allPosts.find((p: any) => p.id === postId);
       }
@@ -251,7 +196,6 @@ export default function BlogForm() {
       setFormData({
         title: postData.title,
         slug: postData.slug,
-        // Handle both camelCase (Drizzle) and snake_case (potential raw SQL)
         categoryId: (postData.categoryId || postData.category_id || '').toString(),
         excerpt: postData.excerpt || '',
         coverImage: postData.coverImage || postData.cover_image_url || '',
@@ -262,18 +206,16 @@ export default function BlogForm() {
         is_published: postData.is_published,
         published_at: postData.published_at ? new Date(postData.published_at) : undefined,
         views: postData.views || 0,
-        likes: postData.likes || 0
+        likes: postData.likes || 0,
+        content: postData.content || ''
       });
       editor?.commands.setContent(postData.content);
     } catch (error: any) {
-      console.error("Failed to load post:", error);
       toast({ 
         variant: "destructive", 
-        title: "Gagal memuat artikel", 
-        description: error.message || "Terjadi kesalahan saat mengambil data." 
+        title: "Gagal!", 
+        description: "Gagal memuat artikel." 
       });
-      // Don't navigate away immediately so user can see the error
-      // navigate('/admin/blog');
     } finally {
       setIsLoading(false);
     }
@@ -282,7 +224,7 @@ export default function BlogForm() {
   const handleAIGenerateFullBlog = async () => {
     const topic = aiTopic.trim();
     if (!topic) {
-      toast({ variant: "destructive", title: "Validasi Gagal", description: "Topik wajib diisi." });
+      toast({ variant: "destructive", title: "Gagal!", description: "Topik wajib diisi." });
       return;
     }
     if (!editor) return;
@@ -372,21 +314,14 @@ export default function BlogForm() {
         seo_title: finalSeoTitle,
         seo_description: finalSeoDesc,
         seo_keywords: finalSeoKeywords,
+        content: data.content_html
       }));
 
       editor.commands.setContent(data.content_html);
       setIsAIBlogModalOpen(false);
-      toast({ title: "Berhasil", description: "Artikel lengkap berhasil dibuat oleh AI." });
+      toast({ title: "✓ Selesai!", description: "Artikel berhasil dibuat." });
     } catch (error: any) {
-      const status = error?.response?.status;
-      const code = error?.response?.data?.code;
-      if (status === 429 || code === 'AI_RATE_LIMITED') {
-        toast({ variant: "destructive", title: "AI Sedang Penuh", description: "Terlalu banyak permintaan. Coba lagi beberapa menit." });
-      } else if (status === 503 || code === 'AI_UNAVAILABLE') {
-        toast({ variant: "destructive", title: "AI Sedang Tidak Tersedia", description: "Server AI sedang sibuk. Coba lagi nanti." });
-      } else {
-        toast({ variant: "destructive", title: "Gagal", description: error?.message || "Gagal membuat artikel dengan AI." });
-      }
+      toast({ variant: "destructive", title: "Gagal!", description: "Gagal membuat artikel." });
     } finally {
       setAiBlogLoading(false);
     }
@@ -396,8 +331,7 @@ export default function BlogForm() {
     navigator.clipboard.writeText(text);
     setCopiedIndex(index);
     toast({
-      title: "Salin Berhasil",
-      description: "Prompt gambar telah disalin ke clipboard."
+      title: "✓ Tersalin!"
     });
     setTimeout(() => {
       setCopiedIndex(null);
@@ -407,13 +341,13 @@ export default function BlogForm() {
   const handleAIGenerateImagePrompts = async () => {
     const blogTitle = formData.title.trim();
     const blogExcerpt = formData.excerpt.trim();
-    const blogContent = editor ? editor.getText() : '';
+    const blogContent = formData.content || (editor ? editor.getText() : '');
 
     if (!blogTitle && !blogContent) {
       toast({
         variant: "destructive",
-        title: "Validasi Gagal",
-        description: "Judul atau isi artikel harus diisi terlebih dahulu untuk membuat prompt gambar."
+        title: "Gagal!",
+        description: "Judul atau isi artikel wajib diisi."
       });
       return;
     }
@@ -428,10 +362,10 @@ export default function BlogForm() {
         `You must generate exactly ${numImages} distinct and unique image prompts that represent different sections, key concepts, or visual ideas of the blog post.`,
         "",
         "For each prompt, adhere to the following rules:",
-        "1. Make it extremely detailed and descriptive (at least 80-120 words per prompt). Describe the scene, subjects, actions, composition, lighting, artistic style (e.g., futuristic digital art, 3D isometric render, corporate flat design, cinematic realistic photo), colors, camera angle, and emotional mood.",
+        "1. Make it extremely detailed and descriptive (at least 80-120 words per prompt). Describe the scene, subjects, actions, composition, lighting, artistic style, colors, camera angle, and emotional mood.",
         "2. Format the output as a valid JSON object wrapping the array under the 'prompts' key. Do not include markdown formatting or backticks, just raw JSON.",
         "3. Avoid abstract words; focus on concrete visual elements that AI image generators can easily render.",
-        "4. Use English for the prompt contents, as image generators perform best with English, even if the blog is in Indonesian. The 'scene' field must be in Indonesian.",
+        "4. Use English for the prompt contents. The 'scene' field must be in Indonesian.",
         "",
         "JSON schema format:",
         "{",
@@ -448,12 +382,14 @@ export default function BlogForm() {
         `Judul Blog: ${blogTitle}`,
         blogExcerpt ? `Ringkasan Blog: ${blogExcerpt}` : '',
         `Konten Blog: ${blogContent.substring(0, 4000)}`,
+        "",
+        `Generate exactly ${numImages} image prompts strictly following the instructions and output format.`
       ].filter(Boolean);
 
       const resp = await api.ai.generate({
-        prompt: userPromptParts.join('\n\n'),
+        prompt: userPromptParts.join('\n'),
         systemPrompt,
-        task: 'image_prompt',
+        task: 'blog',
       });
 
       const raw = String(resp?.content || resp?.result || resp || '');
@@ -461,22 +397,18 @@ export default function BlogForm() {
       if (!jsonStr) throw new Error('AI tidak mengembalikan JSON yang valid');
 
       const parsed = JSON.parse(jsonStr);
-      if (!parsed.prompts || !Array.isArray(parsed.prompts)) throw new Error('Hasil AI tidak sesuai format');
-
-      setGeneratedPrompts(parsed.prompts);
-      toast({
-        title: "Berhasil",
-        description: `Berhasil membuat ${parsed.prompts.length} prompt gambar.`
-      });
-    } catch (error: any) {
-      console.error(error);
-      const status = error?.response?.status;
-      const code = error?.response?.data?.code;
-      if (status === 429 || code === 'AI_RATE_LIMITED') {
-        toast({ variant: "destructive", title: "AI Sedang Penuh", description: "Terlalu banyak permintaan. Coba lagi beberapa menit." });
+      if (Array.isArray(parsed.prompts) && parsed.prompts.length > 0) {
+        setGeneratedPrompts(parsed.prompts);
+        toast({ title: "✓ Selesai!", description: "Prompt gambar berhasil dibuat." });
       } else {
-        toast({ variant: "destructive", title: "Gagal", description: error?.message || "Gagal membuat prompt gambar dengan AI." });
+        throw new Error('Prompts tidak ditemukan');
       }
+    } catch (e: any) {
+      toast({
+        variant: "destructive",
+        title: "Gagal!",
+        description: "Gagal membuat prompt gambar."
+      });
     } finally {
       setAiPromptLoading(false);
     }
@@ -484,30 +416,21 @@ export default function BlogForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editor) return;
-
     setIsSaving(true);
-    try {
-      // Clamp values to PostgreSQL integer range (max 2,147,483,647)
-      const MAX_INT = 2147483647;
-      const safeViews = Math.min(Math.max(0, parseInt(formData.views.toString()) || 0), MAX_INT);
-      const safeLikes = Math.min(Math.max(0, parseInt(formData.likes.toString()) || 0), MAX_INT);
 
-      // Handle empty slug - auto-generate if empty
-      let finalSlug = formData.slug.trim();
+    try {
+      const safeViews = Number.isInteger(Number(formData.views)) && Number(formData.views) >= 0 
+        ? Number(formData.views) 
+        : 0;
+
+      const safeLikes = Number.isInteger(Number(formData.likes)) && Number(formData.likes) >= 0 
+        ? Number(formData.likes) 
+        : 0;
+
+      let finalSlug = formData.slug ? slugify(formData.slug) : slugify(formData.title);
+      
       if (!finalSlug) {
-        finalSlug = formData.title
-          .toLowerCase()
-          .trim()
-          .replace(/[^\w\s-]/g, '')
-          .replace(/[\s_-]+/g, '-')
-          .replace(/^-+|-+$/g, '');
-          
-        // Append random string to ensure uniqueness if needed (simple collision avoidance)
-        // Ideally backend handles this, but frontend can try to be unique too
-        // finalSlug += `-${Math.random().toString(36).substring(2, 7)}`; 
-        // Better: let backend fail and we retry? Or just timestamp?
-        finalSlug += `-${Date.now().toString().slice(-4)}`;
+        finalSlug = `post-${Date.now()}`;
       }
 
       const payload = {
@@ -525,67 +448,66 @@ export default function BlogForm() {
 
       if (id) {
         await api.blog.posts.update(parseInt(id), payload);
-        toast({ title: "Berhasil", description: "Artikel diperbarui." });
+        toast({ title: "✓ Tersimpan!", description: "Artikel diperbarui." });
       } else {
         await api.blog.posts.create(payload);
-        toast({ title: "Berhasil", description: "Artikel diterbitkan." });
+        toast({ title: "✓ Tersimpan!", description: "Artikel diterbitkan." });
       }
       await queryClient.invalidateQueries({ queryKey: ['blog-posts'] });
       navigate('/admin/blog');
     } catch (error) {
-      console.error(error);
-      toast({ variant: "destructive", title: "Gagal", description: "Terjadi kesalahan saat menyimpan." });
+      toast({ variant: "destructive", title: "Gagal!", description: "Gagal menyimpan artikel." });
     } finally {
       setIsSaving(false);
     }
   };
 
   const handleAddComment = async () => {
-      if (!newCommentContent || !id) return;
-      setIsAddingComment(true);
-      try {
-          await api.blogPosts.addComment(parseInt(id), {
-              name: newCommentName,
-              email: 'admin@local.host',
-              content: newCommentContent,
-              avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(newCommentName)}&background=random`
-          });
-          toast({ title: "Berhasil", description: "Komentar ditambahkan." });
-          setNewCommentContent('');
-          refetchComments();
-      } catch (error) {
-          toast({ variant: "destructive", title: "Gagal", description: "Gagal menambah komentar." });
-      } finally {
-          setIsAddingComment(false);
-      }
+    if (!newCommentContent || !id) return;
+    setIsAddingComment(true);
+    try {
+      await api.blogPosts.addComment(parseInt(id), {
+        name: newCommentName,
+        email: 'admin@local.host',
+        content: newCommentContent,
+        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(newCommentName)}&background=random`
+      });
+      toast({ title: "✓ Tersimpan!", description: "Komentar ditambahkan." });
+      setNewCommentContent('');
+      refetchComments();
+    } catch (error) {
+      toast({ variant: "destructive", title: "Gagal!", description: "Gagal menambah komentar." });
+    } finally {
+      setIsAddingComment(false);
+    }
   };
 
   const handleDeleteComment = async (commentId: number) => {
-      if (!confirm('Hapus komentar ini?')) return;
-      try {
-          await api.blogComments.delete(commentId);
-          toast({ title: "Berhasil", description: "Komentar dihapus." });
-          refetchComments();
-      } catch (error) {
-          toast({ variant: "destructive", title: "Gagal", description: "Gagal menghapus komentar." });
-      }
+    if (!confirm('Hapus komentar ini?')) return;
+    try {
+      await api.blogComments.delete(commentId);
+      toast({ title: "✓ Dihapus!", description: "Komentar dihapus." });
+      refetchComments();
+    } catch (error) {
+      toast({ variant: "destructive", title: "Gagal!", description: "Gagal menghapus komentar." });
+    }
   };
 
   if (isLoading) {
-      return <div className="flex justify-center p-12"><ModernLoader size="lg" text="Memuat Artikel..." /></div>;
+    return <div className="flex justify-center p-12"><ModernLoader size="lg" text="Memuat..." /></div>;
   }
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-20">
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate('/admin/blog')}>
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">{id ? 'Edit Artikel' : 'Tulis Artikel Baru'}</h2>
-          <p className="text-muted-foreground">Buat konten menarik dengan bantuan AI.</p>
-        </div>
+          <Button variant="ghost" size="icon" onClick={() => navigate('/admin/blog')}>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div>
+            <h2 className="text-3xl font-bold tracking-tight">{id ? 'Edit Artikel' : 'Tulis Artikel'}</h2>
+            <p className="text-muted-foreground">Konten artikel portofolio.</p>
+          </div>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <Button
@@ -593,10 +515,10 @@ export default function BlogForm() {
             variant="outline"
             className="gap-2"
             onClick={() => setIsAIBlogModalOpen(true)}
-            disabled={!editor || aiBlogLoading}
+            disabled={aiBlogLoading}
           >
             {aiBlogLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-            Tulis dengan AI
+            Tulis AI
           </Button>
           <Button
             type="button"
@@ -606,7 +528,7 @@ export default function BlogForm() {
             disabled={aiBlogLoading || aiPromptLoading}
           >
             <ImageIcon className="h-4 w-4 text-purple-500" />
-            Prompt Gambar AI
+            Prompt Gambar
           </Button>
         </div>
       </div>
@@ -614,36 +536,36 @@ export default function BlogForm() {
       <Dialog open={isAIBlogModalOpen} onOpenChange={setIsAIBlogModalOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Tulis Artikel dengan AI</DialogTitle>
+            <DialogTitle>Tulis Artikel AI</DialogTitle>
             <DialogDescription>
-              Masukkan topik, lalu AI akan membuat judul, slug, ringkasan, isi konten super detail, dan SEO (Bahasa Indonesia).
+              Generate judul, slug, ringkasan, dan konten otomatis.
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label>Topik Artikel</Label>
+              <Label>Topik</Label>
               <Input
                 value={aiTopic}
                 onChange={(e) => setAiTopic(e.target.value)}
-                placeholder="Contoh: Panduan Lengkap Belajar React untuk Pemula"
+                placeholder="Topik"
               />
             </div>
             <div className="space-y-2">
-              <Label>Kata Kunci Utama (Opsional)</Label>
+              <Label>Kata Kunci (Opsional)</Label>
               <Input
                 value={aiPrimaryKeyword}
                 onChange={(e) => setAiPrimaryKeyword(e.target.value)}
-                placeholder="Contoh: belajar react"
+                placeholder="Kata Kunci"
               />
             </div>
             <div className="flex justify-end gap-2">
               <Button type="button" variant="outline" onClick={() => setIsAIBlogModalOpen(false)} disabled={aiBlogLoading}>
                 Batal
               </Button>
-              <Button type="button" onClick={handleAIGenerateFullBlog} disabled={aiBlogLoading || !editor}>
+              <Button type="button" onClick={handleAIGenerateFullBlog} disabled={aiBlogLoading}>
                 {aiBlogLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                Buat Artikel
+                Generate
               </Button>
             </div>
           </div>
@@ -655,23 +577,23 @@ export default function BlogForm() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-purple-600 dark:text-purple-400">
               <ImageIcon className="h-5 w-5" />
-              Generator Prompt Gambar AI
+              Prompt Gambar
             </DialogTitle>
             <DialogDescription>
-              Buat prompting super panjang dan detail untuk ChatGPT, Midjourney, atau DALL-E untuk membuat gambar ilustrasi sesuai isi artikel blog.
+              Prompting visual detail untuk gambar artikel.
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-6 my-4">
             <div className="space-y-3 bg-muted/40 p-4 rounded-lg border border-purple-500/10">
               <div className="flex justify-between items-center">
-                <Label className="text-sm font-semibold">Jumlah Gambar/Halaman</Label>
+                <Label className="text-sm font-semibold">Jumlah Gambar</Label>
                 <span className="text-sm font-bold text-purple-600 dark:text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-full border border-purple-500/20">
-                  {numImages} Gambar
+                  {numImages}
                 </span>
               </div>
               <p className="text-xs text-muted-foreground">
-                Tentukan jumlah scene visual yang ingin Anda buat prompt gambarnya secara berurutan.
+                Tentukan jumlah scene visual gambar.
               </p>
               <div className="pt-2">
                 <Slider
@@ -696,22 +618,19 @@ export default function BlogForm() {
                 disabled={aiPromptLoading}
               >
                 {aiPromptLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                Buat Prompt Detail
+                Generate
               </Button>
             </div>
 
             {aiPromptLoading && (
               <div className="flex flex-col items-center justify-center p-8 space-y-4 border rounded-lg bg-muted/20 animate-pulse">
-                <ModernLoader size="md" text="Menyusun prompt gambar super detail..." />
-                <p className="text-xs text-muted-foreground text-center max-w-sm">
-                  AI sedang menganalisis isi artikel untuk membuat instruksi gambar yang panjang dan detail...
-                </p>
+                <ModernLoader size="md" text="Menyusun prompt..." />
               </div>
             )}
 
             {generatedPrompts.length > 0 && (
               <div className="space-y-4">
-                <h4 className="font-semibold text-sm text-foreground/80 border-b pb-2">Hasil Prompt Gambar ({generatedPrompts.length})</h4>
+                <h4 className="font-semibold text-sm text-foreground/80 border-b pb-2">Hasil Prompt ({generatedPrompts.length})</h4>
                 <div className="space-y-4">
                   {generatedPrompts.map((item, index) => (
                     <div key={index} className="border border-purple-500/10 rounded-lg overflow-hidden bg-card shadow-sm">
@@ -758,41 +677,41 @@ export default function BlogForm() {
           <Card>
             <CardContent className="p-6 space-y-4">
               <div className="space-y-2">
-                <Label>Judul Artikel</Label>
+                <Label>Judul</Label>
                 <Input 
                   value={formData.title} 
                   onChange={e => setFormData({...formData, title: e.target.value})} 
-                  placeholder="Contoh: Cara Belajar React untuk Pemula" 
+                  placeholder="Judul" 
                   className="text-lg font-medium"
                   required
                 />
               </div>
               
               <div className="space-y-2">
-                <Label>Slug URL</Label>
+                <Label>Slug</Label>
                 <Input 
                   value={formData.slug} 
                   onChange={e => setFormData({...formData, slug: e.target.value})} 
-                  placeholder="URL slug (opsional, auto-generate dari judul)" 
+                  placeholder="Slug" 
                 />
               </div>
               
               <div className="space-y-2">
-                <Label>Ringkasan (Excerpt)</Label>
+                <Label>Ringkasan</Label>
                 <Textarea 
                   value={formData.excerpt} 
                   onChange={e => setFormData({...formData, excerpt: e.target.value})} 
-                  placeholder="Ringkasan singkat untuk ditampilkan di kartu..." 
+                  placeholder="Ringkasan" 
                   rows={3}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label className="font-semibold text-base">Isi Konten Artikel (HTML & Rich Text)</Label>
+                <Label className="font-semibold text-base">Konten</Label>
                 <RichHtmlEditor 
                   value={formData.content} 
                   onChange={(content) => setFormData({...formData, content})}
-                  placeholder="Tuliskan konten artikel blog dalam format HTML atau teks..."
+                  placeholder="Konten"
                 />
               </div>
             </CardContent>
@@ -805,33 +724,31 @@ export default function BlogForm() {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                        <Label>SEO Title</Label>
-                        <Input value={formData.seo_title} onChange={e => setFormData({...formData, seo_title: e.target.value})} placeholder="Title tag..." />
+                        <Label>Judul</Label>
+                        <Input value={formData.seo_title} onChange={e => setFormData({...formData, seo_title: e.target.value})} placeholder="Judul" />
                     </div>
                     <div className="space-y-2">
-                        <Label>SEO Keywords</Label>
-                        <Input value={formData.seo_keywords} onChange={e => setFormData({...formData, seo_keywords: e.target.value})} placeholder="react, tutorial, frontend (pisahkan koma)" />
+                        <Label>Kata Kunci</Label>
+                        <Input value={formData.seo_keywords} onChange={e => setFormData({...formData, seo_keywords: e.target.value})} placeholder="Kata Kunci" />
                     </div>
                 </div>
                 <div className="space-y-2">
-                    <Label>SEO Description</Label>
-                    <Textarea value={formData.seo_description} onChange={e => setFormData({...formData, seo_description: e.target.value})} placeholder="Meta description..." />
+                    <Label>Deskripsi</Label>
+                    <Textarea value={formData.seo_description} onChange={e => setFormData({...formData, seo_description: e.target.value})} placeholder="Deskripsi" />
                 </div>
              </CardContent>
           </Card>
 
-          {/* Comments Manager (Only if ID exists) */}
           {id && (
               <Card>
                   <CardHeader>
                       <CardTitle className="flex items-center gap-2">
-                          <MessageCircle className="h-5 w-5" /> Manajemen Komentar
+                          <MessageCircle className="h-5 w-5" /> Komentar
                       </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                      {/* Add Comment */}
                       <div className="space-y-4 border-b pb-4">
-                          <Label>Tambah Komentar Manual</Label>
+                          <Label>Tambah Komentar</Label>
                           <div className="flex gap-2">
                               <Input 
                                   value={newCommentName} 
@@ -842,7 +759,7 @@ export default function BlogForm() {
                               <Input 
                                   value={newCommentContent} 
                                   onChange={e => setNewCommentContent(e.target.value)} 
-                                  placeholder="Isi komentar..." 
+                                  placeholder="Komentar" 
                                   className="flex-1"
                               />
                               <Button type="button" onClick={handleAddComment} disabled={isAddingComment}>
@@ -851,10 +768,9 @@ export default function BlogForm() {
                           </div>
                       </div>
 
-                      {/* List Comments */}
                       <div className="space-y-4 max-h-[300px] overflow-y-auto">
                           {comments.length === 0 ? (
-                              <p className="text-center text-muted-foreground text-sm py-4">Belum ada komentar.</p>
+                              <p className="text-center text-muted-foreground text-sm py-4">Belum ada komentar</p>
                           ) : (
                               comments.map((comment: any) => (
                                   <div key={comment.id} className="flex justify-between items-start gap-2 bg-muted/30 p-3 rounded-md">
@@ -886,10 +802,10 @@ export default function BlogForm() {
         <div className="space-y-6">
           <Card>
             <CardContent className="p-6 space-y-4">
-              <h3 className="font-semibold mb-2">Publishing</h3>
+              <h3 className="font-semibold mb-2">Publikasi</h3>
               
               <div className="flex items-center justify-between">
-                <Label htmlFor="published">Status Publikasi</Label>
+                <Label htmlFor="published">Publikasi</Label>
                 <Switch 
                   id="published" 
                   checked={formData.is_published} 
@@ -897,50 +813,51 @@ export default function BlogForm() {
                 />
               </div>
               <div className="text-sm text-muted-foreground text-right">
-                {formData.is_published ? "Akan dipublikasikan" : "Simpan sebagai Draft"}
+                {formData.is_published ? "Publik" : "Draft"}
               </div>
 
               <div className="pt-4 border-t space-y-2">
-                <Label>Tanggal Pembuatan (Opsional)</Label>
+                <Label>Tanggal</Label>
                 <CustomDatePicker
                   value={formData.published_at || null}
                   onChange={(date) => setFormData({ ...formData, published_at: date || undefined })}
-                  placeholder="Pilih atau ketik tanggal (Default: Sekarang)"
+                  placeholder="Tanggal"
                   minYear={2022}
                   maxYear={2040}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Bisa diketik manual (YYYY-MM-DD / DD/MM/YYYY) atau pilih dari dropdown Bulan & Tahun (2022-2040).
+                  Format YYYY-MM-DD atau pilih kalender.
                 </p>
               </div>
 
-              {/* Custom Views & Likes */}
               <div className="pt-4 border-t space-y-4">
                   <div>
-                      <Label>Jumlah Views (Manual)</Label>
+                      <Label>Views</Label>
                       <Input 
                           type="number" 
                           value={formData.views} 
                           onChange={e => setFormData({...formData, views: parseInt(e.target.value) || 0})}
+                          placeholder="Views"
                           className="mt-1"
                       />
-                      <p className="text-xs text-muted-foreground mt-1">Atur jumlah view awal.</p>
+                      <p className="text-xs text-muted-foreground mt-1">Jumlah tayangan awal.</p>
                   </div>
                   <div>
-                      <Label>Jumlah Likes (Manual)</Label>
+                      <Label>Likes</Label>
                       <Input 
                           type="number" 
                           value={formData.likes} 
                           onChange={e => setFormData({...formData, likes: parseInt(e.target.value) || 0})}
+                          placeholder="Likes"
                           className="mt-1"
                       />
-                      <p className="text-xs text-muted-foreground mt-1">Atur jumlah like awal.</p>
+                      <p className="text-xs text-muted-foreground mt-1">Jumlah suka awal.</p>
                   </div>
               </div>
 
               <Button type="submit" className="w-full mt-4" disabled={isSaving || aiBlogLoading}>
                 {isSaving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
-                Simpan Artikel
+                Simpan
               </Button>
             </CardContent>
           </Card>
@@ -956,7 +873,7 @@ export default function BlogForm() {
                 </div>
                 <Select value={formData.categoryId} onValueChange={(val) => setFormData({...formData, categoryId: val})}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Pilih Kategori" />
+                    <SelectValue placeholder="Kategori" />
                   </SelectTrigger>
                   <SelectContent>
                     {categories.map((cat: any) => (
@@ -967,20 +884,20 @@ export default function BlogForm() {
               </div>
 
               <div className="space-y-2">
-                <Label>Cover Image (CDN URL)</Label>
+                <Label>Sampul</Label>
                 <div className="flex gap-2">
-                    <Input value={formData.coverImage} onChange={e => setFormData({...formData, coverImage: e.target.value})} placeholder="https://..." />
+                    <Input value={formData.coverImage} onChange={e => setFormData({...formData, coverImage: e.target.value})} placeholder="URL" />
                 </div>
                 {formData.coverImage && (
                     <div className="aspect-video rounded-md overflow-hidden bg-muted mt-2">
-                        <img src={formData.coverImage} className="w-full h-full object-cover" />
+                        <img src={formData.coverImage} className="w-full h-full object-cover" alt="Sampul" />
                     </div>
                 )}
               </div>
 
               <div className="space-y-2">
-                <Label>Tags</Label>
-                <Input value={formData.tags} onChange={e => setFormData({...formData, tags: e.target.value})} placeholder="tech, life, coding (pisahkan koma)" />
+                <Label>Tag</Label>
+                <Input value={formData.tags} onChange={e => setFormData({...formData, tags: e.target.value})} placeholder="Tag" />
               </div>
             </CardContent>
           </Card>

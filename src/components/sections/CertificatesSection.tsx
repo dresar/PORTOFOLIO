@@ -8,11 +8,14 @@ import { useModalStore } from '@/store/modalStore';
 import { Button } from '@/components/ui/button';
 import { normalizeMediaUrl, safeUrl } from '@/lib/utils';
 import { certificateCategoriesAPI } from '@/services/api';
+import { useLocalizedContent } from '@/hooks/useLocalizedContent';
 
 export const CertificatesSection = () => {
   const { t } = useTranslation();
   const { openCertificateModal } = useModalStore();
-  const { certificates = [], isLoading, refetch } = useCertificates();
+  const { certificates: rawCertificates = [], isLoading, refetch } = useCertificates();
+  const { getCertificates } = useLocalizedContent();
+  const certificates = getCertificates(rawCertificates);
   const [selectedCategory, setSelectedCategory] = useState<number | 'all'>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 15;
@@ -92,9 +95,6 @@ export const CertificatesSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <span className="inline-block px-4 py-1 text-sm font-medium rounded-full bg-primary/10 text-primary mb-3">
-            {t('nav.certificates')}
-          </span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold mb-3">
             {t('sections.certificates.title')}
           </h2>

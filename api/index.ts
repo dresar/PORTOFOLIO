@@ -1389,14 +1389,62 @@ export default async function handler(req: any, res: any) {
         }
     }
 
+    // Translate (Public endpoint powered by 9Router AI)
+    if (resourceName === 'translate') {
+        if (req.method !== 'POST') return sendJSON(res, 405, { error: 'Method not allowed' });
+        try {
+            const body = await parseBody(req);
+            const { text, target = 'en' } = body || {};
+            if (!text) return sendJSON(res, 400, { error: 'Text is required' });
+
+            const apiKey = process.env.AI_API_KEY || process.env.AI_GATEWAY_API_KEY;
+            const apiUrl = process.env.AI_API_URL || (process.env.AI_GATEWAY_BASE_URL ? `${process.env.AI_GATEWAY_BASE_URL.replace(/\/+$/, '')}/chat/completions` : 'https://9router.serverinka.cloud/v1/chat/completions');
+            const model = process.env.AI_MODEL || process.env.AI_GATEWAY_MODEL || 'MY-COMBO';
+
+            if (!apiKey) return sendJSON(res, 503, { error: 'AI Gateway not configured', translated: text });
+
+            const systemPrompt = `You are a professional translator for portfolio content. Translate the given text to fluent ${target === 'en' ? 'English' : 'Indonesian'}. Preserve all HTML tags, styling, emojis, and code formatting exactly as they are. Output ONLY the translated text without any explanation.`;
+            const apiRes = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${apiKey}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    model,
+                    messages: [
+                        { role: 'system', content: systemPrompt },
+                        { role: 'user', content: String(text) }
+                    ],
+                    stream: false
+                })
+            });
+
+            const rawText = await apiRes.text();
+            let data: any;
+            try {
+                data = JSON.parse(rawText);
+            } catch {
+                const clean = rawText.replace(/data:\s*\[DONE\][\s\S]*$/, '').trim();
+                data = JSON.parse(clean);
+            }
+
+            const translated = data?.choices?.[0]?.message?.content?.trim() || text;
+            return sendJSON(res, 200, { translated, original: text });
+        } catch (err: any) {
+            return sendJSON(res, 500, { error: 'Translation failed', details: err?.message });
+        }
+    }
+
     // AI
     if (resourceName === 'ai') {
         const tokenUser = verifyJwtToken(req);
         if (!tokenUser) return sendJSON(res, 401, { error: 'Unauthorized. AI operations require authentication.' });
 
-        const apiKey = process.env.AI_API_KEY;
-        const apiUrl = process.env.AI_API_URL || 'https://one.apprentice.cyou/api/v1/chat/completions';
-        const model = process.env.AI_MODEL || 'gemini-2.5-flash';
+        const apiKey = process.env.AI_API_KEY || process.env.AI_GATEWAY_API_KEY;
+        const apiUrl = process.env.AI_API_URL || (process.env.AI_GATEWAY_BASE_URL ? `${process.env.AI_GATEWAY_BASE_URL.replace(/\/+$/, '')}/chat/completions` : 'https://9router.serverinka.cloud/v1/chat/completions');
+        const model = process.env.AI_MODEL || process.env.AI_GATEWAY_MODEL || 'MY-COMBO';
 
         const parseUpstreamError = async (apiRes: any) => {
             const status = Number(apiRes?.status || 500);
@@ -1453,11 +1501,13 @@ export default async function handler(req: any, res: any) {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${apiKey}`,
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
                 },
                 body: JSON.stringify({
                     model: reqModel,
                     messages: messages,
+                    stream: false,
                     ...(typeof maxTokens === 'number' ? { max_tokens: Math.max(1, Math.min(8192, Math.floor(maxTokens))) } : {})
                 })
             });
@@ -1470,7 +1520,14 @@ export default async function handler(req: any, res: any) {
                 throw err;
             }
 
-            const data = await apiRes.json();
+            const rawText = await apiRes.text();
+            let data: any;
+            try {
+              data = JSON.parse(rawText);
+            } catch {
+              const clean = rawText.replace(/data:\s*\[DONE\][\s\S]*$/, '').trim();
+              data = JSON.parse(clean);
+            }
             return data.choices?.[0]?.message?.content || "";
         };
 

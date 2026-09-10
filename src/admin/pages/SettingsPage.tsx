@@ -15,7 +15,6 @@ import { api } from '../services/api';
 import { Loader2, Save, Globe, Shield, Bot, User, Lock, Mail, Edit, X, ShieldCheck, KeyRound } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-// --- Site Settings Schema ---
 const settingsSchema = z.object({
   theme: z.string().optional(),
   seoTitle: z.string().min(1, "Judul SEO diperlukan"),
@@ -28,7 +27,6 @@ const settingsSchema = z.object({
 
 type SettingsFormValues = z.infer<typeof settingsSchema>;
 
-// --- Profile Schema ---
 const profileSchema = z.object({
   name: z.string().min(1, "Nama diperlukan"),
   email: z.string().email("Email tidak valid"),
@@ -57,7 +55,6 @@ const profileSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
-// --- Site Settings Component ---
 function SiteSettingsForm() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -95,11 +92,9 @@ function SiteSettingsForm() {
         });
       }
     } catch (error) {
-      console.error("Failed to load settings:", error);
       toast({
         variant: "destructive",
-        title: "Gagal memuat pengaturan",
-        description: "Tidak dapat mengambil pengaturan situs. Cek koneksi server.",
+        title: "Gagal!",
       });
     } finally {
       setIsLoading(false);
@@ -205,7 +200,6 @@ function SiteSettingsForm() {
   );
 }
 
-// --- Profile Settings Component ---
 function ProfileSettingsForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);

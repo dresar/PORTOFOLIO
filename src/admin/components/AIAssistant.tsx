@@ -58,18 +58,12 @@ export function AIAssistant() {
       .map((m) => `${m.role === 'user' ? 'User' : 'Assistant'}: ${cleanText(m.content)}`)
       .join('\n\n');
     navigator.clipboard.writeText(chatText);
-    toast({
-        title: "Chat Disalin",
-        description: "Seluruh percakapan berhasil disalin ke clipboard.",
-    });
+    toast({ title: "✓ Disalin!" });
   };
 
   const handleCopyMessage = (text: string) => {
     navigator.clipboard.writeText(cleanText(text));
-    toast({
-        title: "Teks Disalin",
-        description: "Pesan berhasil disalin ke clipboard.",
-    });
+    toast({ title: "✓ Disalin!" });
   };
 
   const handleSend = async () => {
@@ -81,7 +75,6 @@ export function AIAssistant() {
     setIsLoading(true);
 
     try {
-      // Gather context
       const pageContext = `URL: ${window.location.origin}${location.pathname}\nPage Title: ${document.title}\nPage Content Preview: ${document.body.innerText.slice(0, 1500)}...`;
       
       const response = await chatWithAssistant(userMessage, pageContext); 

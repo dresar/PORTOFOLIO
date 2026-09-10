@@ -6,10 +6,13 @@ import { normalizeMediaUrl } from '@/lib/utils';
 import { useModalStore } from '@/store/modalStore';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState, useRef } from 'react';
+import { useLocalizedContent } from '@/hooks/useLocalizedContent';
 
 export const ExperienceSection = () => {
   const { t } = useTranslation();
-  const { experiences = [], isLoading } = useExperience();
+  const { experiences: rawExperiences = [], isLoading } = useExperience();
+  const { getExperiences } = useLocalizedContent();
+  const experiences = getExperiences(rawExperiences);
   const { openExperienceGalleryModal, openExperienceDetailModal } = useModalStore();
   const [isMobile, setIsMobile] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -55,9 +58,6 @@ export const ExperienceSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <span className="inline-block px-4 py-1 text-sm font-medium rounded-full bg-primary/10 text-primary mb-3">
-            {t('nav.experience')}
-          </span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold mb-3">
             {t('sections.experience.title')}
           </h2>

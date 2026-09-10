@@ -42,12 +42,10 @@ import {
 } from "@/components/ui/select";
 import { DeleteAlert } from "../components/DeleteAlert";
 
-// --- Schemas ---
-
 const profileSchema = z.object({
   fullName: z.string().min(1, "Nama lengkap diperlukan"),
   greeting: z.string().optional(),
-  role: z.string().optional(), // We will handle this as comma-separated string in the UI, convert to JSON on submit
+  role: z.string().optional(),
   bio: z.string().optional(),
   shortBio: z.string().optional(),
   heroImage: z.string().optional(),
@@ -68,17 +66,12 @@ function ProfileTab() {
   const [isEditing, setIsEditing] = useState(false);
   const { toast } = useToast();
   
-    // Custom state for Roles input (comma separated) to avoid fighting with JSON format in input
     const [rolesInput, setRolesInput] = useState("");
   
-    // Update form value whenever rolesInput changes to ensure it's captured
-    useEffect(() => {
-        const rolesArray = rolesInput.split(',').map(r => r.trim()).filter(r => r.length > 0);
-        const rolesJson = JSON.stringify(rolesArray);
-        // Only update if different to avoid loop (though setValue shouldn't trigger this effect)
-        // Actually, we just need to make sure onSubmit uses the latest rolesInput, which it does.
-        // But for live preview, we use rolesInput state directly.
-    }, [rolesInput]);
+  useEffect(() => {
+    const rolesArray = rolesInput.split(',').map(r => r.trim()).filter(r => r.length > 0);
+    const rolesJson = JSON.stringify(rolesArray);
+  }, [rolesInput]);
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -109,13 +102,11 @@ function ProfileTab() {
     try {
       let data = await api.profile.get();
       
-      // FIX: Handle Array if it slips through from API
       if (Array.isArray(data)) {
           data = data[0] || {};
       }
 
       if (data && Object.keys(data).length > 0) {
-        // Parse roles JSON to comma-separated string for display
         let parsedRoles = "";
         try {
             const rawRole = data.role;
@@ -155,14 +146,12 @@ function ProfileTab() {
           stats_exp_years: data.stats_exp_years || '',
         });
       } else {
-         toast({ title: "Data Kosong", description: "Tidak ada data profil ditemukan dari server." });
+         toast({ title: "Kosong" });
       }
     } catch (error) {
-      console.error("Load Profile Error:", error);
       toast({
         variant: "destructive",
-        title: "Gagal memuat profil",
-        description: "Terjadi kesalahan saat mengambil data profil.",
+        title: "Gagal!",
       });
     } finally {
       setIsLoading(false);
@@ -172,7 +161,6 @@ function ProfileTab() {
   const onSubmit = async (data: ProfileFormValues) => {
     setIsLoading(true);
     try {
-      // Convert rolesInput string back to JSON array string
       const rolesArray = rolesInput.split(',').map(r => r.trim()).filter(r => r.length > 0);
       const rolesJson = JSON.stringify(rolesArray);
 
@@ -183,18 +171,10 @@ function ProfileTab() {
 
       await api.profile.update(payload);
       
-      toast({
-        title: "Tersimpan!",
-        description: "Profil berhasil diperbarui.",
-      });
+      toast({ title: "✓ Tersimpan!" });
       setIsEditing(false);
     } catch (error) {
-      console.error("Save Error:", error);
-      toast({
-        variant: "destructive",
-        title: "Gagal!",
-        description: "Terjadi kesalahan sistem.",
-      });
+      toast({ variant: "destructive", title: "Gagal!" });
     } finally {
       setIsLoading(false);
     }
@@ -205,9 +185,9 @@ function ProfileTab() {
           navigator.geolocation.getCurrentPosition(async (position) => {
               const { latitude, longitude } = position.coords;
               form.setValue('location', `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
-              toast({ title: "Lokasi Terdeteksi", description: "Koordinat berhasil diambil." });
+              toast({ title: "✓ Lokasi!" });
           }, (err) => {
-              toast({ variant: "destructive", title: "Gagal", description: "Izin lokasi tidak tersedia." });
+              toast({ variant: "destructive", title: "Gagal!" });
           });
       }
   };
@@ -335,7 +315,7 @@ function ProfileTab() {
                                     const match = val.match(/src=["'](.*?)["']/);
                                     if (match && match[1]) {
                                         val = match[1].trim();
-                                        toast({ title: "Format Otomatis", description: "URL peta berhasil disalin." });
+                                        toast({ title: "✓ Format Otomatis" });
                                     }
                                 }
                                 form.setValue('map_embed_url', val, { shouldValidate: true, shouldDirty: true });
@@ -429,7 +409,6 @@ function ProfileTab() {
         </div>
       </div>
 
-      {/* Bottom Section: Large Previews */}
       <div className="mt-8">
           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2"><Globe className="w-5 h-5"/> Live Preview</h3>
           <div className="grid md:grid-cols-2 gap-6">
@@ -530,9 +509,9 @@ function SocialsTab() {
             queryClient.invalidateQueries({ queryKey: ['social-links'] });
             setIsDialogOpen(false);
             form.reset();
-            toast({ title: "Berhasil", description: "Link sosial media ditambahkan." });
+            toast({ title: "✓ Ditambah!" });
         },
-        onError: () => toast({ variant: "destructive", title: "Gagal", description: "Gagal menambahkan link." })
+        onError: () => toast({ variant: "destructive", title: "Gagal!" })
     });
 
     const updateMutation = useMutation({
@@ -542,18 +521,18 @@ function SocialsTab() {
             setIsDialogOpen(false);
             setEditingId(null);
             form.reset();
-            toast({ title: "Berhasil", description: "Link sosial media diperbarui." });
+            toast({ title: "✓ Tersimpan!" });
         },
-        onError: () => toast({ variant: "destructive", title: "Gagal", description: "Gagal memperbarui link." })
+        onError: () => toast({ variant: "destructive", title: "Gagal!" })
     });
 
     const deleteMutation = useMutation({
         mutationFn: api.socialLinks.delete,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['social-links'] });
-            toast({ title: "Terhapus", description: "Link sosial media dihapus." });
+            toast({ title: "✓ Terhapus!" });
         },
-        onError: () => toast({ variant: "destructive", title: "Gagal", description: "Gagal menghapus link." })
+        onError: () => toast({ variant: "destructive", title: "Gagal!" })
     });
 
     const handleDelete = (id: number) => {
@@ -568,14 +547,14 @@ function SocialsTab() {
         try {
             if (deleteAlert.isBulk) {
                 await api.socialLinks.bulkDelete(selectedIds);
-                toast({ title: "Berhasil", description: `${selectedIds.length} link dihapus.` });
+                toast({ title: "✓ Terhapus!", description: `${selectedIds.length} link dihapus.` });
                 setSelectedIds([]);
                 queryClient.invalidateQueries({ queryKey: ['social-links'] });
             } else if (deleteAlert.id) {
                 deleteMutation.mutate(deleteAlert.id);
             }
         } catch (error) {
-            toast({ variant: "destructive", title: "Gagal", description: "Gagal menghapus data." });
+            toast({ variant: "destructive", title: "Gagal!" });
         } finally {
             setDeleteAlert({ isOpen: false });
         }

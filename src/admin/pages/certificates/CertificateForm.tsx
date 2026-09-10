@@ -82,12 +82,11 @@ export default function CertificateForm() {
           categoryId: cert.categoryId || 0
         });
       } else {
-        toast({ variant: "destructive", title: "Error", description: "Sertifikat tidak ditemukan." });
+        toast({ variant: "destructive", title: "Gagal!", description: "Sertifikat tidak ditemukan." });
         navigate('/admin/certificates');
       }
     } catch (error) {
-      console.error(error);
-      toast({ variant: "destructive", title: "Error", description: "Gagal memuat sertifikat." });
+      toast({ variant: "destructive", title: "Gagal!", description: "Gagal memuat sertifikat." });
     } finally {
       setIsLoading(false);
     }
@@ -96,15 +95,14 @@ export default function CertificateForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validation
     if (!formData.name || !formData.issuer || !formData.issueDate) {
-        toast({ variant: "destructive", title: "Validasi Gagal", description: "Mohon lengkapi nama, penerbit, dan tanggal terbit." });
-        return;
+      toast({ variant: "destructive", title: "Gagal!", description: "Lengkapi data wajib." });
+      return;
     }
 
     if (!formData.categoryId || formData.categoryId === 0) {
-        toast({ variant: "destructive", title: "Validasi Gagal", description: "Mohon pilih kategori." });
-        return;
+      toast({ variant: "destructive", title: "Gagal!", description: "Kategori wajib dipilih." });
+      return;
     }
 
     setIsSaving(true);
@@ -124,27 +122,26 @@ export default function CertificateForm() {
           payload.id = Number(formData.id);
         }
         await api.certificates.update(numericId, payload);
-        toast({ title: "Berhasil", description: "Sertifikat diperbarui." });
+        toast({ title: "✓ Tersimpan!", description: "Sertifikat diperbarui." });
       } else {
         if (formData.id !== undefined && !isNaN(Number(formData.id))) {
           payload.id = Number(formData.id);
         }
         await api.certificates.create(payload);
-        toast({ title: "Berhasil", description: "Sertifikat ditambahkan." });
+        toast({ title: "✓ Tersimpan!", description: "Sertifikat ditambahkan." });
       }
       queryClient.invalidateQueries({ queryKey: ['certificates'] });
       navigate('/admin/certificates');
     } catch (error: any) {
-      console.error(error);
       const errDetail = error?.response?.data?.detail || error?.response?.data?.error || error?.message || String(error || '');
       if (errDetail.includes('duplicate key') || errDetail.includes('already exists') || errDetail.includes('certificate_pkey')) {
         toast({
           variant: "destructive",
-          title: "ID Sudah Digunakan",
-          description: `ID ${formData.id} sudah digunakan. Gunakan ID unik lain.`
+          title: "Gagal!",
+          description: `ID ${formData.id} sudah digunakan.`
         });
       } else {
-        toast({ variant: "destructive", title: "Gagal", description: "Terjadi kesalahan saat menyimpan." });
+        toast({ variant: "destructive", title: "Gagal!", description: "Gagal menyimpan sertifikat." });
       }
     } finally {
       setIsSaving(false);
@@ -152,7 +149,7 @@ export default function CertificateForm() {
   };
 
   if (isLoading) {
-    return <div className="flex justify-center py-12"><ModernLoader size="lg" text="Memuat Sertifikat..." /></div>;
+    return <div className="flex justify-center py-12"><ModernLoader size="lg" text="Memuat..." /></div>;
   }
 
   const handlePickImage = async (file: File | null) => {
@@ -215,7 +212,7 @@ export default function CertificateForm() {
 
   const handleAnalyzeImage = async () => {
     if (!selectedImageFile) {
-      toast({ variant: "destructive", title: "Gagal", description: "Pilih gambar sertifikat dulu." });
+      toast({ variant: "destructive", title: "Gagal!", description: "Pilih gambar terlebih dahulu." });
       return;
     }
 
@@ -244,9 +241,9 @@ export default function CertificateForm() {
         verified: typeof extracted.verified === 'boolean' ? extracted.verified : prev.verified,
       }));
 
-      toast({ title: "Berhasil", description: "Analisis selesai. Form diisi otomatis dari gambar." });
+      toast({ title: "✓ Selesai!", description: "Form terisi otomatis." });
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Analisis Gagal", description: error?.message || "Gagal menganalisis gambar sertifikat." });
+      toast({ variant: "destructive", title: "Gagal!", description: "Gagal menganalisis gambar." });
     } finally {
       setIsAnalyzing(false);
       setSelectedImageFile(null);
@@ -263,33 +260,33 @@ export default function CertificateForm() {
         </Button>
         <div>
           <h2 className="text-3xl font-bold tracking-tight">{isEditing ? 'Edit Sertifikat' : 'Tambah Sertifikat'}</h2>
-          <p className="text-muted-foreground">{isEditing ? 'Perbarui data sertifikat.' : 'Tambahkan sertifikat baru ke portofolio.'}</p>
+          <p className="text-muted-foreground">{isEditing ? 'Perbarui data sertifikat.' : 'Tambah sertifikat baru.'}</p>
         </div>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Form Sertifikat</CardTitle>
+          <CardTitle>Informasi</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-3">
               <div className="flex items-center justify-between gap-3 flex-wrap">
                 <div className="space-y-1">
-                  <div className="font-medium">AI Autofill dari Gambar</div>
-                  <div className="text-sm text-muted-foreground">Pilih gambar sertifikat, lalu jalankan analisis untuk mengisi form otomatis.</div>
+                  <div className="font-medium">Autofill Gambar</div>
+                  <div className="text-sm text-muted-foreground">Analisis gambar untuk mengisi formulir otomatis.</div>
                 </div>
                 <div className="flex gap-2">
                   <Button type="button" variant="outline" onClick={handleAnalyzeImage} disabled={isAnalyzing}>
                     {isAnalyzing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                    {isAnalyzing ? 'Menganalisis...' : 'Analisis & Isi Otomatis'}
+                    {isAnalyzing ? 'Menganalisis...' : 'Analisis'}
                   </Button>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
                 <div className="space-y-2">
-                  <Label>Pilih Gambar untuk Analisis (Tidak Disimpan)</Label>
+                  <Label>Pilih Gambar</Label>
                   <Input
                     type="file"
                     accept="image/*"
@@ -315,25 +312,25 @@ export default function CertificateForm() {
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="md:col-span-1 space-y-2">
-                <Label>ID Sertifikat <span className="text-red-500">*</span></Label>
+                <Label>ID</Label>
                 <Input 
                   type="number"
                   value={formData.id !== undefined ? formData.id : ''} 
                   onChange={e => setFormData({...formData, id: e.target.value ? Number(e.target.value) : undefined})} 
                   required 
-                  placeholder="27"
+                  placeholder="ID"
                   className="font-mono"
                 />
               </div>
               <div className="md:col-span-3 space-y-2">
-                <Label>Nama Sertifikat</Label>
-                <Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required placeholder="Contoh: AWS Certified Cloud Practitioner" />
+                <Label>Nama</Label>
+                <Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required placeholder="Nama" />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label>Penerbit (Issuer)</Label>
-              <Input value={formData.issuer} onChange={e => setFormData({...formData, issuer: e.target.value})} required placeholder="Contoh: Amazon Web Services" />
+              <Label>Penerbit</Label>
+              <Input value={formData.issuer} onChange={e => setFormData({...formData, issuer: e.target.value})} required placeholder="Penerbit" />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -349,12 +346,12 @@ export default function CertificateForm() {
 
             <div className="space-y-2">
               <Label>ID Kredensial (Opsional)</Label>
-              <Input value={formData.credentialId} onChange={e => setFormData({...formData, credentialId: e.target.value})} placeholder="Contoh: AKIA_SANITIZED_AWS_KEY" />
+              <Input value={formData.credentialId} onChange={e => setFormData({...formData, credentialId: e.target.value})} placeholder="ID" />
             </div>
 
             <div className="space-y-2">
               <div className="flex justify-between items-center">
-                <Label>Kategori Sertifikat</Label>
+                <Label>Kategori</Label>
                 <CertificateCategoryManager />
               </div>
               <Select 
@@ -362,10 +359,10 @@ export default function CertificateForm() {
                 onValueChange={(val) => setFormData({...formData, categoryId: Number(val)})}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Pilih Kategori" />
+                  <SelectValue placeholder="Kategori" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="0">Pilih Kategori...</SelectItem>
+                  <SelectItem value="0">Kategori</SelectItem>
                   {[...(categories || [])]
                     .sort((a: any, b: any) => (Number(a.id) || 0) - (Number(b.id) || 0))
                     .map((cat: any) => (
@@ -390,14 +387,14 @@ export default function CertificateForm() {
 
             <div className="space-y-2">
               <Label>URL Kredensial</Label>
-              <Input value={formData.credentialUrl} onChange={e => setFormData({...formData, credentialUrl: e.target.value})} placeholder="https://..." />
+              <Input value={formData.credentialUrl} onChange={e => setFormData({...formData, credentialUrl: e.target.value})} placeholder="URL" />
             </div>
 
             <div className="space-y-2">
-              <Label>Gambar Sertifikat (URL)</Label>
+              <Label>Gambar</Label>
               <div className="flex gap-4 items-start">
                 <div className="flex-1">
-                  <Input value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} placeholder="https://..." />
+                  <Input value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} placeholder="URL" />
                 </div>
                 {formData.image && (
                   <div className="h-20 w-20 rounded border overflow-hidden flex-shrink-0 bg-muted">

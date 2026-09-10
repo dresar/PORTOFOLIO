@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -10,9 +11,23 @@ import { Globe } from 'lucide-react';
 
 export const LanguageSwitcher = () => {
   const { i18n } = useTranslation();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
+    localStorage.setItem('i18nextLng', lng);
+
+    const pathname = location.pathname;
+    const match = pathname.match(/^\/(id|en)(\/.*)?$/);
+    if (match) {
+      const rest = match[2] || '';
+      navigate(`/${lng}${rest}${location.search}${location.hash}`);
+    } else if (pathname === '/') {
+      navigate(`/${lng}${location.search}${location.hash}`);
+    } else {
+      navigate(`/${lng}${pathname}${location.search}${location.hash}`);
+    }
   };
 
   return (

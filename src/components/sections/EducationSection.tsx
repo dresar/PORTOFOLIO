@@ -3,11 +3,14 @@ import { GraduationCap, Calendar, Award, Image as ImageIcon, Loader2, ArrowRight
 import { useTranslation } from 'react-i18next';
 import { useEducation } from '@/hooks/useEducation';
 import { useModalStore } from '@/store/modalStore';
+import { useLocalizedContent } from '@/hooks/useLocalizedContent';
 
 export const EducationSection = () => {
   const { t } = useTranslation();
   const { openEducationDetailModal } = useModalStore();
-  const { education = [], isLoading } = useEducation();
+  const { education: rawEducation = [], isLoading } = useEducation();
+  const { getEducations } = useLocalizedContent();
+  const education = getEducations(rawEducation);
   
   const formatDate = (dateString: string) => {
     if (!dateString) return '';
@@ -37,7 +40,6 @@ export const EducationSection = () => {
 
     return (
       <>
-        {/* Cover Image Wrapper with Logo Overlay */}
         <div className="relative shrink-0">
           <div className="relative aspect-video overflow-hidden bg-muted flex items-center justify-center">
             {coverUrl ? (
@@ -56,7 +58,6 @@ export const EducationSection = () => {
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </div>
           
-          {/* Circular Logo Overlay */}
           {(edu.logo || edu.logo_url) && (
             <div className="absolute -bottom-4 sm:-bottom-6 left-3 sm:left-5 w-9 h-9 sm:w-14 sm:h-14 rounded-full border-2 sm:border-4 border-background bg-white flex items-center justify-center z-10 overflow-hidden shadow-md">
               <img 
@@ -68,7 +69,6 @@ export const EducationSection = () => {
           )}
         </div>
         
-        {/* Content */}
         <div className="pt-5 sm:pt-8 px-2.5 sm:px-5 pb-3 sm:pb-5 flex flex-col flex-1">
           <div className="mb-2 sm:mb-3">
             <h3 className="text-xs sm:text-lg font-heading font-bold mb-0.5 sm:mb-1 leading-snug line-clamp-1 group-hover:text-primary transition-colors">{edu.institution}</h3>
@@ -92,7 +92,6 @@ export const EducationSection = () => {
              </div>
           </div>
 
-          {/* Action Buttons */}
           <div className="flex items-center justify-between pt-2 sm:pt-3 border-t border-border/50 mt-auto">
             <div className="flex gap-1">
               {edu.gallery && (typeof edu.gallery === 'string' ? JSON.parse(edu.gallery).length > 0 : edu.gallery.length > 0) && (
@@ -139,16 +138,12 @@ export const EducationSection = () => {
   return (
     <section id="education" className="py-6 md:py-8 relative">
       <div className="container mx-auto px-4">
-        {/* Section Header */}
         <motion.div
           className="text-center mb-6"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <span className="inline-block px-4 py-1 text-sm font-medium rounded-full bg-primary/10 text-primary mb-3">
-            {t('nav.education')}
-          </span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold mb-3">
             {t('sections.education.title')}
           </h2>
@@ -157,7 +152,6 @@ export const EducationSection = () => {
           </p>
         </motion.div>
 
-        {/* Education Static 2x2 Grid for Mobile, 4-Col Grid for Desktop */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 md:gap-6">
           {education.map((edu: any, index: number) => (
             <motion.div

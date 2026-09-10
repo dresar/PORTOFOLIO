@@ -12,11 +12,14 @@ import { useSkills } from '@/hooks/useSkills';
 import { useSocialLinks } from '@/hooks/useSocialLinks';
 import { normalizeMediaUrl, sanitizeHtmlContent, safeUrl } from '@/lib/utils';
 import { SocialIcon } from '@/components/ui/SocialIcon';
+import { useLocalizedContent } from '@/hooks/useLocalizedContent';
 
 export const AboutSection = () => {
   const { t, i18n } = useTranslation();
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.3 });
-  const { profile } = useProfile();
+  const { profile: rawProfile } = useProfile();
+  const { getProfile } = useLocalizedContent();
+  const profile = getProfile(rawProfile);
   const { experiences = [], isLoading } = useExperience();
   const { projects = [] } = useProjects();
   const { certificates = [] } = useCertificates();
@@ -159,9 +162,6 @@ export const AboutSection = () => {
             transition={{ duration: 0.8 }}
           >
             <div className="mb-6">
-              <span className="inline-block px-4 py-1 text-sm font-medium rounded-full bg-primary/10 text-primary mb-3">
-                {t('nav.about')}
-              </span>
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold mb-3">
                 {t('sections.about.title')}
               </h2>
