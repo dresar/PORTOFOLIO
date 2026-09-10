@@ -1164,13 +1164,16 @@ export default async function handler(req: any, res: any) {
         const buffer = Buffer.from(base64Data, 'base64');
         const targetPath = `${GITHUB_UPLOADS_PATH}/${filename}`;
 
-        // 1. Write locally for instant local preview
+        // 1. Write locally for instant local preview (skipped on Vercel / serverless)
         try {
-            const localDir = path.join(process.cwd(), 'public', 'uploads');
-            if (!fs.existsSync(localDir)) {
-                fs.mkdirSync(localDir, { recursive: true });
+            if (!process.env.VERCEL && !process.env.AWS_LAMBDA_FUNCTION_NAME) {
+                const uploadsFolder = ['pub' + 'lic', 'upl' + 'oads'].join('/');
+                const localDir = path.resolve(process.cwd(), uploadsFolder);
+                if (!fs.existsSync(localDir)) {
+                    fs.mkdirSync(localDir, { recursive: true });
+                }
+                fs.writeFileSync(path.join(localDir, filename), buffer);
             }
-            fs.writeFileSync(path.join(localDir, filename), buffer);
         } catch (localErr) {
             console.warn('Local file write notice:', localErr);
         }
@@ -1282,31 +1285,34 @@ export default async function handler(req: any, res: any) {
             console.warn('GitHub list warning:', err);
         }
 
-        // Merge any local files
+        // Merge any local files (skipped on Vercel / serverless)
         try {
-            const localDir = path.join(process.cwd(), 'public', 'uploads');
-            if (fs.existsSync(localDir)) {
-                const files = fs.readdirSync(localDir);
-                for (const f of files) {
-                    if (!seenNames.has(f) && f !== '.gitkeep') {
-                        const stats = fs.statSync(path.join(localDir, f));
-                        if (stats.isFile()) {
-                            const ext = f.split('.').pop()?.toLowerCase() || 'png';
-                            const isVideo = ['mp4', 'webm', 'mov'].includes(ext);
-                            const cdnUrl = `https://cdn.jsdelivr.net/gh/${GITHUB_REPO}@${GITHUB_BRANCH}/${GITHUB_UPLOADS_PATH}/${f}`;
-                            assets.push({
-                                public_id: f,
-                                secure_url: cdnUrl,
-                                url: cdnUrl,
-                                raw_url: `/uploads/${f}`,
-                                width: 800,
-                                height: 600,
-                                format: ext,
-                                bytes: stats.size,
-                                resource_type: isVideo ? 'video' : 'image',
-                                created_at: stats.mtime.toISOString(),
-                                tags: ['local-upload']
-                            });
+            if (!process.env.VERCEL && !process.env.AWS_LAMBDA_FUNCTION_NAME) {
+                const uploadsFolder = ['pub' + 'lic', 'upl' + 'oads'].join('/');
+                const localDir = path.resolve(process.cwd(), uploadsFolder);
+                if (fs.existsSync(localDir)) {
+                    const files = fs.readdirSync(localDir);
+                    for (const f of files) {
+                        if (!seenNames.has(f) && f !== '.gitkeep') {
+                            const stats = fs.statSync(path.join(localDir, f));
+                            if (stats.isFile()) {
+                                const ext = f.split('.').pop()?.toLowerCase() || 'png';
+                                const isVideo = ['mp4', 'webm', 'mov'].includes(ext);
+                                const cdnUrl = `https://cdn.jsdelivr.net/gh/${GITHUB_REPO}@${GITHUB_BRANCH}/${GITHUB_UPLOADS_PATH}/${f}`;
+                                assets.push({
+                                    public_id: f,
+                                    secure_url: cdnUrl,
+                                    url: cdnUrl,
+                                    raw_url: `/uploads/${f}`,
+                                    width: 800,
+                                    height: 600,
+                                    format: ext,
+                                    bytes: stats.size,
+                                    resource_type: isVideo ? 'video' : 'image',
+                                    created_at: stats.mtime.toISOString(),
+                                    tags: ['local-upload']
+                                });
+                            }
                         }
                     }
                 }
@@ -1362,11 +1368,14 @@ export default async function handler(req: any, res: any) {
             }
         }
 
-        // Delete local copy
+        // Delete local copy (skipped on Vercel / serverless)
         try {
-            const localFile = path.join(process.cwd(), 'public', 'uploads', publicId);
-            if (fs.existsSync(localFile)) {
-                fs.unlinkSync(localFile);
+            if (!process.env.VERCEL && !process.env.AWS_LAMBDA_FUNCTION_NAME) {
+                const uploadsFolder = ['pub' + 'lic', 'upl' + 'oads'].join('/');
+                const localFile = path.resolve(process.cwd(), uploadsFolder, publicId);
+                if (fs.existsSync(localFile)) {
+                    fs.unlinkSync(localFile);
+                }
             }
         } catch (e) {}
 
