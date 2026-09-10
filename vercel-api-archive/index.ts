@@ -1,9 +1,9 @@
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-serverless';
+import { neon } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-http';
 // WebSocket configuration for Neon
 try {
   if (typeof WebSocket !== 'undefined') {
-    neonConfig.webSocketConstructor = WebSocket;
+    
   }
 } catch (e) {
   console.error('Failed to configure WebSocket for Neon:', e);
@@ -93,50 +93,6 @@ function trackFailed(ip: string) {
 function clearAttempts(ip: string) {
   loginAttempts.delete(ip);
 }
-
-const getPool = () => {
-    if (pool) return pool;
-    const DB_URL = process.env.DATABASE_URL;
-    if (!DB_URL) throw new Error('DATABASE_URL is not configured');
-    
-    // Enhanced configuration for Neon
-    const isNeon = DB_URL && DB_URL.includes('neon.tech');
-
-    let normalizedUrl = DB_URL;
-    try {
-      const u = new URL(DB_URL as string);
-      // Remove unsupported channel binding for Node pg
-      u.searchParams.delete('channel_binding');
-      // Ensure libpq compatibility and SSL required
-      if (!u.searchParams.has('uselibpqcompat')) u.searchParams.set('uselibpqcompat', 'true');
-      if (!u.searchParams.has('sslmode')) u.searchParams.set('sslmode', 'require');
-      normalizedUrl = u.toString();
-    } catch {
-      // Fallback if URL parsing fails: append compat flags safely
-      const hasQuery = (DB_URL || '').includes('?');
-      const sep = hasQuery ? '&' : '?';
-      normalizedUrl = `${DB_URL}${sep}uselibpqcompat=true&sslmode=require`;
-    }
-    
-    pool = new Pool({
-      connectionString: normalizedUrl,
-      connectionTimeoutMillis: 60000,
-      idleTimeoutMillis: 10000,
-      max: 5,
-      keepAlive: true,
-      ssl: isNeon ? { rejectUnauthorized: false } : undefined
-    });
-    
-    pool.query('SELECT 1').catch((err) => {
-      console.error('DB connectivity check failed:', err?.code || err?.message || err);
-    });
-    
-    pool.on('error', (err) => {
-      console.error('Unexpected error on idle client', err);
-    });
-
-    return pool;
-};
 
 // --- 2. DATABASE SCHEMA ---
 // (Keeping schema definitions identical to ensure compatibility)
@@ -414,10 +370,26 @@ const schema = {
 };
 
 // Lazy DB init
+
+let sqlClient: any = null;
+const getSql = () => {
+    if (sqlClient) return sqlClient;
+    const DB_URL = process.env.DATABASE_URL;
+    if (!DB_URL) throw new Error('DATABASE_URL is not configured');
+    
+    let normalizedUrl = DB_URL;
+    if (!DB_URL.includes('sslmode=')) {
+        const sep = DB_URL.includes('?') ? '&' : '?';
+        normalizedUrl = DB_URL + sep + 'sslmode=require';
+    }
+    sqlClient = neon(normalizedUrl);
+    return sqlClient;
+};
+
 let db: any;
 const getDb = () => {
     if (db) return db;
-    db = drizzle(getPool(), { schema });
+    db = drizzle(getSql(), { schema });
     return db;
 };
 
@@ -425,7 +397,7 @@ let didEnsureSchema = false;
 const ensureSchema = async () => {
     if (didEnsureSchema) return;
     try {
-        const client = await getPool().connect();
+        const client = { query: async (q) => getSql().query(q), release: () => {} };
         try {
             // Ensure tables exist (Basic Schema)
             await client.query(`
@@ -486,7 +458,7 @@ const ensureSchema = async () => {
         didEnsureSchema = true;
     } catch (e: any) {
         console.error('Schema ensure failed:', e?.code || e?.message || e);
-        throw Object.assign(new Error('DB_UNAVAILABLE'), { cause: e });
+        throw Object.assign(new Error('DB_UNAVAILABLE: ' + String(e.message || e)), { cause: e });
     }
 };
 
@@ -542,12 +514,12 @@ const resources: Record<string, any> = {
   'social-links': socialLinks,
   'projects': projects,
   'project-categories': projectCategories,
-  'blog-posts': blogPosts,
+  'blog': blogPosts,
   'blog-categories': blogCategories,
   'blog-comments': blogComments,
   'skills': skills,
   'skill-categories': skillCategories,
-  'experience': experiences, // Map 'experience' -> experiences table
+  'experiences': experiences, // Map 'experience' -> experiences table
   'education': educations,
   'certificates': certificates,
   'certificate-categories': certificateCategories,
@@ -1638,7 +1610,7 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
     /*
     if (resourceName === 'debug-tables') {
         try {
-            const client = await getPool().connect();
+            const client = { query: async (q) => getSql().query(q), release: () => {} };
             try {
                 const result = await client.query("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'");
                 client.release();
@@ -1677,7 +1649,7 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
 
         // Helper: get active cloudinary config from DB (full, unmasked)
         const getActiveConfig = async () => {
-            const client = await getPool().connect();
+            const client = { query: async (q) => getSql().query(q), release: () => {} };
             try {
                 const result = await client.query(
                     'SELECT * FROM cloudinary_config WHERE is_active = true ORDER BY id DESC LIMIT 1'
@@ -1703,7 +1675,7 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
                 created_at: new Date().toISOString(),
                 updated_at: new Date().toISOString()
             };
-            const client = await getPool().connect();
+            const client = { query: async (q) => getSql().query(q), release: () => {} };
             try {
                 const result = await client.query('SELECT * FROM cloudinary_config ORDER BY id ASC');
                 return sendJSON(res, 200, [ghConfig, ...result.rows.map(maskSecret)]);
@@ -1721,7 +1693,7 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
             if (!cloud_name || !api_key || !api_secret) {
                 return sendJSON(res, 400, { error: 'cloud_name, api_key, and api_secret are required' });
             }
-            const client = await getPool().connect();
+            const client = { query: async (q) => getSql().query(q), release: () => {} };
             try {
                 const countResult = await client.query('SELECT COUNT(*) FROM cloudinary_config');
                 const count = parseInt(countResult.rows[0].count, 10);
@@ -1746,7 +1718,7 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
             if (!configId) return sendJSON(res, 400, { error: 'Config ID required (pass as ?id=)' });
             const body = await parseBody(req);
             const { cloud_name, api_key, api_secret, label } = body || {};
-            const client = await getPool().connect();
+            const client = { query: async (q) => getSql().query(q), release: () => {} };
             try {
                 const existing = await client.query('SELECT * FROM cloudinary_config WHERE id = $1', [configId]);
                 if (!existing.rows[0]) return sendJSON(res, 404, { error: 'Config not found' });
@@ -1770,7 +1742,7 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
         if (action === 'configs' && req.method === 'DELETE') {
             const configId = id ? Number(id) : null;
             if (!configId) return sendJSON(res, 400, { error: 'Config ID required (pass as ?id=)' });
-            const client = await getPool().connect();
+            const client = { query: async (q) => getSql().query(q), release: () => {} };
             try {
                 const existing = await client.query('SELECT * FROM cloudinary_config WHERE id = $1', [configId]);
                 if (!existing.rows[0]) return sendJSON(res, 404, { error: 'Config not found' });
@@ -1790,7 +1762,7 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
             const body = await parseBody(req);
             const { config_id } = body || {};
             if (!config_id) return sendJSON(res, 400, { error: 'config_id is required' });
-            const client = await getPool().connect();
+            const client = { query: async (q) => getSql().query(q), release: () => {} };
             try {
                 await client.query('UPDATE cloudinary_config SET is_active = false');
                 const result = await client.query(
@@ -1809,7 +1781,7 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
             const { config_id } = body || {};
 
             if (config_id && Number(config_id) !== 9999) {
-                const client = await getPool().connect();
+                const client = { query: async (q) => getSql().query(q), release: () => {} };
                 let cfg: any;
                 try {
                     const resDb = await client.query('SELECT * FROM cloudinary_config WHERE id = $1', [Number(config_id)]);
@@ -1889,7 +1861,7 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
 
             if (providerFilter === 'all' || providerFilter === 'cloudinary') {
                 try {
-                    const client = await getPool().connect();
+                    const client = { query: async (q) => getSql().query(q), release: () => {} };
                     let cldConfigs: any[] = [];
                     try {
                         let query = 'SELECT * FROM cloudinary_config';
@@ -1952,7 +1924,7 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
             const targetProvider = (provider || 'github').toLowerCase();
 
             if (targetProvider === 'cloudinary') {
-                const client = await getPool().connect();
+                const client = { query: async (q) => getSql().query(q), release: () => {} };
                 let configToUse: any;
                 try {
                     if (config_id && Number(config_id) !== 9999) {
@@ -2041,7 +2013,7 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
                 const isCloudinary = provider === 'cloudinary' || id.includes('/') || (!id.includes('.') && !sha);
                 if (isCloudinary) {
                     try {
-                        const client = await getPool().connect();
+                        const client = { query: async (q) => getSql().query(q), release: () => {} };
                         let targetConfig: any;
                         try {
                             const resDb = await client.query('SELECT * FROM cloudinary_config WHERE is_active = true LIMIT 1');
@@ -2079,9 +2051,9 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
     // PUBLIC ACCESS OVERRIDE: Allow read-only access to specific resources without auth
     const publicResources = [
       'projects', 'project-categories', 
-      'blog-posts', 'blog-categories',
+      'blog', 'blog-posts', 'blog-categories',
       'skills', 'skill-categories',
-      'experience', 'education',
+      'experiences', 'experience', 'education',
       'certificates', 'certificate-categories',
       'social-links', 'profile', 'settings',
       'home-content', 'about-content',
@@ -2345,7 +2317,7 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
       code === '57P01';
 
     if (isDbError) {
-      return sendJSON(res, 503, isAuthenticated ? { error: 'Service temporarily unavailable', code: 'DB_UNAVAILABLE' } : { error: 'Service temporarily unavailable' });
+      return sendJSON(res, 503, { error: 'Service temporarily unavailable', details: msg });
     }
 
     if (isProduction && !isAuthenticated) {
@@ -2355,4 +2327,12 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
     return sendJSON(res, 500, { error: 'Internal Server Error', details: msg || 'Unknown error' });
   }
 }
+
+
+
+
+
+
+
+
 
