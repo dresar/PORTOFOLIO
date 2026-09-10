@@ -23,18 +23,11 @@ import * as dotenv from 'dotenv';
 import { IncomingMessage, ServerResponse } from 'http';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import fs from 'fs';
-import path from 'path';
-import crypto from 'crypto';
 
 // --- 1. CONFIGURATION ---
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET || '';
-const GITHUB_REPO = process.env.GITHUB_REPO || 'dresar/PORTOFOLIO';
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
-const GITHUB_BRANCH = process.env.GITHUB_BRANCH || 'main';
-const GITHUB_UPLOADS_PATH = 'public/uploads';
 
 interface TokenPayload {
   id: number;
