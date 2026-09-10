@@ -297,9 +297,9 @@ const BlogDetail = () => {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-            {/* Left Column: Main Article Content */}
-            <article className="lg:col-span-2">
+          <div className="max-w-4xl mx-auto">
+            {/* Main Article Content - Full Width */}
+            <article className="w-full">
               {/* Header */}
               <header className="mb-8">
                 <div className="flex flex-wrap items-center gap-4 mb-6 text-sm text-muted-foreground">
@@ -329,28 +329,49 @@ const BlogDetail = () => {
                 </p>
               </header>
 
-              {/* Featured Image - Compact & Centered */}
+              {/* Featured Image - Compact & Click to Zoom */}
               {(post.coverImageFile || post.coverImage) ? (
                 <div className="flex justify-center mb-10">
-                  <div className="rounded-xl overflow-hidden shadow-md cursor-pointer group relative max-w-[380px] sm:max-w-[420px] w-full border border-border/50 bg-muted/20">
+                  <div 
+                    className="rounded-xl overflow-hidden shadow-md cursor-zoom-in group relative max-w-[420px] w-full border border-border/50 bg-muted/20 hover:shadow-xl transition-all"
+                    onClick={() => openImagePreviewModal(normalizeMediaUrl(post.coverImageFile || post.coverImage), post.title)}
+                  >
                     <img 
                         src={normalizeMediaUrl(post.coverImageFile || post.coverImage)} 
                         alt={post.title} 
                         className="w-full max-h-[440px] object-contain group-hover:scale-[1.01] transition-transform duration-300"
-                        onClick={() => openImagePreviewModal(normalizeMediaUrl(post.coverImageFile || post.coverImage), post.title)}
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
                           target.src = "https://placehold.co/1200x600?text=Blog+Post";
                         }}
                     />
+                    <div className="absolute bottom-2 right-2 bg-background/80 backdrop-blur-sm text-[11px] px-2 py-1 rounded-md text-muted-foreground border border-border/40 pointer-events-none flex items-center gap-1">
+                      <span>🔍 Klik untuk Zoom</span>
+                    </div>
                   </div>
                 </div>
               ) : null}
 
-              {/* Content */}
+              {/* Content with Image Click-to-Zoom Handler */}
               <div 
-                className="html-theme-responsive prose prose-lg dark:prose-invert max-w-none mb-12 [&_.overflow-hidden]:max-w-[360px] sm:[&_.overflow-hidden]:max-w-[400px] md:[&_.overflow-hidden]:max-w-[440px] [&_.overflow-hidden]:mx-auto [&_.overflow-hidden]:my-6 [&_img]:max-w-[340px] sm:[&_img]:max-w-[380px] md:[&_img]:max-w-[420px] [&_img]:max-h-[480px] [&_img]:w-auto [&_img]:h-auto [&_img]:object-contain [&_img]:mx-auto [&_img]:rounded-xl [&_img]:shadow-md [&_img]:border [&_img]:border-border/50 [&_img]:my-6 [&_img]:block [&_blockquote]:border-l-4 [&_blockquote]:border-primary [&_blockquote]:bg-primary/5 [&_blockquote]:p-4 [&_blockquote]:rounded-r-lg"
+                className="html-theme-responsive prose prose-lg dark:prose-invert max-w-none mb-12 [&_.overflow-hidden]:max-w-[360px] sm:[&_.overflow-hidden]:max-w-[400px] md:[&_.overflow-hidden]:max-w-[440px] [&_.overflow-hidden]:mx-auto [&_.overflow-hidden]:my-6 [&_img]:max-w-[340px] sm:[&_img]:max-w-[380px] md:[&_img]:max-w-[420px] [&_img]:max-h-[480px] [&_img]:w-auto [&_img]:h-auto [&_img]:object-contain [&_img]:mx-auto [&_img]:rounded-xl [&_img]:shadow-md [&_img]:border [&_img]:border-border/50 [&_img]:my-6 [&_img]:block [&_img]:cursor-zoom-in hover:[&_img]:scale-[1.01] hover:[&_img]:shadow-xl [&_img]:transition-all [&_blockquote]:border-l-4 [&_blockquote]:border-primary [&_blockquote]:bg-primary/5 [&_blockquote]:p-4 [&_blockquote]:rounded-r-lg"
                 data-color-mode={resolvedTheme === 'dark' ? 'dark' : 'light'}
+                onClick={(e) => {
+                  const target = e.target as HTMLElement;
+                  if (target && target.tagName === 'IMG') {
+                    const img = target as HTMLImageElement;
+                    const container = e.currentTarget;
+                    const allImgs = Array.from(container.querySelectorAll('img')).map(i => normalizeMediaUrl(i.src));
+                    const currentSrc = normalizeMediaUrl(img.src);
+                    const currentIndex = allImgs.indexOf(currentSrc);
+                    openImagePreviewModal(
+                      currentSrc, 
+                      img.alt || post.title, 
+                      allImgs.length > 0 ? allImgs : undefined, 
+                      currentIndex >= 0 ? currentIndex : 0
+                    );
+                  }
+                }}
               >
                 {post.content && post.content.trim().startsWith('<') && !post.content.includes('# ') && !post.content.includes('![') ? (
                   <div dangerouslySetInnerHTML={{ __html: sanitizeHtmlContent(post.content) }} />
@@ -363,7 +384,7 @@ const BlogDetail = () => {
               </div>
 
               {/* Tags */}
-              <div className="border-t pt-8 mb-8">
+              <div className="border-t pt-8 mb-4">
                  <div className="flex flex-wrap gap-2">
                      {post.tags && Array.isArray(post.tags) && post.tags.map((tag: string, i: number) => (
                          <Badge key={i} variant="outline" className="text-muted-foreground">
@@ -372,210 +393,140 @@ const BlogDetail = () => {
                      ))}
                  </div>
               </div>
-              
-              {/* Share Buttons Mobile (Bottom) */}
-              <div className="lg:hidden flex justify-between items-center pt-6 border-t border-border">
-                  <span className="font-semibold">{t('common.share_label')}</span>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="icon" onClick={() => handleShare('twitter')}>
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" /></svg>
-                    </Button>
-                    <Button variant="outline" size="icon" onClick={() => handleShare('facebook')}>
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fillRule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clipRule="evenodd" /></svg>
-                    </Button>
-                    <Button variant="outline" size="icon" onClick={() => handleShare('linkedin')}>
-                         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fillRule="evenodd" d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" clipRule="evenodd" /></svg>
-                    </Button>
-                  </div>
-              </div>
             </article>
 
-            {/* Right Column: Sidebar (Sticky) */}
-            <aside className="space-y-8">
-              <div className="sticky top-24 space-y-6">
-                
-                {/* Author Profile */}
-                <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
-                   <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-                     <User className="w-5 h-5 text-primary" />
-                     Tentang Penulis
-                   </h3>
-                   <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden">
-                        {profile?.aboutImage || profile?.heroImage ? (
-                             <img src={normalizeMediaUrl(profile.aboutImage || profile.heroImage)} alt="Author" className="w-full h-full object-cover" />
-                        ) : (
-                             <span className="font-bold text-primary text-lg">{profile?.fullName?.charAt(0) || 'E'}</span>
-                        )}
-                      </div>
-                      <div>
-                        <p className="font-bold text-foreground">{profile?.fullName || 'Eka'}</p>
-                        <p className="text-xs text-muted-foreground">{profile?.role && JSON.parse(profile.role)[0] || 'Software Engineer'}</p>
-                      </div>
-                   </div>
-                   <p className="text-sm text-muted-foreground mt-4 leading-relaxed line-clamp-4">
-                     {profile?.shortBio || profile?.bio || 'Suka berbagi pengalaman seputar teknologi, coding, dan pengembangan karir di dunia IT.'}
-                   </p>
+            {/* Interaction & Share Bar (Di Bawah Artikel) */}
+            <div className="border-t border-b border-border py-6 my-8 flex flex-wrap items-center justify-between gap-4 bg-muted/10 px-6 rounded-2xl">
+              <div className="flex items-center gap-4">
+                <Button 
+                   variant="outline" 
+                   onClick={handleLike}
+                   className={`flex items-center gap-2 rounded-full ${likeMutation.isPending ? 'opacity-50' : ''} hover:text-red-500`}
+                >
+                  <Heart className={`w-4 h-4 ${post.likes ? 'fill-red-500 text-red-500' : ''}`} />
+                  <span className="font-semibold">{formatCompactNumber(post.likes || 0)}</span>
+                  <span className="text-xs text-muted-foreground">Suka</span>
+                </Button>
+
+                <div className="flex items-center gap-2 text-sm text-muted-foreground px-3.5 py-1.5 rounded-full bg-background border border-border/50">
+                  <Eye className="w-4 h-4 text-blue-500" />
+                  <span>{formatCompactNumber(post.views || 0)} Dilihat</span>
                 </div>
-
-                {/* Engagement Stats */}
-                <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
-                   <h3 className="font-bold text-lg mb-4">Interaksi</h3>
-                   <div className="grid grid-cols-2 gap-4">
-                      <div className="text-center p-4 bg-background rounded-lg border border-border/50">
-                         <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            onClick={handleLike}
-                            className={`h-10 w-10 rounded-full mb-2 ${likeMutation.isPending ? 'opacity-50' : ''} hover:bg-red-500/10 hover:text-red-500`}
-                         >
-                           <Heart className="w-5 h-5" />
-                         </Button>
-                         <p className="text-lg font-bold">{formatCompactNumber(post.likes || 0)}</p>
-                         <p className="text-xs text-muted-foreground">Suka</p>
-                      </div>
-                      <div className="text-center p-4 bg-background rounded-lg border border-border/50">
-                         <div className="h-10 w-10 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center mx-auto mb-2">
-                           <Eye className="w-5 h-5" />
-                         </div>
-                         <p className="text-lg font-bold">{formatCompactNumber(post.views || 0)}</p>
-                         <p className="text-xs text-muted-foreground">Dilihat</p>
-                      </div>
-                   </div>
-                </div>
-
-                 {/* AI-SEO & Raw Markdown Access */}
-                 <div className="bg-card border border-primary/20 bg-primary/[0.02] rounded-xl p-5 shadow-sm">
-                    <div className="flex items-center gap-2 mb-2">
-                      <FileText className="w-4 h-4 text-primary" />
-                      <h3 className="font-bold text-sm text-foreground">Format Markdown (AI-SEO)</h3>
-                    </div>
-                    <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
-                      Artikel ini tersedia dalam format Markdown (.md) murni untuk konsumsi AI Agent (ChatGPT, Perplexity, Claude, Gemini) & pengembang.
-                    </p>
-                    <div className="flex flex-col gap-2">
-                      <a 
-                        href={`/uploads/articles/${slug}/README.md`} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-xs font-medium text-primary hover:underline flex items-center justify-between p-2 rounded-lg bg-primary/10 border border-primary/20"
-                      >
-                        <span>Buka File README.md</span>
-                        <span className="text-[10px] bg-primary/20 px-1.5 py-0.5 rounded font-mono">Raw .md</span>
-                      </a>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="w-full text-xs h-8"
-                        onClick={() => {
-                          navigator.clipboard.writeText(`https://etech.my.id/uploads/articles/${slug}/README.md`);
-                          toast.success('Link Markdown berhasil disalin!');
-                        }}
-                      >
-                        Salin Tautan Markdown
-                      </Button>
-                    </div>
-                 </div>
-
-                {/* Share Desktop */}
-                <div className="hidden lg:block bg-card border border-border rounded-xl p-6 shadow-sm">
-                   <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-                     <Share2 className="w-5 h-5" />
-                     Bagikan Artikel
-                   </h3>
-                   <div className="flex gap-2">
-                      <Button className="flex-1" variant="outline" onClick={() => handleShare('twitter')}>
-                          Twitter
-                      </Button>
-                      <Button className="flex-1" variant="outline" onClick={() => handleShare('facebook')}>
-                          Facebook
-                      </Button>
-                   </div>
-                   <Button className="w-full mt-2" variant="outline" onClick={() => handleShare('copy')}>
-                       Salin Link
-                   </Button>
-                </div>
-
-                {/* Comments Section */}
-                <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
-                   <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-                     <MessageCircle className="w-5 h-5" />
-                     Komentar ({comments?.length || 0})
-                   </h3>
-                   
-                   <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar mb-6">
-                      {commentsLoading ? (
-                          <div className="text-center py-4 text-muted-foreground text-xs">Memuat komentar...</div>
-                      ) : comments.length > 0 ? (
-                          comments.map((comment: any) => (
-                              <div key={comment.id} className="flex gap-3">
-                                 <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center shrink-0 overflow-hidden">
-                                   {comment.avatar ? (
-                                       <img src={comment.avatar} alt={comment.name} className="w-full h-full object-cover" />
-                                   ) : (
-                                       <span className="text-xs font-bold">{comment.name.charAt(0).toUpperCase()}</span>
-                                   )}
-                                 </div>
-                                 <div className="flex-1">
-                                    <div className="bg-muted/30 p-3 rounded-lg rounded-tl-none">
-                                       <div className="flex justify-between items-start mb-1">
-                                         <p className="text-sm font-bold">{comment.name}</p>
-                                         <span className="text-[10px] text-muted-foreground">
-                                             {format(new Date(comment.createdAt), 'd MMM yyyy', { locale: idLocale })}
-                                         </span>
-                                       </div>
-                                       <p className="text-xs text-muted-foreground leading-relaxed">{comment.content}</p>
-                                    </div>
-                                 </div>
-                              </div>
-                          ))
-                      ) : (
-                          <div className="text-center py-4 text-muted-foreground text-xs">
-                              Belum ada komentar
-                          </div>
-                      )}
-                   </div>
-                   
-                   <div className="pt-4 border-t border-border">
-                      <form onSubmit={handleCommentSubmit} className="space-y-3">
-                          <Input 
-                            placeholder="Nama *" 
-                            value={commentName}
-                            onChange={(e) => setCommentName(e.target.value)}
-                            className="text-sm"
-                            required
-                          />
-                          <Input 
-                            placeholder="Email" 
-                            type="email"
-                            value={commentEmail}
-                            onChange={(e) => setCommentEmail(e.target.value)}
-                            className="text-sm"
-                          />
-                          <div className="flex gap-2">
-                             <Textarea 
-                                placeholder="Komentar..." 
-                                value={commentContent}
-                                onChange={(e) => setCommentContent(e.target.value)}
-                                className="flex-1 text-sm min-h-[80px] resize-none"
-                                required
-                             />
-                             <Button 
-                                type="submit" 
-                                size="icon" 
-                                variant="default" 
-                                className="h-[80px] w-12"
-                                disabled={isSubmitting}
-                             >
-                                {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                             </Button>
-                          </div>
-                      </form>
-                   </div>
-                </div>
-
               </div>
-            </aside>
+
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-medium text-muted-foreground mr-1 flex items-center gap-1">
+                  <Share2 className="w-3.5 h-3.5" />
+                  Bagikan:
+                </span>
+                <Button variant="outline" size="sm" onClick={() => handleShare('twitter')}>Twitter</Button>
+                <Button variant="outline" size="sm" onClick={() => handleShare('facebook')}>Facebook</Button>
+                <Button variant="outline" size="sm" onClick={() => handleShare('copy')}>Salin Link</Button>
+              </div>
+            </div>
+
+            {/* Author Profile (Di Bawah Artikel) */}
+            <div className="bg-card border border-border rounded-2xl p-6 sm:p-8 shadow-sm my-10">
+               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden border border-border/50">
+                    {profile?.aboutImage || profile?.heroImage ? (
+                         <img src={normalizeMediaUrl(profile.aboutImage || profile.heroImage)} alt="Author" className="w-full h-full object-cover" />
+                    ) : (
+                         <span className="font-bold text-primary text-2xl">{profile?.fullName?.charAt(0) || 'E'}</span>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex flex-wrap items-center gap-2 mb-1">
+                      <h3 className="font-bold text-lg text-foreground">{profile?.fullName || 'Eka Syarif Maulana, S.Kom'}</h3>
+                      <Badge variant="secondary" className="text-xs font-normal">Founder Inka.tech</Badge>
+                    </div>
+                    <p className="text-xs text-primary font-medium mb-2">{profile?.role && JSON.parse(profile.role)[0] || 'Senior Fullstack Developer & AI Engineer'}</p>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {profile?.shortBio || profile?.bio || 'Suka berbagi pengalaman seputar teknologi, coding, arsitektur AI, dan edukasi keamanan siber.'}
+                    </p>
+                  </div>
+               </div>
+            </div>
+
+            {/* Comments Section (Di Bawah Artikel) */}
+            <div className="bg-card border border-border rounded-2xl p-6 sm:p-8 shadow-sm my-10">
+               <h3 className="font-bold text-lg mb-6 flex items-center gap-2">
+                 <MessageCircle className="w-5 h-5 text-primary" />
+                 Diskusi & Komentar ({comments?.length || 0})
+               </h3>
+               
+               <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar mb-8">
+                  {commentsLoading ? (
+                      <div className="text-center py-4 text-muted-foreground text-xs">Memuat komentar...</div>
+                  ) : comments.length > 0 ? (
+                      comments.map((comment: any) => (
+                          <div key={comment.id} className="flex gap-3">
+                             <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center shrink-0 overflow-hidden">
+                               {comment.avatar ? (
+                                   <img src={comment.avatar} alt={comment.name} className="w-full h-full object-cover" />
+                               ) : (
+                                   <span className="text-xs font-bold">{comment.name.charAt(0).toUpperCase()}</span>
+                               )}
+                             </div>
+                             <div className="flex-1">
+                                <div className="bg-muted/30 p-3.5 rounded-xl rounded-tl-none border border-border/30">
+                                   <div className="flex justify-between items-start mb-1">
+                                     <p className="text-sm font-bold">{comment.name}</p>
+                                     <span className="text-[10px] text-muted-foreground">
+                                         {format(new Date(comment.createdAt), 'd MMM yyyy', { locale: idLocale })}
+                                     </span>
+                                   </div>
+                                   <p className="text-xs text-muted-foreground leading-relaxed">{comment.content}</p>
+                                </div>
+                             </div>
+                          </div>
+                      ))
+                  ) : (
+                      <div className="text-center py-4 text-muted-foreground text-xs">
+                          Belum ada komentar. Jadilah yang pertama memberikan tanggapan!
+                      </div>
+                  )}
+               </div>
+               
+               <div className="pt-6 border-t border-border">
+                  <form onSubmit={handleCommentSubmit} className="space-y-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <Input 
+                          placeholder="Nama Anda *" 
+                          value={commentName}
+                          onChange={(e) => setCommentName(e.target.value)}
+                          className="text-sm"
+                          required
+                        />
+                        <Input 
+                          placeholder="Email Anda (Opsional)" 
+                          type="email"
+                          value={commentEmail}
+                          onChange={(e) => setCommentEmail(e.target.value)}
+                          className="text-sm"
+                        />
+                      </div>
+                      <div className="flex gap-3">
+                         <Textarea 
+                            placeholder="Tulis tanggapan atau pertanyaan Anda..." 
+                            value={commentContent}
+                            onChange={(e) => setCommentContent(e.target.value)}
+                            className="flex-1 text-sm min-h-[90px] resize-none"
+                            required
+                         />
+                         <Button 
+                            type="submit" 
+                            variant="default" 
+                            className="h-[90px] px-5 flex flex-col items-center justify-center gap-1"
+                            disabled={isSubmitting}
+                         >
+                            {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+                            <span className="text-xs">Kirim</span>
+                         </Button>
+                      </div>
+                  </form>
+               </div>
+            </div>
           </div>
         </div>
       </main>
