@@ -352,9 +352,9 @@ function ProfileTab() {
                         <Label htmlFor="heroImage">Foto Profil Utama (Hero)</Label>
                         <Input id="heroImage" {...form.register('heroImage')} placeholder="URL" disabled={!isEditing} />
                         
-                        <div className="relative aspect-[3/4] w-full rounded-lg border bg-muted/30 overflow-hidden flex items-center justify-center">
+                        <div className="relative aspect-[4/5] max-w-xs mx-auto w-full rounded-lg border bg-muted/30 overflow-hidden flex items-center justify-center">
                             {heroImage ? (
-                                <img src={heroImage} alt="Hero Preview" className="w-full h-full object-cover" />
+                                <img src={heroImage} alt="Hero Preview" className="w-full h-full object-cover object-top" />
                             ) : (
                                 <div className="text-center p-4 text-muted-foreground">
                                     <User className="w-12 h-12 mx-auto mb-2 opacity-20" />
@@ -370,9 +370,9 @@ function ProfileTab() {
                         <Label htmlFor="aboutImage">Foto Tentang Saya</Label>
                         <Input id="aboutImage" {...form.register('aboutImage')} placeholder="URL" disabled={!isEditing} />
                         
-                        <div className="relative aspect-video w-full rounded-lg border bg-muted/30 overflow-hidden flex items-center justify-center">
+                        <div className="relative aspect-[4/5] max-w-xs mx-auto w-full rounded-lg border bg-muted/30 overflow-hidden flex items-center justify-center">
                             {aboutImage ? (
-                                <img src={aboutImage} alt="About Preview" className="w-full h-full object-cover" />
+                                <img src={aboutImage} alt="About Preview" className="w-full h-full object-cover object-top" />
                             ) : (
                                 <div className="text-center p-4 text-muted-foreground">
                                     <ImageIcon className="w-12 h-12 mx-auto mb-2 opacity-20" />

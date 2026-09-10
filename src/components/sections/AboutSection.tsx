@@ -96,61 +96,61 @@ export const AboutSection = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            <div className="relative aspect-square max-w-sm mx-auto">
+            <div className="relative aspect-[4/5] max-w-[270px] sm:max-w-[300px] md:max-w-[320px] mx-auto">
               {/* Main Image Container */}
-              <div className="relative w-full h-full rounded-2xl overflow-hidden glass">
-                {/* Filter removed as requested */}
+              <div className="relative w-full h-full rounded-2xl overflow-hidden glass border border-border/60 shadow-xl">
                 {aboutImage ? (
                    <img 
                     src={aboutImage} 
-                    alt="About Profile" 
-                    className="w-full h-full object-cover"
+                    alt={profile?.fullName || "About Profile"} 
+                    className="w-full h-full object-cover object-top"
+                    loading="lazy"
                    />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                  <div className="w-full h-full flex items-center justify-center text-muted-foreground bg-card">
                     <div className="text-center">
-                      <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-primary/20 flex items-center justify-center">
-                        <span className="text-4xl font-bold text-primary">
+                      <div className="w-24 h-24 mx-auto mb-3 rounded-full bg-primary/20 flex items-center justify-center">
+                        <span className="text-3xl font-bold text-primary">
                           {profile?.fullName?.substring(0, 2).toUpperCase() || "ME"}
                         </span>
                       </div>
-                      <p className="text-sm">Profile Image</p>
+                      <p className="text-xs text-muted-foreground">Foto Profil</p>
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* Floating Stats - Certifications (Replaces Experience) */}
+              {/* Floating Stats - Certifications */}
               <div
-                className="absolute -left-4 top-10 p-4 rounded-xl glass border border-white/10 shadow-lg z-20"
+                className="absolute -left-3 sm:-left-4 top-8 px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-xl glass border border-border/50 shadow-md z-20"
                 style={{ animation: 'floatBadgeUp 3s ease-in-out infinite' }}
                 aria-hidden="true"
               >
                 <div className="text-center">
-                  <p className="text-3xl font-bold text-primary">
+                  <p className="text-xl sm:text-2xl font-bold text-primary leading-tight">
                     {inView ? <CountUp end={certificateCount} duration={2.5} /> : 0}
                   </p>
-                  <p className="text-xs text-muted-foreground">{t('nav.certificates') || "Sertifikasi"}</p>
+                  <p className="text-[10px] sm:text-[11px] text-muted-foreground leading-tight">{t('nav.certificates') || "Sertifikasi"}</p>
                 </div>
               </div>
 
-              {/* Floating Stats - Skills (Replaces Projects) */}
+              {/* Floating Stats - Skills */}
               <div
-                className="absolute -right-4 bottom-10 p-4 rounded-xl glass border border-white/10 shadow-lg z-20"
+                className="absolute -right-3 sm:-right-4 bottom-8 px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-xl glass border border-border/50 shadow-md z-20"
                 style={{ animation: 'floatBadgeDown 4s 0.5s ease-in-out infinite' }}
                 aria-hidden="true"
               >
                 <div className="text-center">
-                  <p className="text-3xl font-bold text-primary">
+                  <p className="text-xl sm:text-2xl font-bold text-primary leading-tight">
                     {inView ? <CountUp end={skillCount} duration={2.5} /> : 0}+
                   </p>
-                  <p className="text-xs text-muted-foreground">{t('nav.skills') || "Keahlian"}</p>
+                  <p className="text-[10px] sm:text-[11px] text-muted-foreground leading-tight">{t('nav.skills') || "Keahlian"}</p>
                 </div>
               </div>
 
               {/* Decorative Elements */}
-              <div className="absolute -top-4 -right-4 w-24 h-24 border-2 border-primary/30 rounded-2xl -z-10" />
-              <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-primary/10 rounded-2xl blur-2xl -z-10" />
+              <div className="absolute -top-3 -right-3 w-16 h-16 border border-primary/30 rounded-xl -z-10 pointer-events-none" />
+              <div className="absolute -bottom-3 -left-3 w-20 h-20 bg-primary/10 rounded-xl blur-xl -z-10 pointer-events-none" />
             </div>
           </motion.div>
 

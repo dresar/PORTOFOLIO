@@ -456,7 +456,7 @@ const BlogDetail = () => {
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                   <div className="w-13 h-13 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden border border-border/50">
                     {profile?.aboutImage || profile?.heroImage ? (
-                      <img src={normalizeMediaUrl(profile.aboutImage || profile.heroImage)} alt="Author" className="w-full h-full object-cover" />
+                      <img src={normalizeMediaUrl(profile.aboutImage || profile.heroImage)} alt="Author" className="w-full h-full object-cover object-top" />
                     ) : (
                       <span className="font-bold text-primary text-xl">{profile?.fullName?.charAt(0) || 'E'}</span>
                     )}

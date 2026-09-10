@@ -199,97 +199,95 @@ export const HeroSection = () => {
 
           {/* Right Side - Image with Floating Badges */}
           <motion.div
-            className="order-1 lg:order-2 relative flex items-center justify-center"
-            initial={{ opacity: 0, x: 50 }}
+            className="order-1 lg:order-2 relative flex items-center justify-center my-4 lg:my-0"
+            initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
           >
             {/* Glow Effect Behind Image */}
-            <div className="absolute inset-0 flex items-center justify-center" aria-hidden="true">
-              {/* Static glow — no animation to avoid expensive blur repaints */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none" aria-hidden="true">
               <div
-                className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 rounded-full"
+                className="w-56 h-56 sm:w-64 sm:h-64 lg:w-72 lg:h-72 rounded-full"
                 style={{
-                  background: 'radial-gradient(circle, hsl(174 100% 41% / 0.25), hsl(270 80% 60% / 0.15), transparent 70%)',
-                  filter: 'blur(60px)',
+                  background: 'radial-gradient(circle, hsl(var(--primary) / 0.22), hsl(var(--accent) / 0.12), transparent 70%)',
+                  filter: 'blur(50px)',
                 }}
               />
             </div>
 
-            {/* Border Beam Animation — CSS only (GPU transform:rotate) */}
-            <div
-              className="absolute w-72 h-72 md:w-[340px] md:h-[340px] lg:w-[420px] lg:h-[420px] rounded-3xl border-beam-spin"
-              style={{
-                background: 'conic-gradient(from 0deg, transparent, hsl(var(--primary)), transparent 30%)',
-                padding: '3px',
-              }}
-              aria-hidden="true"
-            >
-              <div className="w-full h-full rounded-3xl bg-background" />
-            </div>
+            {/* Compact Photo Card with Integrated Border Beam */}
+            <div className="relative w-56 sm:w-64 md:w-72 lg:w-[290px] aspect-[4/5] group">
+              {/* Border Beam Animation — exact card bounds */}
+              <div
+                className="absolute -inset-[2px] rounded-2xl sm:rounded-3xl border-beam-spin pointer-events-none"
+                style={{
+                  background: 'conic-gradient(from 0deg, transparent, hsl(var(--primary)), transparent 30%)',
+                  padding: '2px',
+                }}
+                aria-hidden="true"
+              >
+                <div className="w-full h-full rounded-2xl sm:rounded-3xl bg-background/50 backdrop-blur-xs" />
+              </div>
 
-            {/* Main Image */}
-            <motion.div
-              className="relative w-64 h-80 md:w-80 md:h-[400px] lg:w-96 lg:h-[480px] rounded-3xl overflow-hidden border-2 border-border/50 z-10"
-              whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.3 }}
-            >
-              {heroImage ? (
-                <img
-                  src={heroImage}
-                  alt={profile?.fullName || "Foto profil Eka Syarif Maulana"}
-                  className="w-full h-full object-cover"
-                  loading="eager"
-                  fetchpriority="high"
-                  decoding="async"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-card text-muted-foreground">
-                  <div className="text-center">
-                    <span className="text-6xl font-bold opacity-20">
-                      {profile?.fullName?.substring(0, 2).toUpperCase() || "??"}
-                    </span>
+              {/* Main Image Container */}
+              <motion.div
+                className="relative w-full h-full rounded-2xl sm:rounded-3xl overflow-hidden border border-border/60 bg-card shadow-xl z-10"
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.25 }}
+              >
+                {heroImage ? (
+                  <img
+                    src={heroImage}
+                    alt={profile?.fullName || "Foto profil Eka Syarif Maulana"}
+                    className="w-full h-full object-cover object-top"
+                    loading="eager"
+                    fetchpriority="high"
+                    decoding="async"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-card text-muted-foreground">
+                    <div className="text-center">
+                      <span className="text-5xl font-bold opacity-20">
+                        {profile?.fullName?.substring(0, 2).toUpperCase() || "??"}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              )}
-              {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
-            </motion.div>
+                )}
+                {/* Subtle Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent pointer-events-none" />
+              </motion.div>
 
-            {/* Floating Badge - Top Right */}
-            <div
-              className="absolute -top-4 -right-4 md:top-4 md:right-0 lg:-right-8 glass-strong px-4 py-3 rounded-2xl z-20"
-              style={{ animation: 'floatBadgeUp 3s ease-in-out infinite' }}
-              aria-hidden="true"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
-                  <CheckCircle className="w-5 h-5 text-primary" />
+              {/* Floating Badge - Top Right */}
+              <div
+                className="absolute -top-3 -right-3 sm:-top-3.5 sm:-right-3.5 glass-strong px-3 py-2 rounded-xl z-20 shadow-md border border-border/60 flex items-center gap-2"
+                style={{ animation: 'floatBadgeUp 3s ease-in-out infinite' }}
+                aria-hidden="true"
+              >
+                <div className="w-7 h-7 rounded-lg bg-primary/20 flex items-center justify-center text-primary shrink-0">
+                  <CheckCircle className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <p className="text-xl md:text-2xl font-bold text-foreground">
+                  <p className="text-sm font-bold text-foreground leading-tight">
                     {projectCount}+
                   </p>
-                  <p className="text-xs text-muted-foreground">{t('hero.projects_completed')}</p>
+                  <p className="text-[10px] text-muted-foreground leading-tight">{t('hero.projects_completed') || "Proyek"}</p>
                 </div>
               </div>
-            </div>
 
-            {/* Floating Badge - Bottom Left */}
-            <div
-              className="absolute -bottom-4 -left-4 md:bottom-8 md:left-0 lg:-left-8 glass-strong px-4 py-3 rounded-2xl z-20"
-              style={{ animation: 'floatBadgeDown 3.5s 0.5s ease-in-out infinite' }}
-              aria-hidden="true"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
-                  <Briefcase className="w-5 h-5 text-accent" />
+              {/* Floating Badge - Bottom Left */}
+              <div
+                className="absolute -bottom-3 -left-3 sm:-bottom-3.5 sm:-left-3.5 glass-strong px-3 py-2 rounded-xl z-20 shadow-md border border-border/60 flex items-center gap-2"
+                style={{ animation: 'floatBadgeDown 3.5s 0.5s ease-in-out infinite' }}
+                aria-hidden="true"
+              >
+                <div className="w-7 h-7 rounded-lg bg-accent/20 flex items-center justify-center text-accent shrink-0">
+                  <Briefcase className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <p className="text-xl md:text-2xl font-bold text-foreground">
+                  <p className="text-sm font-bold text-foreground leading-tight">
                     {yearsExperience}+
                   </p>
-                  <p className="text-xs text-muted-foreground">{t('hero.years_experience')}</p>
+                  <p className="text-[10px] text-muted-foreground leading-tight">{t('hero.years_experience') || "Pengalaman"}</p>
                 </div>
               </div>
             </div>
