@@ -172,7 +172,7 @@ export const HeroSection = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7 }}
             >
-              {socialLinks.map((social: any, index: number) => {
+              {(Array.isArray(socialLinks) ? socialLinks : []).map((social: any, index: number) => {
                 const platformName = social.platform || social.icon || 'Social';
                 const isEmail = social.icon === 'email' || String(social.platform).toLowerCase() === 'email' || String(social.url).startsWith('mailto:');
                 const rawUrl = isEmail ? (social.url?.startsWith('mailto:') ? social.url : `mailto:${social.url}`) : social.url;

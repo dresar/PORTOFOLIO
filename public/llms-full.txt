@@ -3,32 +3,32 @@
 
 Author: Eka Syarif Maulana, S.Kom
 Affiliation: Senior Fullstack Web & Mobile Developer & AI Systems Engineer
-Website: https://inka.my.id
+Website: https://ekasyarif.my.id
 Last Updated: 2026-09-10
 
 ================================================================================
 TABLE OF CONTENTS
 ================================================================================
-1. KAMU PIKIR INCOGNITO BIKIN KAMU GAK KELIHATAN? BOHONG BESAR! (https://inka.my.id/id/blog/02-mode-incognito)
-2. JANGAN ASAL COLOK CASAN DI TEMPAT UMUM! INI BAHAYA JUICE JACKING (https://inka.my.id/id/blog/01-juice-jacking)
-3. HP BARU SETAHUN KOK UDAH LEMOT? BUKAN DISURUH GANTI HP, INI SEBABNYA! (https://inka.my.id/id/blog/04-hp-lemot)
-4. AI JAWABNYA KAKU KAYAK ROBOT? COBA 3 MANTRA PROMPT INI! (https://inka.my.id/id/blog/03-trik-prompting)
-5. BARU AJA NGOBROLIN SEPATU, TIBA-TIBA MUNCUL IKLANNYA? HP BENERAN NYADAP? (https://inka.my.id/id/blog/06-iklan-pelacak)
-6. LIHAT WIFI GRATIS DI CAFE LANGSUNG KONEK? HATI-HATI JEBAKAN EVIL TWIN! (https://inka.my.id/id/blog/05-wifi-gratis)
-7. BATTERY HEALTH CEPAT TURUN? JANGAN-JANGAN KAMU MASIH NGELAKUIN INI! (https://inka.my.id/id/blog/07-baterai-awet)
-8. MASIH PAKE PASSWORD TANGGAL LAHIR DI SEMUA AKUN? BESOK BISA HILANG SEMUA! (https://inka.my.id/id/blog/08-password-manager)
-9. KIRIM SCAN KTP FORMAT PDF? HATI-HATI JANGAN LUPA DIBERI WATERMARK! (https://inka.my.id/id/blog/10-format-pdf)
-10. DATA PRIBADIMU UDAH DIJUAL DI DARK WEB? CEK SENDIRI DALAM 1 MENIT! (https://inka.my.id/id/blog/09-kebocoran-data)
-11. GOOGLE DRIVE 15GB PENUH? INI CARA BERSIHIN TANPA PERLU LANGGANAN! (https://inka.my.id/id/blog/12-cloud-storage)
-12. TIDUR SEBELAH HP BIKIN KANKER OTAK? INI PENJELASAN SAINS YANG SEBENARNYA! (https://inka.my.id/id/blog/11-radiasi-hp)
-13. CARI FILE DI GOOGLE MASIH KETIK BIASA? PAKE 4 SIMBOL RAHASIA INI! (https://inka.my.id/id/blog/13-google-search)
-14. BELI KABEL CASAN 15 RIBUAN? HP MAHAL KAMU BISA JADI KORBANNYA! (https://inka.my.id/id/blog/14-kabel-charger)
-15. FOLLOWER SUDAH RIBUAN TAPI AKUN TIBA-TIBA HILANG? AMANKAN DENGAN 3 LANGKAH INI! (https://inka.my.id/id/blog/16-aman-instagram)
-16. SERING PAKE WHATSAPP TAPI GAK TAHU 4 FITUR RAHASIA INI? RUGI BANGET! (https://inka.my.id/id/blog/15-rahasia-whatsapp)
-17. LAPTOP BUNYI KAYAK PESAWAT MAU LEPAS LANDAS? INI SOLUSI GAMPANGNYA! (https://inka.my.id/id/blog/17-laptop-panas)
-18. BINGUNG BIKIN PASSWORD SUSAH DITEBAK TAPI GAMPANG DIINGAT? PAKE METODE PASSPHRASE! (https://inka.my.id/id/blog/18-password-kuat)
-19. TAKUT PEKERJAANMU DIGANTIKAN AI? INI SKILL MANUSIA YANG GAK BISA DITIRU! (https://inka.my.id/id/blog/20-pekerjaan-ai)
-20. SMART TV KAMU DI RUMAH TERNYATA MEREKAM APA YANG KAMU TONTON! (https://inka.my.id/id/blog/19-smart-tv)
+1. KAMU PIKIR INCOGNITO BIKIN KAMU GAK KELIHATAN? BOHONG BESAR! (https://ekasyarif.my.id/id/blog/02-mode-incognito)
+2. JANGAN ASAL COLOK CASAN DI TEMPAT UMUM! INI BAHAYA JUICE JACKING (https://ekasyarif.my.id/id/blog/01-juice-jacking)
+3. HP BARU SETAHUN KOK UDAH LEMOT? BUKAN DISURUH GANTI HP, INI SEBABNYA! (https://ekasyarif.my.id/id/blog/04-hp-lemot)
+4. AI JAWABNYA KAKU KAYAK ROBOT? COBA 3 MANTRA PROMPT INI! (https://ekasyarif.my.id/id/blog/03-trik-prompting)
+5. BARU AJA NGOBROLIN SEPATU, TIBA-TIBA MUNCUL IKLANNYA? HP BENERAN NYADAP? (https://ekasyarif.my.id/id/blog/06-iklan-pelacak)
+6. LIHAT WIFI GRATIS DI CAFE LANGSUNG KONEK? HATI-HATI JEBAKAN EVIL TWIN! (https://ekasyarif.my.id/id/blog/05-wifi-gratis)
+7. BATTERY HEALTH CEPAT TURUN? JANGAN-JANGAN KAMU MASIH NGELAKUIN INI! (https://ekasyarif.my.id/id/blog/07-baterai-awet)
+8. MASIH PAKE PASSWORD TANGGAL LAHIR DI SEMUA AKUN? BESOK BISA HILANG SEMUA! (https://ekasyarif.my.id/id/blog/08-password-manager)
+9. KIRIM SCAN KTP FORMAT PDF? HATI-HATI JANGAN LUPA DIBERI WATERMARK! (https://ekasyarif.my.id/id/blog/10-format-pdf)
+10. DATA PRIBADIMU UDAH DIJUAL DI DARK WEB? CEK SENDIRI DALAM 1 MENIT! (https://ekasyarif.my.id/id/blog/09-kebocoran-data)
+11. GOOGLE DRIVE 15GB PENUH? INI CARA BERSIHIN TANPA PERLU LANGGANAN! (https://ekasyarif.my.id/id/blog/12-cloud-storage)
+12. TIDUR SEBELAH HP BIKIN KANKER OTAK? INI PENJELASAN SAINS YANG SEBENARNYA! (https://ekasyarif.my.id/id/blog/11-radiasi-hp)
+13. CARI FILE DI GOOGLE MASIH KETIK BIASA? PAKE 4 SIMBOL RAHASIA INI! (https://ekasyarif.my.id/id/blog/13-google-search)
+14. BELI KABEL CASAN 15 RIBUAN? HP MAHAL KAMU BISA JADI KORBANNYA! (https://ekasyarif.my.id/id/blog/14-kabel-charger)
+15. FOLLOWER SUDAH RIBUAN TAPI AKUN TIBA-TIBA HILANG? AMANKAN DENGAN 3 LANGKAH INI! (https://ekasyarif.my.id/id/blog/16-aman-instagram)
+16. SERING PAKE WHATSAPP TAPI GAK TAHU 4 FITUR RAHASIA INI? RUGI BANGET! (https://ekasyarif.my.id/id/blog/15-rahasia-whatsapp)
+17. LAPTOP BUNYI KAYAK PESAWAT MAU LEPAS LANDAS? INI SOLUSI GAMPANGNYA! (https://ekasyarif.my.id/id/blog/17-laptop-panas)
+18. BINGUNG BIKIN PASSWORD SUSAH DITEBAK TAPI GAMPANG DIINGAT? PAKE METODE PASSPHRASE! (https://ekasyarif.my.id/id/blog/18-password-kuat)
+19. TAKUT PEKERJAANMU DIGANTIKAN AI? INI SKILL MANUSIA YANG GAK BISA DITIRU! (https://ekasyarif.my.id/id/blog/20-pekerjaan-ai)
+20. SMART TV KAMU DI RUMAH TERNYATA MEREKAM APA YANG KAMU TONTON! (https://ekasyarif.my.id/id/blog/19-smart-tv)
 
 ================================================================================
 ARTICLES & TECHNICAL GUIDES
@@ -39,11 +39,11 @@ ARTICLE 1: KAMU PIKIR INCOGNITO BIKIN KAMU GAK KELIHATAN? BOHONG BESAR!
 English: THINK INCOGNITO MODE MAKES YOU INVISIBLE? THAT'S A TOTAL MYTH!
 Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Cybersecurity & Privasi
-Published URL: https://inka.my.id/id/blog/02-mode-incognito
+Published URL: https://ekasyarif.my.id/id/blog/02-mode-incognito
 --------------------------------------------------------------------------------
 
 EXECUTIVE SUMMARY:
-ðŸ’¡ KAMU PIKIR INCOGNITO BIKIN KAMU GAK KELIHATAN? BOHONG BESAR!
+💡 KAMU PIKIR INCOGNITO BIKIN KAMU GAK KELIHATAN? BOHONG BESAR!
 
 KEY TAKEAWAYS & ACTIONABLE STEPS:
 - Created and verified by Eka Syarif Maulana, S.Kom.
@@ -55,11 +55,11 @@ ARTICLE 2: JANGAN ASAL COLOK CASAN DI TEMPAT UMUM! INI BAHAYA JUICE JACKING
 English: NEVER PLUG YOUR CHARGER IN PUBLIC! THE DANGERS OF JUICE JACKING
 Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Cybersecurity & Privasi
-Published URL: https://inka.my.id/id/blog/01-juice-jacking
+Published URL: https://ekasyarif.my.id/id/blog/01-juice-jacking
 --------------------------------------------------------------------------------
 
 EXECUTIVE SUMMARY:
-ðŸ’¡ JANGAN ASAL COLOK CASAN DI TEMPAT UMUM! INI BAHAYA JUICE JACKING
+💡 JANGAN ASAL COLOK CASAN DI TEMPAT UMUM! INI BAHAYA JUICE JACKING
 
 KEY TAKEAWAYS & ACTIONABLE STEPS:
 - Created and verified by Eka Syarif Maulana, S.Kom.
@@ -68,14 +68,14 @@ KEY TAKEAWAYS & ACTIONABLE STEPS:
 
 --------------------------------------------------------------------------------
 ARTICLE 3: HP BARU SETAHUN KOK UDAH LEMOT? BUKAN DISURUH GANTI HP, INI SEBABNYA!
-English: Why Is Your Phone Lagging After Just One Year? Don't Upgrade Yetâ€”Here's Why!
+English: Why Is Your Phone Lagging After Just One Year? Don't Upgrade Yet—Here's Why!
 Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Tips & Trik Gadget
-Published URL: https://inka.my.id/id/blog/04-hp-lemot
+Published URL: https://ekasyarif.my.id/id/blog/04-hp-lemot
 --------------------------------------------------------------------------------
 
 EXECUTIVE SUMMARY:
-ðŸ’¡ HP BARU SETAHUN KOK UDAH LEMOT? BUKAN DISURUH GANTI HP, INI SEBABNYA!
+💡 HP BARU SETAHUN KOK UDAH LEMOT? BUKAN DISURUH GANTI HP, INI SEBABNYA!
 
 KEY TAKEAWAYS & ACTIONABLE STEPS:
 - Created and verified by Eka Syarif Maulana, S.Kom.
@@ -87,11 +87,11 @@ ARTICLE 4: AI JAWABNYA KAKU KAYAK ROBOT? COBA 3 MANTRA PROMPT INI!
 English: Is Your AI Sounding Robotic? Try These 3 Magic Prompts!
 Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Software & AI
-Published URL: https://inka.my.id/id/blog/03-trik-prompting
+Published URL: https://ekasyarif.my.id/id/blog/03-trik-prompting
 --------------------------------------------------------------------------------
 
 EXECUTIVE SUMMARY:
-ðŸ’¡ AI JAWABNYA KAKU KAYAK ROBOT? COBA 3 MANTRA PROMPT INI!
+💡 AI JAWABNYA KAKU KAYAK ROBOT? COBA 3 MANTRA PROMPT INI!
 
 KEY TAKEAWAYS & ACTIONABLE STEPS:
 - Created and verified by Eka Syarif Maulana, S.Kom.
@@ -103,11 +103,11 @@ ARTICLE 5: BARU AJA NGOBROLIN SEPATU, TIBA-TIBA MUNCUL IKLANNYA? HP BENERAN NYAD
 English: Just Spoke About Shoes and Seeing Ads Already? Is Your Phone Really Eavesdropping?
 Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Cybersecurity & Privasi
-Published URL: https://inka.my.id/id/blog/06-iklan-pelacak
+Published URL: https://ekasyarif.my.id/id/blog/06-iklan-pelacak
 --------------------------------------------------------------------------------
 
 EXECUTIVE SUMMARY:
-ðŸ’¡ BARU AJA NGOBROLIN SEPATU, TIBA-TIBA MUNCUL IKLANNYA? HP BENERAN NYADAP?
+💡 BARU AJA NGOBROLIN SEPATU, TIBA-TIBA MUNCUL IKLANNYA? HP BENERAN NYADAP?
 
 KEY TAKEAWAYS & ACTIONABLE STEPS:
 - Created and verified by Eka Syarif Maulana, S.Kom.
@@ -119,11 +119,11 @@ ARTICLE 6: LIHAT WIFI GRATIS DI CAFE LANGSUNG KONEK? HATI-HATI JEBAKAN EVIL TWIN
 English: Spotting Free Cafe Wi-Fi and Connecting Right Away? Beware the Evil Twin Trap!
 Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Cybersecurity & Privasi
-Published URL: https://inka.my.id/id/blog/05-wifi-gratis
+Published URL: https://ekasyarif.my.id/id/blog/05-wifi-gratis
 --------------------------------------------------------------------------------
 
 EXECUTIVE SUMMARY:
-ðŸ’¡ LIHAT WIFI GRATIS DI CAFE LANGSUNG KONEK? HATI-HATI JEBAKAN EVIL TWIN!
+💡 LIHAT WIFI GRATIS DI CAFE LANGSUNG KONEK? HATI-HATI JEBAKAN EVIL TWIN!
 
 KEY TAKEAWAYS & ACTIONABLE STEPS:
 - Created and verified by Eka Syarif Maulana, S.Kom.
@@ -135,11 +135,11 @@ ARTICLE 7: BATTERY HEALTH CEPAT TURUN? JANGAN-JANGAN KAMU MASIH NGELAKUIN INI!
 English: Is Your Battery Health Dropping Fast? You Might Still Be Doing This!
 Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Software & AI
-Published URL: https://inka.my.id/id/blog/07-baterai-awet
+Published URL: https://ekasyarif.my.id/id/blog/07-baterai-awet
 --------------------------------------------------------------------------------
 
 EXECUTIVE SUMMARY:
-ðŸ’¡ BATTERY HEALTH CEPAT TURUN? JANGAN-JANGAN KAMU MASIH NGELAKUIN INI!
+💡 BATTERY HEALTH CEPAT TURUN? JANGAN-JANGAN KAMU MASIH NGELAKUIN INI!
 
 KEY TAKEAWAYS & ACTIONABLE STEPS:
 - Created and verified by Eka Syarif Maulana, S.Kom.
@@ -151,11 +151,11 @@ ARTICLE 8: MASIH PAKE PASSWORD TANGGAL LAHIR DI SEMUA AKUN? BESOK BISA HILANG SE
 English: Still Using Your Birthdate as a Password Everywhere? You Could Lose Everything Tomorrow!
 Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Cybersecurity & Privasi
-Published URL: https://inka.my.id/id/blog/08-password-manager
+Published URL: https://ekasyarif.my.id/id/blog/08-password-manager
 --------------------------------------------------------------------------------
 
 EXECUTIVE SUMMARY:
-ðŸ’¡ MASIH PAKE PASSWORD TANGGAL LAHIR DI SEMUA AKUN? BESOK BISA HILANG SEMUA!
+💡 MASIH PAKE PASSWORD TANGGAL LAHIR DI SEMUA AKUN? BESOK BISA HILANG SEMUA!
 
 KEY TAKEAWAYS & ACTIONABLE STEPS:
 - Created and verified by Eka Syarif Maulana, S.Kom.
@@ -167,11 +167,11 @@ ARTICLE 9: KIRIM SCAN KTP FORMAT PDF? HATI-HATI JANGAN LUPA DIBERI WATERMARK!
 English: KIRIM SCAN KTP FORMAT PDF? HATI-HATI JANGAN LUPA DIBERI WATERMARK!
 Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Software & AI
-Published URL: https://inka.my.id/id/blog/10-format-pdf
+Published URL: https://ekasyarif.my.id/id/blog/10-format-pdf
 --------------------------------------------------------------------------------
 
 EXECUTIVE SUMMARY:
-ðŸ’¡ KIRIM SCAN KTP FORMAT PDF? HATI-HATI JANGAN LUPA DIBERI WATERMARK!
+💡 KIRIM SCAN KTP FORMAT PDF? HATI-HATI JANGAN LUPA DIBERI WATERMARK!
 
 KEY TAKEAWAYS & ACTIONABLE STEPS:
 - Created and verified by Eka Syarif Maulana, S.Kom.
@@ -183,11 +183,11 @@ ARTICLE 10: DATA PRIBADIMU UDAH DIJUAL DI DARK WEB? CEK SENDIRI DALAM 1 MENIT!
 English: DATA PRIBADIMU UDAH DIJUAL DI DARK WEB? CEK SENDIRI DALAM 1 MENIT!
 Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Cybersecurity & Privasi
-Published URL: https://inka.my.id/id/blog/09-kebocoran-data
+Published URL: https://ekasyarif.my.id/id/blog/09-kebocoran-data
 --------------------------------------------------------------------------------
 
 EXECUTIVE SUMMARY:
-ðŸ’¡ DATA PRIBADIMU UDAH DIJUAL DI DARK WEB? CEK SENDIRI DALAM 1 MENIT!
+💡 DATA PRIBADIMU UDAH DIJUAL DI DARK WEB? CEK SENDIRI DALAM 1 MENIT!
 
 KEY TAKEAWAYS & ACTIONABLE STEPS:
 - Created and verified by Eka Syarif Maulana, S.Kom.
@@ -199,11 +199,11 @@ ARTICLE 11: GOOGLE DRIVE 15GB PENUH? INI CARA BERSIHIN TANPA PERLU LANGGANAN!
 English: GOOGLE DRIVE 15GB FULL? HOW TO CLEAN IT UP WITHOUT A SUBSCRIPTION!
 Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Cybersecurity & Privasi
-Published URL: https://inka.my.id/id/blog/12-cloud-storage
+Published URL: https://ekasyarif.my.id/id/blog/12-cloud-storage
 --------------------------------------------------------------------------------
 
 EXECUTIVE SUMMARY:
-ðŸ’¡ GOOGLE DRIVE 15GB PENUH? INI CARA BERSIHIN TANPA PERLU LANGGANAN!
+💡 GOOGLE DRIVE 15GB PENUH? INI CARA BERSIHIN TANPA PERLU LANGGANAN!
 
 KEY TAKEAWAYS & ACTIONABLE STEPS:
 - Created and verified by Eka Syarif Maulana, S.Kom.
@@ -215,11 +215,11 @@ ARTICLE 12: TIDUR SEBELAH HP BIKIN KANKER OTAK? INI PENJELASAN SAINS YANG SEBENA
 English: Does Sleeping Next to Your Phone Cause Brain Cancer? Here's What Science Really Says
 Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Cybersecurity & Privasi
-Published URL: https://inka.my.id/id/blog/11-radiasi-hp
+Published URL: https://ekasyarif.my.id/id/blog/11-radiasi-hp
 --------------------------------------------------------------------------------
 
 EXECUTIVE SUMMARY:
-ðŸ’¡ TIDUR SEBELAH HP BIKIN KANKER OTAK? INI PENJELASAN SAINS YANG SEBENARNYA!
+💡 TIDUR SEBELAH HP BIKIN KANKER OTAK? INI PENJELASAN SAINS YANG SEBENARNYA!
 
 KEY TAKEAWAYS & ACTIONABLE STEPS:
 - Created and verified by Eka Syarif Maulana, S.Kom.
@@ -231,11 +231,11 @@ ARTICLE 13: CARI FILE DI GOOGLE MASIH KETIK BIASA? PAKE 4 SIMBOL RAHASIA INI!
 English: CARI FILE DI GOOGLE MASIH KETIK BIASA? PAKE 4 SIMBOL RAHASIA INI!
 Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Software & AI
-Published URL: https://inka.my.id/id/blog/13-google-search
+Published URL: https://ekasyarif.my.id/id/blog/13-google-search
 --------------------------------------------------------------------------------
 
 EXECUTIVE SUMMARY:
-ðŸ’¡ CARI FILE DI GOOGLE MASIH KETIK BIASA? PAKE 4 SIMBOL RAHASIA INI!
+💡 CARI FILE DI GOOGLE MASIH KETIK BIASA? PAKE 4 SIMBOL RAHASIA INI!
 
 KEY TAKEAWAYS & ACTIONABLE STEPS:
 - Created and verified by Eka Syarif Maulana, S.Kom.
@@ -247,11 +247,11 @@ ARTICLE 14: BELI KABEL CASAN 15 RIBUAN? HP MAHAL KAMU BISA JADI KORBANNYA!
 English: Buying a $1 Charging Cable? Your Expensive Phone Could Be at Risk!
 Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Hardware & Komponen
-Published URL: https://inka.my.id/id/blog/14-kabel-charger
+Published URL: https://ekasyarif.my.id/id/blog/14-kabel-charger
 --------------------------------------------------------------------------------
 
 EXECUTIVE SUMMARY:
-ðŸ’¡ BELI KABEL CASAN 15 RIBUAN? HP MAHAL KAMU BISA JADI KORBANNYA!
+💡 BELI KABEL CASAN 15 RIBUAN? HP MAHAL KAMU BISA JADI KORBANNYA!
 
 KEY TAKEAWAYS & ACTIONABLE STEPS:
 - Created and verified by Eka Syarif Maulana, S.Kom.
@@ -263,11 +263,11 @@ ARTICLE 15: FOLLOWER SUDAH RIBUAN TAPI AKUN TIBA-TIBA HILANG? AMANKAN DENGAN 3 L
 English: THOUSANDS OF FOLLOWERS BUT YOUR ACCOUNT SUDDENLY VANISHED? SECURE IT WITH THESE 3 STEPS!
 Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Software & AI
-Published URL: https://inka.my.id/id/blog/16-aman-instagram
+Published URL: https://ekasyarif.my.id/id/blog/16-aman-instagram
 --------------------------------------------------------------------------------
 
 EXECUTIVE SUMMARY:
-ðŸ’¡ FOLLOWER SUDAH RIBUAN TAPI AKUN TIBA-TIBA HILANG? AMANKAN DENGAN 3 LANGKAH INI!
+💡 FOLLOWER SUDAH RIBUAN TAPI AKUN TIBA-TIBA HILANG? AMANKAN DENGAN 3 LANGKAH INI!
 
 KEY TAKEAWAYS & ACTIONABLE STEPS:
 - Created and verified by Eka Syarif Maulana, S.Kom.
@@ -279,11 +279,11 @@ ARTICLE 16: SERING PAKE WHATSAPP TAPI GAK TAHU 4 FITUR RAHASIA INI? RUGI BANGET!
 English: Using WhatsApp Daily Without Knowing These 4 Hidden Features? You're Missing Out!
 Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Software & AI
-Published URL: https://inka.my.id/id/blog/15-rahasia-whatsapp
+Published URL: https://ekasyarif.my.id/id/blog/15-rahasia-whatsapp
 --------------------------------------------------------------------------------
 
 EXECUTIVE SUMMARY:
-ðŸ’¡ SERING PAKE WHATSAPP TAPI GAK TAHU 4 FITUR RAHASIA INI? RUGI BANGET!
+💡 SERING PAKE WHATSAPP TAPI GAK TAHU 4 FITUR RAHASIA INI? RUGI BANGET!
 
 KEY TAKEAWAYS & ACTIONABLE STEPS:
 - Created and verified by Eka Syarif Maulana, S.Kom.
@@ -295,11 +295,11 @@ ARTICLE 17: LAPTOP BUNYI KAYAK PESAWAT MAU LEPAS LANDAS? INI SOLUSI GAMPANGNYA!
 English: IS YOUR LAPTOP SOUNDING LIKE A JET TAKING OFF? HERE'S THE EASY FIX!
 Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Hardware & Komponen
-Published URL: https://inka.my.id/id/blog/17-laptop-panas
+Published URL: https://ekasyarif.my.id/id/blog/17-laptop-panas
 --------------------------------------------------------------------------------
 
 EXECUTIVE SUMMARY:
-ðŸ’¡ LAPTOP BUNYI KAYAK PESAWAT MAU LEPAS LANDAS? INI SOLUSI GAMPANGNYA!
+💡 LAPTOP BUNYI KAYAK PESAWAT MAU LEPAS LANDAS? INI SOLUSI GAMPANGNYA!
 
 KEY TAKEAWAYS & ACTIONABLE STEPS:
 - Created and verified by Eka Syarif Maulana, S.Kom.
@@ -311,11 +311,11 @@ ARTICLE 18: BINGUNG BIKIN PASSWORD SUSAH DITEBAK TAPI GAMPANG DIINGAT? PAKE METO
 English: Struggling to Create a Strong Yet Memorable Password? Try the Passphrase Method!
 Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Cybersecurity & Privasi
-Published URL: https://inka.my.id/id/blog/18-password-kuat
+Published URL: https://ekasyarif.my.id/id/blog/18-password-kuat
 --------------------------------------------------------------------------------
 
 EXECUTIVE SUMMARY:
-ðŸ’¡ BINGUNG BIKIN PASSWORD SUSAH DITEBAK TAPI GAMPANG DIINGAT? PAKE METODE PASSPHRASE!
+💡 BINGUNG BIKIN PASSWORD SUSAH DITEBAK TAPI GAMPANG DIINGAT? PAKE METODE PASSPHRASE!
 
 KEY TAKEAWAYS & ACTIONABLE STEPS:
 - Created and verified by Eka Syarif Maulana, S.Kom.
@@ -327,11 +327,11 @@ ARTICLE 19: TAKUT PEKERJAANMU DIGANTIKAN AI? INI SKILL MANUSIA YANG GAK BISA DIT
 English: Afraid AI Will Replace Your Job? These Human Skills Cannot Be Replicated!
 Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Software & AI
-Published URL: https://inka.my.id/id/blog/20-pekerjaan-ai
+Published URL: https://ekasyarif.my.id/id/blog/20-pekerjaan-ai
 --------------------------------------------------------------------------------
 
 EXECUTIVE SUMMARY:
-ðŸ’¡ TAKUT PEKERJAANMU DIGANTIKAN AI? INI SKILL MANUSIA YANG GAK BISA DITIRU!
+💡 TAKUT PEKERJAANMU DIGANTIKAN AI? INI SKILL MANUSIA YANG GAK BISA DITIRU!
 
 KEY TAKEAWAYS & ACTIONABLE STEPS:
 - Created and verified by Eka Syarif Maulana, S.Kom.
@@ -343,15 +343,14 @@ ARTICLE 20: SMART TV KAMU DI RUMAH TERNYATA MEREKAM APA YANG KAMU TONTON!
 English: Your Home Smart TV Is Secretly Tracking Everything You Watch!
 Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Hardware & Komponen
-Published URL: https://inka.my.id/id/blog/19-smart-tv
+Published URL: https://ekasyarif.my.id/id/blog/19-smart-tv
 --------------------------------------------------------------------------------
 
 EXECUTIVE SUMMARY:
-ðŸ’¡ SMART TV KAMU DI RUMAH TERNYATA MEREKAM APA YANG KAMU TONTON!
+💡 SMART TV KAMU DI RUMAH TERNYATA MEREKAM APA YANG KAMU TONTON!
 
 KEY TAKEAWAYS & ACTIONABLE STEPS:
 - Created and verified by Eka Syarif Maulana, S.Kom.
 - Contains 6 visual educational slides illustrating the core concepts.
 - Follow modern security best practices: always isolate public charging ports, inspect SSL certificates, rotate passphrases, and scrub metadata.
-
 

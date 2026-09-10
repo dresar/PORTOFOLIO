@@ -317,18 +317,31 @@ export interface UploadResponse {
 // ==========================================
 
 const fetchWithLocalFallback = async <T>(
-  endpoint: string,
-  cacheKey: string,
-  fallbackValue: T,
-  params?: any
-): Promise<T> => {
-  try {
-    const response = await apiClient.get<T>(endpoint, { params });
+    endpoint: string,
+    cacheKey: string,
+    fallbackValue: T,
+    params?: any
+  ): Promise<T> => {
     try {
-      localStorage.setItem(cacheKey, JSON.stringify(response.data));
-    } catch {}
-    return response.data;
-  } catch (error) {
+      const response = await apiClient.get<T>(endpoint, { params });
+      
+      // Ensure we return an array if fallbackValue is an array
+      let responseData = response.data as any;
+      if (Array.isArray(fallbackValue) && !Array.isArray(responseData)) {
+        if (responseData && Array.isArray(responseData.data)) {
+          responseData = responseData.data;
+        } else if (responseData && Array.isArray(responseData.items)) {
+          responseData = responseData.items;
+        } else {
+          responseData = fallbackValue;
+        }
+      }
+
+      try {
+        localStorage.setItem(cacheKey, JSON.stringify(responseData));
+      } catch {}
+      return responseData as T;
+    } catch (error) {
     try {
       const cached = localStorage.getItem(cacheKey);
       if (cached) {

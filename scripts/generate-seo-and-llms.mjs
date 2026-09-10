@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-const DOMAIN = 'https://etech.my.id';
+const DOMAIN = 'https://ekasyarif.my.id';
 const postsPath = path.resolve('src/data/blogPosts.json');
 const posts = JSON.parse(fs.readFileSync(postsPath, 'utf8'));
 

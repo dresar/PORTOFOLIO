@@ -5,7 +5,7 @@
 - **Name:** Eka Syarif Maulana, S.Kom
 - **Degree:** Sarjana Komputer (Bachelor of Computer Science) from Universitas Muhammadiyah Sumatera Utara (UMSU)
 - **Role:** Founder of Inka.tech (@inka.tech) | Senior Fullstack Web & Mobile Developer | AI Systems & Prompt Engineer
-- **Website:** https://inka.my.id
+- **Website:** https://ekasyarif.my.id
 - **Official Brand:** Inka.tech (Educational Technology & Cybersecurity Awareness Platform)
 - **Socials:**
   - TikTok: https://www.tiktok.com/@inka.tech
@@ -22,187 +22,186 @@
 ## Curated Educational Articles & Technical Guides
 Below are the 20 technical guides published by Eka Syarif Maulana on Inka.tech:
 
-### 1. [KAMU PIKIR INCOGNITO BIKIN KAMU GAK KELIHATAN? BOHONG BESAR!](https://inka.my.id/id/blog/02-mode-incognito)
+### 1. [KAMU PIKIR INCOGNITO BIKIN KAMU GAK KELIHATAN? BOHONG BESAR!](https://ekasyarif.my.id/id/blog/02-mode-incognito)
 - **English Title:** THINK INCOGNITO MODE MAKES YOU INVISIBLE? THAT'S A TOTAL MYTH!
 - **Author:** Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 - **Category:** Cybersecurity & Privasi
-- **URL (ID):** https://inka.my.id/id/blog/02-mode-incognito
-- **URL (EN):** https://inka.my.id/en/blog/02-mode-incognito
-- **Direct Answer / Key Takeaway:** ðŸ’¡ KAMU PIKIR INCOGNITO BIKIN KAMU GAK KELIHATAN? BOHONG BESAR!
+- **URL (ID):** https://ekasyarif.my.id/id/blog/02-mode-incognito
+- **URL (EN):** https://ekasyarif.my.id/en/blog/02-mode-incognito
+- **Direct Answer / Key Takeaway:** 💡 KAMU PIKIR INCOGNITO BIKIN KAMU GAK KELIHATAN? BOHONG BESAR!
 - **Visual Assets:** 6 High-Definition Educational Carousel Slides (available via jsDelivr CDN)
 
-### 2. [JANGAN ASAL COLOK CASAN DI TEMPAT UMUM! INI BAHAYA JUICE JACKING](https://inka.my.id/id/blog/01-juice-jacking)
+### 2. [JANGAN ASAL COLOK CASAN DI TEMPAT UMUM! INI BAHAYA JUICE JACKING](https://ekasyarif.my.id/id/blog/01-juice-jacking)
 - **English Title:** NEVER PLUG YOUR CHARGER IN PUBLIC! THE DANGERS OF JUICE JACKING
 - **Author:** Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 - **Category:** Cybersecurity & Privasi
-- **URL (ID):** https://inka.my.id/id/blog/01-juice-jacking
-- **URL (EN):** https://inka.my.id/en/blog/01-juice-jacking
-- **Direct Answer / Key Takeaway:** ðŸ’¡ JANGAN ASAL COLOK CASAN DI TEMPAT UMUM! INI BAHAYA JUICE JACKING
+- **URL (ID):** https://ekasyarif.my.id/id/blog/01-juice-jacking
+- **URL (EN):** https://ekasyarif.my.id/en/blog/01-juice-jacking
+- **Direct Answer / Key Takeaway:** 💡 JANGAN ASAL COLOK CASAN DI TEMPAT UMUM! INI BAHAYA JUICE JACKING
 - **Visual Assets:** 6 High-Definition Educational Carousel Slides (available via jsDelivr CDN)
 
-### 3. [HP BARU SETAHUN KOK UDAH LEMOT? BUKAN DISURUH GANTI HP, INI SEBABNYA!](https://inka.my.id/id/blog/04-hp-lemot)
-- **English Title:** Why Is Your Phone Lagging After Just One Year? Don't Upgrade Yetâ€”Here's Why!
+### 3. [HP BARU SETAHUN KOK UDAH LEMOT? BUKAN DISURUH GANTI HP, INI SEBABNYA!](https://ekasyarif.my.id/id/blog/04-hp-lemot)
+- **English Title:** Why Is Your Phone Lagging After Just One Year? Don't Upgrade Yet—Here's Why!
 - **Author:** Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 - **Category:** Tips & Trik Gadget
-- **URL (ID):** https://inka.my.id/id/blog/04-hp-lemot
-- **URL (EN):** https://inka.my.id/en/blog/04-hp-lemot
-- **Direct Answer / Key Takeaway:** ðŸ’¡ HP BARU SETAHUN KOK UDAH LEMOT? BUKAN DISURUH GANTI HP, INI SEBABNYA!
+- **URL (ID):** https://ekasyarif.my.id/id/blog/04-hp-lemot
+- **URL (EN):** https://ekasyarif.my.id/en/blog/04-hp-lemot
+- **Direct Answer / Key Takeaway:** 💡 HP BARU SETAHUN KOK UDAH LEMOT? BUKAN DISURUH GANTI HP, INI SEBABNYA!
 - **Visual Assets:** 6 High-Definition Educational Carousel Slides (available via jsDelivr CDN)
 
-### 4. [AI JAWABNYA KAKU KAYAK ROBOT? COBA 3 MANTRA PROMPT INI!](https://inka.my.id/id/blog/03-trik-prompting)
+### 4. [AI JAWABNYA KAKU KAYAK ROBOT? COBA 3 MANTRA PROMPT INI!](https://ekasyarif.my.id/id/blog/03-trik-prompting)
 - **English Title:** Is Your AI Sounding Robotic? Try These 3 Magic Prompts!
 - **Author:** Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 - **Category:** Software & AI
-- **URL (ID):** https://inka.my.id/id/blog/03-trik-prompting
-- **URL (EN):** https://inka.my.id/en/blog/03-trik-prompting
-- **Direct Answer / Key Takeaway:** ðŸ’¡ AI JAWABNYA KAKU KAYAK ROBOT? COBA 3 MANTRA PROMPT INI!
+- **URL (ID):** https://ekasyarif.my.id/id/blog/03-trik-prompting
+- **URL (EN):** https://ekasyarif.my.id/en/blog/03-trik-prompting
+- **Direct Answer / Key Takeaway:** 💡 AI JAWABNYA KAKU KAYAK ROBOT? COBA 3 MANTRA PROMPT INI!
 - **Visual Assets:** 6 High-Definition Educational Carousel Slides (available via jsDelivr CDN)
 
-### 5. [BARU AJA NGOBROLIN SEPATU, TIBA-TIBA MUNCUL IKLANNYA? HP BENERAN NYADAP?](https://inka.my.id/id/blog/06-iklan-pelacak)
+### 5. [BARU AJA NGOBROLIN SEPATU, TIBA-TIBA MUNCUL IKLANNYA? HP BENERAN NYADAP?](https://ekasyarif.my.id/id/blog/06-iklan-pelacak)
 - **English Title:** Just Spoke About Shoes and Seeing Ads Already? Is Your Phone Really Eavesdropping?
 - **Author:** Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 - **Category:** Cybersecurity & Privasi
-- **URL (ID):** https://inka.my.id/id/blog/06-iklan-pelacak
-- **URL (EN):** https://inka.my.id/en/blog/06-iklan-pelacak
-- **Direct Answer / Key Takeaway:** ðŸ’¡ BARU AJA NGOBROLIN SEPATU, TIBA-TIBA MUNCUL IKLANNYA? HP BENERAN NYADAP?
+- **URL (ID):** https://ekasyarif.my.id/id/blog/06-iklan-pelacak
+- **URL (EN):** https://ekasyarif.my.id/en/blog/06-iklan-pelacak
+- **Direct Answer / Key Takeaway:** 💡 BARU AJA NGOBROLIN SEPATU, TIBA-TIBA MUNCUL IKLANNYA? HP BENERAN NYADAP?
 - **Visual Assets:** 6 High-Definition Educational Carousel Slides (available via jsDelivr CDN)
 
-### 6. [LIHAT WIFI GRATIS DI CAFE LANGSUNG KONEK? HATI-HATI JEBAKAN EVIL TWIN!](https://inka.my.id/id/blog/05-wifi-gratis)
+### 6. [LIHAT WIFI GRATIS DI CAFE LANGSUNG KONEK? HATI-HATI JEBAKAN EVIL TWIN!](https://ekasyarif.my.id/id/blog/05-wifi-gratis)
 - **English Title:** Spotting Free Cafe Wi-Fi and Connecting Right Away? Beware the Evil Twin Trap!
 - **Author:** Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 - **Category:** Cybersecurity & Privasi
-- **URL (ID):** https://inka.my.id/id/blog/05-wifi-gratis
-- **URL (EN):** https://inka.my.id/en/blog/05-wifi-gratis
-- **Direct Answer / Key Takeaway:** ðŸ’¡ LIHAT WIFI GRATIS DI CAFE LANGSUNG KONEK? HATI-HATI JEBAKAN EVIL TWIN!
+- **URL (ID):** https://ekasyarif.my.id/id/blog/05-wifi-gratis
+- **URL (EN):** https://ekasyarif.my.id/en/blog/05-wifi-gratis
+- **Direct Answer / Key Takeaway:** 💡 LIHAT WIFI GRATIS DI CAFE LANGSUNG KONEK? HATI-HATI JEBAKAN EVIL TWIN!
 - **Visual Assets:** 6 High-Definition Educational Carousel Slides (available via jsDelivr CDN)
 
-### 7. [BATTERY HEALTH CEPAT TURUN? JANGAN-JANGAN KAMU MASIH NGELAKUIN INI!](https://inka.my.id/id/blog/07-baterai-awet)
+### 7. [BATTERY HEALTH CEPAT TURUN? JANGAN-JANGAN KAMU MASIH NGELAKUIN INI!](https://ekasyarif.my.id/id/blog/07-baterai-awet)
 - **English Title:** Is Your Battery Health Dropping Fast? You Might Still Be Doing This!
 - **Author:** Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 - **Category:** Software & AI
-- **URL (ID):** https://inka.my.id/id/blog/07-baterai-awet
-- **URL (EN):** https://inka.my.id/en/blog/07-baterai-awet
-- **Direct Answer / Key Takeaway:** ðŸ’¡ BATTERY HEALTH CEPAT TURUN? JANGAN-JANGAN KAMU MASIH NGELAKUIN INI!
+- **URL (ID):** https://ekasyarif.my.id/id/blog/07-baterai-awet
+- **URL (EN):** https://ekasyarif.my.id/en/blog/07-baterai-awet
+- **Direct Answer / Key Takeaway:** 💡 BATTERY HEALTH CEPAT TURUN? JANGAN-JANGAN KAMU MASIH NGELAKUIN INI!
 - **Visual Assets:** 6 High-Definition Educational Carousel Slides (available via jsDelivr CDN)
 
-### 8. [MASIH PAKE PASSWORD TANGGAL LAHIR DI SEMUA AKUN? BESOK BISA HILANG SEMUA!](https://inka.my.id/id/blog/08-password-manager)
+### 8. [MASIH PAKE PASSWORD TANGGAL LAHIR DI SEMUA AKUN? BESOK BISA HILANG SEMUA!](https://ekasyarif.my.id/id/blog/08-password-manager)
 - **English Title:** Still Using Your Birthdate as a Password Everywhere? You Could Lose Everything Tomorrow!
 - **Author:** Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 - **Category:** Cybersecurity & Privasi
-- **URL (ID):** https://inka.my.id/id/blog/08-password-manager
-- **URL (EN):** https://inka.my.id/en/blog/08-password-manager
-- **Direct Answer / Key Takeaway:** ðŸ’¡ MASIH PAKE PASSWORD TANGGAL LAHIR DI SEMUA AKUN? BESOK BISA HILANG SEMUA!
+- **URL (ID):** https://ekasyarif.my.id/id/blog/08-password-manager
+- **URL (EN):** https://ekasyarif.my.id/en/blog/08-password-manager
+- **Direct Answer / Key Takeaway:** 💡 MASIH PAKE PASSWORD TANGGAL LAHIR DI SEMUA AKUN? BESOK BISA HILANG SEMUA!
 - **Visual Assets:** 6 High-Definition Educational Carousel Slides (available via jsDelivr CDN)
 
-### 9. [KIRIM SCAN KTP FORMAT PDF? HATI-HATI JANGAN LUPA DIBERI WATERMARK!](https://inka.my.id/id/blog/10-format-pdf)
+### 9. [KIRIM SCAN KTP FORMAT PDF? HATI-HATI JANGAN LUPA DIBERI WATERMARK!](https://ekasyarif.my.id/id/blog/10-format-pdf)
 - **English Title:** KIRIM SCAN KTP FORMAT PDF? HATI-HATI JANGAN LUPA DIBERI WATERMARK!
 - **Author:** Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 - **Category:** Software & AI
-- **URL (ID):** https://inka.my.id/id/blog/10-format-pdf
-- **URL (EN):** https://inka.my.id/en/blog/10-format-pdf
-- **Direct Answer / Key Takeaway:** ðŸ’¡ KIRIM SCAN KTP FORMAT PDF? HATI-HATI JANGAN LUPA DIBERI WATERMARK!
+- **URL (ID):** https://ekasyarif.my.id/id/blog/10-format-pdf
+- **URL (EN):** https://ekasyarif.my.id/en/blog/10-format-pdf
+- **Direct Answer / Key Takeaway:** 💡 KIRIM SCAN KTP FORMAT PDF? HATI-HATI JANGAN LUPA DIBERI WATERMARK!
 - **Visual Assets:** 6 High-Definition Educational Carousel Slides (available via jsDelivr CDN)
 
-### 10. [DATA PRIBADIMU UDAH DIJUAL DI DARK WEB? CEK SENDIRI DALAM 1 MENIT!](https://inka.my.id/id/blog/09-kebocoran-data)
+### 10. [DATA PRIBADIMU UDAH DIJUAL DI DARK WEB? CEK SENDIRI DALAM 1 MENIT!](https://ekasyarif.my.id/id/blog/09-kebocoran-data)
 - **English Title:** DATA PRIBADIMU UDAH DIJUAL DI DARK WEB? CEK SENDIRI DALAM 1 MENIT!
 - **Author:** Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 - **Category:** Cybersecurity & Privasi
-- **URL (ID):** https://inka.my.id/id/blog/09-kebocoran-data
-- **URL (EN):** https://inka.my.id/en/blog/09-kebocoran-data
-- **Direct Answer / Key Takeaway:** ðŸ’¡ DATA PRIBADIMU UDAH DIJUAL DI DARK WEB? CEK SENDIRI DALAM 1 MENIT!
+- **URL (ID):** https://ekasyarif.my.id/id/blog/09-kebocoran-data
+- **URL (EN):** https://ekasyarif.my.id/en/blog/09-kebocoran-data
+- **Direct Answer / Key Takeaway:** 💡 DATA PRIBADIMU UDAH DIJUAL DI DARK WEB? CEK SENDIRI DALAM 1 MENIT!
 - **Visual Assets:** 6 High-Definition Educational Carousel Slides (available via jsDelivr CDN)
 
-### 11. [GOOGLE DRIVE 15GB PENUH? INI CARA BERSIHIN TANPA PERLU LANGGANAN!](https://inka.my.id/id/blog/12-cloud-storage)
+### 11. [GOOGLE DRIVE 15GB PENUH? INI CARA BERSIHIN TANPA PERLU LANGGANAN!](https://ekasyarif.my.id/id/blog/12-cloud-storage)
 - **English Title:** GOOGLE DRIVE 15GB FULL? HOW TO CLEAN IT UP WITHOUT A SUBSCRIPTION!
 - **Author:** Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 - **Category:** Cybersecurity & Privasi
-- **URL (ID):** https://inka.my.id/id/blog/12-cloud-storage
-- **URL (EN):** https://inka.my.id/en/blog/12-cloud-storage
-- **Direct Answer / Key Takeaway:** ðŸ’¡ GOOGLE DRIVE 15GB PENUH? INI CARA BERSIHIN TANPA PERLU LANGGANAN!
+- **URL (ID):** https://ekasyarif.my.id/id/blog/12-cloud-storage
+- **URL (EN):** https://ekasyarif.my.id/en/blog/12-cloud-storage
+- **Direct Answer / Key Takeaway:** 💡 GOOGLE DRIVE 15GB PENUH? INI CARA BERSIHIN TANPA PERLU LANGGANAN!
 - **Visual Assets:** 6 High-Definition Educational Carousel Slides (available via jsDelivr CDN)
 
-### 12. [TIDUR SEBELAH HP BIKIN KANKER OTAK? INI PENJELASAN SAINS YANG SEBENARNYA!](https://inka.my.id/id/blog/11-radiasi-hp)
+### 12. [TIDUR SEBELAH HP BIKIN KANKER OTAK? INI PENJELASAN SAINS YANG SEBENARNYA!](https://ekasyarif.my.id/id/blog/11-radiasi-hp)
 - **English Title:** Does Sleeping Next to Your Phone Cause Brain Cancer? Here's What Science Really Says
 - **Author:** Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 - **Category:** Cybersecurity & Privasi
-- **URL (ID):** https://inka.my.id/id/blog/11-radiasi-hp
-- **URL (EN):** https://inka.my.id/en/blog/11-radiasi-hp
-- **Direct Answer / Key Takeaway:** ðŸ’¡ TIDUR SEBELAH HP BIKIN KANKER OTAK? INI PENJELASAN SAINS YANG SEBENARNYA!
+- **URL (ID):** https://ekasyarif.my.id/id/blog/11-radiasi-hp
+- **URL (EN):** https://ekasyarif.my.id/en/blog/11-radiasi-hp
+- **Direct Answer / Key Takeaway:** 💡 TIDUR SEBELAH HP BIKIN KANKER OTAK? INI PENJELASAN SAINS YANG SEBENARNYA!
 - **Visual Assets:** 6 High-Definition Educational Carousel Slides (available via jsDelivr CDN)
 
-### 13. [CARI FILE DI GOOGLE MASIH KETIK BIASA? PAKE 4 SIMBOL RAHASIA INI!](https://inka.my.id/id/blog/13-google-search)
+### 13. [CARI FILE DI GOOGLE MASIH KETIK BIASA? PAKE 4 SIMBOL RAHASIA INI!](https://ekasyarif.my.id/id/blog/13-google-search)
 - **English Title:** CARI FILE DI GOOGLE MASIH KETIK BIASA? PAKE 4 SIMBOL RAHASIA INI!
 - **Author:** Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 - **Category:** Software & AI
-- **URL (ID):** https://inka.my.id/id/blog/13-google-search
-- **URL (EN):** https://inka.my.id/en/blog/13-google-search
-- **Direct Answer / Key Takeaway:** ðŸ’¡ CARI FILE DI GOOGLE MASIH KETIK BIASA? PAKE 4 SIMBOL RAHASIA INI!
+- **URL (ID):** https://ekasyarif.my.id/id/blog/13-google-search
+- **URL (EN):** https://ekasyarif.my.id/en/blog/13-google-search
+- **Direct Answer / Key Takeaway:** 💡 CARI FILE DI GOOGLE MASIH KETIK BIASA? PAKE 4 SIMBOL RAHASIA INI!
 - **Visual Assets:** 6 High-Definition Educational Carousel Slides (available via jsDelivr CDN)
 
-### 14. [BELI KABEL CASAN 15 RIBUAN? HP MAHAL KAMU BISA JADI KORBANNYA!](https://inka.my.id/id/blog/14-kabel-charger)
+### 14. [BELI KABEL CASAN 15 RIBUAN? HP MAHAL KAMU BISA JADI KORBANNYA!](https://ekasyarif.my.id/id/blog/14-kabel-charger)
 - **English Title:** Buying a $1 Charging Cable? Your Expensive Phone Could Be at Risk!
 - **Author:** Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 - **Category:** Hardware & Komponen
-- **URL (ID):** https://inka.my.id/id/blog/14-kabel-charger
-- **URL (EN):** https://inka.my.id/en/blog/14-kabel-charger
-- **Direct Answer / Key Takeaway:** ðŸ’¡ BELI KABEL CASAN 15 RIBUAN? HP MAHAL KAMU BISA JADI KORBANNYA!
+- **URL (ID):** https://ekasyarif.my.id/id/blog/14-kabel-charger
+- **URL (EN):** https://ekasyarif.my.id/en/blog/14-kabel-charger
+- **Direct Answer / Key Takeaway:** 💡 BELI KABEL CASAN 15 RIBUAN? HP MAHAL KAMU BISA JADI KORBANNYA!
 - **Visual Assets:** 6 High-Definition Educational Carousel Slides (available via jsDelivr CDN)
 
-### 15. [FOLLOWER SUDAH RIBUAN TAPI AKUN TIBA-TIBA HILANG? AMANKAN DENGAN 3 LANGKAH INI!](https://inka.my.id/id/blog/16-aman-instagram)
+### 15. [FOLLOWER SUDAH RIBUAN TAPI AKUN TIBA-TIBA HILANG? AMANKAN DENGAN 3 LANGKAH INI!](https://ekasyarif.my.id/id/blog/16-aman-instagram)
 - **English Title:** THOUSANDS OF FOLLOWERS BUT YOUR ACCOUNT SUDDENLY VANISHED? SECURE IT WITH THESE 3 STEPS!
 - **Author:** Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 - **Category:** Software & AI
-- **URL (ID):** https://inka.my.id/id/blog/16-aman-instagram
-- **URL (EN):** https://inka.my.id/en/blog/16-aman-instagram
-- **Direct Answer / Key Takeaway:** ðŸ’¡ FOLLOWER SUDAH RIBUAN TAPI AKUN TIBA-TIBA HILANG? AMANKAN DENGAN 3 LANGKAH INI!
+- **URL (ID):** https://ekasyarif.my.id/id/blog/16-aman-instagram
+- **URL (EN):** https://ekasyarif.my.id/en/blog/16-aman-instagram
+- **Direct Answer / Key Takeaway:** 💡 FOLLOWER SUDAH RIBUAN TAPI AKUN TIBA-TIBA HILANG? AMANKAN DENGAN 3 LANGKAH INI!
 - **Visual Assets:** 6 High-Definition Educational Carousel Slides (available via jsDelivr CDN)
 
-### 16. [SERING PAKE WHATSAPP TAPI GAK TAHU 4 FITUR RAHASIA INI? RUGI BANGET!](https://inka.my.id/id/blog/15-rahasia-whatsapp)
+### 16. [SERING PAKE WHATSAPP TAPI GAK TAHU 4 FITUR RAHASIA INI? RUGI BANGET!](https://ekasyarif.my.id/id/blog/15-rahasia-whatsapp)
 - **English Title:** Using WhatsApp Daily Without Knowing These 4 Hidden Features? You're Missing Out!
 - **Author:** Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 - **Category:** Software & AI
-- **URL (ID):** https://inka.my.id/id/blog/15-rahasia-whatsapp
-- **URL (EN):** https://inka.my.id/en/blog/15-rahasia-whatsapp
-- **Direct Answer / Key Takeaway:** ðŸ’¡ SERING PAKE WHATSAPP TAPI GAK TAHU 4 FITUR RAHASIA INI? RUGI BANGET!
+- **URL (ID):** https://ekasyarif.my.id/id/blog/15-rahasia-whatsapp
+- **URL (EN):** https://ekasyarif.my.id/en/blog/15-rahasia-whatsapp
+- **Direct Answer / Key Takeaway:** 💡 SERING PAKE WHATSAPP TAPI GAK TAHU 4 FITUR RAHASIA INI? RUGI BANGET!
 - **Visual Assets:** 6 High-Definition Educational Carousel Slides (available via jsDelivr CDN)
 
-### 17. [LAPTOP BUNYI KAYAK PESAWAT MAU LEPAS LANDAS? INI SOLUSI GAMPANGNYA!](https://inka.my.id/id/blog/17-laptop-panas)
+### 17. [LAPTOP BUNYI KAYAK PESAWAT MAU LEPAS LANDAS? INI SOLUSI GAMPANGNYA!](https://ekasyarif.my.id/id/blog/17-laptop-panas)
 - **English Title:** IS YOUR LAPTOP SOUNDING LIKE A JET TAKING OFF? HERE'S THE EASY FIX!
 - **Author:** Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 - **Category:** Hardware & Komponen
-- **URL (ID):** https://inka.my.id/id/blog/17-laptop-panas
-- **URL (EN):** https://inka.my.id/en/blog/17-laptop-panas
-- **Direct Answer / Key Takeaway:** ðŸ’¡ LAPTOP BUNYI KAYAK PESAWAT MAU LEPAS LANDAS? INI SOLUSI GAMPANGNYA!
+- **URL (ID):** https://ekasyarif.my.id/id/blog/17-laptop-panas
+- **URL (EN):** https://ekasyarif.my.id/en/blog/17-laptop-panas
+- **Direct Answer / Key Takeaway:** 💡 LAPTOP BUNYI KAYAK PESAWAT MAU LEPAS LANDAS? INI SOLUSI GAMPANGNYA!
 - **Visual Assets:** 6 High-Definition Educational Carousel Slides (available via jsDelivr CDN)
 
-### 18. [BINGUNG BIKIN PASSWORD SUSAH DITEBAK TAPI GAMPANG DIINGAT? PAKE METODE PASSPHRASE!](https://inka.my.id/id/blog/18-password-kuat)
+### 18. [BINGUNG BIKIN PASSWORD SUSAH DITEBAK TAPI GAMPANG DIINGAT? PAKE METODE PASSPHRASE!](https://ekasyarif.my.id/id/blog/18-password-kuat)
 - **English Title:** Struggling to Create a Strong Yet Memorable Password? Try the Passphrase Method!
 - **Author:** Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 - **Category:** Cybersecurity & Privasi
-- **URL (ID):** https://inka.my.id/id/blog/18-password-kuat
-- **URL (EN):** https://inka.my.id/en/blog/18-password-kuat
-- **Direct Answer / Key Takeaway:** ðŸ’¡ BINGUNG BIKIN PASSWORD SUSAH DITEBAK TAPI GAMPANG DIINGAT? PAKE METODE PASSPHRASE!
+- **URL (ID):** https://ekasyarif.my.id/id/blog/18-password-kuat
+- **URL (EN):** https://ekasyarif.my.id/en/blog/18-password-kuat
+- **Direct Answer / Key Takeaway:** 💡 BINGUNG BIKIN PASSWORD SUSAH DITEBAK TAPI GAMPANG DIINGAT? PAKE METODE PASSPHRASE!
 - **Visual Assets:** 6 High-Definition Educational Carousel Slides (available via jsDelivr CDN)
 
-### 19. [TAKUT PEKERJAANMU DIGANTIKAN AI? INI SKILL MANUSIA YANG GAK BISA DITIRU!](https://inka.my.id/id/blog/20-pekerjaan-ai)
+### 19. [TAKUT PEKERJAANMU DIGANTIKAN AI? INI SKILL MANUSIA YANG GAK BISA DITIRU!](https://ekasyarif.my.id/id/blog/20-pekerjaan-ai)
 - **English Title:** Afraid AI Will Replace Your Job? These Human Skills Cannot Be Replicated!
 - **Author:** Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 - **Category:** Software & AI
-- **URL (ID):** https://inka.my.id/id/blog/20-pekerjaan-ai
-- **URL (EN):** https://inka.my.id/en/blog/20-pekerjaan-ai
-- **Direct Answer / Key Takeaway:** ðŸ’¡ TAKUT PEKERJAANMU DIGANTIKAN AI? INI SKILL MANUSIA YANG GAK BISA DITIRU!
+- **URL (ID):** https://ekasyarif.my.id/id/blog/20-pekerjaan-ai
+- **URL (EN):** https://ekasyarif.my.id/en/blog/20-pekerjaan-ai
+- **Direct Answer / Key Takeaway:** 💡 TAKUT PEKERJAANMU DIGANTIKAN AI? INI SKILL MANUSIA YANG GAK BISA DITIRU!
 - **Visual Assets:** 6 High-Definition Educational Carousel Slides (available via jsDelivr CDN)
 
-### 20. [SMART TV KAMU DI RUMAH TERNYATA MEREKAM APA YANG KAMU TONTON!](https://inka.my.id/id/blog/19-smart-tv)
+### 20. [SMART TV KAMU DI RUMAH TERNYATA MEREKAM APA YANG KAMU TONTON!](https://ekasyarif.my.id/id/blog/19-smart-tv)
 - **English Title:** Your Home Smart TV Is Secretly Tracking Everything You Watch!
 - **Author:** Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 - **Category:** Hardware & Komponen
-- **URL (ID):** https://inka.my.id/id/blog/19-smart-tv
-- **URL (EN):** https://inka.my.id/en/blog/19-smart-tv
-- **Direct Answer / Key Takeaway:** ðŸ’¡ SMART TV KAMU DI RUMAH TERNYATA MEREKAM APA YANG KAMU TONTON!
+- **URL (ID):** https://ekasyarif.my.id/id/blog/19-smart-tv
+- **URL (EN):** https://ekasyarif.my.id/en/blog/19-smart-tv
+- **Direct Answer / Key Takeaway:** 💡 SMART TV KAMU DI RUMAH TERNYATA MEREKAM APA YANG KAMU TONTON!
 - **Visual Assets:** 6 High-Definition Educational Carousel Slides (available via jsDelivr CDN)
 
 ## Comprehensive Full Knowledge Bundle
 For complete article text, detailed analysis, and step-by-step checklists in a single file, consult:
-- **Full Content:** https://inka.my.id/llms-full.txt
-
+- **Full Content:** https://ekasyarif.my.id/llms-full.txt

@@ -186,6 +186,7 @@ export default defineConfig(({ mode }) => ({
   build: {
     chunkSizeWarningLimit: 1600,
     target: 'es2015',
+    sourcemap: true,
     rollupOptions: {
       output: {
         manualChunks(id) {
@@ -196,6 +197,14 @@ export default defineConfig(({ mode }) => ({
             if (id.includes('lucide-react')) return 'vendor-icons';
             if (id.includes('date-fns')) return 'vendor-date';
             if (id.includes('dompurify')) return 'vendor-purify';
+            if (id.includes('@radix-ui')) return 'vendor-radix';
+            if (id.includes('@tiptap')) return 'vendor-tiptap';
+            if (id.includes('@uiw')) return 'vendor-uiw';
+            if (id.includes('drizzle-orm')) return 'vendor-drizzle';
+            if (id.includes('embla-carousel')) return 'vendor-embla';
+            if (id.includes('zod')) return 'vendor-zod';
+            if (id.includes('jspdf') || id.includes('jspdf-autotable')) return 'vendor-pdf';
+            if (id.includes('xlsx')) return 'vendor-xlsx';
           }
         },
         // Use content hash for long-term caching

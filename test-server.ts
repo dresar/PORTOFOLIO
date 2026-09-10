@@ -1,5 +1,5 @@
 import http from 'http';
-import handler from './api/index';
+import handler from './vercel-api-archive/index.ts';
 import dotenv from 'dotenv';
 
 dotenv.config();

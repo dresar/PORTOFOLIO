@@ -20,10 +20,10 @@ import {
 } from 'drizzle-orm/pg-core';
 import { relations, sql, eq, desc, asc, and, like, ilike, inArray } from 'drizzle-orm';
 import * as dotenv from 'dotenv';
-import { IncomingMessage, ServerResponse } from 'http';
+import { IncomingMessage, ServerResponse } from 'node:http';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 
 // --- 1. CONFIGURATION ---
 dotenv.config();

@@ -28,7 +28,7 @@ export const ContactSection = () => {
   const { t } = useTranslation();
   const { profile } = useProfile();
   const { socialLinks } = useSocialLinks();
-  const normalizedSocialLinks = (socialLinks ?? []) as SocialLink[];
+  const normalizedSocialLinks = Array.isArray(socialLinks) ? socialLinks : [];
   
   const [formData, setFormData] = useState({
     name: '',
