@@ -68,6 +68,7 @@
     "@tiptap/extension-youtube": "^3.17.1",
     "@tiptap/react": "^3.17.1",
     "@tiptap/starter-kit": "^3.17.1",
+    "@tsndr/cloudflare-worker-jwt": "^3.2.3",
     "@types/bcryptjs": "^2.4.6",
     "@types/dompurify": "^3.0.5",
     "@types/jsonwebtoken": "^9.0.10",

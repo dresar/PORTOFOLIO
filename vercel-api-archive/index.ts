@@ -16,7 +16,7 @@ import {
 import { relations, sql, eq, desc, asc, and, like, ilike, inArray } from 'drizzle-orm';
 // Dotenv removed for Cloudflare Workers compatibility
 import { IncomingMessage, ServerResponse } from 'node:http';
-import jwt from 'jsonwebtoken';
+import jwt from '@tsndr/cloudflare-worker-jwt';
 import bcrypt from 'bcryptjs';
 import crypto from 'node:crypto';
 
@@ -35,7 +35,7 @@ interface TokenPayload {
   name?: string;
 }
 
-function verifyJwtToken(req: any): TokenPayload | null {
+async function verifyJwtToken(req: any): Promise<TokenPayload | null> {
   try {
     if (!JWT_SECRET) return null;
     const authHeader = req.headers?.authorization;
@@ -44,8 +44,10 @@ function verifyJwtToken(req: any): TokenPayload | null {
     if (parts.length !== 2 || parts[0].toLowerCase() !== 'bearer') return null;
     const token = parts[1];
     if (!token || token === 'demo-token' || token === 'fake-jwt-token') return null;
-    const decoded = jwt.verify(token, JWT_SECRET) as TokenPayload;
-    return decoded;
+    const isValid = await jwt.verify(token, JWT_SECRET);
+    if (!isValid) return null;
+    const decoded = jwt.decode(token);
+    return (decoded.payload || decoded) as TokenPayload;
   } catch (err) {
     return null;
   }
@@ -874,11 +876,8 @@ export default async function handler(req: any, res: any) {
                         clearAttempts(ip);
 
                         if (user.pin) {
-                            const tempToken = jwt.sign(
-                                { id: user.id, email: user.email, stage: 'pin_required' },
-                                JWT_SECRET,
-                                { expiresIn: '5m' }
-                            );
+                            const tempToken = await jwt.sign({ id: user.id, email: user.email, stage: 'pin_required', exp: Math.floor(Date.now() / 1000) + (5 * 60) },
+                                JWT_SECRET);
                             return sendJSON(res, 200, {
                                 requirePin: true,
                                 tempToken,
@@ -886,11 +885,8 @@ export default async function handler(req: any, res: any) {
                             });
                         }
 
-                        const token = jwt.sign(
-                            { id: user.id, email: user.email, name: user.name, role: 'admin' },
-                            JWT_SECRET,
-                            { expiresIn: '7d' }
-                        );
+                        const token = await jwt.sign({ id: user.id, email: user.email, name: user.name, role: 'admin', exp: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60) },
+                            JWT_SECRET);
                         return sendJSON(res, 200, {
                             token,
                             user: { id: user.id, email: user.email, name: user.name, role: 'admin' }
@@ -917,7 +913,9 @@ export default async function handler(req: any, res: any) {
             try {
                 let decoded: any;
                 try {
-                    decoded = jwt.verify(tempToken, JWT_SECRET);
+                    const isValid = await jwt.verify(tempToken, JWT_SECRET);
+if (!isValid) throw new Error('invalid');
+decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
                 } catch (jwtErr) {
                     return sendJSON(res, 401, { error: 'Sesi verifikasi telah kedaluwarsa. Silakan login kembali.' });
                 }
@@ -949,11 +947,8 @@ export default async function handler(req: any, res: any) {
 
                 if (isPinValid) {
                     clearAttempts(ip);
-                    const token = jwt.sign(
-                        { id: user.id, email: user.email, name: user.name, role: 'admin' },
-                        JWT_SECRET,
-                        { expiresIn: '7d' }
-                    );
+                    const token = await jwt.sign({ id: user.id, email: user.email, name: user.name, role: 'admin', exp: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60) },
+                        JWT_SECRET);
                     return sendJSON(res, 200, {
                         token,
                         user: { id: user.id, email: user.email, name: user.name, role: 'admin' }
@@ -970,7 +965,7 @@ export default async function handler(req: any, res: any) {
         if (action === 'register') {
             if (req.method !== 'POST') return sendJSON(res, 405, { error: 'Method not allowed' });
             // Only authenticated admin can create new accounts if users already exist
-            const tokenUser = verifyJwtToken(req);
+            const tokenUser = await verifyJwtToken(req);
             const body = await parseBody(req);
             const { email, password, name } = body || {};
             if (!email || !password) return sendJSON(res, 400, { error: 'Email and password required' });
@@ -995,7 +990,7 @@ export default async function handler(req: any, res: any) {
         }
 
         if (action === 'me') {
-            const tokenUser = verifyJwtToken(req);
+            const tokenUser = await verifyJwtToken(req);
             if (!tokenUser) {
                 return sendJSON(res, 401, { error: 'Unauthorized. Invalid or missing token.' });
             }
@@ -1315,7 +1310,7 @@ export default async function handler(req: any, res: any) {
 
     // Upload
     if (resourceName === 'upload') {
-        const tokenUser = verifyJwtToken(req);
+        const tokenUser = await verifyJwtToken(req);
         if (!tokenUser) return sendJSON(res, 401, { error: 'Unauthorized. Upload requires authentication.' });
         if (req.method !== 'POST') return sendJSON(res, 405, { error: 'Method not allowed' });
         try {
@@ -1380,7 +1375,7 @@ export default async function handler(req: any, res: any) {
 
     // AI
     if (resourceName === 'ai') {
-        const tokenUser = verifyJwtToken(req);
+        const tokenUser = await verifyJwtToken(req);
         if (!tokenUser) return sendJSON(res, 401, { error: 'Unauthorized. AI operations require authentication.' });
 
         const apiKey = process.env.AI_API_KEY || process.env.AI_GATEWAY_API_KEY;
@@ -1672,7 +1667,7 @@ export default async function handler(req: any, res: any) {
     // --- Cloudinary Endpoints ---
     if (resourceName === 'cloudinary') {
         // All cloudinary endpoints require authentic admin JWT
-        const tokenUser = verifyJwtToken(req);
+        const tokenUser = await verifyJwtToken(req);
         if (!tokenUser) return sendJSON(res, 401, { error: 'Unauthorized. Cloudinary operations require authentication.' });
 
         const MAX_CONFIGS = 5;
@@ -2099,7 +2094,7 @@ export default async function handler(req: any, res: any) {
     const isInteraction = action === 'comments' || action === 'like' || action === 'view';
     const isProduction = process.env.NODE_ENV === 'production';
     
-    const tokenUser = verifyJwtToken(req);
+    const tokenUser = await verifyJwtToken(req);
     const isAuthenticated = Boolean(tokenUser);
 
     if (isProduction && req.method === 'GET' && publicResources.includes(resourceName) && !isInteraction && !isAuthenticated) {
@@ -2326,7 +2321,7 @@ export default async function handler(req: any, res: any) {
 
     if (res.headersSent) return;
 
-    const tokenUser = verifyJwtToken(req);
+    const tokenUser = await verifyJwtToken(req);
     const isAuthenticated = Boolean(tokenUser);
     const isProduction = process.env.NODE_ENV === 'production';
     const msg = String(error?.message || '');
