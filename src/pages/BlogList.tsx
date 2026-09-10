@@ -224,59 +224,36 @@ const BlogList = () => {
             </div>
           ) : filteredPosts.length > 0 ? (
             <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-[1400px] mx-auto">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5 max-w-[1400px] mx-auto">
               {currentPosts.map((post: any, index: number) => (
                 <div key={post.id} className="relative group">
                   <Link to={getLocalizedPath(`/blog/${post.slug}`)} className="block h-full">
                     <motion.div 
-                      initial={{ opacity: 0, y: 20 }}
+                      initial={{ opacity: 0, y: 15 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.05 }}
-                      className="bg-card border rounded-xl overflow-hidden h-full hover:shadow-lg transition-all duration-300 flex flex-col"
+                      transition={{ delay: index * 0.03 }}
+                      className="bg-card border border-border/50 rounded-xl overflow-hidden h-full hover:border-primary/50 hover:shadow-md transition-all duration-200 flex flex-col group-hover:-translate-y-0.5"
                     >
-                      <div className="relative aspect-video overflow-hidden">
+                      {/* Image 3:4 (Portrait for Mobile & Desktop) */}
+                      <div className="relative aspect-[3/4] overflow-hidden bg-muted/20">
                         <img 
-                          src={normalizeMediaUrl(post.coverImage || post.coverImageFile || post.cover_image || post.thumbnail || 'https://images.unsplash.com/photo-1432821596592-e2c18b78144f?w=800&q=80')} 
+                          src={normalizeMediaUrl(post.cover_image || post.coverImage || post.coverImageFile || post.thumbnail || 'https://images.unsplash.com/photo-1432821596592-e2c18b78144f?w=800&q=80')} 
                           alt={post.title}
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          className="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-105"
                           loading="lazy"
                         />
-                        <div className="absolute top-3 left-3 flex gap-2">
-                          <span className="bg-primary/90 text-primary-foreground text-xs font-medium px-2.5 py-1 rounded-full backdrop-blur-sm">
-                            {post.category?.name || t('blog.general')}
-                          </span>
-                        </div>
                       </div>
                       
-                      <div className="p-5 flex flex-col flex-grow">
-                        <div className="flex items-center justify-between text-xs text-muted-foreground mb-3">
-                          <div className="flex items-center gap-3">
-                            <div className="flex items-center gap-1">
-                              <Calendar className="h-3 w-3" />
-                              <span>{format(new Date(post.published_at || post.created_at), 'dd MMM yyyy', { locale: id })}</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <User className="h-3 w-3" />
-                              <span>{typeof post.author === 'string' ? post.author : (post.author?.name || post.author?.username || 'Eka Syarif Maulana, S.Kom')}</span>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-1 text-primary/80 font-medium">
-                            <Eye className="h-3.5 w-3.5" />
-                            <span>{formatCompactNumber(post.views || 0)}</span>
-                          </div>
+                      {/* Content: Title & Date only, no author, no tags, no excerpt */}
+                      <div className="p-2.5 sm:p-3.5 flex flex-col flex-grow justify-between gap-1.5">
+                        <div className="flex items-center gap-1 text-[10px] sm:text-xs text-muted-foreground">
+                          <Calendar className="h-3 w-3 shrink-0 text-primary/70" />
+                          <span>{format(new Date(post.published_at || post.created_at), 'd MMM yyyy', { locale: id })}</span>
                         </div>
                         
-                        <h3 className="text-lg font-semibold mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                        <h3 className="text-xs sm:text-sm font-semibold leading-snug line-clamp-2 text-foreground group-hover:text-primary transition-colors">
                           {post.title}
                         </h3>
-                        
-                        <p className="text-muted-foreground text-sm line-clamp-3 mb-4 flex-grow">
-                          {post.excerpt}
-                        </p>
-                        
-                        <div className="flex items-center text-sm text-primary font-medium mt-auto">
-                          {t('blog.read_more')} <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                        </div>
                       </div>
                     </motion.div>
                   </Link>

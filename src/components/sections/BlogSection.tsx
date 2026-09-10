@@ -57,69 +57,44 @@ export const BlogSection = () => {
           </div>
         ) : (
           /* Static Responsive Grid (2 Columns on Mobile, 4 Columns on Desktop) */
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 md:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
             {latestPosts.map((post: any, index: number) => (
               <motion.div
                 key={post.id}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: index * 0.05 }}
-                className="neon-card group rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-card border border-border/50 h-full flex flex-col"
+                transition={{ duration: 0.3, delay: index * 0.03 }}
+                className="group rounded-xl overflow-hidden hover:shadow-md transition-all duration-200 bg-card border border-border/50 h-full flex flex-col hover:border-primary/50 hover:-translate-y-0.5"
               >
-                <div className="relative aspect-video overflow-hidden shrink-0">
+                {/* 3:4 Portrait Image */}
+                <div className="relative aspect-[3/4] overflow-hidden shrink-0 bg-muted/20">
                   <Link to={getLocalizedPath(`/blog/${post.slug}`)} className="block h-full">
                     <img
                       src={normalizeMediaUrl(post.cover_image || post.coverImage || post.coverImageFile || "https://placehold.co/600x400?text=Blog+Post")}
                       alt={post.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      className="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-105"
+                      loading="lazy"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src = "https://placehold.co/600x400?text=Blog+Post";
                       }}
                     />
                   </Link>
-                  <div className="absolute top-2 left-2 sm:top-3 sm:left-3">
-                    <span className="bg-primary/90 text-primary-foreground text-[10px] sm:text-xs font-medium px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full backdrop-blur-sm truncate max-w-[100px] sm:max-w-none inline-block">
-                      {post.category?.name || t('blog.default_category')}
-                    </span>
-                  </div>
                 </div>
 
-                <div className="p-3 sm:p-6 flex-1 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center gap-1 text-[10px] sm:text-xs text-muted-foreground mb-1.5 sm:mb-3">
-                      <Calendar className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
-                      <span>{format(new Date(post.created_at), 'd MMM yyyy', { locale: id })}</span>
-                    </div>
-
-                    <h3 className="text-xs sm:text-lg font-bold mb-1.5 leading-snug sm:leading-tight line-clamp-2 group-hover:text-primary transition-colors">
-                      <Link to={getLocalizedPath(`/blog/${post.slug}`)} className="focus:outline-none">
-                        {post.title}
-                      </Link>
-                    </h3>
-
-                    <p className="text-muted-foreground text-xs sm:text-sm line-clamp-2 mb-3 hidden sm:block">
-                      {post.excerpt}
-                    </p>
+                {/* Minimalist Title & Date */}
+                <div className="p-2.5 sm:p-3.5 flex flex-col flex-grow justify-between gap-1.5">
+                  <div className="flex items-center gap-1 text-[10px] sm:text-xs text-muted-foreground">
+                    <Calendar className="w-3 h-3 shrink-0 text-primary/70" />
+                    <span>{format(new Date(post.published_at || post.created_at), 'd MMM yyyy', { locale: id })}</span>
                   </div>
 
-                  <div className="pt-2 sm:pt-3 border-t border-border/40 mt-auto flex justify-end">
-                    <Link to={getLocalizedPath(`/blog/${post.slug}`)} className="flex-1">
-                      <span className="relative group/btn overflow-hidden rounded-lg sm:rounded-xl p-[1.5px] transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] shadow-sm hover:shadow-primary/30 cursor-pointer block text-center">
-                        <span 
-                          className="absolute inset-[-1000%] animate-[spin_3.5s_linear_infinite]"
-                          style={{
-                            background: 'conic-gradient(from 90deg at 50% 50%, #0000 0%, #38bdf8 50%, #818cf8 75%, #0000 100%)',
-                          }}
-                        />
-                        <span className="relative flex items-center justify-center gap-1 sm:gap-1.5 px-2 py-1 sm:px-3 sm:py-1.5 rounded-[7px] sm:rounded-[10px] bg-card text-[10px] sm:text-xs font-semibold text-foreground group-hover/btn:text-primary transition-colors">
-                          <span>{t('blog.read_more') || 'Selengkapnya'}</span>
-                          <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary transition-transform duration-300 group-hover/btn:translate-x-1" />
-                        </span>
-                      </span>
+                  <h3 className="text-xs sm:text-sm font-semibold leading-snug line-clamp-2 text-foreground group-hover:text-primary transition-colors">
+                    <Link to={getLocalizedPath(`/blog/${post.slug}`)} className="focus:outline-none">
+                      {post.title}
                     </Link>
-                  </div>
+                  </h3>
                 </div>
               </motion.div>
             ))}
