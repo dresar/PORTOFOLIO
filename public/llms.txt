@@ -1,4 +1,4 @@
-﻿# Eka Syarif Maulana, S.Kom - Knowledge Base & Technical Authority
+# Eka Syarif Maulana, S.Kom - Knowledge Base & Technical Authority
 > Official Agent-Readable Index (llms.txt) for AI Search Engines (Perplexity, ChatGPT, Claude, Gemini, Copilot)
 
 ## About the Author & Entity Authority
