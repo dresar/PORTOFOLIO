@@ -392,7 +392,7 @@ export default function SkillList() {
             Skill
             {isFetching && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
           </h1>
-          <p className="text-muted-foreground">Kelola daftar keahlian Anda.</p>
+          <p className="text-muted-foreground">Daftar keahlian teknis.</p>
         </div>
         <div className="flex gap-2 items-center flex-wrap">
             <SkillCategoryManager />
@@ -408,37 +408,34 @@ export default function SkillList() {
             </Button>
             <Button variant="outline" onClick={toggleSelectAll} disabled={filteredAndSortedSkills.length === 0}>
                 {filteredAndSortedSkills.length > 0 && selectedIds.length === filteredAndSortedSkills.length ? <CheckSquare className="mr-2 h-4 w-4" /> : <Square className="mr-2 h-4 w-4" />}
-                {filteredAndSortedSkills.length > 0 && selectedIds.length === filteredAndSortedSkills.length ? 'Batal Pilih' : 'Pilih Semua'}
+                {filteredAndSortedSkills.length > 0 && selectedIds.length === filteredAndSortedSkills.length ? 'Batal' : 'Pilih Semua'}
             </Button>
             <Button onClick={() => handleOpenModal()}>
-              <Plus className="mr-2 h-4 w-4" /> Tambah Skill
+              <Plus className="mr-2 h-4 w-4" /> Tambah
             </Button>
         </div>
       </div>
 
-      {/* Toolbar Filter & Sort */}
       <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between bg-card p-4 rounded-xl border shadow-sm">
         <div className="flex flex-1 flex-col sm:flex-row gap-3 items-center">
-          {/* Search Input */}
           <div className="relative flex-1 w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Cari skill..."
+              placeholder="Cari"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-9 w-full"
             />
           </div>
 
-          {/* Category Filter */}
           <div className="w-full sm:w-56 flex items-center gap-2">
             <Filter className="h-4 w-4 text-muted-foreground shrink-0 hidden sm:block" />
             <Select value={selectedCategory} onValueChange={setSelectedCategory}>
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Semua Kategori" />
+                <SelectValue placeholder="Kategori" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Semua Kategori</SelectItem>
+                <SelectItem value="all">Semua</SelectItem>
                 {categories.map((cat: any) => (
                   <SelectItem key={cat.id} value={String(cat.id)}>
                     {cat.name}
@@ -448,7 +445,6 @@ export default function SkillList() {
             </Select>
           </div>
 
-          {/* Sort Order */}
           <div className="w-full sm:w-52 flex items-center gap-2">
             <ArrowUpDown className="h-4 w-4 text-muted-foreground shrink-0 hidden sm:block" />
             <Select value={sortOrder} onValueChange={(val: any) => setSortOrder(val)}>
@@ -703,7 +699,7 @@ export default function SkillList() {
                 Batal
               </Button>
               <Button type="submit" className="min-w-[110px]">
-                Simpan Skill
+                Simpan
               </Button>
             </div>
           </form>
@@ -715,11 +711,7 @@ export default function SkillList() {
         onClose={() => setDeleteAlert({ isOpen: false })}
         onConfirm={confirmDelete}
         title={deleteAlert.isBulk ? `Hapus ${selectedIds.length} Skill?` : "Hapus Skill?"}
-        description={
-          deleteAlert.isBulk
-            ? "Apakah Anda yakin ingin menghapus skill yang dipilih? Tindakan ini tidak dapat dibatalkan."
-            : "Apakah Anda yakin ingin menghapus skill ini? Tindakan ini tidak dapat dibatalkan."
-        }
+        description="Tindakan permanen dan tidak dapat dibatalkan."
       />
     </div>
   );

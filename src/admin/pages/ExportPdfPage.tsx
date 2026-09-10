@@ -61,15 +61,15 @@ export default function ExportPdfPage() {
     certLoading;
 
   const sectionsConfig = [
-    { id: 'home', title: 'Beranda (Hero)', desc: 'Bagian perkenalan utama dan sambutan visual depan.', icon: Home, hash: '/#home' },
-    { id: 'about', title: 'Tentang Saya', desc: 'Profil lengkap, deskripsi biografi, dan detail informasi diri.', icon: User, hash: '/#about' },
-    { id: 'education', title: 'Riwayat Pendidikan', desc: 'Tampilan visual instansi sekolah, universitas, nilai, dan lokasi.', icon: GraduationCap, hash: '/#education' },
-    { id: 'skills', title: 'Keahlian Teknis', desc: 'Persentase penguasaan keahlian teknologi visual dan kategori.', icon: Zap, hash: '/#skills' },
-    { id: 'projects', title: 'Proyek Portofolio', desc: 'Galeri kartu proyek, tech stack, tombol eksternal demo dan repositori.', icon: FileText, hash: '/#projects' },
-    { id: 'experience', title: 'Pengalaman Kerja', desc: 'Timeline visual perjalanan karier profesional dan peranan kerja.', icon: Briefcase, hash: '/#experience' },
-    { id: 'certificates', title: 'Sertifikasi', desc: 'Galeri sertifikat profesional beserta lencana verifikasinya.', icon: Award, hash: '/#certificates' },
-    { id: 'blog', title: 'Blog Artikel', desc: 'Tampilan publik daftar tulisan artikel blog terbaru Anda.', icon: MessageSquare, hash: '/#blog' },
-    { id: 'contact', title: 'Kontak Saya', desc: 'Formulir kirim pesan dan kartu sosial media kontak.', icon: Mail, hash: '/#contact' },
+    { id: 'home', title: 'Beranda', desc: 'Perkenalan utama hero section.', icon: Home, hash: '/#home' },
+    { id: 'about', title: 'Tentang', desc: 'Profil lengkap dan biografi.', icon: User, hash: '/#about' },
+    { id: 'education', title: 'Pendidikan', desc: 'Riwayat instansi pendidikan.', icon: GraduationCap, hash: '/#education' },
+    { id: 'skills', title: 'Keahlian', desc: 'Penguasaan keahlian teknis.', icon: Zap, hash: '/#skills' },
+    { id: 'projects', title: 'Proyek', desc: 'Portofolio proyek dan kode.', icon: FileText, hash: '/#projects' },
+    { id: 'experience', title: 'Pengalaman', desc: 'Rekam jejak karier profesional.', icon: Briefcase, hash: '/#experience' },
+    { id: 'certificates', title: 'Sertifikat', desc: 'Sertifikasi dan lisensi.', icon: Award, hash: '/#certificates' },
+    { id: 'blog', title: 'Blog', desc: 'Artikel dan publikasi blog.', icon: MessageSquare, hash: '/#blog' },
+    { id: 'contact', title: 'Kontak', desc: 'Formulir dan kontak sosial.', icon: Mail, hash: '/#contact' },
   ];
 
   const handleExportSection = async (sectionId: string, sectionTitle: string, targetHash: string) => {
@@ -192,14 +192,14 @@ export default function ExportPdfPage() {
 
       doc.save(`portofolio_lengkap_${Date.now()}.pdf`);
       toast({
-        title: "Ekspor Berhasil",
-        description: "Dokumen PDF portofolio lengkap tampilan visual (terbagi per section) telah diunduh.",
+        title: "Berhasil!",
+        description: "PDF portofolio lengkap berhasil diunduh.",
       });
     } catch (err: any) {
       toast({
         variant: "destructive",
-        title: "Ekspor Gagal",
-        description: err.message || "Terjadi kesalahan saat memproses portofolio lengkap ke PDF.",
+        title: "Gagal!",
+        description: err.message || "Terjadi kesalahan saat memproses PDF.",
       });
     } finally {
       setIsGenerating(null);
@@ -210,18 +210,17 @@ export default function ExportPdfPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
-        <p className="text-sm text-muted-foreground">Mengambil dan menyiapkan komponen pratinjau visual...</p>
+        <p className="text-sm text-muted-foreground">Memuat...</p>
       </div>
     );
   }
 
   return (
     <div className="max-w-5xl mx-auto space-y-6 pb-12">
-      {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b pb-5">
         <div>
-          <h1 className="text-3xl font-heading font-bold text-foreground">Ekspor PDF Tampilan Publik</h1>
-          <p className="text-muted-foreground mt-1">Cetak visual halaman publik portofolio Anda ke file PDF. Halaman PDF yang dihasilkan interaktif & dapat diklik untuk menuju live site.</p>
+          <h1 className="text-3xl font-heading font-bold text-foreground">Ekspor PDF</h1>
+          <p className="text-muted-foreground mt-1">Cetak tampilan halaman portofolio ke PDF interaktif.</p>
         </div>
         <Button 
           size="lg"
@@ -234,11 +233,10 @@ export default function ExportPdfPage() {
           ) : (
             <Printer className="w-5 h-5 mr-2" />
           )}
-          Ekspor Portofolio Lengkap (Semua Halaman)
+          Ekspor Lengkap
         </Button>
       </div>
 
-      {/* Main Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {sectionsConfig.map((sect) => {
           const Icon = sect.icon;
@@ -260,7 +258,7 @@ export default function ExportPdfPage() {
                   onClick={() => handleExportSection(sect.id, sect.title, sect.hash)}
                   disabled={isGenerating !== null}
                 >
-                  <span className="text-xs font-semibold">Cetak PDF Visual Bagian Ini</span>
+                  <span className="text-xs font-semibold">Cetak Bagian</span>
                   {isGenerating === sect.id ? (
                     <Loader2 className="w-4 h-4 animate-spin text-primary" />
                   ) : (

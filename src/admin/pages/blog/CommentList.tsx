@@ -128,18 +128,18 @@ export default function CommentList() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Komentar Blog</h2>
-          <p className="text-muted-foreground">Kelola komentar dari pengunjung blog Anda.</p>
+          <h2 className="text-3xl font-bold tracking-tight">Komentar</h2>
+          <p className="text-muted-foreground">Daftar komentar pengunjung.</p>
         </div>
         <Button onClick={() => setIsAddOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" /> Tambah Komentar
+            <Plus className="mr-2 h-4 w-4" /> Tambah
         </Button>
       </div>
 
       <div className="flex items-center gap-2 bg-card p-2 rounded-lg border max-w-sm">
         <Search className="h-4 w-4 text-muted-foreground" />
         <Input 
-          placeholder="Cari komentar..." 
+          placeholder="Cari" 
           className="border-none shadow-none focus-visible:ring-0 h-8"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -309,7 +309,7 @@ export default function CommentList() {
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsViewOpen(false)}>Tutup</Button>
-            <Button variant="destructive" onClick={() => { setIsViewOpen(false); handleDelete(selectedComment.id); }}>Hapus Komentar</Button>
+            <Button variant="destructive" onClick={() => { setIsViewOpen(false); handleDelete(selectedComment.id); }}>Hapus</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -319,7 +319,7 @@ export default function CommentList() {
         onClose={() => setDeleteAlert({ isOpen: false })}
         onConfirm={confirmDelete}
         title="Hapus Komentar?"
-        description="Apakah Anda yakin ingin menghapus komentar ini? Tindakan ini tidak dapat dibatalkan."
+        description="Tindakan permanen dan tidak dapat dibatalkan."
       />
     </div>
   );

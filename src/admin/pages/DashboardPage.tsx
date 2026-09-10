@@ -34,7 +34,7 @@ export default function DashboardPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-[calc(100vh-100px)]">
-        <ModernLoader size="lg" text="Memuat Dashboard..." />
+        <ModernLoader size="lg" text="Memuat..." />
       </div>
     );
   }
@@ -46,16 +46,15 @@ export default function DashboardPage() {
         <div className="flex items-center space-x-2">
           <Button variant="outline" size="sm" onClick={() => refetch()}>
             <RefreshCcw className="mr-2 h-4 w-4" />
-            Refresh Data
+            Refresh
           </Button>
         </div>
       </div>
 
-      {/* Widgets */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Proyek</CardTitle>
+            <CardTitle className="text-sm font-medium">Proyek</CardTitle>
             <Briefcase className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -65,7 +64,7 @@ export default function DashboardPage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Artikel Blog</CardTitle>
+            <CardTitle className="text-sm font-medium">Artikel</CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -75,13 +74,13 @@ export default function DashboardPage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pesan Masuk</CardTitle>
+            <CardTitle className="text-sm font-medium">Pesan</CardTitle>
             <MessageSquare className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats?.counts.messages || 0}</div>
             <p className="text-xs text-muted-foreground">
-              {stats?.counts.unreadMessages || 0} pesan belum dibaca
+              {stats?.counts.unreadMessages || 0} belum dibaca
             </p>
           </CardContent>
         </Card>
@@ -97,15 +96,12 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      {/* Main Content */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        
-        {/* Recent Messages */}
         <Card className="col-span-1 md:col-span-2 lg:col-span-4">
           <CardHeader>
-            <CardTitle>Pesan Terbaru</CardTitle>
+            <CardTitle>Pesan Baru</CardTitle>
             <CardDescription>
-              5 pesan terakhir yang masuk dari formulir kontak.
+              5 pesan terakhir.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -131,18 +127,17 @@ export default function DashboardPage() {
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-muted-foreground text-center py-4">Belum ada pesan masuk.</p>
+                <p className="text-sm text-muted-foreground text-center py-4">Belum ada pesan</p>
               )}
             </div>
           </CardContent>
         </Card>
 
-        {/* Recent Projects */}
         <Card className="col-span-1 md:col-span-2 lg:col-span-3">
           <CardHeader>
-            <CardTitle>Proyek Terbaru</CardTitle>
+            <CardTitle>Proyek Baru</CardTitle>
             <CardDescription>
-              Proyek yang baru saja ditambahkan.
+              Proyek baru ditambahkan.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -167,7 +162,7 @@ export default function DashboardPage() {
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-muted-foreground text-center py-4">Belum ada proyek.</p>
+                <p className="text-sm text-muted-foreground text-center py-4">Belum ada data</p>
               )}
             </div>
           </CardContent>

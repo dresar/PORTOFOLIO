@@ -22,8 +22,8 @@ export function DeleteAlert({
   isOpen,
   onClose,
   onConfirm,
-  title = "Apakah Anda yakin?",
-  description = "Tindakan ini tidak dapat dibatalkan. Data akan dihapus secara permanen dari server.",
+  title = "Hapus Data?",
+  description = "Tindakan permanen dan tidak dapat dibatalkan.",
   isDeleting = false,
 }: DeleteAlertProps) {
   return (
@@ -45,7 +45,7 @@ export function DeleteAlert({
             disabled={isDeleting}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            {isDeleting ? "Menghapus..." : "Ya, Hapus"}
+            {isDeleting ? "Menghapus..." : "Hapus"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

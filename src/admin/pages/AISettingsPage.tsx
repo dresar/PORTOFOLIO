@@ -97,13 +97,13 @@ export default function AISettingsPage() {
       await api.content.settings.update(payload);
       
       toast({
-        title: "Pengaturan disimpan",
+        title: "Tersimpan!",
         description: "Konfigurasi AI berhasil diperbarui.",
       });
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Gagal menyimpan",
+        title: "Gagal!",
         description: "Tidak dapat memperbarui pengaturan.",
       });
     } finally {
@@ -141,20 +141,18 @@ export default function AISettingsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Pengaturan AI</h2>
-          <p className="text-muted-foreground">Konfigurasi Model dan Provider AI Global.</p>
+          <p className="text-muted-foreground">Konfigurasi provider dan model AI.</p>
         </div>
       </div>
 
       <div className="space-y-6">
-        {/* Configuration Section */}
         <Card>
             <CardHeader>
             <CardTitle className="flex items-center gap-2"><Bot className="w-5 h-5"/> Konfigurasi Provider</CardTitle>
-            <CardDescription>Atur koneksi ke API Provider AI (Default: Apprentice / One Key Hub).</CardDescription>
+            <CardDescription>Koneksi ke API provider AI.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                    {/* Provider Selection */}
                     <div className="space-y-2">
                         <Label className="flex items-center gap-2">Pilih Provider AI</Label>
                         <Select 
@@ -163,7 +161,7 @@ export default function AISettingsPage() {
                             value={form.watch('ai_provider')}
                         >
                             <SelectTrigger>
-                                <SelectValue placeholder="Pilih Penyedia AI" />
+                                <SelectValue placeholder="Provider" />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="apprentice">Apprentice (GPT-4o/Gemini)</SelectItem>
@@ -173,11 +171,10 @@ export default function AISettingsPage() {
                             </SelectContent>
                         </Select>
                         <p className="text-xs text-muted-foreground">
-                            Provider ini akan digunakan secara global di seluruh sistem.
+                            Provider aktif sistem AI.
                         </p>
                     </div>
 
-                    {/* Model Selection */}
                     <div className="space-y-4 border rounded-lg p-4 bg-muted/10 animate-in fade-in slide-in-from-top-4 duration-500">
                         <h3 className="font-medium flex items-center text-sm"><Bot className="w-4 h-4 mr-2"/> Pilih Model</h3>
                         
@@ -186,7 +183,7 @@ export default function AISettingsPage() {
                             value={form.watch('ai_model')}
                         >
                             <SelectTrigger>
-                                <SelectValue placeholder="Pilih Model" />
+                                <SelectValue placeholder="Model" />
                             </SelectTrigger>
                             <SelectContent>
                                 {availableModels.map((model) => (
@@ -198,13 +195,13 @@ export default function AISettingsPage() {
                             </SelectContent>
                         </Select>
                         <p className="text-xs text-muted-foreground">
-                            Model terpilih: <span className="font-mono text-primary">{form.watch('ai_model')}</span>
+                            Model aktif: <span className="font-mono text-primary">{form.watch('ai_model')}</span>
                         </p>
 
                         <div className="pt-2">
                             <Button type="submit" disabled={isLoading} className="w-full">
                                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                                Simpan Konfigurasi
+                                Simpan
                             </Button>
                         </div>
                     </div>
@@ -212,11 +209,10 @@ export default function AISettingsPage() {
             </CardContent>
         </Card>
 
-        {/* Test Interface */}
         <Card className="flex flex-col animate-in fade-in slide-in-from-top-8 duration-700 delay-100">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2"><MessageSquare className="w-5 h-5"/> Test Chat</CardTitle>
-                <CardDescription>Uji coba konfigurasi AI Anda secara langsung.</CardDescription>
+                <CardDescription>Uji langsung konfigurasi AI.</CardDescription>
             </CardHeader>
             <CardContent className="flex-1 flex flex-col space-y-4">
                     <div className="flex-1 min-h-[200px] bg-muted/30 rounded-lg p-4 border overflow-y-auto">
@@ -226,7 +222,7 @@ export default function AISettingsPage() {
                             </div>
                         ) : (
                             <div className="h-full flex items-center justify-center text-muted-foreground text-sm italic">
-                                Hasil respons AI akan muncul di sini...
+                                Belum ada respons
                             </div>
                         )}
                     </div>
@@ -237,7 +233,7 @@ export default function AISettingsPage() {
                             <Input 
                                 value={testPrompt} 
                                 onChange={(e) => setTestPrompt(e.target.value)} 
-                                placeholder="Ketik pesan untuk tes..." 
+                                placeholder="Pesan" 
                                 onKeyDown={(e) => e.key === 'Enter' && handleTestChat()}
                             />
                             <Button onClick={handleTestChat} disabled={isTesting || !testPrompt}>
@@ -245,7 +241,7 @@ export default function AISettingsPage() {
                             </Button>
                         </div>
                         <p className="text-xs text-muted-foreground">
-                            *Konfigurasi akan otomatis disimpan sebelum tes dijalankan.
+                            *Konfigurasi otomatis disimpan sebelum tes.
                         </p>
                     </div>
                 </CardContent>

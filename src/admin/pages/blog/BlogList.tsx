@@ -132,10 +132,10 @@ export default function BlogList() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-            Artikel Blog
+            Blog
             {isFetching && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
           </h1>
-          <p className="text-muted-foreground">Kelola artikel dan konten blog Anda.</p>
+          <p className="text-muted-foreground">Daftar artikel blog.</p>
         </div>
         <div className="flex gap-2 items-center">
             {selectedIds.length > 0 && (
@@ -149,7 +149,7 @@ export default function BlogList() {
                 Refresh
             </Button>
             <Button onClick={() => navigate('/admin/blog/new')}>
-              <Plus className="mr-2 h-4 w-4" /> Tulis Artikel
+              <Plus className="mr-2 h-4 w-4" /> Tulis
             </Button>
         </div>
       </div>
@@ -158,7 +158,7 @@ export default function BlogList() {
         <div className="flex items-center gap-2 bg-card p-2 rounded-lg border max-w-sm flex-grow">
           <Search className="h-4 w-4 text-muted-foreground" />
           <Input 
-            placeholder="Cari artikel..." 
+            placeholder="Cari" 
             className="border-none shadow-none focus-visible:ring-0 h-8"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -168,10 +168,10 @@ export default function BlogList() {
         <div className="w-[200px]">
             <Select value={selectedCategory} onValueChange={(val) => { setSelectedCategory(val); setCurrentPage(1); }}>
                 <SelectTrigger>
-                    <SelectValue placeholder="Filter Kategori" />
+                    <SelectValue placeholder="Kategori" />
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem value="all">Semua Kategori</SelectItem>
+                    <SelectItem value="all">Semua</SelectItem>
                     {categories.map((cat: any) => (
                         <SelectItem key={cat.id} value={cat.id.toString()}>
                             {cat.name}
@@ -283,11 +283,7 @@ export default function BlogList() {
         onClose={() => setDeleteAlert({ isOpen: false })}
         onConfirm={confirmDelete}
         title={deleteAlert.isBulk ? `Hapus ${selectedIds.length} Artikel?` : "Hapus Artikel?"}
-        description={
-          deleteAlert.isBulk
-            ? "Apakah Anda yakin ingin menghapus artikel yang dipilih? Tindakan ini tidak dapat dibatalkan."
-            : "Apakah Anda yakin ingin menghapus artikel ini? Tindakan ini tidak dapat dibatalkan."
-        }
+        description="Tindakan permanen dan tidak dapat dibatalkan."
       />
     </div>
   );

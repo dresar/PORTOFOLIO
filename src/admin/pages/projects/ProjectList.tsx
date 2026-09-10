@@ -124,7 +124,7 @@ export default function ProjectList() {
             Proyek
             {isFetching && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
           </h1>
-          <p className="text-muted-foreground">Kelola portofolio proyek Anda.</p>
+          <p className="text-muted-foreground">Daftar portofolio proyek.</p>
         </div>
         <div className="flex gap-2 items-center">
             {selectedIds.length > 0 && (
@@ -138,7 +138,7 @@ export default function ProjectList() {
                 Refresh
             </Button>
             <Button onClick={() => navigate('/admin/projects/new')}>
-              <Plus className="mr-2 h-4 w-4" /> Tambah Proyek
+              <Plus className="mr-2 h-4 w-4" /> Tambah
             </Button>
         </div>
       </div>
@@ -152,7 +152,7 @@ export default function ProjectList() {
                         <SelectValue placeholder="Kategori" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="all">Semua Kategori</SelectItem>
+                        <SelectItem value="all">Semua</SelectItem>
                         {categories.map((c: any) => (
                             <SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>
                         ))}
@@ -164,7 +164,7 @@ export default function ProjectList() {
         <div className="flex gap-2 w-full md:w-auto">
              <Button variant="outline" onClick={toggleSelectAll} disabled={filteredProjects.length === 0}>
                 {filteredProjects.length > 0 && selectedIds.length === filteredProjects.length ? <CheckSquare className="mr-2 h-4 w-4" /> : <Square className="mr-2 h-4 w-4" />}
-                {filteredProjects.length > 0 && selectedIds.length === filteredProjects.length ? 'Batal Pilih' : 'Pilih Semua'}
+                {filteredProjects.length > 0 && selectedIds.length === filteredProjects.length ? 'Batal' : 'Pilih Semua'}
              </Button>
         </div>
       </div>
@@ -175,9 +175,9 @@ export default function ProjectList() {
                 <Card>
                     <CardContent className="flex flex-col items-center justify-center py-10 text-center">
                         <Layers className="h-12 w-12 text-muted-foreground mb-4" />
-                        <p className="text-muted-foreground mb-4">Belum ada data project.</p>
+                        <p className="text-muted-foreground mb-4">Belum ada data</p>
                         <Button onClick={() => navigate('/admin/projects/new')}>
-                            <Plus className="mr-2 h-4 w-4" /> Buat Project Baru
+                            <Plus className="mr-2 h-4 w-4" /> Tambah
                         </Button>
                     </CardContent>
                 </Card>
@@ -301,12 +301,8 @@ export default function ProjectList() {
         isOpen={deleteAlert.isOpen}
         onClose={() => setDeleteAlert({ isOpen: false })}
         onConfirm={confirmDelete}
-        title={deleteAlert.isBulk ? `Hapus ${selectedIds.length} Project?` : "Hapus Project?"}
-        description={
-          deleteAlert.isBulk
-            ? "Apakah Anda yakin ingin menghapus project yang dipilih? Tindakan ini tidak dapat dibatalkan."
-            : "Apakah Anda yakin ingin menghapus project ini? Tindakan ini tidak dapat dibatalkan."
-        }
+        title={deleteAlert.isBulk ? `Hapus ${selectedIds.length} Proyek?` : "Hapus Proyek?"}
+        description="Tindakan permanen dan tidak dapat dibatalkan."
       />
     </div>
   );

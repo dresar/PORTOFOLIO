@@ -88,10 +88,6 @@ export default function ExperienceList() {
     return htmlString.replace(/<[^>]*>?/gm, '');
   };
 
-  // if (isLoading) {
-  //     return <div className="flex justify-center p-12"><ModernLoader size="lg" text="Memuat Pengalaman..." /></div>;
-  // }
-
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -100,7 +96,7 @@ export default function ExperienceList() {
             Pengalaman
             {isFetching && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
           </h1>
-          <p className="text-muted-foreground">Kelola riwayat pengalaman kerja Anda.</p>
+          <p className="text-muted-foreground">Daftar riwayat pengalaman kerja.</p>
         </div>
         <div className="flex gap-2 items-center">
             {selectedIds.length > 0 && (
@@ -115,10 +111,10 @@ export default function ExperienceList() {
             </Button>
             <Button variant="outline" onClick={toggleSelectAll} disabled={experiences.length === 0}>
                 {experiences.length > 0 && selectedIds.length === experiences.length ? <CheckSquare className="mr-2 h-4 w-4" /> : <Square className="mr-2 h-4 w-4" />}
-                {experiences.length > 0 && selectedIds.length === experiences.length ? 'Batal Pilih' : 'Pilih Semua'}
+                {experiences.length > 0 && selectedIds.length === experiences.length ? 'Batal' : 'Pilih Semua'}
             </Button>
             <Button onClick={() => navigate('/admin/experience/new')}>
-              <Plus className="mr-2 h-4 w-4" /> Tambah Pengalaman
+              <Plus className="mr-2 h-4 w-4" /> Tambah
             </Button>
         </div>
       </div>
@@ -128,9 +124,9 @@ export default function ExperienceList() {
             <Card>
                 <CardContent className="flex flex-col items-center justify-center py-10 text-center">
                     <Briefcase className="h-12 w-12 text-muted-foreground mb-4" />
-                    <p className="text-muted-foreground mb-4">Belum ada data pengalaman kerja.</p>
+                    <p className="text-muted-foreground mb-4">Belum ada data</p>
                     <Button onClick={() => navigate('/admin/experience/new')}>
-                        <Plus className="mr-2 h-4 w-4" /> Tambah Sekarang
+                        <Plus className="mr-2 h-4 w-4" /> Tambah
                     </Button>
                 </CardContent>
             </Card>
@@ -187,7 +183,7 @@ export default function ExperienceList() {
                                 <div className="flex gap-2 mt-3">
                                     <Badge variant="outline" className="text-xs">
                                         <ImageIcon className="h-3 w-3 mr-1" />
-                                        Dokumentasi Tersedia
+                                        Galeri
                                     </Badge>
                                 </div>
                             )}
@@ -227,11 +223,7 @@ export default function ExperienceList() {
         onClose={() => setDeleteAlert({ isOpen: false })}
         onConfirm={confirmDelete}
         title={deleteAlert.isBulk ? `Hapus ${selectedIds.length} Item?` : "Hapus Pengalaman?"}
-        description={
-          deleteAlert.isBulk
-            ? "Apakah Anda yakin ingin menghapus data pengalaman yang dipilih? Tindakan ini tidak dapat dibatalkan."
-            : "Apakah Anda yakin ingin menghapus data pengalaman ini? Tindakan ini tidak dapat dibatalkan."
-        }
+        description="Tindakan permanen dan tidak dapat dibatalkan."
       />
     </div>
   );

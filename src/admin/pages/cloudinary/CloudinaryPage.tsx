@@ -383,7 +383,7 @@ function MediaGrid({ configs, activeConfig, onActivate }: {
             className="h-7 text-xs font-medium px-3"
             onClick={() => { setProviderFilter('all'); setCursor(undefined); setCursorHistory([]); }}
           >
-            Semua Penyimpanan
+            Semua
           </Button>
           <Button
             type="button"
@@ -412,7 +412,7 @@ function MediaGrid({ configs, activeConfig, onActivate }: {
             <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-2">
               <Button size="sm" variant="destructive" onClick={handleBulkDelete} disabled={deleteMutation.isPending} className="h-8 gap-1.5 px-3 text-xs">
                 {deleteMutation.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />}
-                Hapus {selectedIds.size} Item
+                Hapus ({selectedIds.size})
               </Button>
               <Button size="sm" variant="ghost" onClick={() => setSelectedIds(new Set())} className="h-8 px-2 text-xs">Batal</Button>
             </div>
@@ -425,7 +425,7 @@ function MediaGrid({ configs, activeConfig, onActivate }: {
             <RefreshCw className="w-3.5 h-3.5" />
           </Button>
           <Button size="sm" onClick={() => setShowUpload(true)} className="gap-1.5 h-8 text-xs shrink-0">
-            <Upload className="w-3.5 h-3.5" /> Upload Media
+            <Upload className="w-3.5 h-3.5" /> Upload
           </Button>
         </div>
       </div>
@@ -758,7 +758,7 @@ export default function CloudinaryPage() {
       toast({ title: 'Konfigurasi Dihapus' });
       qc.invalidateQueries({ queryKey: ['cloudinary-configs'] });
     },
-    onError: () => toast({ variant: 'destructive', title: 'Gagal menghapus konfigurasi' })
+    onError: () => toast({ variant: 'destructive', title: 'Gagal!' })
   });
 
   return (
@@ -767,10 +767,10 @@ export default function CloudinaryPage() {
         <div>
           <h2 className="text-3xl font-bold tracking-tight flex items-center gap-3">
             <Cloud className="w-8 h-8 text-primary" />
-            Media & CDN Storage
+            Media CDN
           </h2>
           <p className="text-muted-foreground mt-1 text-sm">
-            Kelola media dan aset portofolio via GitHub CDN (jsDelivr Edge) & Cloudinary Multi-Akun (maks. {MAX_CONFIGS} akun)
+            Penyimpanan aset via GitHub CDN & Cloudinary.
           </p>
         </div>
 
@@ -811,14 +811,14 @@ export default function CloudinaryPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-semibold flex items-center gap-2">
-                  <Cloud className="w-5 h-5 text-sky-500" /> Cloudinary Multi-Akun
+                  <Cloud className="w-5 h-5 text-sky-500" /> Cloudinary
                 </h3>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  Hubungkan hingga {MAX_CONFIGS} akun Cloudinary untuk penyimpanan alternatif dan pemrosesan video/gambar.
+                  Penyimpanan alternatif hingga {MAX_CONFIGS} akun.
                 </p>
               </div>
               <span className="text-xs text-muted-foreground bg-muted px-2.5 py-1 rounded-full border">
-                {cloudinaryConfigs.length}/{MAX_CONFIGS} Akun Digunakan
+                {cloudinaryConfigs.length}/{MAX_CONFIGS} Akun
               </span>
             </div>
 

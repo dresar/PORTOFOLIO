@@ -125,13 +125,13 @@ function SiteSettingsForm() {
       await api.content.settings.update(payload);
       
       toast({
-        title: "Pengaturan disimpan",
-        description: "Pengaturan situs Anda telah diperbarui.",
+        title: "Tersimpan!",
+        description: "Pengaturan situs berhasil diperbarui.",
       });
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Gagal menyimpan pengaturan",
+        title: "Gagal!",
         description: "Tidak dapat memperbarui pengaturan.",
       });
     } finally {
@@ -142,7 +142,6 @@ function SiteSettingsForm() {
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
       <div className="grid gap-4 md:grid-cols-2">
-          {/* General SEO */}
           <Card>
           <CardHeader>
               <CardTitle className="flex items-center gap-2"><Globe className="w-5 h-5"/> Umum & SEO</CardTitle>
@@ -151,25 +150,24 @@ function SiteSettingsForm() {
           <CardContent className="space-y-4">
               <div className="space-y-2">
               <Label htmlFor="seoTitle">Judul Situs (SEO)</Label>
-              <Input id="seoTitle" {...form.register('seoTitle')} placeholder="Portofolio Saya" />
+              <Input id="seoTitle" {...form.register('seoTitle')} placeholder="Judul" />
               {form.formState.errors.seoTitle && <p className="text-xs text-destructive">{form.formState.errors.seoTitle.message}</p>}
               </div>
               <div className="space-y-2">
               <Label htmlFor="seoDesc">Deskripsi Meta</Label>
-              <Textarea id="seoDesc" {...form.register('seoDesc')} placeholder="Deskripsi singkat tentang situs Anda..." />
+              <Textarea id="seoDesc" {...form.register('seoDesc')} placeholder="Deskripsi" />
               </div>
               <div className="space-y-2">
               <Label htmlFor="cdn_url">URL CDN (Opsional)</Label>
-              <Input id="cdn_url" {...form.register('cdn_url')} placeholder="https://cdn.example.com" />
+              <Input id="cdn_url" {...form.register('cdn_url')} placeholder="URL" />
               </div>
           </CardContent>
           </Card>
 
-          {/* System Config */}
           <Card>
           <CardHeader>
               <CardTitle className="flex items-center gap-2"><Shield className="w-5 h-5"/> Konfigurasi Sistem</CardTitle>
-              <CardDescription>Kelola mode pemeliharaan dan penyedia layanan.</CardDescription>
+              <CardDescription>Mode pemeliharaan dan status sistem.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
               <div className="flex items-center justify-between rounded-lg border p-4">
@@ -178,8 +176,8 @@ function SiteSettingsForm() {
                       <p className="text-sm text-muted-foreground">Nonaktifkan akses publik ke situs.</p>
                   </div>
                   <Switch 
-                      checked={form.watch('maintenanceMode')}
-                      onCheckedChange={(checked) => form.setValue('maintenanceMode', checked)}
+                      checked={form.watch('maintenanceMode')} 
+                      onCheckedChange={(checked) => form.setValue('maintenanceMode', checked)} 
                   />
               </div>
               
@@ -200,7 +198,7 @@ function SiteSettingsForm() {
       <div className="flex justify-end">
           <Button type="submit" disabled={isLoading} size="lg">
               {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-              Simpan Pengaturan Situs
+              Simpan
           </Button>
       </div>
     </form>
@@ -238,7 +236,7 @@ function ProfileSettingsForm() {
       if (data) {
         setHasPin(Boolean((data as any).hasPin));
         form.reset({
-          name: data.name || '', 
+          name: data.name || '',
           email: data.email || '',
           avatar: data.avatar || '',
           password: '',
@@ -247,32 +245,14 @@ function ProfileSettingsForm() {
           confirmPin: '',
         });
       }
-    } catch (error) {
-      console.error("Failed to load admin profile:", error);
-      toast({
-        variant: "destructive",
-        title: "Gagal memuat profil admin",
-        description: "Pastikan Anda login sebagai admin.",
-      });
+    } catch (e) {
+      console.error("Failed to load profile", e);
     } finally {
       setIsLoading(false);
     }
   };
 
   const onSubmit = async (data: ProfileFormValues) => {
-    if (data.password && data.password !== data.confirmPassword) {
-      toast({ variant: "destructive", title: "Password tidak cocok", description: "Konfirmasi password harus sama." });
-      return;
-    }
-    if (data.pin && data.pin !== data.confirmPin) {
-      toast({ variant: "destructive", title: "PIN tidak cocok", description: "Konfirmasi PIN harus sama." });
-      return;
-    }
-    if (data.pin && data.pin.length < 4) {
-      toast({ variant: "destructive", title: "PIN Terlalu Pendek", description: "PIN harus minimal 4-8 digit angka." });
-      return;
-    }
-
     setIsLoading(true);
     try {
       const payload: any = {
@@ -280,13 +260,15 @@ function ProfileSettingsForm() {
         email: data.email,
         avatar: data.avatar,
       };
+
       if (data.password) {
         payload.password = data.password;
       }
+
       if (data.pin) {
         payload.pin = data.pin;
       }
-      
+
       const updatedUser = await api.auth.updateMe(payload);
       if (updatedUser) {
         setHasPin(Boolean((updatedUser as any).hasPin));
@@ -297,8 +279,8 @@ function ProfileSettingsForm() {
       }
 
       toast({
-        title: "Profil diperbarui",
-        description: "Informasi akun dan keamanan Anda telah disimpan.",
+        title: "Tersimpan!",
+        description: "Profil berhasil diperbarui.",
       });
       
       form.setValue('password', '');
@@ -309,7 +291,7 @@ function ProfileSettingsForm() {
     } catch (error: any) {
       toast({
         variant: "destructive",
-        title: "Gagal menyimpan",
+        title: "Gagal!",
         description: error.message || "Terjadi kesalahan saat menyimpan profil.",
       });
     } finally {
@@ -323,12 +305,12 @@ function ProfileSettingsForm() {
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <div className="flex flex-col space-y-1.5">
             <CardTitle className="flex items-center gap-2"><User className="w-5 h-5"/> Informasi Akun Admin</CardTitle>
-            <CardDescription>Perbarui nama, email, kata sandi, dan PIN keamanan 2FA Anda.</CardDescription>
+            <CardDescription>Informasi akun dan keamanan 2FA.</CardDescription>
           </div>
           {!isEditing ? (
             <Button type="button" variant="outline" size="sm" onClick={() => setIsEditing(true)}>
               <Edit className="mr-2 h-4 w-4" />
-              Edit Profil
+              Edit
             </Button>
           ) : (
              <Button type="button" variant="ghost" size="sm" onClick={() => {
@@ -342,12 +324,13 @@ function ProfileSettingsForm() {
         </CardHeader>
         <CardContent className="space-y-4 pt-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Nama Lengkap</Label>
+            <Label htmlFor="name">Nama</Label>
             <div className="relative">
               <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input 
                 id="name" 
                 className="pl-9" 
+                placeholder="Nama"
                 {...form.register('name')} 
                 readOnly={!isEditing}
               />
@@ -356,12 +339,13 @@ function ProfileSettingsForm() {
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="email">Email Login</Label>
+            <Label htmlFor="email">Email</Label>
             <div className="relative">
               <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input 
                 id="email" 
                 className="pl-9" 
+                placeholder="Email"
                 {...form.register('email')} 
                 readOnly={!isEditing}
               />
@@ -370,10 +354,11 @@ function ProfileSettingsForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="avatar">URL Avatar / Foto Profil (CDN)</Label>
+            <Label htmlFor="avatar">URL Avatar</Label>
             <div className="flex gap-2">
                 <Input 
                   id="avatar" 
+                  placeholder="URL"
                   {...form.register('avatar')} 
                   readOnly={!isEditing}
                 />
@@ -383,7 +368,6 @@ function ProfileSettingsForm() {
                     </div>
                 )}
             </div>
-            <p className="text-xs text-muted-foreground">Link langsung ke gambar profil admin (bukan profil publik).</p>
           </div>
 
           <div className="flex items-center justify-between rounded-lg border p-4 bg-muted/20">
@@ -393,15 +377,15 @@ function ProfileSettingsForm() {
               </div>
               <div>
                 <h4 className="text-sm font-medium flex items-center gap-2">
-                  Autentikasi Dua Langkah (2FA PIN)
+                  2FA PIN
                   <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 font-semibold uppercase tracking-wider">
                     {hasPin ? "Aktif" : "Nonaktif"}
                   </span>
                 </h4>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   {hasPin 
-                    ? "PIN keamanan terpasang. Setiap login setelah kata sandi akan meminta verifikasi PIN."
-                    : "Belum ada PIN yang terpasang pada akun ini."}
+                    ? "PIN keamanan aktif."
+                    : "Belum ada PIN terpasang."}
                 </p>
               </div>
             </div>
@@ -411,32 +395,31 @@ function ProfileSettingsForm() {
             <div className="space-y-6 pt-4 border-t animate-in fade-in slide-in-from-top-4 duration-300">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="col-span-2">
-                  <h4 className="text-sm font-medium mb-1">Ubah Kata Sandi (Kosongkan jika tidak ingin mengubah)</h4>
+                  <h4 className="text-sm font-medium mb-1">Kata Sandi</h4>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="password">Kata Sandi Baru</Label>
                   <div className="relative">
                     <Lock className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input id="password" type="password" className="pl-9" {...form.register('password')} />
+                    <Input id="password" type="password" placeholder="Password" className="pl-9" {...form.register('password')} />
                   </div>
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Konfirmasi Kata Sandi</Label>
+                  <Label htmlFor="confirmPassword">Konfirmasi</Label>
                   <div className="relative">
                     <Lock className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input id="confirmPassword" type="password" className="pl-9" {...form.register('confirmPassword')} />
+                    <Input id="confirmPassword" type="password" placeholder="Konfirmasi" className="pl-9" {...form.register('confirmPassword')} />
                   </div>
                   {form.formState.errors.confirmPassword && <p className="text-xs text-destructive">{form.formState.errors.confirmPassword.message}</p>}
                 </div>
               </div>
 
               <div className="col-span-2 pt-4 border-t">
-                <h4 className="text-sm font-medium mb-1">Ubah PIN Keamanan 2FA (Kosongkan jika tidak ingin mengubah)</h4>
-                <p className="text-xs text-muted-foreground mb-3">PIN numerik yang wajib dimasukkan saat login setelah kata sandi.</p>
-                <div className="grid gap-4 md:grid-cols-2">
+                <h4 className="text-sm font-medium mb-1">PIN Keamanan (2FA)</h4>
+                <div className="grid gap-4 md:grid-cols-2 mt-2">
                   <div className="space-y-2">
-                    <Label htmlFor="pin">PIN Baru (Angka)</Label>
+                    <Label htmlFor="pin">PIN Baru</Label>
                     <div className="relative">
                       <KeyRound className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                       <Input 
@@ -444,13 +427,14 @@ function ProfileSettingsForm() {
                         type="password" 
                         inputMode="numeric"
                         maxLength={8}
+                        placeholder="PIN"
                         className="pl-9 font-mono tracking-widest" 
                         {...form.register('pin')} 
                       />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="confirmPin">Konfirmasi PIN Baru</Label>
+                    <Label htmlFor="confirmPin">Konfirmasi PIN</Label>
                     <div className="relative">
                       <KeyRound className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                       <Input 
@@ -458,6 +442,7 @@ function ProfileSettingsForm() {
                         type="password" 
                         inputMode="numeric"
                         maxLength={8}
+                        placeholder="Konfirmasi"
                         className="pl-9 font-mono tracking-widest" 
                         {...form.register('confirmPin')} 
                       />
@@ -475,7 +460,7 @@ function ProfileSettingsForm() {
         <div className="flex justify-end animate-in fade-in slide-in-from-bottom-4 duration-300">
             <Button type="submit" disabled={isLoading} size="lg">
                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                Simpan Profil & Keamanan
+                Simpan
             </Button>
         </div>
       )}
@@ -489,14 +474,14 @@ export default function SettingsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Pengaturan</h2>
-          <p className="text-muted-foreground">Kelola profil admin dan konfigurasi situs.</p>
+          <p className="text-muted-foreground">Profil admin dan konfigurasi situs.</p>
         </div>
       </div>
 
       <Tabs defaultValue="profile" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="profile">Profil Admin</TabsTrigger>
-          <TabsTrigger value="site">Pengaturan Situs</TabsTrigger>
+          <TabsTrigger value="profile">Profil</TabsTrigger>
+          <TabsTrigger value="site">Situs</TabsTrigger>
         </TabsList>
         <TabsContent value="profile" className="space-y-4">
           <ProfileSettingsForm />

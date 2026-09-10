@@ -137,8 +137,8 @@ export default function WATemplateList() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Template WhatsApp</h2>
-          <p className="text-muted-foreground">Kelola pesan cepat untuk balasan otomatis.</p>
+          <h2 className="text-3xl font-bold tracking-tight">WhatsApp</h2>
+          <p className="text-muted-foreground">Template pesan otomatis.</p>
         </div>
         <div className="flex gap-2">
             {selectedIds.length > 0 && (
@@ -148,29 +148,29 @@ export default function WATemplateList() {
             )}
             <Button variant="outline" onClick={toggleSelectAll}>
                 {templates.length > 0 && selectedIds.length === templates.length ? <CheckSquare className="mr-2 h-4 w-4" /> : <Square className="mr-2 h-4 w-4" />}
-                {templates.length > 0 && selectedIds.length === templates.length ? 'Batal Pilih' : 'Pilih Semua'}
+                {templates.length > 0 && selectedIds.length === templates.length ? 'Batal' : 'Pilih Semua'}
             </Button>
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
             <DialogTrigger asChild>
-                <Button onClick={() => handleOpenModal()}><Plus className="mr-2 h-4 w-4" /> Tambah Template</Button>
+                <Button onClick={() => handleOpenModal()}><Plus className="mr-2 h-4 w-4" /> Tambah</Button>
             </DialogTrigger>
             <DialogContent className="max-w-xl">
             <DialogHeader>
-              <DialogTitle>{editingId ? 'Edit Template' : 'Tambah Template Baru'}</DialogTitle>
+              <DialogTitle>{editingId ? 'Edit Template' : 'Tambah Template'}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label>Nama Template</Label>
-                <Input value={formData.template_name} onChange={e => setFormData({...formData, template_name: e.target.value})} required placeholder="Contoh: Pesan Pembuka" />
+                <Input value={formData.template_name} onChange={e => setFormData({...formData, template_name: e.target.value})} required placeholder="Nama" />
               </div>
               <div className="space-y-2">
                 <Label>Kategori</Label>
-                <Input value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} placeholder="General, Business, Support..." />
+                <Input value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} placeholder="Kategori" />
               </div>
               <div className="space-y-2">
                 <Label>Isi Pesan</Label>
-                <Textarea value={formData.template_content} onChange={e => setFormData({...formData, template_content: e.target.value})} required placeholder="Halo, terima kasih sudah menghubungi..." className="min-h-[100px]" />
-                <p className="text-xs text-muted-foreground">Gunakan template ini untuk mempercepat balasan di WhatsApp.</p>
+                <Textarea value={formData.template_content} onChange={e => setFormData({...formData, template_content: e.target.value})} required placeholder="Pesan" className="min-h-[100px]" />
+                <p className="text-xs text-muted-foreground">Template balasan cepat WhatsApp.</p>
               </div>
               <div className="flex items-center space-x-2">
                 <Switch 
@@ -239,8 +239,8 @@ export default function WATemplateList() {
         {templates.length === 0 && (
             <div className="col-span-full flex flex-col items-center justify-center p-12 border-2 border-dashed rounded-lg text-muted-foreground">
                 <MessageSquare className="h-12 w-12 mb-4 opacity-20" />
-                <p>Belum ada template WhatsApp.</p>
-                <Button variant="link" onClick={() => handleOpenModal()}>Buat Template Pertama</Button>
+                <p>Belum ada data</p>
+                <Button variant="link" onClick={() => handleOpenModal()}>Tambah</Button>
             </div>
         )}
       </div>
@@ -250,11 +250,7 @@ export default function WATemplateList() {
         onClose={() => setDeleteAlert({ isOpen: false })}
         onConfirm={confirmDelete}
         title={deleteAlert.isBulk ? `Hapus ${selectedIds.length} Template?` : "Hapus Template?"}
-        description={
-          deleteAlert.isBulk
-            ? "Apakah Anda yakin ingin menghapus template yang dipilih? Tindakan ini tidak dapat dibatalkan."
-            : "Apakah Anda yakin ingin menghapus template ini? Tindakan ini tidak dapat dibatalkan."
-        }
+        description="Tindakan permanen dan tidak dapat dibatalkan."
       />
     </div>
   );

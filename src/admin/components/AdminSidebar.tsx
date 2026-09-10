@@ -36,8 +36,8 @@ interface SidebarProps {
 
 const menuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/admin/dashboard' },
-  { icon: Mail, label: 'Pesan Masuk', path: '/admin/messages' },
-  { icon: User, label: 'Tentang Saya', path: '/admin/about-content' },
+  { icon: Mail, label: 'Pesan', path: '/admin/messages' },
+  { icon: User, label: 'Tentang', path: '/admin/about-content' },
   { icon: Briefcase, label: 'Pengalaman', path: '/admin/experience' },
   { icon: Briefcase, label: 'Proyek', path: '/admin/projects' },
   { icon: Zap, label: 'Keahlian', path: '/admin/skills' },
@@ -63,7 +63,6 @@ export function AdminSidebar({ isOpen, onClose }: SidebarProps) {
 
   return (
     <>
-      {/* Mobile Overlay */}
       {isOpen && (
         <div 
           className="fixed inset-0 z-40 bg-black/50 md:hidden"
@@ -76,7 +75,6 @@ export function AdminSidebar({ isOpen, onClose }: SidebarProps) {
         isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
       )}>
         <div className="flex flex-col h-full">
-          {/* Header */}
           <div className="flex items-center justify-between h-16 px-4 border-b">
             <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
               Admin Panel
@@ -86,14 +84,13 @@ export function AdminSidebar({ isOpen, onClose }: SidebarProps) {
             </Button>
           </div>
 
-          {/* Navigation */}
           <ScrollArea className="flex-1 py-4">
             <nav className="grid gap-1.5 px-2">
               {menuItems.map((item) => (
                 <NavLink
                   key={item.path}
                   to={item.path}
-                  onClick={() => isOpen && onClose()} // Close on mobile click
+                  onClick={() => isOpen && onClose()}
                   className={({ isActive }) =>
                     cn(
                       "flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
@@ -114,7 +111,6 @@ export function AdminSidebar({ isOpen, onClose }: SidebarProps) {
             </nav>
           </ScrollArea>
 
-          {/* Footer */}
           <div className="p-4 border-t">
             <Button 
               variant="outline" 

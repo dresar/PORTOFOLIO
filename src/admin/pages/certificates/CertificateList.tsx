@@ -150,7 +150,7 @@ export default function CertificateList() {
                 <SelectValue placeholder="Kategori" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Semua Kategori</SelectItem>
+                <SelectItem value="all">Semua</SelectItem>
                 {sortedCategories.map((cat: any) => (
                   <SelectItem key={cat.id} value={cat.id.toString()}>
                     [ID: {cat.id}] {cat.name}
@@ -285,11 +285,7 @@ export default function CertificateList() {
         onClose={() => setDeleteAlert({ isOpen: false })}
         onConfirm={confirmDelete}
         title={deleteAlert.isBulk ? `Hapus ${selectedIds.length} Sertifikat?` : "Hapus Sertifikat?"}
-        description={
-          deleteAlert.isBulk
-            ? "Apakah Anda yakin ingin menghapus sertifikat yang dipilih? Tindakan ini tidak dapat dibatalkan."
-            : "Apakah Anda yakin ingin menghapus sertifikat ini? Tindakan ini tidak dapat dibatalkan."
-        }
+        description="Tindakan permanen dan tidak dapat dibatalkan."
       />
     </div>
   );

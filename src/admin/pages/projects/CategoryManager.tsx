@@ -133,24 +133,24 @@ export function CategoryManager() {
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
                 <Button variant="outline" size="sm">
-                    <Plus className="w-4 h-4 mr-2" /> Kelola Kategori
+                    <Plus className="w-4 h-4 mr-2" /> Kategori
                 </Button>
             </DialogTrigger>
             <DialogContent className="max-w-md">
                 <DialogHeader>
-                    <DialogTitle>Kategori Project</DialogTitle>
+                    <DialogTitle>Kategori</DialogTitle>
                     <DialogDescription>
-                        Tambah, edit, atau hapus kategori project.
+                        Daftar kategori proyek.
                     </DialogDescription>
                 </DialogHeader>
 
                 <div className="space-y-4 my-4">
                     <form onSubmit={form.handleSubmit(onSubmit)} className="flex gap-2 items-end">
                         <div className="grid w-full gap-1.5">
-                            <Label htmlFor="name">{editingId ? 'Edit Kategori' : 'Kategori Baru'}</Label>
+                            <Label htmlFor="name">{editingId ? 'Edit' : 'Kategori Baru'}</Label>
                             <Input
                                 id="name"
-                                placeholder="Nama kategori"
+                                placeholder="Nama"
                                 {...form.register('name')}
                             />
                         </div>

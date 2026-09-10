@@ -27,7 +27,6 @@ export default function MessagesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMessage, setViewMessage] = useState<any | null>(null);
 
-  // State for Delete Alert
   const [deleteAlert, setDeleteAlert] = useState<{
     isOpen: boolean;
     id?: number;
@@ -37,7 +36,7 @@ export default function MessagesPage() {
   const { data: messages = [], isLoading, isFetching } = useQuery({
     queryKey: ['messages'],
     queryFn: api.messages.getAll,
-    refetchInterval: 5000, // Poll every 5 seconds for real-time updates
+    refetchInterval: 5000,
     refetchIntervalInBackground: true,
     select: (response: any) => {
        if (Array.isArray(response)) return response;
@@ -103,10 +102,10 @@ export default function MessagesPage() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-            Pesan Masuk
+            Pesan
             {isFetching && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
           </h1>
-          <p className="text-muted-foreground">Kelola pesan yang masuk dari formulir kontak.</p>
+          <p className="text-muted-foreground">Daftar pesan kontak masuk.</p>
         </div>
         <div className="flex gap-2 items-center">
             {selectedIds.length > 0 && (
@@ -127,7 +126,7 @@ export default function MessagesPage() {
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="Cari pesan..."
+              placeholder="Cari"
               className="pl-8"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -136,7 +135,7 @@ export default function MessagesPage() {
         <div className="flex gap-2 w-full md:w-auto">
              <Button variant="outline" onClick={toggleSelectAll} disabled={filteredMessages.length === 0}>
                 {filteredMessages.length > 0 && selectedIds.length === filteredMessages.length ? <CheckSquare className="mr-2 h-4 w-4" /> : <Square className="mr-2 h-4 w-4" />}
-                {filteredMessages.length > 0 && selectedIds.length === filteredMessages.length ? 'Batal Pilih' : 'Pilih Semua'}
+                {filteredMessages.length > 0 && selectedIds.length === filteredMessages.length ? 'Batal' : 'Pilih Semua'}
              </Button>
         </div>
       </div>
@@ -146,7 +145,7 @@ export default function MessagesPage() {
             <Card>
                 <CardContent className="flex flex-col items-center justify-center py-10 text-center">
                     <MessageSquare className="h-12 w-12 text-muted-foreground mb-4" />
-                    <p className="text-muted-foreground">Belum ada pesan masuk.</p>
+                    <p className="text-muted-foreground">Belum ada pesan</p>
                 </CardContent>
             </Card>
         ) : (
@@ -184,7 +183,7 @@ export default function MessagesPage() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <DropdownMenuItem onClick={() => setViewMessage(msg)}>
-                                <Eye className="mr-2 h-4 w-4" /> Lihat Detail
+                                <Eye className="mr-2 h-4 w-4" /> Detail
                             </DropdownMenuItem>
                             <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDelete(msg.id)}>
                                 <Trash2 className="mr-2 h-4 w-4" /> Hapus
@@ -202,13 +201,9 @@ export default function MessagesPage() {
         onClose={() => setDeleteAlert({ isOpen: false })}
         onConfirm={confirmDelete}
         title={deleteAlert.isBulk ? `Hapus ${selectedIds.length} Pesan?` : "Hapus Pesan?"}
-        description={deleteAlert.isBulk
-            ? "Apakah Anda yakin ingin menghapus pesan yang dipilih? Tindakan ini tidak dapat dibatalkan."
-            : "Apakah Anda yakin ingin menghapus pesan ini? Tindakan ini tidak dapat dibatalkan."
-        }
+        description="Tindakan permanen dan tidak dapat dibatalkan."
       />
       
-      {/* Dialog for View Message */}
       <Dialog open={!!viewMessage} onOpenChange={(open) => !open && setViewMessage(null)}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
@@ -246,7 +241,7 @@ export default function MessagesPage() {
              {viewMessage && (
                 <Button variant="destructive" onClick={() => { handleDelete(viewMessage.id); setViewMessage(null); }} disabled={isDeleting}>
                     {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
-                    Hapus Pesan
+                    Hapus
                 </Button>
              )}
           </div>

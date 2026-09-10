@@ -168,7 +168,7 @@ export default function EducationList() {
             Pendidikan
             {isFetching && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
           </h1>
-          <p className="text-muted-foreground">Kelola riwayat pendidikan Anda.</p>
+          <p className="text-muted-foreground">Daftar riwayat pendidikan.</p>
         </div>
         <div className="flex gap-2 items-center">
             {selectedIds.length > 0 && (
@@ -183,37 +183,34 @@ export default function EducationList() {
             </Button>
             <Button variant="outline" onClick={toggleSelectAll} disabled={educationList.length === 0}>
                 {educationList.length > 0 && selectedIds.length === educationList.length ? <CheckSquare className="mr-2 h-4 w-4" /> : <Square className="mr-2 h-4 w-4" />}
-                {educationList.length > 0 && selectedIds.length === educationList.length ? 'Batal Pilih' : 'Pilih Semua'}
+                {educationList.length > 0 && selectedIds.length === educationList.length ? 'Batal' : 'Pilih Semua'}
             </Button>
             <Button onClick={() => navigate('/admin/education/new')}>
-              <Plus className="mr-2 h-4 w-4" /> Tambah Pendidikan
+              <Plus className="mr-2 h-4 w-4" /> Tambah
             </Button>
         </div>
       </div>
 
-      {/* Toolbar Filter & Sort */}
       <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between bg-card p-4 rounded-xl border shadow-sm">
         <div className="flex flex-1 flex-col sm:flex-row gap-3 items-center">
-          {/* Search Input */}
           <div className="relative flex-1 w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Cari sekolah / institusi / gelar..."
+              placeholder="Cari"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-9 w-full"
             />
           </div>
 
-          {/* Sort Order */}
           <div className="w-full sm:w-56 flex items-center gap-2">
             <ArrowUpDown className="h-4 w-4 text-muted-foreground shrink-0 hidden sm:block" />
             <Select value={sortOrder} onValueChange={(val: any) => setSortOrder(val)}>
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Urutkan" />
+                <SelectValue placeholder="Urutan" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="id_asc">ID Terkecil (Default)</SelectItem>
+                <SelectItem value="id_asc">ID Terkecil</SelectItem>
                 <SelectItem value="id_desc">ID Terbesar</SelectItem>
                 <SelectItem value="name_asc">Institusi (A-Z)</SelectItem>
                 <SelectItem value="year_desc">Tahun Terbaru</SelectItem>
@@ -223,7 +220,7 @@ export default function EducationList() {
         </div>
 
         <div className="text-xs text-muted-foreground self-end sm:self-center">
-          Menampilkan <span className="font-semibold text-foreground">{filteredAndSortedEducation.length}</span> dari {educationList.length} pendidikan
+          Menampilkan <span className="font-semibold text-foreground">{filteredAndSortedEducation.length}</span> dari {educationList.length} data
         </div>
       </div>
 
@@ -231,8 +228,8 @@ export default function EducationList() {
         <Card className="p-8 text-center border-dashed">
           <div className="flex flex-col items-center justify-center text-muted-foreground gap-2">
             <GraduationCap className="h-10 w-10 stroke-1" />
-            <p className="text-base font-medium">Tidak ada data pendidikan ditemukan</p>
-            <p className="text-xs">Coba ubah kata kunci pencarian Anda.</p>
+            <p className="text-base font-medium">Belum ada data</p>
+            <p className="text-xs">Data tidak ditemukan.</p>
           </div>
         </Card>
       ) : (
@@ -356,11 +353,7 @@ export default function EducationList() {
         onClose={() => setDeleteAlert({ isOpen: false })}
         onConfirm={confirmDelete}
         title={deleteAlert.isBulk ? `Hapus ${selectedIds.length} Item?` : "Hapus Pendidikan?"}
-        description={
-          deleteAlert.isBulk
-            ? "Apakah Anda yakin ingin menghapus data pendidikan yang dipilih? Tindakan ini tidak dapat dibatalkan."
-            : "Apakah Anda yakin ingin menghapus data pendidikan ini? Tindakan ini tidak dapat dibatalkan."
-        }
+        description="Tindakan permanen dan tidak dapat dibatalkan."
       />
     </div>
   );

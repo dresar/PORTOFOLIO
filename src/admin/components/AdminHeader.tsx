@@ -26,7 +26,6 @@ export default function AdminHeader({ onToggleSidebar, onOpenMediaPicker }: Admi
   useEffect(() => {
     const loadProfile = async () => {
       try {
-        // Fetch Admin User instead of Public Profile
         const data = await api.auth.getMe();
         if (data) {
             updateUser(data);
@@ -43,7 +42,6 @@ export default function AdminHeader({ onToggleSidebar, onOpenMediaPicker }: Admi
     navigate('/admin/login');
   };
 
-  // Use user from store as primary source
   const adminName = user?.name || user?.username || "Admin";
   const adminInitial = adminName.charAt(0).toUpperCase();
   const adminAvatar = user?.avatar || "";
@@ -60,7 +58,6 @@ export default function AdminHeader({ onToggleSidebar, onOpenMediaPicker }: Admi
       </div>
       
       <div className="flex items-center gap-2 md:gap-4">
-        {/* Media Picker Button */}
         <Button
           variant="outline"
           size="icon"
@@ -74,11 +71,10 @@ export default function AdminHeader({ onToggleSidebar, onOpenMediaPicker }: Admi
         <Button variant="outline" size="sm" asChild className="hidden md:flex">
           <a href="/" target="_blank" rel="noopener noreferrer">
             <ExternalLink className="mr-2 h-4 w-4" />
-            Lihat Website
+            Website
           </a>
         </Button>
         
-        {/* Mobile View Website Icon */}
         <Button variant="ghost" size="icon" asChild className="md:hidden">
           <a href="/" target="_blank" rel="noopener noreferrer">
             <ExternalLink className="h-5 w-5" />
@@ -106,7 +102,7 @@ export default function AdminHeader({ onToggleSidebar, onOpenMediaPicker }: Admi
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => navigate('/admin/settings')}>
               <User className="mr-2 h-4 w-4" />
-              <span>Profil Saya</span>
+              <span>Profil</span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => navigate('/admin/settings')}>
               <Settings className="mr-2 h-4 w-4" />

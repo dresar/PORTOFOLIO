@@ -144,14 +144,14 @@ export function CertificateCategoryManager() {
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
                 <Button variant="outline" size="sm">
-                    <Plus className="w-4 h-4 mr-2" /> Kelola Kategori
+                    <Plus className="w-4 h-4 mr-2" /> Kategori
                 </Button>
             </DialogTrigger>
             <DialogContent className="max-w-md">
                 <DialogHeader>
-                    <DialogTitle>Kategori Sertifikat</DialogTitle>
+                    <DialogTitle>Kategori</DialogTitle>
                     <DialogDescription>
-                        Kelola nama dan ID kategori sertifikat.
+                        Daftar kategori sertifikat.
                     </DialogDescription>
                 </DialogHeader>
 
@@ -172,7 +172,7 @@ export function CertificateCategoryManager() {
                                 <Label htmlFor="name" className="text-xs">Nama Kategori</Label>
                                 <Input 
                                     id="name" 
-                                    placeholder="Frontend, AWS, etc." 
+                                    placeholder="Nama" 
                                     className="h-9 text-xs"
                                     {...form.register('name')} 
                                 />
