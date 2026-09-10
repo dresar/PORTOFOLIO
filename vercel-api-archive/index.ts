@@ -14,14 +14,13 @@ import {
   pgEnum, varchar
 } from 'drizzle-orm/pg-core';
 import { relations, sql, eq, desc, asc, and, like, ilike, inArray } from 'drizzle-orm';
-import * as dotenv from 'dotenv';
+// Dotenv removed for Cloudflare Workers compatibility
 import { IncomingMessage, ServerResponse } from 'node:http';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import crypto from 'node:crypto';
 
 // --- 1. CONFIGURATION ---
-dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET || '';
 const GITHUB_REPO = process.env.GITHUB_REPO || 'dresar/PORTOFOLIO';
