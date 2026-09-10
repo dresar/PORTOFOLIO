@@ -1,14 +1,9 @@
 import { Pool, neonConfig } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-serverless';
-import ws from 'ws';
-
-// Robust WebSocket configuration for Neon
+// WebSocket configuration for Neon
 try {
-  // Handle different import scenarios for ws
-  if (ws && typeof ws !== 'function' && (ws as any).WebSocket) {
-     neonConfig.webSocketConstructor = (ws as any).WebSocket;
-  } else {
-     neonConfig.webSocketConstructor = ws;
+  if (typeof WebSocket !== 'undefined') {
+    neonConfig.webSocketConstructor = WebSocket;
   }
 } catch (e) {
   console.error('Failed to configure WebSocket for Neon:', e);
