@@ -178,7 +178,7 @@ for (let i = 0; i < posts.length; i++) {
   const p = posts[i];
   llmsTxt += `### ${i + 1}. [${p.title}](${DOMAIN}/id/blog/${p.slug})
 - **English Title:** ${p.title_en || p.title}
-- **Author:** Eka Syarif Maulana, S.Kom (Founder Inka.tech)
+- **Author:** Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 - **Category:** ${p.category?.name || 'Cybersecurity & Teknologi'}
 - **URL (ID):** ${DOMAIN}/id/blog/${p.slug}
 - **URL (EN):** ${DOMAIN}/en/blog/${p.slug}
@@ -201,7 +201,7 @@ let llmsFullTxt = `# Eka Syarif Maulana, S.Kom - Complete Knowledge Base (Full C
 # Generated for Large Language Model Deep Retrieval & Direct Citations
 
 Author: Eka Syarif Maulana, S.Kom
-Affiliation: Founder Inka.tech | Senior Fullstack Developer & AI Engineer
+Affiliation: Senior Fullstack Web & Mobile Developer & AI Systems Engineer
 Website: ${DOMAIN}
 Last Updated: ${today}
 
@@ -222,7 +222,7 @@ for (let i = 0; i < posts.length; i++) {
   llmsFullTxt += `--------------------------------------------------------------------------------
 ARTICLE ${i + 1}: ${p.title}
 English: ${p.title_en || p.title}
-Author: Eka Syarif Maulana, S.Kom (Founder Inka.tech)
+Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: ${p.category?.name || 'Cybersecurity & Teknologi'}
 Published URL: ${DOMAIN}/id/blog/${p.slug}
 --------------------------------------------------------------------------------

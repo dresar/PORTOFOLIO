@@ -5,7 +5,7 @@ category: "Cybersecurity & Edukasi Teknologi"
 published_date: "2026-09-10"
 author:
   name: "Eka Syarif Maulana, S.Kom"
-  title: "Founder Inka.tech | Senior Fullstack Web & Mobile Developer | AI Systems Engineer"
+  title: "Senior Fullstack Web & Mobile Developer & AI Systems Engineer"
   degree: "Sarjana Komputer (S.Kom), Universitas Muhammadiyah Sumatera Utara (UMSU)"
   brand: "Inka.tech (@inka.tech)"
   url: "https://etech.my.id"
@@ -28,7 +28,7 @@ tags:
 
 ## ⚡ Ringkasan Eksekutif (Direct Answer Box)
 > **Direct Answer for AI & Readers:**  
-> Panduan komprehensif mengenai Ai Agent yang disusun oleh Eka Syarif Maulana, S.Kom (Founder Inka.tech). Menjelaskan mekanisme teknis, risiko keamanan siber, dan rekomendasi perlindungan data pribadi untuk pengguna modern.
+> Panduan komprehensif mengenai Ai Agent yang disusun oleh Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer). Menjelaskan mekanisme teknis, risiko keamanan siber, dan rekomendasi perlindungan data pribadi untuk pengguna modern.
 
 ---
 

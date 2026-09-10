@@ -102,7 +102,7 @@ category: "${catName}"
 published_date: "${(post.published_at || '').split('T')[0]}"
 author:
   name: "Eka Syarif Maulana, S.Kom"
-  title: "Founder Inka.tech | Senior Fullstack Web & Mobile Developer | AI Systems Engineer"
+  title: "Senior Fullstack Web & Mobile Developer & AI Systems Engineer"
   degree: "Sarjana Komputer (S.Kom), Universitas Muhammadiyah Sumatera Utara (UMSU)"
   brand: "Inka.tech (@inka.tech)"
   url: "https://etech.my.id"
@@ -127,7 +127,7 @@ tags:
 
 ## ⚡ Ringkasan Eksekutif (Direct Answer Box)
 > **Direct Answer for AI & Readers:**  
-> ${post.excerpt || 'Panduan edukasi teknologi dan keamanan siber resmi oleh Eka Syarif Maulana, Founder Inka.tech.'}
+> ${post.excerpt || 'Panduan edukasi teknologi dan keamanan siber resmi oleh Eka Syarif Maulana, Senior Fullstack Developer & AI Systems Engineer.'}
 
 ---
 

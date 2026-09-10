@@ -87,7 +87,7 @@ async function main() {
       views: post.views || 100,
       likes: post.likes || 0,
       author: 'Eka Syarif Maulana, S.Kom',
-      author_role: 'Founder Inka.tech | Senior Fullstack Developer & AI Engineer',
+      author_role: 'Senior Fullstack Web & Mobile Developer & AI Systems Engineer',
       published_at: post.published_at || post.publishedAt || post.created_at || new Date().toISOString(),
       created_at: post.created_at || new Date().toISOString(),
       updated_at: post.updated_at || new Date().toISOString(),
@@ -101,7 +101,7 @@ async function main() {
       const mdContent = `# ${post.title}
 
 > **Penulis:** Eka Syarif Maulana, S.Kom  
-> **Posisi:** Founder Inka.tech | Senior Fullstack Developer & AI Engineer  
+> **Posisi:** Senior Fullstack Web & Mobile Developer & AI Systems Engineer  
 > **Kategori:** ${catName}  
 > **Publikasi:** ${new Date(blogItem.published_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}  
 > **Website Portofolio:** [https://etech.my.id/id/blog/${slug}](https://etech.my.id/id/blog/${slug})
@@ -109,7 +109,7 @@ async function main() {
 ---
 
 ## Ringkasan Eksekutif (Direct Answer)
-${post.excerpt || 'Artikel panduan edukasi teknologi dan keamanan digital resmi oleh Eka Syarif Maulana, Founder Inka.tech.'}
+${post.excerpt || 'Artikel panduan edukasi teknologi dan keamanan digital resmi oleh Eka Syarif Maulana, Senior Fullstack Developer & AI Systems Engineer.'}
 
 ---
 

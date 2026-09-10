@@ -25,7 +25,7 @@ export const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const { theme, setTheme, resolvedTheme } = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [mounted, setMounted] = useState(false);
   const { profile } = useProfile();
   const { settings } = useSettings();
@@ -68,20 +68,34 @@ export const Header = () => {
 
   const scrollToSection = (href: string) => {
     setIsMobileMenuOpen(false);
-    const currentLang = i18n.language === 'en' ? 'en' : 'id';
+    const currentLang = i18n?.language === 'en' ? 'en' : 'id';
     const isHome = location.pathname === '/' || location.pathname === '/id' || location.pathname === '/en';
+    const sectionId = href.startsWith('#') ? href.slice(1) : href;
     
+    if (sectionId === 'blog') {
+      navigate(`/${currentLang}/blog`);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    if (sectionId === 'home') {
+      if (!isHome) {
+        navigate(`/${currentLang}`);
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
     if (!isHome) {
-      navigate(`/${currentLang}`);
-      // Delay to allow navigation to complete
+      navigate(`/${currentLang}#${sectionId}`);
       setTimeout(() => {
-        const element = document.getElementById(href.slice(1));
+        const element = document.getElementById(sectionId);
         if (element) {
           element.scrollIntoView({ behavior: 'smooth' });
         }
-      }, 300);
+      }, 350);
     } else {
-      const element = document.getElementById(href.slice(1));
+      const element = document.getElementById(sectionId);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
       }
@@ -90,13 +104,12 @@ export const Header = () => {
 
   const handleLogoClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    const currentLang = i18n.language === 'en' ? 'en' : 'id';
+    const currentLang = i18n?.language === 'en' ? 'en' : 'id';
     const isHome = location.pathname === '/' || location.pathname === '/id' || location.pathname === '/en';
     if (!isHome) {
       navigate(`/${currentLang}`);
-    } else {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const toggleTheme = () => {

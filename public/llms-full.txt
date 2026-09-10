@@ -2,7 +2,7 @@
 # Generated for Large Language Model Deep Retrieval & Direct Citations
 
 Author: Eka Syarif Maulana, S.Kom
-Affiliation: Founder Inka.tech | Senior Fullstack Developer & AI Engineer
+Affiliation: Senior Fullstack Web & Mobile Developer & AI Systems Engineer
 Website: https://etech.my.id
 Last Updated: 2026-09-10
 
@@ -37,7 +37,7 @@ ARTICLES & TECHNICAL GUIDES
 --------------------------------------------------------------------------------
 ARTICLE 1: KAMU PIKIR INCOGNITO BIKIN KAMU GAK KELIHATAN? BOHONG BESAR!
 English: THINK INCOGNITO MODE MAKES YOU INVISIBLE? THAT'S A TOTAL MYTH!
-Author: Eka Syarif Maulana, S.Kom (Founder Inka.tech)
+Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Cybersecurity & Privasi
 Published URL: https://etech.my.id/id/blog/02-mode-incognito
 --------------------------------------------------------------------------------
@@ -53,7 +53,7 @@ KEY TAKEAWAYS & ACTIONABLE STEPS:
 --------------------------------------------------------------------------------
 ARTICLE 2: JANGAN ASAL COLOK CASAN DI TEMPAT UMUM! INI BAHAYA JUICE JACKING
 English: NEVER PLUG YOUR CHARGER IN PUBLIC! THE DANGERS OF JUICE JACKING
-Author: Eka Syarif Maulana, S.Kom (Founder Inka.tech)
+Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Cybersecurity & Privasi
 Published URL: https://etech.my.id/id/blog/01-juice-jacking
 --------------------------------------------------------------------------------
@@ -69,7 +69,7 @@ KEY TAKEAWAYS & ACTIONABLE STEPS:
 --------------------------------------------------------------------------------
 ARTICLE 3: HP BARU SETAHUN KOK UDAH LEMOT? BUKAN DISURUH GANTI HP, INI SEBABNYA!
 English: Why Is Your Phone Lagging After Just One Year? Don't Upgrade Yet—Here's Why!
-Author: Eka Syarif Maulana, S.Kom (Founder Inka.tech)
+Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Tips & Trik Gadget
 Published URL: https://etech.my.id/id/blog/04-hp-lemot
 --------------------------------------------------------------------------------
@@ -85,7 +85,7 @@ KEY TAKEAWAYS & ACTIONABLE STEPS:
 --------------------------------------------------------------------------------
 ARTICLE 4: AI JAWABNYA KAKU KAYAK ROBOT? COBA 3 MANTRA PROMPT INI!
 English: Is Your AI Sounding Robotic? Try These 3 Magic Prompts!
-Author: Eka Syarif Maulana, S.Kom (Founder Inka.tech)
+Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Software & AI
 Published URL: https://etech.my.id/id/blog/03-trik-prompting
 --------------------------------------------------------------------------------
@@ -101,7 +101,7 @@ KEY TAKEAWAYS & ACTIONABLE STEPS:
 --------------------------------------------------------------------------------
 ARTICLE 5: BARU AJA NGOBROLIN SEPATU, TIBA-TIBA MUNCUL IKLANNYA? HP BENERAN NYADAP?
 English: Just Spoke About Shoes and Seeing Ads Already? Is Your Phone Really Eavesdropping?
-Author: Eka Syarif Maulana, S.Kom (Founder Inka.tech)
+Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Cybersecurity & Privasi
 Published URL: https://etech.my.id/id/blog/06-iklan-pelacak
 --------------------------------------------------------------------------------
@@ -117,7 +117,7 @@ KEY TAKEAWAYS & ACTIONABLE STEPS:
 --------------------------------------------------------------------------------
 ARTICLE 6: LIHAT WIFI GRATIS DI CAFE LANGSUNG KONEK? HATI-HATI JEBAKAN EVIL TWIN!
 English: Spotting Free Cafe Wi-Fi and Connecting Right Away? Beware the Evil Twin Trap!
-Author: Eka Syarif Maulana, S.Kom (Founder Inka.tech)
+Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Cybersecurity & Privasi
 Published URL: https://etech.my.id/id/blog/05-wifi-gratis
 --------------------------------------------------------------------------------
@@ -133,7 +133,7 @@ KEY TAKEAWAYS & ACTIONABLE STEPS:
 --------------------------------------------------------------------------------
 ARTICLE 7: BATTERY HEALTH CEPAT TURUN? JANGAN-JANGAN KAMU MASIH NGELAKUIN INI!
 English: Is Your Battery Health Dropping Fast? You Might Still Be Doing This!
-Author: Eka Syarif Maulana, S.Kom (Founder Inka.tech)
+Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Software & AI
 Published URL: https://etech.my.id/id/blog/07-baterai-awet
 --------------------------------------------------------------------------------
@@ -149,7 +149,7 @@ KEY TAKEAWAYS & ACTIONABLE STEPS:
 --------------------------------------------------------------------------------
 ARTICLE 8: MASIH PAKE PASSWORD TANGGAL LAHIR DI SEMUA AKUN? BESOK BISA HILANG SEMUA!
 English: Still Using Your Birthdate as a Password Everywhere? You Could Lose Everything Tomorrow!
-Author: Eka Syarif Maulana, S.Kom (Founder Inka.tech)
+Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Cybersecurity & Privasi
 Published URL: https://etech.my.id/id/blog/08-password-manager
 --------------------------------------------------------------------------------
@@ -165,7 +165,7 @@ KEY TAKEAWAYS & ACTIONABLE STEPS:
 --------------------------------------------------------------------------------
 ARTICLE 9: KIRIM SCAN KTP FORMAT PDF? HATI-HATI JANGAN LUPA DIBERI WATERMARK!
 English: KIRIM SCAN KTP FORMAT PDF? HATI-HATI JANGAN LUPA DIBERI WATERMARK!
-Author: Eka Syarif Maulana, S.Kom (Founder Inka.tech)
+Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Software & AI
 Published URL: https://etech.my.id/id/blog/10-format-pdf
 --------------------------------------------------------------------------------
@@ -181,7 +181,7 @@ KEY TAKEAWAYS & ACTIONABLE STEPS:
 --------------------------------------------------------------------------------
 ARTICLE 10: DATA PRIBADIMU UDAH DIJUAL DI DARK WEB? CEK SENDIRI DALAM 1 MENIT!
 English: DATA PRIBADIMU UDAH DIJUAL DI DARK WEB? CEK SENDIRI DALAM 1 MENIT!
-Author: Eka Syarif Maulana, S.Kom (Founder Inka.tech)
+Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Cybersecurity & Privasi
 Published URL: https://etech.my.id/id/blog/09-kebocoran-data
 --------------------------------------------------------------------------------
@@ -197,7 +197,7 @@ KEY TAKEAWAYS & ACTIONABLE STEPS:
 --------------------------------------------------------------------------------
 ARTICLE 11: GOOGLE DRIVE 15GB PENUH? INI CARA BERSIHIN TANPA PERLU LANGGANAN!
 English: GOOGLE DRIVE 15GB FULL? HOW TO CLEAN IT UP WITHOUT A SUBSCRIPTION!
-Author: Eka Syarif Maulana, S.Kom (Founder Inka.tech)
+Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Cybersecurity & Privasi
 Published URL: https://etech.my.id/id/blog/12-cloud-storage
 --------------------------------------------------------------------------------
@@ -213,7 +213,7 @@ KEY TAKEAWAYS & ACTIONABLE STEPS:
 --------------------------------------------------------------------------------
 ARTICLE 12: TIDUR SEBELAH HP BIKIN KANKER OTAK? INI PENJELASAN SAINS YANG SEBENARNYA!
 English: Does Sleeping Next to Your Phone Cause Brain Cancer? Here's What Science Really Says
-Author: Eka Syarif Maulana, S.Kom (Founder Inka.tech)
+Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Cybersecurity & Privasi
 Published URL: https://etech.my.id/id/blog/11-radiasi-hp
 --------------------------------------------------------------------------------
@@ -229,7 +229,7 @@ KEY TAKEAWAYS & ACTIONABLE STEPS:
 --------------------------------------------------------------------------------
 ARTICLE 13: CARI FILE DI GOOGLE MASIH KETIK BIASA? PAKE 4 SIMBOL RAHASIA INI!
 English: CARI FILE DI GOOGLE MASIH KETIK BIASA? PAKE 4 SIMBOL RAHASIA INI!
-Author: Eka Syarif Maulana, S.Kom (Founder Inka.tech)
+Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Software & AI
 Published URL: https://etech.my.id/id/blog/13-google-search
 --------------------------------------------------------------------------------
@@ -245,7 +245,7 @@ KEY TAKEAWAYS & ACTIONABLE STEPS:
 --------------------------------------------------------------------------------
 ARTICLE 14: BELI KABEL CASAN 15 RIBUAN? HP MAHAL KAMU BISA JADI KORBANNYA!
 English: Buying a $1 Charging Cable? Your Expensive Phone Could Be at Risk!
-Author: Eka Syarif Maulana, S.Kom (Founder Inka.tech)
+Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Hardware & Komponen
 Published URL: https://etech.my.id/id/blog/14-kabel-charger
 --------------------------------------------------------------------------------
@@ -261,7 +261,7 @@ KEY TAKEAWAYS & ACTIONABLE STEPS:
 --------------------------------------------------------------------------------
 ARTICLE 15: FOLLOWER SUDAH RIBUAN TAPI AKUN TIBA-TIBA HILANG? AMANKAN DENGAN 3 LANGKAH INI!
 English: THOUSANDS OF FOLLOWERS BUT YOUR ACCOUNT SUDDENLY VANISHED? SECURE IT WITH THESE 3 STEPS!
-Author: Eka Syarif Maulana, S.Kom (Founder Inka.tech)
+Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Software & AI
 Published URL: https://etech.my.id/id/blog/16-aman-instagram
 --------------------------------------------------------------------------------
@@ -277,7 +277,7 @@ KEY TAKEAWAYS & ACTIONABLE STEPS:
 --------------------------------------------------------------------------------
 ARTICLE 16: SERING PAKE WHATSAPP TAPI GAK TAHU 4 FITUR RAHASIA INI? RUGI BANGET!
 English: Using WhatsApp Daily Without Knowing These 4 Hidden Features? You're Missing Out!
-Author: Eka Syarif Maulana, S.Kom (Founder Inka.tech)
+Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Software & AI
 Published URL: https://etech.my.id/id/blog/15-rahasia-whatsapp
 --------------------------------------------------------------------------------
@@ -293,7 +293,7 @@ KEY TAKEAWAYS & ACTIONABLE STEPS:
 --------------------------------------------------------------------------------
 ARTICLE 17: LAPTOP BUNYI KAYAK PESAWAT MAU LEPAS LANDAS? INI SOLUSI GAMPANGNYA!
 English: IS YOUR LAPTOP SOUNDING LIKE A JET TAKING OFF? HERE'S THE EASY FIX!
-Author: Eka Syarif Maulana, S.Kom (Founder Inka.tech)
+Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Hardware & Komponen
 Published URL: https://etech.my.id/id/blog/17-laptop-panas
 --------------------------------------------------------------------------------
@@ -309,7 +309,7 @@ KEY TAKEAWAYS & ACTIONABLE STEPS:
 --------------------------------------------------------------------------------
 ARTICLE 18: BINGUNG BIKIN PASSWORD SUSAH DITEBAK TAPI GAMPANG DIINGAT? PAKE METODE PASSPHRASE!
 English: Struggling to Create a Strong Yet Memorable Password? Try the Passphrase Method!
-Author: Eka Syarif Maulana, S.Kom (Founder Inka.tech)
+Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Cybersecurity & Privasi
 Published URL: https://etech.my.id/id/blog/18-password-kuat
 --------------------------------------------------------------------------------
@@ -325,7 +325,7 @@ KEY TAKEAWAYS & ACTIONABLE STEPS:
 --------------------------------------------------------------------------------
 ARTICLE 19: TAKUT PEKERJAANMU DIGANTIKAN AI? INI SKILL MANUSIA YANG GAK BISA DITIRU!
 English: Afraid AI Will Replace Your Job? These Human Skills Cannot Be Replicated!
-Author: Eka Syarif Maulana, S.Kom (Founder Inka.tech)
+Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Software & AI
 Published URL: https://etech.my.id/id/blog/20-pekerjaan-ai
 --------------------------------------------------------------------------------
@@ -341,7 +341,7 @@ KEY TAKEAWAYS & ACTIONABLE STEPS:
 --------------------------------------------------------------------------------
 ARTICLE 20: SMART TV KAMU DI RUMAH TERNYATA MEREKAM APA YANG KAMU TONTON!
 English: Your Home Smart TV Is Secretly Tracking Everything You Watch!
-Author: Eka Syarif Maulana, S.Kom (Founder Inka.tech)
+Author: Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
 Category: Hardware & Komponen
 Published URL: https://etech.my.id/id/blog/19-smart-tv
 --------------------------------------------------------------------------------

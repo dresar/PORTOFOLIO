@@ -1,8 +1,10 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useBlogPostBySlug } from '@/hooks/useBlog';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import { BlogSlidePlayer } from '@/components/blog/BlogSlidePlayer';
 import { normalizeMediaUrl, formatCompactNumber, sanitizeHtmlContent } from '@/lib/utils';
 import { format } from 'date-fns';
 import { id as idLocale } from 'date-fns/locale';
@@ -271,12 +273,12 @@ const BlogDetail = () => {
                 "author": {
                   "@type": "Person",
                   "name": "Eka Syarif Maulana, S.Kom",
-                  "jobTitle": "Founder Inka.tech | Senior Fullstack Developer & AI Engineer",
+                  "jobTitle": "Senior Fullstack Web & Mobile Developer & AI Systems Engineer",
                   "url": "https://etech.my.id"
                 },
                 "publisher": {
-                  "@type": "Organization",
-                  "name": "Inka.tech",
+                  "@type": "Person",
+                  "name": "Eka Syarif Maulana, S.Kom",
                   "url": "https://etech.my.id"
                 },
                 "mainEntityOfPage": {
@@ -287,166 +289,165 @@ const BlogDetail = () => {
             </script>
           </Helmet>
 
-          <div className="mb-8">
+          <div className="mb-6">
             <Link 
               to={getLocalizedPath('/blog')} 
-              className="inline-flex items-center text-muted-foreground hover:text-primary transition-colors"
+              className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-1 px-3 rounded-lg hover:bg-muted/50 w-fit"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               {t('blog.back_to_blog')}
             </Link>
           </div>
 
-          <div className="max-w-4xl mx-auto">
-            {/* Main Article Content - Full Width */}
-            <article className="w-full">
-              {/* Header */}
-              <header className="mb-8">
-                <div className="flex flex-wrap items-center gap-4 mb-6 text-sm text-muted-foreground">
-                    <Badge variant="secondary" className="text-sm font-medium">
-                        {post.category?.name || t('blog.default_category')}
-                    </Badge>
-                    <span className="flex items-center">
-                        <Calendar className="w-4 h-4 mr-1.5" />
-                        {format(new Date(post.published_at || post.created_at), 'd MMMM yyyy', { locale: idLocale })}
-                    </span>
-                    <span className="flex items-center text-foreground font-medium">
-                        <User className="w-4 h-4 mr-1.5 text-primary" />
-                        Eka Syarif Maulana
-                    </span>
-                    <span className="flex items-center font-medium text-primary">
-                        <Eye className="w-4 h-4 mr-1.5" />
-                        {formatCompactNumber(post.views || 0)} views
-                    </span>
-                </div>
-
-                <h1 className="text-3xl md:text-5xl font-bold mb-6 leading-tight">
-                    {post.title}
-                </h1>
-
-                <p className="text-xl text-muted-foreground leading-relaxed border-l-4 border-primary/50 pl-4">
-                    {post.excerpt}
-                </p>
-              </header>
-
-              {/* Featured Image - Compact & Click to Zoom */}
-              {(post.coverImageFile || post.coverImage) ? (
-                <div className="flex justify-center mb-10">
-                  <div 
-                    className="rounded-xl overflow-hidden shadow-md cursor-zoom-in group relative max-w-[420px] w-full border border-border/50 bg-muted/20 hover:shadow-xl transition-all"
-                    onClick={() => openImagePreviewModal(normalizeMediaUrl(post.coverImageFile || post.coverImage), post.title)}
-                  >
-                    <img 
-                        src={normalizeMediaUrl(post.coverImageFile || post.coverImage)} 
-                        alt={post.title} 
-                        className="w-full max-h-[440px] object-contain group-hover:scale-[1.01] transition-transform duration-300"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = "https://placehold.co/1200x600?text=Blog+Post";
-                        }}
-                    />
-                    <div className="absolute bottom-2 right-2 bg-background/80 backdrop-blur-sm text-[11px] px-2 py-1 rounded-md text-muted-foreground border border-border/40 pointer-events-none flex items-center gap-1">
-                      <span>🔍 Klik untuk Zoom</span>
-                    </div>
-                  </div>
-                </div>
-              ) : null}
-
-              {/* Content with Image Click-to-Zoom Handler */}
-              <div 
-                className="html-theme-responsive prose prose-lg dark:prose-invert max-w-none mb-12 [&_.overflow-hidden]:max-w-[360px] sm:[&_.overflow-hidden]:max-w-[400px] md:[&_.overflow-hidden]:max-w-[440px] [&_.overflow-hidden]:mx-auto [&_.overflow-hidden]:my-6 [&_img]:max-w-[340px] sm:[&_img]:max-w-[380px] md:[&_img]:max-w-[420px] [&_img]:max-h-[480px] [&_img]:w-auto [&_img]:h-auto [&_img]:object-contain [&_img]:mx-auto [&_img]:rounded-xl [&_img]:shadow-md [&_img]:border [&_img]:border-border/50 [&_img]:my-6 [&_img]:block [&_img]:cursor-zoom-in hover:[&_img]:scale-[1.01] hover:[&_img]:shadow-xl [&_img]:transition-all [&_blockquote]:border-l-4 [&_blockquote]:border-primary [&_blockquote]:bg-primary/5 [&_blockquote]:p-4 [&_blockquote]:rounded-r-lg"
-                data-color-mode={resolvedTheme === 'dark' ? 'dark' : 'light'}
-                onClick={(e) => {
-                  const target = e.target as HTMLElement;
-                  if (target && target.tagName === 'IMG') {
-                    const img = target as HTMLImageElement;
-                    const container = e.currentTarget;
-                    const allImgs = Array.from(container.querySelectorAll('img')).map(i => normalizeMediaUrl(i.src));
-                    const currentSrc = normalizeMediaUrl(img.src);
-                    const currentIndex = allImgs.indexOf(currentSrc);
-                    openImagePreviewModal(
-                      currentSrc, 
-                      img.alt || post.title, 
-                      allImgs.length > 0 ? allImgs : undefined, 
-                      currentIndex >= 0 ? currentIndex : 0
-                    );
-                  }
-                }}
-              >
-                {post.content && post.content.trim().startsWith('<') && !post.content.includes('# ') && !post.content.includes('![') ? (
-                  <div dangerouslySetInnerHTML={{ __html: sanitizeHtmlContent(post.content) }} />
-                ) : (
-                  <MDEditor.Markdown 
-                    source={post.content || ''} 
-                    style={{ backgroundColor: 'transparent', color: 'inherit', fontSize: 'inherit', fontFamily: 'inherit' }} 
-                  />
-                )}
-              </div>
-
-              {/* Tags */}
-              <div className="border-t pt-8 mb-4">
-                 <div className="flex flex-wrap gap-2">
-                     {post.tags && Array.isArray(post.tags) && post.tags.map((tag: string, i: number) => (
-                         <Badge key={i} variant="outline" className="text-muted-foreground">
-                             # {tag}
-                         </Badge>
-                     ))}
-                 </div>
-              </div>
-            </article>
-
-            {/* Interaction & Share Bar (Di Bawah Artikel) */}
-            <div className="border-t border-b border-border py-6 my-8 flex flex-wrap items-center justify-between gap-4 bg-muted/10 px-6 rounded-2xl">
-              <div className="flex items-center gap-4">
-                <Button 
-                   variant="outline" 
-                   onClick={handleLike}
-                   className={`flex items-center gap-2 rounded-full ${likeMutation.isPending ? 'opacity-50' : ''} hover:text-red-500`}
-                >
-                  <Heart className={`w-4 h-4 ${post.likes ? 'fill-red-500 text-red-500' : ''}`} />
-                  <span className="font-semibold">{formatCompactNumber(post.likes || 0)}</span>
-                  <span className="text-xs text-muted-foreground">Suka</span>
-                </Button>
-
-                <div className="flex items-center gap-2 text-sm text-muted-foreground px-3.5 py-1.5 rounded-full bg-background border border-border/50">
-                  <Eye className="w-4 h-4 text-blue-500" />
-                  <span>{formatCompactNumber(post.views || 0)} Dilihat</span>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-medium text-muted-foreground mr-1 flex items-center gap-1">
-                  <Share2 className="w-3.5 h-3.5" />
-                  Bagikan:
-                </span>
-                <Button variant="outline" size="sm" onClick={() => handleShare('twitter')}>Twitter</Button>
-                <Button variant="outline" size="sm" onClick={() => handleShare('facebook')}>Facebook</Button>
-                <Button variant="outline" size="sm" onClick={() => handleShare('copy')}>Salin Link</Button>
-              </div>
+          {/* Article Title & Metadata Header */}
+          <header className="mb-8 max-w-4xl">
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-4 text-xs sm:text-sm text-muted-foreground">
+              <Badge variant="secondary" className="font-semibold tracking-wide uppercase px-2.5 py-0.5">
+                {post.category?.name || t('blog.default_category')}
+              </Badge>
+              <span className="flex items-center">
+                <Calendar className="w-3.5 h-3.5 mr-1.5 text-primary" />
+                {format(new Date(post.published_at || post.created_at), 'd MMMM yyyy', { locale: idLocale })}
+              </span>
+              <span className="flex items-center text-foreground font-medium">
+                <User className="w-3.5 h-3.5 mr-1.5 text-primary" />
+                Eka Syarif Maulana, S.Kom
+              </span>
+              <span className="flex items-center font-medium text-primary">
+                <Eye className="w-3.5 h-3.5 mr-1.5" />
+                {formatCompactNumber(post.views || 0)} views
+              </span>
             </div>
 
-            {/* Author Profile (Di Bawah Artikel) */}
-            <div className="bg-card border border-border rounded-2xl p-6 sm:p-8 shadow-sm my-10">
-               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+            <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold mb-5 leading-tight tracking-tight text-foreground">
+              {post.title}
+            </h1>
+
+            <p className="text-base sm:text-xl text-muted-foreground leading-relaxed border-l-4 border-primary/60 pl-4 py-1">
+              {post.excerpt}
+            </p>
+          </header>
+
+          {/* 2-Column Responsive Layout:
+              Desktop: Left is Rich Content (col-span-7/8), Right is Sticky Slide Carousel (col-span-5/4)
+              Mobile: Slide Carousel is at the TOP (order-1), Article content is below (order-2)
+          */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+            {/* Left Column: Article Rich Technical Guide */}
+            <div className="order-2 lg:order-1 lg:col-span-7 xl:col-span-8 min-w-0">
+              <article className="w-full">
+                {/* Content with Image Click-to-Zoom Handler */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4 }}
+                  className="html-theme-responsive prose prose-lg dark:prose-invert max-w-none mb-12 
+                    [&_h2]:text-2xl sm:[&_h2]:text-3xl [&_h2]:font-bold [&_h2]:tracking-tight [&_h2]:mt-10 [&_h2]:mb-4 [&_h2]:text-foreground [&_h2]:border-b [&_h2]:border-border/40 [&_h2]:pb-2.5
+                    [&_h3]:text-xl sm:[&_h3]:text-2xl [&_h3]:font-semibold [&_h3]:mt-6 [&_h3]:mb-3 [&_h3]:text-foreground
+                    [&_p]:text-muted-foreground [&_p]:leading-relaxed [&_p]:text-base sm:[&_p]:text-lg
+                    [&_ul]:space-y-2 [&_ul]:list-disc [&_ul]:list-inside [&_ul]:text-muted-foreground
+                    [&_ol]:space-y-2 [&_ol]:list-decimal [&_ol]:list-inside [&_ol]:text-muted-foreground
+                    [&_table]:w-full [&_table]:text-sm [&_table]:border-collapse [&_table]:my-6
+                    [&_th]:bg-muted/60 [&_th]:p-3 [&_th]:border [&_th]:border-border [&_th]:text-left [&_th]:font-semibold [&_th]:text-foreground
+                    [&_td]:p-3 [&_td]:border [&_td]:border-border/60 [&_td]:text-muted-foreground
+                    [&_pre]:bg-muted/70 [&_pre]:p-4 [&_pre]:rounded-xl [&_pre]:border [&_pre]:border-border/50 [&_pre]:overflow-x-auto
+                    [&_code]:text-xs [&_code]:font-mono [&_code]:bg-muted/60 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:border [&_code]:border-border/40
+                    [&_.direct-answer-box]:p-6 [&_.direct-answer-box]:rounded-2xl [&_.direct-answer-box]:border [&_.direct-answer-box]:border-primary/30 [&_.direct-answer-box]:bg-primary/5 [&_.direct-answer-box]:shadow-xs [&_.direct-answer-box]:my-6
+                    [&_.checklist-box]:p-6 [&_.checklist-box]:rounded-2xl [&_.checklist-box]:border [&_.checklist-box]:border-emerald-500/30 [&_.checklist-box]:bg-emerald-500/5 [&_.checklist-box]:shadow-xs [&_.checklist-box]:my-8
+                    [&_.author-attribution-card]:p-6 [&_.author-attribution-card]:rounded-2xl [&_.author-attribution-card]:border [&_.author-attribution-card]:border-border/60 [&_.author-attribution-card]:bg-muted/20 [&_.author-attribution-card]:my-8
+                    [&_blockquote]:border-l-4 [&_blockquote]:border-primary [&_blockquote]:bg-primary/5 [&_blockquote]:p-4 [&_blockquote]:rounded-r-lg"
+                  data-color-mode={resolvedTheme === 'dark' ? 'dark' : 'light'}
+                  onClick={(e) => {
+                    const target = e.target as HTMLElement;
+                    if (target && target.tagName === 'IMG') {
+                      const img = target as HTMLImageElement;
+                      const container = e.currentTarget;
+                      const allImgs = Array.from(container.querySelectorAll('img')).map(i => normalizeMediaUrl(i.src));
+                      const currentSrc = normalizeMediaUrl(img.src);
+                      const currentIndex = allImgs.indexOf(currentSrc);
+                      openImagePreviewModal(
+                        currentSrc, 
+                        img.alt || post.title, 
+                        allImgs.length > 0 ? allImgs : undefined, 
+                        currentIndex >= 0 ? currentIndex : 0
+                      );
+                    }
+                  }}
+                >
+                  {post.content && post.content.trim().startsWith('<') && !post.content.includes('# ') && !post.content.includes('![') ? (
+                    <div dangerouslySetInnerHTML={{ __html: sanitizeHtmlContent(post.content) }} />
+                  ) : (
+                    <MDEditor.Markdown 
+                      source={post.content || ''} 
+                      style={{ backgroundColor: 'transparent', color: 'inherit', fontSize: 'inherit', fontFamily: 'inherit' }} 
+                    />
+                  )}
+                </motion.div>
+
+                {/* Tags */}
+                <div className="border-t border-border pt-8 mb-4">
+                  <div className="flex flex-wrap gap-2">
+                    {post.tags && Array.isArray(post.tags) && post.tags.map((tag: string, i: number) => (
+                      <Badge key={i} variant="outline" className="text-muted-foreground">
+                        # {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              </article>
+
+              {/* Interaction & Share Bar */}
+              <div className="border-t border-b border-border py-6 my-8 flex flex-wrap items-center justify-between gap-4 bg-muted/10 px-6 rounded-2xl">
+                <div className="flex items-center gap-4">
+                  <Button 
+                    variant="outline" 
+                    onClick={handleLike}
+                    className={`flex items-center gap-2 rounded-full ${likeMutation.isPending ? 'opacity-50' : ''} hover:text-red-500`}
+                  >
+                    <Heart className={`w-4 h-4 ${post.likes ? 'fill-red-500 text-red-500' : ''}`} />
+                    <span className="font-semibold">{formatCompactNumber(post.likes || 0)}</span>
+                    <span className="text-xs text-muted-foreground">Suka</span>
+                  </Button>
+
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground px-3.5 py-1.5 rounded-full bg-background border border-border/50">
+                    <Eye className="w-4 h-4 text-blue-500" />
+                    <span>{formatCompactNumber(post.views || 0)} Dilihat</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-medium text-muted-foreground mr-1 flex items-center gap-1">
+                    <Share2 className="w-3.5 h-3.5" />
+                    Bagikan:
+                  </span>
+                  <Button variant="outline" size="sm" onClick={() => handleShare('twitter')}>Twitter</Button>
+                  <Button variant="outline" size="sm" onClick={() => handleShare('facebook')}>Facebook</Button>
+                  <Button variant="outline" size="sm" onClick={() => handleShare('copy')}>Salin Link</Button>
+                </div>
+              </div>
+
+              {/* Author Profile */}
+              <div className="bg-card border border-border rounded-2xl p-6 sm:p-8 shadow-sm my-10">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
                   <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden border border-border/50">
                     {profile?.aboutImage || profile?.heroImage ? (
-                         <img src={normalizeMediaUrl(profile.aboutImage || profile.heroImage)} alt="Author" className="w-full h-full object-cover" />
+                      <img src={normalizeMediaUrl(profile.aboutImage || profile.heroImage)} alt="Author" className="w-full h-full object-cover" />
                     ) : (
-                         <span className="font-bold text-primary text-2xl">{profile?.fullName?.charAt(0) || 'E'}</span>
+                      <span className="font-bold text-primary text-2xl">{profile?.fullName?.charAt(0) || 'E'}</span>
                     )}
                   </div>
                   <div className="flex-1">
                     <div className="flex flex-wrap items-center gap-2 mb-1">
                       <h3 className="font-bold text-lg text-foreground">{profile?.fullName || 'Eka Syarif Maulana, S.Kom'}</h3>
-                      <Badge variant="secondary" className="text-xs font-normal">Founder Inka.tech</Badge>
+                      <Badge variant="secondary" className="text-xs font-normal">Senior Fullstack Web & Mobile Developer & AI Systems Engineer</Badge>
                     </div>
-                    <p className="text-xs text-primary font-medium mb-2">{profile?.role && JSON.parse(profile.role)[0] || 'Senior Fullstack Developer & AI Engineer'}</p>
+                    <p className="text-xs text-primary font-medium mb-2">Sarjana Komputer (S.Kom), Universitas Muhammadiyah Sumatera Utara</p>
                     <p className="text-sm text-muted-foreground leading-relaxed">
-                      {profile?.shortBio || profile?.bio || 'Suka berbagi pengalaman seputar teknologi, coding, arsitektur AI, dan edukasi keamanan siber.'}
+                      {profile?.shortBio || profile?.bio || 'Praktisi rekayasa perangkat lunak fullstack, kecerdasan buatan, dan riset keamanan siber.'}
                     </p>
                   </div>
-               </div>
-            </div>
+                </div>
+              </div>
 
             {/* Comments Section (Di Bawah Artikel) */}
             <div className="bg-card border border-border rounded-2xl p-6 sm:p-8 shadow-sm my-10">
@@ -526,6 +527,24 @@ const BlogDetail = () => {
                       </div>
                   </form>
                </div>
+            </div>
+            </div>
+
+            {/* Right Column: Interactive Slide Player (Sticky on Desktop, Top Hero on Mobile) */}
+            <div className="order-1 lg:order-2 lg:col-span-5 xl:col-span-4 lg:sticky lg:top-24 space-y-4">
+              <BlogSlidePlayer 
+                slug={slug || ''} 
+                title={post.title} 
+              />
+
+              <div className="p-4 rounded-xl border border-border/50 bg-muted/20 text-xs text-muted-foreground space-y-1.5 shadow-xs">
+                <div className="font-semibold text-foreground flex items-center gap-1.5">
+                  <span>💡 Navigasi Visual</span>
+                </div>
+                <p className="leading-relaxed">
+                  Semua infografis 6 slide artikel ini dapat Anda zoom layar penuh dengan menekan gambar. Penjelasan teknis komprehensif, arsitektur data, dan mitigasi dapat dibaca lengkap di kolom artikel.
+                </p>
+              </div>
             </div>
           </div>
         </div>

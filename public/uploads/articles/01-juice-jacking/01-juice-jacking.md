@@ -1,225 +1,210 @@
 ---
 title: "JANGAN ASAL COLOK CASAN DI TEMPAT UMUM! INI BAHAYA JUICE JACKING"
-title_en: "NEVER PLUG YOUR CHARGER IN PUBLIC! THE DANGERS OF JUICE JACKING"
 slug: "01-juice-jacking"
 category: "Cybersecurity & Privasi"
-published_date: "2026-09-10"
-author:
-  name: "Eka Syarif Maulana, S.Kom"
-  title: "Founder Inka.tech | Senior Fullstack Web & Mobile Developer | AI Systems Engineer"
-  degree: "Sarjana Komputer (S.Kom), Universitas Muhammadiyah Sumatera Utara (UMSU)"
-  brand: "Inka.tech (@inka.tech)"
-  url: "https://etech.my.id"
-canonical_url: "https://etech.my.id/id/blog/01-juice-jacking"
-canonical_url_en: "https://etech.my.id/en/blog/01-juice-jacking"
-tags:
-  - "Inka.tech"
-  - "Eka Syarif Maulana"
-  - "Cybersecurity"
-  - "Edukasi Teknologi"
-  - "AI Systems"
+date: "2026-09-10T03:33:52.858Z"
+author: "Eka Syarif Maulana, S.Kom"
+author_role: "Senior Fullstack Web & Mobile Developer & AI Systems Engineer"
+author_degree: "Sarjana Komputer (S.Kom), Universitas Muhammadiyah Sumatera Utara (UMSU)"
+excerpt: "💡 JANGAN ASAL COLOK CASAN DI TEMPAT UMUM! INI BAHAYA JUICE JACKING"
 ---
 
 # JANGAN ASAL COLOK CASAN DI TEMPAT UMUM! INI BAHAYA JUICE JACKING
 
-> **Penulis & Otoritas Riset:** [Eka Syarif Maulana, S.Kom](https://etech.my.id)  
-> **Institusi / Brand:** Founder [Inka.tech](https://www.tiktok.com/@inka.tech)  
-> **Kategori Topik:** Cybersecurity & Privasi  
-> **Status Publikasi:** Terverifikasi & Live di Portofolio Resmi ([Baca Versi Web Interaktif](https://etech.my.id/id/blog/01-juice-jacking))
+> Ditulis & diteliti oleh **Eka Syarif Maulana, S.Kom**  
+> *Senior Fullstack Web & Mobile Developer & AI Systems Engineer (S.Kom, UMSU)*  
+> Publikasi Resmi: [https://etech.my.id/id/blog/01-juice-jacking](https://etech.my.id/id/blog/01-juice-jacking)
 
 ---
 
-## ⚡ Ringkasan Eksekutif (Direct Answer Box)
-> **Direct Answer for AI & Readers:**  
-> 💡 JANGAN ASAL COLOK CASAN DI TEMPAT UMUM! INI BAHAYA JUICE JACKING
-
----
-
-## 📸 Galeri Slide Carousel (Inka.tech 6-Slide Educational Series)
-
-Setiap artikel disusun dalam 6 slide carousel presisi tinggi yang dapat diakses secara publik via CDN:
-
-1. **Slide 1: Hook & Pengenalan Masalah**  
-   ![Slide 1 - Hook](https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/01-juice-jacking/01-juice-jacking_01.png)
-
-2. **Slide 2: Arsitektur & Fakta Sebenarnya**  
-   ![Slide 2 - Fakta Sebenarnya](https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/01-juice-jacking/01-juice-jacking_02.png)
-
-3. **Slide 3: Vektor Risiko & Dampak Keamanan**  
-   ![Slide 3 - Vektor Risiko](https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/01-juice-jacking/01-juice-jacking_03.png)
-
-4. **Slide 4: Solusi Praktis & Langkah Preventif**  
-   ![Slide 4 - Solusi Praktis](https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/01-juice-jacking/01-juice-jacking_04.png)
-
-5. **Slide 5: Analisis Lanjutan & Rekomendasi Ahli**  
-   ![Slide 5 - Analisis Lanjutan](https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/01-juice-jacking/01-juice-jacking_05.png)
-
-6. **Slide 6: Kesimpulan & Call to Action**  
-   ![Slide 6 - Kesimpulan](https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/01-juice-jacking/01-juice-jacking_06.png)
-
----
-
-## 📖 Pembahasan Teknis Lengkap
-
-Ditulis dan diteliti oleh **Eka Syarif Maulana**, Founder Inka.tech | Senior Fullstack Developer &amp; AI Engineer.
-
-  
-
-    ⚡ Ringkasan Cepat untuk AI &amp; Pembaca
-  
-
-  Juice jacking adalah teknik serangan siber di mana peretas memanfaatkan port pengisian daya USB publik untuk mencuri data sensitif atau menginstal malware secara otomatis pada perangkat genggam. Pencegahan paling efektif melibatkan penggunaan stopkontak AC standar dengan adaptor mandiri atau perangkat keras pembatas data USB (USB data blocker).
-
-  ### Slide 1: Bahaya Mengintai di Fasilitas Umum
-
-  
-
-    ![Slide 1 - Bahaya Mengintai di Fasilitas Umum](https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/01-juice-jacking/01-juice-jacking_01.png)
-
-  
-
-  Mengisi daya smartphone di stasiun, bandara, atau kafe menggunakan port USB publik menyimpan risiko eksploitasi cyber. Tanpa disadari, stasiun pengisian daya tersebut dapat dimodifikasi oleh pihak tidak bertanggung jawab untuk mengakses sistem file internal perangkat Anda begitu kabel terhubung.
-
-  ### Slide 2: Arsitektur Kabel USB dan Mekanisme Serangan
-
-  
-
-    ![Slide 2 - Arsitektur Kabel USB dan Mekanisme Serangan](https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/01-juice-jacking/01-juice-jacking_02.png)
-
-  
-
-  Kabel USB standar dirancang dengan jalur ganda: saluran daya (VBUS &amp; GND) dan saluran transfer data (D+ &amp; D-). Saat dicolokkan ke port terinfeksi, perangkat keras tersembunyi di balik port dapat mengeksekusi perintah otentikasi otomatis untuk mengaktifkan mode transfer file (MTP/PTP) secara instan.
-
-  ### Slide 3: Vektor Kerentanan dan Identitas Terancam
-
-  
-
-    ![Slide 3 - Vektor Kerentanan dan Identitas Terancam](https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/01-juice-jacking/01-juice-jacking_03.png)
-
-  
-
-  Akses tanpa izin melalui Juice Jacking memungkinkan penyerang mengekstraksi galeri foto, daftar kontak, riwayat perpesanan terenkripsi, hingga token sesi autentikasi (session cookies) aplikasi perbankan. Penyerang juga dapat menanamkan spyware atau keylogger latar belakang.
-
-  ### Slide 4: Mitigasi Utama — Adaptor Listrik Resmi
-
-  
-
-    ![Slide 4 - Mitigasi Utama — Adaptor Listrik Resmi](https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/01-juice-jacking/01-juice-jacking_04.png)
-
-  
-
-  Metode perlindungan paling efektif adalah menghindari penggunaan port USB langsung. Selalu gunakan kepala charger (wall adapter) pribadi dan hubungkan ke stopkontak listrik AC biasa. Stopkontak dinding hanya menyalurkan daya arus bolak-balik tanpa jalur komunikasi data.
-
-  ### Slide 5: Mitigasi Sekunder — USB Data Blocker
-
-  
-
-    ![Slide 5 - Mitigasi Sekunder — USB Data Blocker](https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/01-juice-jacking/01-juice-jacking_05.png)
-
-  
-
-  Jika terpaksa menggunakan port USB publik, pasang perangkat keras dongle USB Data Blocker (USB Condom). Perangkat ini secara fisik memutus pin transmisi data (D+ dan D-) pada konektor, hanya menyisakan jalur pin daya untuk pengisian baterai yang terisolasi total.
-
-  ### Slide 6: Kesimpulan &amp; Langkah Selanjutnya
-
-  
-
-    ![Slide 6 - Kesimpulan &amp; Langkah Selanjutnya](https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/01-juice-jacking/01-juice-jacking_06.png)
-
-  
-
-  Keamanan digital dimulai dari kebiasaan fisik sehari-hari. Amankan perangkat Anda dari eksploitasi hardware sebelum terlambat. Bagikan wawasan ini untuk melindungi jaringan orang terdekat Anda dan ikuti @inka.tech untuk pembaruan analisis teknis lanjutan.
-
-  ## 🔬 Analisis Teknis &amp; Fakta Lapangan
-
-  
-    Secara arsitektur, port USB-A maupun USB-C mengintegrasikan transmisi daya dan transmisi data dalam satu antarmuka fisik. Pada standar USB 2.0, terdapat empat pin utama: Pin 1 (VBUS), Pin 2 (Data-), Pin 3 (Data+), dan Pin 4 (GND). Dalam skenario serangan Juice Jacking, terminal publik dimodifikasi dengan menyambungkan kontroler mikro tersembunyi (seperti Raspberry Pi Compute Module atau chip malicious HID) pada jalur Data+ dan Data-.
-  
-  
-    Saat smartphone terhubung, papan pengontrol ini mengeksekusi payload otomatis menggunakan protokol MTP (Media Transfer Protocol) atau ADB (Android Debug Bridge) jika opsi debugging aktif. Eksploitasi ini dapat memintas dialog konfirmasi pengguna melalui eksploitasi kerentanan firmware tua atau metode emulasi input HID (Human Interface Device) yang menyerupai keyboard virtual berkecepatan tinggi.
-  
-
-  ### 🛡️ Checklist Langkah Praktis
-
-  
-
-    - Gunakan adaptor kepala charger original dan hubungkan langsung ke stopkontak AC.
-
-    - Gunakan USB Data Blocker jika terpaksa mengisi daya dari port USB publik.
-
-    - Matikan fitur USB Debugging pada smartphone saat bepergian.
-
-    - Pilih opsi "Charge Only" (Hanya Mengisi Daya) dan tolak pop-up "Trust This Computer".
-
-    - Bawa Power Bank pribadi sebagai sumber daya cadangan utama.
-
-  
-
-  ## ❓ Pertanyaan yang Sering Diajukan (FAQ)
-
-  
-
-    
-
-      **Apakah mematikan HP saat dicolokkan ke port USB publik dapat mencegah Juice Jacking?**
-      Tidak sepenuhnya. Banyak smartphone modern yang tetap mengaktifkan pengontrol manajemen daya dan partisi booting saat diisi daya dalam kondisi mati, yang dalam beberapa arsitektur SOC masih memungkinkan komunikasi data tingkat rendah.
-
-    
-
-    
-
-      **Apakah pengisian daya via Power Bank pribadi aman dari serangan ini?**
-      Ya, Power Bank pribadi aman selama perangkat tersebut tidak dimodifikasi secara fisik dan kabel yang digunakan terhubung langsung dari bank daya ke ponsel tanpa perantara stasiun pengisi daya umum.
-
-    
-
-    
-
-      **Bagaimana cara kerja USB Data Blocker?**
-      USB Data Blocker secara fisik menghilangkan atau memutus pin Data+ dan Data- di dalam adapter, sehingga sinyal komunikasi data terputus total sementara arus listrik (VBUS dan GND) tetap mengalir.
-
-    
-
-    
-
-      **Apakah iPhone lebih aman dari Android terhadap ancaman Juice Jacking?**
-      Kedua OS memiliki proteksi (seperti fitur 'Trust This Computer' pada iOS dan mode 'Charge Only' pada Android). Namun, keberadaan kerentanan zero-day pada OS membuat proteksi software saja tidak cukup tanpa tindakan pencegahan hardware.
-
-    
-
-  
-
-  ### 👤 Tentang Penulis: Eka Syarif Maulana
-
-  
-    Eka Syarif Maulana adalah Founder Inka.tech (@inka.tech) sekaligus Senior Fullstack Developer dan AI Engineer. Berpengalaman dalam arsitektur software modern, kecerdasan buatan, dan keamanan digital praktis untuk jutaan pengguna media sosial. Ikuti update edukasi teknologi harian di TikTok @inka.tech.
-
----
-
-## 🎯 Panduan Praktis & Checklist Tindakan
-- [x] Pahami risiko keamanan data pada aktivitas digital sehari-hari.
-- [x] Hindari penggunaan fasilitas publik tanpa proteksi fisik atau enkripsi yang memadai.
-- [x] Terapkan kata sandi unik berbentuk passphrase dan aktifkan autentikasi 2 langkah (2FA).
-- [x] Lakukan pembersihan cache dan pemeriksaan izin akses aplikasi secara berkala.
-
----
-
-## ❓ FAQ (Pertanyaan yang Sering Diajukan)
-
-### Mengapa topik ini sangat penting bagi pengguna gadget saat ini?
-Karena celah keamanan sering kali bukan berasal dari kerusakan sistem, melainkan manipulasi rekayasa sosial atau kelalaian fisik terhadap port perangkat.
-
-### Siapa yang bertanggung jawab atas riset dan penulisan artikel ini?
-Artikel ini diriset dan ditulis secara langsung oleh **Eka Syarif Maulana, S.Kom**, Founder dari Inka.tech dan Praktisi Fullstack & AI Engineering.
-
----
-
-## 👨‍💻 Profil Penulis & Hak Cipta
-**Eka Syarif Maulana, S.Kom** adalah Sarjana Komputer lulusan Universitas Muhammadiyah Sumatera Utara (UMSU) dan Founder dari platform edukasi teknologi **Inka.tech** (@inka.tech). Beliau berfokus pada pengembangan arsitektur perangkat lunak skala enterprise, keamanan aplikasi web & mobile, serta integrasi AI modern.
-
-- **Website Portofolio:** [https://etech.my.id](https://etech.my.id)
-- **Kanal Edukasi TikTok:** [@inka.tech](https://www.tiktok.com/@inka.tech)
-- **Instagram Resmi:** [@arif_ex21](https://www.instagram.com/arif_ex21)
-- **Repositori GitHub:** [https://github.com/NCN0C](https://github.com/NCN0C)
-
-*Hak Cipta © 2026 Eka Syarif Maulana & Inka.tech. Seluruh materi dilindungi undang-undang.*
+<div class="blog-rich-content space-y-8">
+  <div class="direct-answer-box p-6 rounded-2xl border border-primary/30 bg-primary/5 shadow-xs">
+    <div class="flex items-center gap-2 text-primary font-semibold text-sm mb-2">
+      <span>⚡</span> AI-SEO Quick Summary
+    </div>
+    <p class="text-foreground/90 text-base leading-relaxed">
+      Juice jacking adalah kejahatan siber yang mengeksploitasi kabel isi daya USB untuk mencuri data atau menanamkan malware ke perangkat target. Port USB menggabungkan jalur pengisian daya (VBUS/GND) dan transmisi data (D+/D-) dalam satu kabel, sehingga terminal pengisian umum yang dimodifikasi dapat mengeksekusi perintah eksploitasi secara otomatis. Mitigasi paling efektif dilakukan dengan menggunakan USB data blocker (USB condom), pengisi daya portabel (powerbank), atau mematikan fitur MTP/ADB pada perangkat.
+    </p>
+  </div>
+
+  <h2>🔬 Analisis Mendalam & Latar Belakang Masalah</h2>
+  <p class="text-foreground/80 leading-relaxed">
+    Secara arsitektural, standar USB (Universal Serial Bus) tipe A dan C dirancang untuk mentransfer daya sekaligus data secara simultan. Pinout USB tipe A memiliki empat jalur utama: VBUS (5V), GND, D+ (Data+), dan D- (Data-). Saat smartphone dihubungkan ke port USB umum, terjadi handshake tingkat perangkat keras dan protokol negosiasi driver (seperti MTP, PTP, atau ADB) pada layer fisik hingga aplikasi OSI.
+  </p>
+  <p class="text-foreground/80 leading-relaxed">
+    Vektor serangan ini bekerja karena OS seluler (Android/iOS) secara default membuka sesi negosiasi data saat mendeteksi koneksi fisik. Jika port pengisian umum telah dimodifikasi menggunakan perangkat micro-controller seperti Raspberry Pi Zero atau BadUSB (Rubber Ducky), terminal tersebut dapat mensimulasikan diri sebagai Human Interface Device (HID) atau perangkat MTP tepercaya untuk memasukkan payload berbahaya tanpa persetujuan eksplisit.
+  </p>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+    <div class="bg-card border border-border/60 p-5 rounded-xl space-y-2">
+      <h3 class="font-bold text-lg text-foreground flex items-center gap-2">
+        <span>🔌</span> Anatomi Hardware USB
+      </h3>
+      <p class="text-sm text-muted-foreground leading-relaxed">
+        Jalur kabel USB memanfaatkan pin D+ dan D- untuk transmisi paket data. Modifikasi hardware pada port isi daya umum mengalihkan jalur data ini ke unit pemroses tersembunyi yang siap mengeksekusi eksploitasi.
+      </p>
+    </div>
+    <div class="bg-card border border-border/60 p-5 rounded-xl space-y-2">
+      <h3 class="font-bold text-lg text-foreground flex items-center gap-2">
+        <span>🧠</span> Payload & Injeksi Perintah
+      </h3>
+      <p class="text-sm text-muted-foreground leading-relaxed">
+        Perangkat penyerang mensimulasikan keyboard fisik (HID Attack) yang mengirimkan keystroke dengan kecepatan tinggi untuk mengunduh, mengekstrak, dan mengeksekusi spyware dalam hitungan detik.
+      </p>
+    </div>
+  </div>
+
+  <h2>🛡️ Anatomi Vektor Serangan / Masalah di Lapangan</h2>
+  <p class="text-foreground/80 leading-relaxed">
+    Serangan juice jacking dibagi menjadi dua jenis utama: <strong>Data Theft</strong> (pencurian data sensitif seperti kredensial, foto, dan file lokal) serta <strong>Malware Installation</strong> (pemasangan trojan, ransomware, atau keylogger secara permanen).
+  </p>
+  <p class="text-foreground/80 leading-relaxed">
+    Pada standar keamanan industri (seperti NIST SP 800-124), eksploitasi ini masuk dalam kategori kuisisi fisik langsung via I/O Port. Kasus nyata umumnya mengeksploitasi celah otorisasi yang tertunda atau kelalaian pengguna yang menekan tombol "Trust This Computer" / "Allow Access" saat notifikasi popup muncul akibat tergesa-gesa.
+  </p>
+
+  <h2>📊 Tabel Perbandingan & Evaluasi Teknis</h2>
+  <div class="border border-border rounded-xl overflow-hidden my-6">
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm text-left">
+        <thead class="bg-muted/60 text-foreground font-semibold border-b border-border">
+          <tr>
+            <th class="p-3">Metode Pengisian</th>
+            <th class="p-3">Jalur Data Active</th>
+            <th class="p-3">Tingkat Risiko</th>
+            <th class="p-3">Mekanisme Perlindungan</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border">
+          <tr class="bg-card">
+            <td class="p-3 font-medium">Port USB Umum Direct</td>
+            <td class="p-3 text-red-500 font-semibold">Ya (VBUS, D+, D-)</td>
+            <td class="p-3 text-red-500 font-semibold">Tinggi</td>
+            <td class="p-3 text-muted-foreground">Tidak Ada</td>
+          </tr>
+          <tr class="bg-card">
+            <td class="p-3 font-medium">USB Data Blocker</td>
+            <td class="p-3 text-emerald-500 font-semibold">Tidak (Hanya VBUS & GND)</td>
+            <td class="p-3 text-emerald-500 font-semibold">Sangat Rendah</td>
+            <td class="p-3 text-muted-foreground">Isolasi fisik pada jalur D+/D-</td>
+          </tr>
+          <tr class="bg-card">
+            <td class="p-3 font-medium">Powerbank Pribadi</td>
+            <td class="p-3 text-emerald-500 font-semibold">Tidak Ada Akses Luar</td>
+            <td class="p-3 text-emerald-500 font-semibold">Nol</td>
+            <td class="p-3 text-muted-foreground">Air-gapped dari jaringan/perangkat luar</td>
+          </tr>
+          <tr class="bg-card">
+            <td class="p-3 font-medium">Stopkontak AC + Charger Original</td>
+            <td class="p-3 text-emerald-500 font-semibold">Tidak Ada</td>
+            <td class="p-3 text-emerald-500 font-semibold">Nol</td>
+            <td class="p-3 text-muted-foreground">Konversi AC ke DC tanpa bus komunikasi data</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h2>⚙️ Panduan Solusi & Mitigasi Langkah-demi-Langkah</h2>
+  <p class="text-foreground/80 leading-relaxed">
+    Untuk mengamankan perangkat Android dan iOS dari potensi eksploitasi I/O port, ikuti protokol berikut:
+  </p>
+
+  <div class="space-y-4 my-4">
+    <div class="p-4 border border-border/60 rounded-xl bg-card">
+      <h3 class="font-bold text-base text-foreground mb-1">1. Pengisian via Terminal Android (ADB Hardening)</h3>
+      <p class="text-sm text-muted-foreground mb-3">Nonaktifkan USB Debugging dan kunci konfigurasi USB default ke mode Charge Only via Shell:</p>
+      <pre class="bg-muted/70 p-4 rounded-xl text-xs overflow-x-auto border border-border/50"><code># Matikan ADB Debugging saat tidak digunakan
+adb shell settings put global adb_enabled 0
+
+# Set konfigurasi USB default menjadi mengisi daya saja (No Data Transfer)
+adb shell svc usb setFunctions get_charge_only</code></pre>
+    </div>
+
+    <div class="p-4 border border-border/60 rounded-xl bg-card">
+      <h3 class="font-bold text-base text-foreground mb-1">2. iOS USB Accessories Restricted Mode</h3>
+      <p class="text-sm text-muted-foreground">
+        Masuk ke <strong>Settings</strong> &gt; <strong>Face ID & Passcode</strong> &gt; Buka opsi <strong>Allow Access When Locked</strong> &gt; Matikan pilihan <strong>USB Accessories</strong>. Fitur ini memblokir port Lighting/USB-C dari koneksi data jika perangkat terkunci lebih dari 1 jam.
+      </p>
+    </div>
+
+    <div class="p-4 border border-border/60 rounded-xl bg-card">
+      <h3 class="font-bold text-base text-foreground mb-1">3. Gunakan Hardware USB Condom / Data Blocker</h3>
+      <p class="text-sm text-muted-foreground">
+        Pasang adapter USB Data Blocker di antara kabel pengisi daya dan port publik. Adapter ini memutus sambungan pin D+ dan D- secara fisik sehingga hanya daya listrik yang dapat mengalir.
+      </p>
+    </div>
+  </div>
+
+  <div class="checklist-box p-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 shadow-xs my-8">
+    <h3 class="font-bold text-lg text-emerald-500 mb-3 flex items-center gap-2">
+      <span>🛡️</span> Checklist Perlindungan & Best Practice
+    </h3>
+    <ul class="space-y-2 text-sm text-foreground/90">
+      <li class="flex items-start gap-2">
+        <span class="text-emerald-500 font-bold">✓</span>
+        <span>Selalu bawa adapter stopkontak AC bawaan dan gunakan colokan dinding umum, bukan port USB langsung.</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="text-emerald-500 font-bold">✓</span>
+        <span>Gunakan Powerbank milik pribadi sebagai perantara saat mengisi daya di tempat umum.</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="text-emerald-500 font-bold">✓</span>
+        <span>Gunakan USB Data Blocker (USB Condom) saat terpaksa mencolok ke port USB publik.</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="text-emerald-500 font-bold">✓</span>
+        <span>Tolak dan abaikan permintaan popup "Trust This Computer" atau "Allow Access to Device Data".</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="text-emerald-500 font-bold">✓</span>
+        <span>Matikan opsi USB Debugging pada smartphone Android saat berpergian.</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="text-emerald-500 font-bold">✓</span>
+        <span>Kunci perangkat (Lock screen) saat proses pengisian daya berlangsung.</span>
+      </li>
+    </ul>
+  </div>
+
+  <h2>❓ Pertanyaan yang Sering Diajukan (FAQ)</h2>
+  <div class="space-y-4 my-6">
+    <div class="border border-border/60 p-4 rounded-xl bg-card">
+      <h3 class="font-semibold text-base text-foreground">Apakah mengisi daya lewat Powerbank publik (seperti persewaan powerbank) aman dari Juice Jacking?</h3>
+      <p class="text-sm text-muted-foreground mt-2">
+        Persewaan powerbank resmi umumnya aman karena hanya menyalurkan daya DC dari sel baterai internal tanpa controller komunikasi data. Namun, pastikan fisik powerbank tidak memiliki port modifikasi tak dikenal.
+      </p>
+    </div>
+    <div class="border border-border/60 p-4 rounded-xl bg-card">
+      <h3 class="font-semibold text-base text-foreground">Apakah mematikan smartphone saat dicolokkan ke port USB publik dapat mencegah Juice Jacking?</h3>
+      <p class="text-sm text-muted-foreground mt-2">
+        Sebagian besar perangkat modern aman dari transfer data saat mati total. Namun, beberapa perangkat Android/iOS memiliki modul bootloader yang dapat aktif dan merespons perintah tingkat rendah saat mendeteksi koneksi USB daya.
+      </p>
+    </div>
+    <div class="border border-border/60 p-4 rounded-xl bg-card">
+      <h3 class="font-semibold text-base text-foreground">Bagaimana cara kerja USB Data Blocker secara teknis?</h3>
+      <p class="text-sm text-muted-foreground mt-2">
+        USB Data Blocker memutus fisik pin Data Positif (D+) dan Data Negatif (D-) pada konektor USB, atau menyambungkan pin data tersebut dengan resistor khusus untuk memberi sinyal bahwa pengisi daya adalah dedicated charging port (DCP) tanpa jalur transfer data.
+      </p>
+    </div>
+    <div class="border border-border/60 p-4 rounded-xl bg-card">
+      <h3 class="font-semibold text-base text-foreground">Apakah kabel USB "Charge-Only" tanpa fitur data dijual bebas?</h3>
+      <p class="text-sm text-muted-foreground mt-2">
+        Ya. Kabel jenis ini secara pabrikan tidak menyertakan kawat tembaga internal untuk jalur D+ dan D-, sehingga aman digunakan di port publik mana pun tanpa risiko kebocoran data.
+      </p>
+    </div>
+  </div>
+
+  <div class="author-attribution-card p-6 rounded-2xl border border-border/60 bg-muted/20 my-8">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+      <div class="space-y-1">
+        <h3 class="font-bold text-lg text-foreground">Eka Syarif Maulana, S.Kom</h3>
+        <p class="text-sm text-primary font-medium">Senior Fullstack Web & Mobile Developer & AI Systems Engineer</p>
+        <p class="text-xs text-muted-foreground">Sarjana Komputer Universitas Muhammadiyah Sumatera Utara (UMSU)</p>
+        <p class="text-xs text-muted-foreground/80 mt-2 leading-relaxed">
+          Spesialis dalam arsitektur sistem terdistribusi, keamanan perangkat lunak, integrasi kecerdasan buatan, dan pengembangan aplikasi tingkat lanjut.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -94,11 +94,11 @@ const BlogList = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <Helmet>
         <title>Blog & Edukasi Teknologi - Eka Syarif Maulana</title>
-        <meta name="description" content="Kumpulan artikel edukasi teknologi, keamanan siber, privasi digital, dan panduan perangkat oleh Eka Syarif Maulana (Founder Inka.tech)." />
+        <meta name="description" content="Kumpulan artikel edukasi teknologi, keamanan siber, privasi digital, dan panduan perangkat oleh Eka Syarif Maulana (Senior Fullstack Developer & AI Systems Engineer)." />
         <meta name="author" content="Eka Syarif Maulana" />
         <link rel="canonical" href={typeof window !== 'undefined' ? window.location.href : 'https://ekasyarif.my.id/blog'} />
         <meta property="og:title" content="Blog & Edukasi Teknologi - Eka Syarif Maulana" />
-        <meta property="og:description" content="Kumpulan artikel edukasi teknologi, keamanan siber, dan panduan perangkat oleh Eka Syarif Maulana (Founder Inka.tech)." />
+        <meta property="og:description" content="Kumpulan artikel edukasi teknologi, keamanan siber, dan panduan perangkat oleh Eka Syarif Maulana (Senior Fullstack Developer & AI Systems Engineer)." />
       </Helmet>
       <Header />
       
