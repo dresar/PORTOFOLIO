@@ -7,6 +7,7 @@ import { useCertificates } from '@/hooks/useCertificates';
 import { useModalStore } from '@/store/modalStore';
 import { Button } from '@/components/ui/button';
 import { normalizeMediaUrl, safeUrl } from '@/lib/utils';
+import { certificateCategoriesAPI } from '@/services/api';
 
 export const CertificatesSection = () => {
   const { t } = useTranslation();

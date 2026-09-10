@@ -157,12 +157,21 @@ export const SocialIcon: React.FC<SocialIconProps> = ({
     }
   }
 
-  // 2. Resolve SimpleIcons CDN slug
+  // 2. Check local Lucide icon first (instant, zero network latency, zero 404 errors)
+  const cleanKey = (platform || icon || '').toLowerCase().trim();
+  for (const k of Object.keys(LUCIDE_FALLBACKS)) {
+    if (cleanKey === k || cleanKey.includes(k) || (url && url.toLowerCase().includes(k))) {
+      const LucideComp = LUCIDE_FALLBACKS[k];
+      return <LucideComp className={className} size={size} />;
+    }
+  }
+
+  // 3. Resolve SimpleIcons CDN slug for other platforms
   const slug = resolveSocialSlug(platform, icon, url);
 
   if (slug && !imgError) {
     const BRAND_HEX_COLORS: Record<string, string> = {
-      linkedin: '0077b5',
+      linkedin: '0A66C2',
       instagram: 'e4405f',
       facebook: '1877f2',
       youtube: 'ff0000',
@@ -193,9 +202,7 @@ export const SocialIcon: React.FC<SocialIconProps> = ({
     };
 
     const hexColor = BRAND_HEX_COLORS[slug] || 'white';
-    const cdnUrl = hexColor === 'white' 
-      ? `https://cdn.simpleicons.org/${slug}/white`
-      : `https://cdn.simpleicons.org/${slug}/${hexColor}`;
+    const cdnUrl = `https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/${slug}.svg`;
 
     return (
       <img
@@ -203,26 +210,9 @@ export const SocialIcon: React.FC<SocialIconProps> = ({
         alt={platform || slug}
         className={`${className} object-contain transition-transform duration-300 hover:scale-110`}
         style={{ width: size, height: size }}
-        onError={(e) => {
-          const target = e.target as HTMLImageElement;
-          if (!target.dataset.fallbackTried) {
-            target.dataset.fallbackTried = 'true';
-            target.src = `https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/${slug}.svg`;
-          } else {
-            setImgError(true);
-          }
-        }}
+        onError={() => setImgError(true)}
       />
     );
-  }
-
-  // 3. Check Lucide fallback
-  const cleanKey = (platform || icon || '').toLowerCase();
-  for (const k of Object.keys(LUCIDE_FALLBACKS)) {
-    if (cleanKey.includes(k) || (url && url.toLowerCase().includes(k))) {
-      const LucideComp = LUCIDE_FALLBACKS[k];
-      return <LucideComp className={className} size={size} />;
-    }
   }
 
   // 4. Ultimate fallback
