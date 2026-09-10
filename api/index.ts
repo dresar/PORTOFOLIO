@@ -635,6 +635,27 @@ export default async function handler(req: any, res: any) {
       }
     }
 
+    // Handle Root & Health Check Endpoints
+    if (!resourceName || resourceName === 'health' || urlObj.pathname === '/' || urlObj.pathname === '/api' || urlObj.pathname === '/api/') {
+      return sendJSON(res, 200, {
+        status: 'ok',
+        service: 'Portfolio REST API',
+        version: '1.0.0',
+        message: 'Portfolio Backend API is running securely',
+        timestamp: new Date().toISOString()
+      });
+    }
+
+    if (resourceName === 'favicon.ico') {
+      res.statusCode = 204;
+      res.end();
+      return;
+    }
+
+    if (resourceName === 'undefined') {
+      return sendJSON(res, 404, { error: "Resource 'undefined' not found. Please provide a valid API resource path (e.g. /api/projects, /api/profile)." });
+    }
+
     // Alias routing: /projects/categories -> project-categories
     // Frontend uses REST style: /projects/categories, but the generic resource name is 'project-categories'
     {

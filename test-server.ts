@@ -7,6 +7,9 @@ dotenv.config();
 let port = Number(process.env.PORT || 3004);
 
 const server = http.createServer((req, res) => {
+  if (req.url && req.url !== '/favicon.ico') {
+    console.log(`[API ${new Date().toLocaleTimeString()}] ${req.method} ${req.url}`);
+  }
   // Basic CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
