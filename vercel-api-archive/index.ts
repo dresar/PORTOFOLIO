@@ -22,10 +22,10 @@ import crypto from 'node:crypto';
 
 // --- 1. CONFIGURATION ---
 
-const JWT_SECRET = process.env.JWT_SECRET || '';
-const GITHUB_REPO = process.env.GITHUB_REPO || 'dresar/PORTOFOLIO';
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
-const GITHUB_BRANCH = process.env.GITHUB_BRANCH || 'main';
+
+
+
+
 const GITHUB_UPLOADS_PATH = 'public/uploads';
 
 interface TokenPayload {
@@ -37,14 +37,14 @@ interface TokenPayload {
 
 async function verifyJwtToken(req: any): Promise<TokenPayload | null> {
   try {
-    if (!JWT_SECRET) return null;
+    if (!(process.env.JWT_SECRET || '')) return null;
     const authHeader = req.headers?.authorization;
     if (!authHeader || typeof authHeader !== 'string') return null;
     const parts = authHeader.trim().split(' ');
     if (parts.length !== 2 || parts[0].toLowerCase() !== 'bearer') return null;
     const token = parts[1];
     if (!token || token === 'demo-token' || token === 'fake-jwt-token') return null;
-    const isValid = await jwt.verify(token, JWT_SECRET);
+    const isValid = await jwt.verify(token, (process.env.JWT_SECRET || ''));
     if (!isValid) return null;
     const decoded = jwt.decode(token);
     return (decoded.payload || decoded) as TokenPayload;
@@ -877,7 +877,7 @@ export default async function handler(req: any, res: any) {
 
                         if (user.pin) {
                             const tempToken = await jwt.sign({ id: user.id, email: user.email, stage: 'pin_required', exp: Math.floor(Date.now() / 1000) + (5 * 60) },
-                                JWT_SECRET);
+                                (process.env.JWT_SECRET || ''));
                             return sendJSON(res, 200, {
                                 requirePin: true,
                                 tempToken,
@@ -886,7 +886,7 @@ export default async function handler(req: any, res: any) {
                         }
 
                         const token = await jwt.sign({ id: user.id, email: user.email, name: user.name, role: 'admin', exp: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60) },
-                            JWT_SECRET);
+                            (process.env.JWT_SECRET || ''));
                         return sendJSON(res, 200, {
                             token,
                             user: { id: user.id, email: user.email, name: user.name, role: 'admin' }
@@ -913,7 +913,7 @@ export default async function handler(req: any, res: any) {
             try {
                 let decoded: any;
                 try {
-                    const isValid = await jwt.verify(tempToken, JWT_SECRET);
+                    const isValid = await jwt.verify(tempToken, (process.env.JWT_SECRET || ''));
 if (!isValid) throw new Error('invalid');
 decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
                 } catch (jwtErr) {
@@ -948,7 +948,7 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
                 if (isPinValid) {
                     clearAttempts(ip);
                     const token = await jwt.sign({ id: user.id, email: user.email, name: user.name, role: 'admin', exp: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60) },
-                        JWT_SECRET);
+                        (process.env.JWT_SECRET || ''));
                     return sendJSON(res, 200, {
                         token,
                         user: { id: user.id, email: user.email, name: user.name, role: 'admin' }
@@ -1154,9 +1154,9 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
         // 1. Check if file already exists in GitHub (obtain SHA if updating)
         let existingSha: string | undefined;
         try {
-            const checkRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${targetPath}?ref=${GITHUB_BRANCH}`, {
+            const checkRes = await fetch(`https://api.github.com/repos/${(process.env.GITHUB_REPO || 'dresar/PORTOFOLIO')}/contents/${targetPath}?ref=${(process.env.GITHUB_BRANCH || 'main')}`, {
                 headers: {
-                    'Authorization': `Bearer ${GITHUB_TOKEN}`,
+                    'Authorization': `Bearer ${(process.env.GITHUB_TOKEN || '')}`,
                     'Accept': 'application/vnd.github.v3+json',
                     'User-Agent': 'Portfolio-App'
                 }
@@ -1171,16 +1171,16 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
         const uploadPayload: any = {
             message: `upload: ${filename} via GitHub CDN`,
             content: base64Data,
-            branch: GITHUB_BRANCH
+            branch: (process.env.GITHUB_BRANCH || 'main')
         };
         if (existingSha) {
             uploadPayload.sha = existingSha;
         }
 
-        const ghRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${targetPath}`, {
+        const ghRes = await fetch(`https://api.github.com/repos/${(process.env.GITHUB_REPO || 'dresar/PORTOFOLIO')}/contents/${targetPath}`, {
             method: 'PUT',
             headers: {
-                'Authorization': `Bearer ${GITHUB_TOKEN}`,
+                'Authorization': `Bearer ${(process.env.GITHUB_TOKEN || '')}`,
                 'Accept': 'application/vnd.github.v3+json',
                 'Content-Type': 'application/json',
                 'User-Agent': 'Portfolio-App'
@@ -1195,8 +1195,8 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
         }
 
         const ghData: any = await ghRes.json();
-        const cdnUrl = `https://cdn.jsdelivr.net/gh/${GITHUB_REPO}@${GITHUB_BRANCH}/${targetPath}`;
-        const rawUrl = ghData.content?.download_url || `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/${targetPath}`;
+        const cdnUrl = `https://cdn.jsdelivr.net/gh/${(process.env.GITHUB_REPO || 'dresar/PORTOFOLIO')}@${(process.env.GITHUB_BRANCH || 'main')}/${targetPath}`;
+        const rawUrl = ghData.content?.download_url || `https://raw.githubusercontent.com/${(process.env.GITHUB_REPO || 'dresar/PORTOFOLIO')}/${(process.env.GITHUB_BRANCH || 'main')}/${targetPath}`;
 
         return {
             public_id: filename,
@@ -1210,7 +1210,7 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
             bytes: buffer.length,
             resource_type: mimeType.startsWith('video') ? 'video' : 'image',
             created_at: new Date().toISOString(),
-            _account: `GitHub CDN (${GITHUB_REPO})`
+            _account: `GitHub CDN (${(process.env.GITHUB_REPO || 'dresar/PORTOFOLIO')})`
         };
     }
 
@@ -1219,9 +1219,9 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
         const seenNames = new Set<string>();
 
         try {
-            const ghRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${GITHUB_UPLOADS_PATH}?ref=${GITHUB_BRANCH}`, {
+            const ghRes = await fetch(`https://api.github.com/repos/${(process.env.GITHUB_REPO || 'dresar/PORTOFOLIO')}/contents/${GITHUB_UPLOADS_PATH}?ref=${(process.env.GITHUB_BRANCH || 'main')}`, {
                 headers: {
-                    'Authorization': `Bearer ${GITHUB_TOKEN}`,
+                    'Authorization': `Bearer ${(process.env.GITHUB_TOKEN || '')}`,
                     'Accept': 'application/vnd.github.v3+json',
                     'User-Agent': 'Portfolio-App'
                 }
@@ -1235,7 +1235,7 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
                             seenNames.add(item.name);
                             const ext = item.name.split('.').pop()?.toLowerCase() || 'png';
                             const isVideo = ['mp4', 'webm', 'mov'].includes(ext);
-                            const cdnUrl = `https://cdn.jsdelivr.net/gh/${GITHUB_REPO}@${GITHUB_BRANCH}/${item.path}`;
+                            const cdnUrl = `https://cdn.jsdelivr.net/gh/${(process.env.GITHUB_REPO || 'dresar/PORTOFOLIO')}@${(process.env.GITHUB_BRANCH || 'main')}/${item.path}`;
                             assets.push({
                                 public_id: item.name,
                                 secure_url: cdnUrl,
@@ -1268,9 +1268,9 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
 
         if (!fileSha) {
             try {
-                const getRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${targetPath}?ref=${GITHUB_BRANCH}`, {
+                const getRes = await fetch(`https://api.github.com/repos/${(process.env.GITHUB_REPO || 'dresar/PORTOFOLIO')}/contents/${targetPath}?ref=${(process.env.GITHUB_BRANCH || 'main')}`, {
                     headers: {
-                        'Authorization': `Bearer ${GITHUB_TOKEN}`,
+                        'Authorization': `Bearer ${(process.env.GITHUB_TOKEN || '')}`,
                         'Accept': 'application/vnd.github.v3+json',
                         'User-Agent': 'Portfolio-App'
                     }
@@ -1285,10 +1285,10 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
         let ghResult = 'ok';
         if (fileSha) {
             try {
-                const delRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${targetPath}`, {
+                const delRes = await fetch(`https://api.github.com/repos/${(process.env.GITHUB_REPO || 'dresar/PORTOFOLIO')}/contents/${targetPath}`, {
                     method: 'DELETE',
                     headers: {
-                        'Authorization': `Bearer ${GITHUB_TOKEN}`,
+                        'Authorization': `Bearer ${(process.env.GITHUB_TOKEN || '')}`,
                         'Accept': 'application/vnd.github.v3+json',
                         'Content-Type': 'application/json',
                         'User-Agent': 'Portfolio-App'
@@ -1296,7 +1296,7 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
                     body: JSON.stringify({
                         message: `delete: ${publicId} from GitHub CDN`,
                         sha: fileSha,
-                        branch: GITHUB_BRANCH
+                        branch: (process.env.GITHUB_BRANCH || 'main')
                     })
                 });
                 ghResult = delRes.ok ? 'ok' : 'error';
@@ -1695,8 +1695,8 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
         if (action === 'configs' && req.method === 'GET') {
             const ghConfig = {
                 id: 9999,
-                cloud_name: `GitHub CDN (${GITHUB_REPO})`,
-                api_key: GITHUB_TOKEN ? `${GITHUB_TOKEN.slice(0, 8)}••••••••${GITHUB_TOKEN.slice(-4)}` : '',
+                cloud_name: `GitHub CDN (${(process.env.GITHUB_REPO || 'dresar/PORTOFOLIO')})`,
+                api_key: (process.env.GITHUB_TOKEN || '') ? `${(process.env.GITHUB_TOKEN || '').slice(0, 8)}••••••••${(process.env.GITHUB_TOKEN || '').slice(-4)}` : '',
                 api_secret: '••••••••••••••••',
                 label: 'GitHub CDN (jsDelivr Edge)',
                 is_active: true,
@@ -1845,9 +1845,9 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
             }
 
             try {
-                const ghTest = await fetch(`https://api.github.com/repos/${GITHUB_REPO}`, {
+                const ghTest = await fetch(`https://api.github.com/repos/${(process.env.GITHUB_REPO || 'dresar/PORTOFOLIO')}`, {
                     headers: {
-                        'Authorization': `Bearer ${GITHUB_TOKEN}`,
+                        'Authorization': `Bearer ${(process.env.GITHUB_TOKEN || '')}`,
                         'Accept': 'application/vnd.github.v3+json',
                         'User-Agent': 'Portfolio-App'
                     }
@@ -1857,8 +1857,8 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
                     return sendJSON(res, 200, { 
                         success: true, 
                         status: 'connected', 
-                        cloud_name: `GitHub CDN (${GITHUB_REPO})`,
-                        repo: GITHUB_REPO,
+                        cloud_name: `GitHub CDN (${(process.env.GITHUB_REPO || 'dresar/PORTOFOLIO')})`,
+                        repo: (process.env.GITHUB_REPO || 'dresar/PORTOFOLIO'),
                         cdn: 'jsDelivr Edge CDN',
                         default_branch: ghData.default_branch,
                         provider: 'github'
@@ -2355,3 +2355,4 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
     return sendJSON(res, 500, { error: 'Internal Server Error', details: msg || 'Unknown error' });
   }
 }
+
