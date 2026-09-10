@@ -372,7 +372,7 @@ export default function SkillList() {
         toast({
           variant: "destructive",
           title: "ID Sudah Digunakan",
-          description: `ID ${formData.id} sudah digunakan oleh skill lain. Silakan gunakan ID unik lainnya.`
+          description: `ID ${formData.id} sudah digunakan. Gunakan ID unik lain.`
         });
       } else {
         toast({ variant: "destructive", title: "Gagal", description: "Terjadi kesalahan saat menyimpan skill." });

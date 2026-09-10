@@ -180,7 +180,7 @@ export const ExperienceDetailModal = () => {
             {experienceData.description && (
               <div className="space-y-2">
                 <h3 className="text-base font-semibold flex items-center gap-2 text-foreground">
-                  <Briefcase className="w-4 h-4 text-primary" /> Deskripsi Pekerjaan
+                  <Briefcase className="w-4 h-4 text-primary" /> Deskripsi
                 </h3>
                 <div 
                   className="html-theme-responsive p-4 rounded-xl bg-secondary/20 border border-border/40 text-sm leading-relaxed prose dark:prose-invert max-w-none [&>p]:mb-2 [&>ul]:list-disc [&>ul]:pl-4 [&>ol]:list-decimal [&>ol]:pl-4"
@@ -193,7 +193,7 @@ export const ExperienceDetailModal = () => {
             {experienceData.responsibilities && (
               <div className="space-y-2">
                 <h3 className="text-base font-semibold flex items-center gap-2 text-foreground">
-                  <CheckCircle2 className="w-4 h-4 text-primary" /> Tanggung Jawab & Pencapaian
+                  <CheckCircle2 className="w-4 h-4 text-primary" /> Tanggung Jawab
                 </h3>
                 <div className="p-4 rounded-xl bg-secondary/20 border border-border/40 text-muted-foreground text-sm leading-relaxed whitespace-pre-line">
                   {experienceData.responsibilities}
@@ -205,7 +205,7 @@ export const ExperienceDetailModal = () => {
             {parsedSkills.length > 0 && (
               <div className="space-y-2">
                 <h3 className="text-base font-semibold flex items-center gap-2 text-foreground">
-                  <Tag className="w-4 h-4 text-primary" /> Keahlian & Teknologi
+                  <Tag className="w-4 h-4 text-primary" /> Keahlian
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {parsedSkills.map((skill: string, index: number) => (
@@ -221,7 +221,7 @@ export const ExperienceDetailModal = () => {
             {gallery.length > 0 && (
               <div className="space-y-3">
                 <h3 className="text-base font-semibold flex items-center gap-2 text-foreground">
-                  <ImageIcon className="w-4 h-4 text-primary" /> Dokumentasi & Media ({gallery.length})
+                  <ImageIcon className="w-4 h-4 text-primary" /> Galeri ({gallery.length})
                 </h3>
                 <div className="relative rounded-xl overflow-hidden bg-black/40 aspect-video flex items-center justify-center group">
                   {(() => {
@@ -307,7 +307,7 @@ export const ExperienceDetailModal = () => {
                     target="_blank" 
                     rel="noreferrer"
                   >
-                    <ExternalLink className="w-4 h-4" /> Lihat Dokumen Keterangan Kerja / Sertifikat
+                    <ExternalLink className="w-4 h-4" /> Lihat Dokumen
                   </a>
                 </Button>
               </div>

@@ -13,11 +13,11 @@
   "hero": {
     "greeting": "Hello, I'm",
     "role_default": "Developer",
-    "description_default": "I'm a passionate developer and designer creating beautiful, functional digital experiences that make a difference.",
-    "download_resume": "Download Resume",
-    "view_work": "View Work",
-    "projects_completed": "Projects Completed",
-    "years_experience": "Years Experience"
+    "description_default": "Web developer and digital systems engineer focusing on performance, scalability, and precision UI.",
+    "download_resume": "Resume",
+    "view_work": "Work",
+    "projects_completed": "Projects",
+    "years_experience": "Experience"
   },
   "seo": {
     "site_title": "Eka Syarif Maulana, S.Kom - Senior Full Stack Web & Mobile Developer",
@@ -29,43 +29,43 @@
   },
   "sections": {
     "about": {
-      "title": "About Me",
-      "subtitle": "Get to know more about my journey and interests"
+      "title": "About",
+      "subtitle": "Professional background and profile."
     },
     "skills": {
-      "title": "Technical Skills",
-      "subtitle": "Technologies and tools I use to build solutions"
+      "title": "Skills",
+      "subtitle": "Technologies and tooling."
     },
     "experience": {
-      "title": "Work Experience",
-      "subtitle": "My professional journey and roles I've held"
+      "title": "Experience",
+      "subtitle": "Professional track record."
     },
     "projects": {
-      "title": "Featured Projects",
-      "subtitle": "Some of the best work I've done",
+      "title": "Projects",
+      "subtitle": "Work and digital solutions.",
       "ai_summary": "AI Insight",
-      "viewed_summary": "AI Insight (Viewed)",
+      "viewed_summary": "AI Insight",
       "ai_generated": "AI Generated",
       "viewDetails": "Detail",
-      "no_thumbnail": "No thumbnail",
-      "all_projects": "All Projects"
+      "no_thumbnail": "No Image",
+      "all_projects": "All"
     },
     "education": {
-      "title": "Education History",
-      "subtitle": "My academic background and qualifications"
+      "title": "Education",
+      "subtitle": "Academic background."
     },
     "certificates": {
-      "title": "Certifications",
-      "subtitle": "Professional recognition and learning achievements"
+      "title": "Certificates",
+      "subtitle": "Licenses and credentials."
     },
     "contact": {
-      "title": "Contact Me",
-      "subtitle": "Let's discuss how we can work together"
+      "title": "Contact",
+      "subtitle": "Let's collaborate."
     }
   },
   "common": {
     "loading": "Loading...",
-    "error": "An error occurred",
+    "error": "Error",
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",
@@ -73,53 +73,56 @@
     "details": "Detail",
     "description": "Description",
     "present": "Present",
-    "date": "Date / Period",
+    "date": "Date",
     "location": "Location",
     "previous": "Previous",
     "next": "Next",
     "page_info": "Page {{current}} of {{total}}",
     "all": "All",
     "retry": "Retry",
-    "link_copied": "Link copied!",
-    "share_label": "Share:",
-    "copy_link": "Copy Link"
+    "link_copied": "Link Copied!",
+    "share_label": "Share",
+    "copy_link": "Copy Link",
+    "read_more": "More",
+    "show_less": "Close"
   },
   "education": {
-    "title": "Education History",
-    "subtitle": "My academic background and qualifications",
+    "title": "Education",
+    "subtitle": "Academic background.",
     "gallery": "Gallery",
     "docs": "Docs",
     "gpa": "GPA:"
   },
   "skills": {
-    "title": "Technical Skills",
-    "subtitle": "Technologies and tools I use to build solutions",
-    "no_skills": "No skills found in this category."
+    "title": "Skills",
+    "subtitle": "Technologies and tooling.",
+    "no_skills": "No skills listed."
   },
   "certificates": {
-    "title": "Certifications",
-    "subtitle": "Professional recognition and learning achievements",
-    "view": "View Certificate",
-    "verify": "Verify"
+    "title": "Certificates",
+    "subtitle": "Licenses and credentials.",
+    "view": "View",
+    "verify": "Verify",
+    "no_certificates": "No data found"
   },
   "footer": {
     "made_with": "Made with",
     "in_indonesia": "in Indonesia"
   },
   "contact": {
-    "title": "Contact Me",
-    "subtitle": "Let's discuss how we can work together",
+    "title": "Contact",
+    "subtitle": "Let's collaborate.",
     "form": {
-      "title": "Send a Message",
-      "name": "Your Name",
-      "email": "Your Email",
+      "title": "Send Message",
+      "name": "Name",
+      "email": "Email",
       "subject": "Subject",
       "message": "Message",
-      "name_placeholder": "John Doe",
-      "email_placeholder": "you@example.com",
-      "subject_placeholder": "Project Inquiry",
-      "message_placeholder": "Tell me about your project...",
-      "send": "Send Message",
+      "name_placeholder": "Name",
+      "email_placeholder": "Email",
+      "subject_placeholder": "Subject",
+      "message_placeholder": "Message",
+      "send": "Send",
       "sending": "Sending..."
     },
     "info": {
@@ -127,90 +130,73 @@
       "phone": "Phone",
       "location": "Location"
     },
-    "follow_me": "Follow Me",
+    "follow_me": "Social",
     "toast": {
-      "success": "Message sent successfully! I will get back to you soon.",
-      "error": "Failed to send message. Please try again later."
+      "success": "Message Sent!",
+      "error": "Send Failed!"
     }
   },
   "projects": {
-    "title": "Featured Projects",
-    "subtitle": "Some of the best work I've done",
+    "title": "Projects",
+    "subtitle": "Work and digital solutions.",
     "default_category": "Project",
-    "all_projects": "All Projects",
-    "view_details": "View Details",
-    "no_thumbnail": "No Thumbnail",
-    "not_found": "Project not found",
-    "back_to_home": "Back to Home",
-    "additional_resources": "Additional Resources",
-    "no_content": "No detailed content for this project.",
-    "live_demo": "Live Demo",
-    "repository": "Repository"
+    "all_projects": "All",
+    "view_details": "Detail",
+    "no_thumbnail": "No Image",
+    "not_found": "No data found",
+    "back_to_home": "Back",
+    "additional_resources": "Links",
+    "no_content": "No details available.",
+    "live_demo": "Demo",
+    "repository": "Source"
   },
   "blog": {
     "latest_title": "Latest Articles",
-    "subtitle": "Thoughts, ideas, and tutorials on technology and software development.",
-    "read_more": "Read More",
-    "view_all": "View All Articles",
+    "subtitle": "Notes and engineering insights.",
+    "read_more": "More",
+    "view_all": "All Articles",
     "default_category": "Article",
-    "title": "Blog & Articles",
-    "description": "Sharing knowledge, experiences, and insights about the world of technology.",
-    "search_placeholder": "Search articles...",
+    "title": "Blog",
+    "description": "Software engineering notes and ideas.",
+    "search_placeholder": "Search",
     "category_label": "Category",
     "general": "General",
-    "sort_label": "Sort by",
+    "sort_label": "Sort",
     "sort": {
       "newest": "Newest",
       "oldest": "Oldest",
-      "az": "Title (A-Z)",
-      "za": "Title (Z-A)"
+      "az": "A-Z",
+      "za": "Z-A"
     },
-    "active_filter": "Active filters:",
+    "active_filter": "Filter:",
     "search_label": "Search:",
-    "reset_filter": "Reset Filter",
-    "error_title": "Failed to Load Data",
-    "error_description": "An error occurred while fetching blog data. Please try again later.",
+    "reset_filter": "Reset",
+    "error_title": "Load Failed",
+    "error_description": "Something went wrong. Please retry.",
     "no_posts": "No articles found.",
-    "clear_filter": "Clear Filter",
+    "clear_filter": "Clear",
     "not_found": "Article not found",
-    "back_to_blog": "Back to Blog",
-    "share_article": "Share Article",
-    "about_author": "About the Author",
-    "author_role": "Software Engineer & Tech Enthusiast",
-    "author_bio": "Loves sharing experiences about technology, coding, and career development in IT.",
+    "back_to_blog": "Back",
+    "share_article": "Share",
+    "about_author": "Author",
+    "author_role": "Software Engineer",
+    "author_bio": "Software engineering notes and insights.",
     "interaction": "Engagement",
     "likes": "Likes",
     "views": "Views",
     "comments": "Comments",
-    "write_comment": "Write a comment..."
+    "write_comment": "Comment"
   },
   "whatsapp": {
-    "title": "Chat via WhatsApp",
-    "description": "Send a message directly to my WhatsApp. Choose a template to start quickly.",
-    "select_template": "Select Template",
-    "select_topic": "Select topic...",
-    "search_template": "Search template...",
+    "title": "WhatsApp",
+    "description": "Direct chat via WhatsApp.",
+    "select_template": "Template",
+    "select_topic": "Select",
+    "search_template": "Search",
     "template_not_found": "Template not found.",
     "message_label": "Message",
-    "message_placeholder": "Hello, I would like to discuss...",
-    "send": "Send Message",
-    "no_number_configured": "WhatsApp number is not configured yet. Please contact the administrator."
-  },
-  "common": {
-    "read_more": "Read More",
-    "show_less": "Show Less",
-    "details": "Details",
-    "present": "Present",
-    "previous": "Previous",
-    "next": "Next",
-    "date": "Date",
-    "location": "Location",
-    "description": "Description",
-    "all": "All",
-    "retry": "Retry",
-    "share_label": "Share",
-    "error": "An Error Occurred",
-    "page_info": "Page {{current}} of {{total}}",
-    "cancel": "Cancel"
+    "message_placeholder": "Message",
+    "send": "Send",
+    "no_number_configured": "Number not configured."
   }
 }

@@ -1,10 +1,12 @@
 
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useModalStore } from '@/store/modalStore';
+import { useTranslation } from 'react-i18next';
 import { Award, ExternalLink } from 'lucide-react';
 import { normalizeMediaUrl, safeUrl } from '@/lib/utils';
 
 export const CertificateModal = () => {
+  const { t } = useTranslation();
   const { isOpen, modalType, certificateData, closeModal, openImagePreviewModal } = useModalStore();
 
   const isModalOpen = isOpen && modalType === 'certificate';
@@ -41,12 +43,12 @@ export const CertificateModal = () => {
 
             <div className="flex flex-wrap gap-3 mb-6">
                 <div className="px-3 py-1.5 rounded-lg bg-muted/50 border border-border/40">
-                <span className="text-xs text-muted-foreground">Issue Date: </span>
+                <span className="text-xs text-muted-foreground">{t('common.date')}: </span>
                 <span className="text-sm font-medium">{new Date(certificateData.issueDate).toLocaleDateString()}</span>
                 </div>
                 {certificateData.credentialId && (
                 <div className="px-3 py-1.5 rounded-lg bg-muted/50 border border-border/40">
-                    <span className="text-xs text-muted-foreground">Credential ID: </span>
+                    <span className="text-xs text-muted-foreground">ID: </span>
                     <span className="text-sm font-medium">{certificateData.credentialId}</span>
                 </div>
                 )}
@@ -60,7 +62,7 @@ export const CertificateModal = () => {
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity shadow-lg shadow-primary/20"
                 >
                 <ExternalLink className="w-3.5 h-3.5" />
-                Verify Certificate
+                {t('certificates.verify')}
                 </a>
             )}
         </div>

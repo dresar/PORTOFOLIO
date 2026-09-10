@@ -57,21 +57,20 @@ const NotFound = () => {
           className="space-y-4"
         >
           <p className="text-xl text-muted-foreground">
-            Oops! Sepertinya Anda tersesat di antah berantah.
-            Halaman yang Anda cari mungkin telah dipindahkan atau dihapus.
+            Halaman tidak ditemukan atau telah dipindahkan.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <Button asChild size="lg" className="rounded-full group">
               <Link to="/">
                 <Home className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
-                Kembali ke Beranda
+                Beranda
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="rounded-full">
               <Link to={-1 as any}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Kembali Sebelumnya
+                Kembali
               </Link>
             </Button>
           </div>

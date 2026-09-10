@@ -241,14 +241,14 @@ export const CertificatesSection = () => {
                   : 'bg-primary text-primary-foreground hover:bg-primary/90'
               }`}
             >
-              Next
+              {t('common.next')}
             </button>
           </div>
         )}
 
         {filteredCertificates.length === 0 && (
           <div className="text-center py-12 text-muted-foreground">
-            No certificates found in this category.
+            {t('certificates.no_certificates')}
           </div>
         )}
       </div>

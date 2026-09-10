@@ -153,9 +153,9 @@ const ProjectDetail = () => {
         <Header />
         <main className="flex-grow flex items-center justify-center">
             <div className="text-center">
-                <h1 className="text-2xl font-bold mb-2">Proyek tidak ditemukan</h1>
+                <h1 className="text-2xl font-bold mb-2">{t('projects.not_found')}</h1>
                 <Button onClick={() => navigate('/')} variant="outline">
-                    Kembali ke Beranda
+                    {t('projects.back_to_home')}
                 </Button>
             </div>
         </main>
@@ -280,7 +280,7 @@ const ProjectDetail = () => {
                     <button
                       onClick={() => openImagePreviewModal(allImages[currentImageIndex], project.title, allImages, currentImageIndex)}
                       className="absolute top-3 right-3 p-2 rounded-lg bg-black/60 hover:bg-primary text-white backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all flex items-center gap-1.5 text-xs font-semibold shadow-lg z-20 cursor-pointer"
-                      title="Perbesar Layar Penuh"
+                      title="Perbesar"
                     >
                       <Maximize2 className="w-4 h-4" />
                       <span>Perbesar</span>
@@ -346,7 +346,7 @@ const ProjectDetail = () => {
             <div className="mt-10 pt-8 border-t border-border/50 space-y-4">
               <h3 className="text-xl font-bold flex items-center gap-2 text-foreground">
                 <Video className="w-5 h-5 text-primary" />
-                <span>Demonstrasi Video Proyek</span>
+                <span>Video Demo</span>
               </h3>
               {isDirectVideo ? (
                 <CustomVideoPlayer src={normalizeMediaUrl(rawVideoUrl)} />
@@ -386,8 +386,8 @@ const ProjectDetail = () => {
                       }
                     })()
                 ) : (
-                    <p className="text-center text-muted-foreground italic">
-                        Tidak ada konten detail untuk proyek ini.
+                    <p className="text-center text-muted-foreground">
+                        {t('projects.no_content')}
                     </p>
                 )}
              </div>
@@ -396,7 +396,7 @@ const ProjectDetail = () => {
           {/* Additional Links */}
           {project.links && project.links.length > 0 && (
               <div className="mt-12 pt-8 border-t border-border/50">
-                  <h3 className="text-xl font-bold mb-4">Sumber Daya Tambahan</h3>
+                  <h3 className="text-xl font-bold mb-4">{t('projects.additional_resources')}</h3>
                   <div className="flex flex-col gap-2">
                       {project.links.map((link: any, i: number) => (
                           <a 

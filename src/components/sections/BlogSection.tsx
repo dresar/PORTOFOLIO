@@ -110,7 +110,7 @@ export const BlogSection = () => {
                           }}
                         />
                         <span className="relative flex items-center justify-center gap-1 sm:gap-1.5 px-2 py-1 sm:px-3 sm:py-1.5 rounded-[7px] sm:rounded-[10px] bg-card text-[10px] sm:text-xs font-semibold text-foreground group-hover/btn:text-primary transition-colors">
-                          <span>{t('blog.read_more') || 'Baca Selengkapnya'}</span>
+                          <span>{t('blog.read_more') || 'Selengkapnya'}</span>
                           <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary transition-transform duration-300 group-hover/btn:translate-x-1" />
                         </span>
                       </span>

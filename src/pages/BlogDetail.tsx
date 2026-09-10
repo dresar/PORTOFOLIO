@@ -95,10 +95,10 @@ const BlogDetail = () => {
       setCommentContent('');
       setCommentName('');
       setCommentEmail('');
-      toast.success('Komentar berhasil dikirim!');
+      toast.success('Komentar Terkirim!');
     },
     onError: () => {
-      toast.error('Gagal mengirim komentar. Silakan coba lagi.');
+      toast.error('Gagal Mengirim!');
     }
   });
 
@@ -440,8 +440,8 @@ const BlogDetail = () => {
                               </div>
                           ))
                       ) : (
-                          <div className="text-center py-4 text-muted-foreground text-xs italic">
-                              Belum ada komentar. Jadilah yang pertama!
+                          <div className="text-center py-4 text-muted-foreground text-xs">
+                              Belum ada komentar
                           </div>
                       )}
                    </div>
@@ -449,14 +449,14 @@ const BlogDetail = () => {
                    <div className="pt-4 border-t border-border">
                       <form onSubmit={handleCommentSubmit} className="space-y-3">
                           <Input 
-                            placeholder="Nama Lengkap *" 
+                            placeholder="Nama *" 
                             value={commentName}
                             onChange={(e) => setCommentName(e.target.value)}
                             className="text-sm"
                             required
                           />
                           <Input 
-                            placeholder="Email (Opsional)" 
+                            placeholder="Email" 
                             type="email"
                             value={commentEmail}
                             onChange={(e) => setCommentEmail(e.target.value)}
@@ -464,7 +464,7 @@ const BlogDetail = () => {
                           />
                           <div className="flex gap-2">
                              <Textarea 
-                                placeholder="Tulis komentar..." 
+                                placeholder="Komentar..." 
                                 value={commentContent}
                                 onChange={(e) => setCommentContent(e.target.value)}
                                 className="flex-1 text-sm min-h-[80px] resize-none"

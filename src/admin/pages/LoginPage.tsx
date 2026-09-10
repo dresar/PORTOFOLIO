@@ -74,8 +74,8 @@ export default function LoginPage() {
         setStep('pin');
         setPin('');
         toast({
-          title: "Verifikasi Dua Langkah",
-          description: "Kredensial valid. Masukkan PIN keamanan 6-digit Anda.",
+          title: "Verifikasi PIN",
+          description: "Masukkan PIN 6-digit.",
         });
         return;
       }
@@ -90,7 +90,7 @@ export default function LoginPage() {
       
       toast({
         title: "Login Berhasil",
-        description: `Selamat datang kembali, ${user.name || 'Admin'}!`,
+        description: `Selamat datang, ${user.name || 'Admin'}.`,
       });
       navigate('/admin/dashboard');
 
@@ -115,7 +115,7 @@ export default function LoginPage() {
       toast({
         variant: "destructive",
         title: "PIN Diperlukan",
-        description: "Silakan masukkan PIN keamanan Anda.",
+        description: "Masukkan PIN keamanan.",
       });
       return;
     }
@@ -137,7 +137,7 @@ export default function LoginPage() {
 
       toast({
         title: "Autentikasi Berhasil",
-        description: `Selamat datang, ${user.name || 'Admin'}!`,
+        description: `Selamat datang, ${user.name || 'Admin'}.`,
       });
       navigate('/admin/dashboard');
 
@@ -224,7 +224,7 @@ export default function LoginPage() {
                       Portal Admin
                     </h1>
                     <p className="text-xs sm:text-sm text-muted-foreground">
-                      Masukkan kredensial akun terdaftar untuk masuk
+                      Autentikasi akun admin.
                     </p>
                   </div>
 
@@ -329,7 +329,7 @@ export default function LoginPage() {
                       Autentikasi 2FA
                     </h1>
                     <p className="text-xs sm:text-sm text-muted-foreground">
-                      Masukkan PIN keamanan untuk otorisasi akses
+                      Masukkan 6-digit PIN keamanan.
                     </p>
                   </div>
 
@@ -417,10 +417,10 @@ export default function LoginPage() {
                       {isLoading ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Memverifikasi PIN...
+                          Memverifikasi...
                         </>
                       ) : (
-                        'Buka Akses Dashboard'
+                        'Verifikasi'
                       )}
                     </Button>
 
@@ -435,7 +435,7 @@ export default function LoginPage() {
                       disabled={isLoading}
                     >
                       <ArrowLeft className="mr-2 h-3.5 w-3.5" />
-                      Ganti Akun
+                      Kembali
                     </Button>
                   </form>
                 </motion.div>

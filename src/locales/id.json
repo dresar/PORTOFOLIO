@@ -13,11 +13,11 @@
   "hero": {
     "greeting": "Halo, Saya",
     "role_default": "Pengembang",
-    "description_default": "Saya seorang pengembang dan desainer yang bersemangat menciptakan pengalaman digital yang indah dan fungsional.",
-    "download_resume": "Unduh Resume",
-    "view_work": "Lihat Karya",
-    "projects_completed": "Proyek Selesai",
-    "years_experience": "Tahun Pengalaman"
+    "description_default": "Pengembang web dan sistem digital fokus pada performa, skalabilitas, dan antarmuka presisi.",
+    "download_resume": "Unduh CV",
+    "view_work": "Karya",
+    "projects_completed": "Proyek",
+    "years_experience": "Pengalaman"
   },
   "seo": {
     "site_title": "Eka Syarif Maulana, S.Kom - Senior Full Stack Web & Mobile Developer",
@@ -29,38 +29,38 @@
   },
   "sections": {
     "about": {
-      "title": "Tentang Saya",
-      "subtitle": "Kenali lebih dekat perjalanan dan minat saya"
+      "title": "Tentang",
+      "subtitle": "Profil dan perjalanan profesional."
     },
     "skills": {
-      "title": "Keahlian Teknis",
-      "subtitle": "Teknologi dan alat yang saya gunakan untuk membangun solusi"
+      "title": "Keahlian",
+      "subtitle": "Teknologi dan perangkat kerja."
     },
     "experience": {
-      "title": "Pengalaman Kerja",
-      "subtitle": "Perjalanan profesional dan peran yang pernah saya emban"
+      "title": "Pengalaman",
+      "subtitle": "Rekam jejak dan peran profesional."
     },
     "projects": {
-      "title": "Proyek Unggulan",
-      "subtitle": "Beberapa hasil karya terbaik yang pernah saya kerjakan",
+      "title": "Proyek",
+      "subtitle": "Karya dan solusi digital.",
       "ai_summary": "AI Insight",
       "viewed_summary": "AI Insight",
       "ai_generated": "Dibuat oleh AI",
       "viewDetails": "Detail",
-      "no_thumbnail": "Tidak ada gambar",
-      "all_projects": "Semua Proyek"
+      "no_thumbnail": "Tanpa Gambar",
+      "all_projects": "Semua"
     },
     "education": {
-      "title": "Riwayat Pendidikan",
-      "subtitle": "Latar belakang akademis dan kualifikasi saya"
+      "title": "Pendidikan",
+      "subtitle": "Latar belakang akademis."
     },
     "certificates": {
-      "title": "Sertifikasi",
-      "subtitle": "Pengakuan profesional dan pencapaian pembelajaran"
+      "title": "Sertifikat",
+      "subtitle": "Lisensi dan pencapaian profesional."
     },
     "contact": {
-      "title": "Hubungi Saya",
-      "subtitle": "Mari diskusikan bagaimana kita bisa bekerja sama"
+      "title": "Kontak",
+      "subtitle": "Mari berkolaborasi."
     }
   },
   "common": {
@@ -73,53 +73,56 @@
     "details": "Detail",
     "description": "Deskripsi",
     "present": "Sekarang",
-    "date": "Tanggal / Periode",
+    "date": "Tanggal",
     "location": "Lokasi",
     "previous": "Sebelumnya",
     "next": "Selanjutnya",
     "page_info": "Halaman {{current}} dari {{total}}",
     "all": "Semua",
     "retry": "Muat Ulang",
-    "link_copied": "Link disalin!",
-    "share_label": "Bagikan:",
-    "copy_link": "Salin Link"
+    "link_copied": "Link Disalin!",
+    "share_label": "Bagikan",
+    "copy_link": "Salin Link",
+    "read_more": "Selengkapnya",
+    "show_less": "Tutup"
   },
   "education": {
-    "title": "Riwayat Pendidikan",
-    "subtitle": "Latar belakang akademis dan kualifikasi saya",
+    "title": "Pendidikan",
+    "subtitle": "Latar belakang akademis.",
     "gallery": "Galeri",
     "docs": "Dokumen",
     "gpa": "IPK:"
   },
   "skills": {
-    "title": "Keahlian Teknis",
-    "subtitle": "Teknologi dan alat yang saya gunakan untuk membangun solusi",
-    "no_skills": "Tidak ada keahlian ditemukan dalam kategori ini."
+    "title": "Keahlian",
+    "subtitle": "Teknologi dan perangkat kerja.",
+    "no_skills": "Belum ada keahlian."
   },
   "certificates": {
-    "title": "Sertifikasi",
-    "subtitle": "Pengakuan profesional dan pencapaian pembelajaran",
-    "view": "Lihat Sertifikat",
-    "verify": "Verifikasi"
+    "title": "Sertifikat",
+    "subtitle": "Lisensi dan pencapaian profesional.",
+    "view": "Lihat",
+    "verify": "Verifikasi",
+    "no_certificates": "Belum ada data"
   },
   "footer": {
     "made_with": "Dibuat dengan",
     "in_indonesia": "di Indonesia"
   },
   "contact": {
-    "title": "Hubungi Saya",
-    "subtitle": "Mari diskusikan bagaimana kita bisa bekerja sama",
+    "title": "Kontak",
+    "subtitle": "Mari berkolaborasi.",
     "form": {
       "title": "Kirim Pesan",
-      "name": "Nama Lengkap",
+      "name": "Nama",
       "email": "Email",
       "subject": "Subjek",
       "message": "Pesan",
-      "name_placeholder": "Nama Lengkap Anda",
-      "email_placeholder": "email@anda.com",
-      "subject_placeholder": "Tawaran Proyek",
-      "message_placeholder": "Ceritakan detail proyek Anda...",
-      "send": "Kirim Pesan",
+      "name_placeholder": "Nama",
+      "email_placeholder": "Email",
+      "subject_placeholder": "Subjek",
+      "message_placeholder": "Pesan",
+      "send": "Kirim",
       "sending": "Mengirim..."
     },
     "info": {
@@ -127,90 +130,73 @@
       "phone": "Telepon",
       "location": "Lokasi"
     },
-    "follow_me": "Ikuti Saya",
+    "follow_me": "Media Sosial",
     "toast": {
-      "success": "Pesan berhasil dikirim! Saya akan segera membalasnya.",
-      "error": "Gagal mengirim pesan. Silakan coba lagi nanti."
+      "success": "Pesan Terkirim!",
+      "error": "Gagal Mengirim!"
     }
   },
   "projects": {
-    "title": "Proyek Unggulan",
-    "subtitle": "Beberapa hasil karya terbaik yang pernah saya kerjakan",
+    "title": "Proyek",
+    "subtitle": "Karya dan solusi digital.",
     "default_category": "Proyek",
-    "all_projects": "Semua Proyek",
-    "view_details": "Lihat Detail",
-    "no_thumbnail": "Tidak Ada Gambar",
-    "not_found": "Proyek tidak ditemukan",
-    "back_to_home": "Kembali ke Beranda",
-    "additional_resources": "Sumber Daya Tambahan",
-    "no_content": "Tidak ada konten detail untuk proyek ini.",
-    "live_demo": "Live Demo",
-    "repository": "Repository"
+    "all_projects": "Semua",
+    "view_details": "Detail",
+    "no_thumbnail": "Tanpa Gambar",
+    "not_found": "Belum ada data",
+    "back_to_home": "Kembali",
+    "additional_resources": "Tautan",
+    "no_content": "Belum ada detail.",
+    "live_demo": "Demo",
+    "repository": "Kode"
   },
   "blog": {
     "latest_title": "Artikel Terbaru",
-    "subtitle": "Tulisan, pemikiran, dan tutorial seputar teknologi dan pengembangan software.",
-    "read_more": "Baca Selengkapnya",
-    "view_all": "Lihat Semua Artikel",
+    "subtitle": "Catatan dan wawasan teknologi.",
+    "read_more": "Selengkapnya",
+    "view_all": "Semua Artikel",
     "default_category": "Artikel",
-    "title": "Blog & Artikel",
-    "description": "Berbagi pengetahuan, pengalaman, dan pandangan seputar dunia teknologi.",
-    "search_placeholder": "Cari artikel...",
+    "title": "Blog",
+    "description": "Catatan seputar rekayasa perangkat lunak.",
+    "search_placeholder": "Cari",
     "category_label": "Kategori",
     "general": "Umum",
-    "sort_label": "Urutkan",
+    "sort_label": "Urutan",
     "sort": {
       "newest": "Terbaru",
       "oldest": "Terlama",
-      "az": "Judul (A-Z)",
-      "za": "Judul (Z-A)"
+      "az": "A-Z",
+      "za": "Z-A"
     },
-    "active_filter": "Filter aktif:",
-    "search_label": "Pencarian:",
-    "reset_filter": "Reset Filter",
-    "error_title": "Gagal Memuat Data",
-    "error_description": "Terjadi kesalahan saat mengambil data blog. Silakan coba lagi beberapa saat lagi.",
-    "no_posts": "Tidak ada artikel yang ditemukan.",
+    "active_filter": "Filter:",
+    "search_label": "Cari:",
+    "reset_filter": "Reset",
+    "error_title": "Gagal Memuat",
+    "error_description": "Terjadi kendala. Coba muat ulang.",
+    "no_posts": "Belum ada artikel.",
     "clear_filter": "Hapus Filter",
     "not_found": "Artikel tidak ditemukan",
-    "back_to_blog": "Kembali ke Blog",
-    "share_article": "Bagikan Artikel",
-    "about_author": "Tentang Penulis",
-    "author_role": "Software Engineer & Tech Enthusiast",
-    "author_bio": "Suka berbagi pengalaman seputar teknologi, coding, dan pengembangan karir di dunia IT.",
+    "back_to_blog": "Kembali",
+    "share_article": "Bagikan",
+    "about_author": "Penulis",
+    "author_role": "Software Engineer",
+    "author_bio": "Catatan seputar rekayasa perangkat lunak dan solusi digital.",
     "interaction": "Interaksi",
     "likes": "Suka",
     "views": "Dilihat",
     "comments": "Komentar",
-    "write_comment": "Tulis komentar..."
+    "write_comment": "Komentar"
   },
   "whatsapp": {
-    "title": "Chat via WhatsApp",
-    "description": "Kirim pesan langsung ke WhatsApp saya. Pilih template untuk memulai dengan cepat.",
+    "title": "WhatsApp",
+    "description": "Hubungi langsung via WhatsApp.",
     "select_template": "Pilih Template",
-    "select_topic": "Pilih topik pembicaraan...",
-    "search_template": "Cari template...",
+    "select_topic": "Pilih",
+    "search_template": "Cari",
     "template_not_found": "Template tidak ditemukan.",
     "message_label": "Pesan",
-    "message_placeholder": "Halo, saya ingin berdiskusi tentang...",
-    "send": "Kirim Pesan",
-    "no_number_configured": "Nomor WhatsApp belum dikonfigurasi. Silakan hubungi administrator."
-  },
-  "common": {
-    "read_more": "Selengkapnya",
-    "show_less": "Tampilkan Lebih Sedikit",
-    "details": "Detail",
-    "present": "Sekarang",
-    "previous": "Sebelumnya",
-    "next": "Selanjutnya",
-    "date": "Tanggal",
-    "location": "Lokasi",
-    "description": "Deskripsi",
-    "all": "Semua",
-    "retry": "Coba Lagi",
-    "share_label": "Bagikan",
-    "error": "Terjadi Kesalahan",
-    "page_info": "Halaman {{current}} dari {{total}}",
-    "cancel": "Batal"
+    "message_placeholder": "Pesan",
+    "send": "Kirim",
+    "no_number_configured": "Nomor belum dikonfigurasi."
   }
 }

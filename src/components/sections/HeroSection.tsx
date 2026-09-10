@@ -29,7 +29,7 @@ export const HeroSection = () => {
         <section id="home" className="relative min-h-[80vh] flex items-center overflow-hidden pt-16">
             <div className="container mx-auto px-4 py-8 relative z-10 flex flex-col items-center justify-center">
                 <Loader2 className="h-12 w-12 animate-spin text-primary opacity-50" />
-                <p className="text-muted-foreground mt-4 text-sm animate-pulse">Memuat Profil...</p>
+                <p className="text-muted-foreground mt-4 text-sm animate-pulse">{t('common.loading')}</p>
             </div>
         </section>
     );

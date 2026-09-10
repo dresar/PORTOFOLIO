@@ -194,7 +194,7 @@ export const AboutSection = () => {
                 >
                   <span>
                     {isExpanded 
-                      ? (t('common.show_less') && t('common.show_less') !== 'common.show_less' ? t('common.show_less') : 'Tampilkan Lebih Sedikit')
+                      ? (t('common.show_less') && t('common.show_less') !== 'common.show_less' ? t('common.show_less') : 'Tutup')
                       : (t('common.read_more') && t('common.read_more') !== 'common.read_more' ? t('common.read_more') : 'Selengkapnya')
                     }
                   </span>
