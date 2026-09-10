@@ -8,7 +8,7 @@ import { useProfile } from '@/hooks/useProfile';
 import { useSocialLinks } from '@/hooks/useSocialLinks';
 import { Loader2 } from 'lucide-react';
 import { useProjects } from '@/hooks/useProjects';
-import { normalizeMediaUrl } from '@/lib/utils';
+import { normalizeMediaUrl, sanitizeHtmlContent, safeUrl } from '@/lib/utils';
 import { useExperience } from '@/hooks/useExperience';
 import { SocialIcon } from '@/components/ui/SocialIcon';
 
@@ -138,7 +138,7 @@ export const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              dangerouslySetInnerHTML={{ __html: shortBio }}
+              dangerouslySetInnerHTML={{ __html: sanitizeHtmlContent(shortBio) }}
             />
 
             {/* CTA Buttons */}
@@ -149,7 +149,7 @@ export const HeroSection = () => {
               transition={{ delay: 0.6 }}
             >
               {(profile?.resumeFile || profile?.resumeUrl) && (
-                <a href={profile.resumeFile || profile.resumeUrl} target="_blank" rel="noopener noreferrer">
+                <a href={safeUrl(profile.resumeFile || profile.resumeUrl)} target="_blank" rel="noopener noreferrer">
                   <ShinyButton variant="primary">
                     <Download className="w-4 h-4 mr-2 inline" />
                     {t('hero.download_resume')}
@@ -172,10 +172,11 @@ export const HeroSection = () => {
               {socialLinks.map((social: any, index: number) => {
                 const platformName = social.platform || social.icon || 'Social';
                 const isEmail = social.icon === 'email' || String(social.platform).toLowerCase() === 'email' || String(social.url).startsWith('mailto:');
+                const rawUrl = isEmail ? (social.url?.startsWith('mailto:') ? social.url : `mailto:${social.url}`) : social.url;
                 return (
                   <motion.a
                     key={social.id || index}
-                    href={isEmail ? (social.url.startsWith('mailto:') ? social.url : `mailto:${social.url}`) : social.url}
+                    href={safeUrl(rawUrl)}
                     target={isEmail ? undefined : '_blank'}
                     rel="noopener noreferrer"
                     aria-label={`${platformName}`}

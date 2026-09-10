@@ -7,7 +7,7 @@ import { useProjects } from '@/hooks/useProjects';
 import { useProjectCategories } from '@/hooks/useProjectCategories';
 import { Button } from '@/components/ui/button';
 import { AISummaryModal } from '@/components/ui/AISummaryModal';
-import { normalizeMediaUrl } from '@/lib/utils';
+import { normalizeMediaUrl, safeUrl } from '@/lib/utils';
 
 export const ProjectsSection = () => {
   const { t } = useTranslation();
@@ -270,7 +270,7 @@ export const ProjectsSection = () => {
                           size="icon"
                           variant="outline"
                           className="rounded-full hover:bg-black hover:text-white transition-colors h-9 w-9"
-                          onClick={() => window.open(project.repo_urls?.[0] || project.repoUrl || project.github_url, '_blank')}
+                          onClick={() => window.open(safeUrl(project.repo_urls?.[0] || project.repoUrl || project.github_url), '_blank', 'noopener,noreferrer')}
                           title={t('projects.repository')}
                         >
                           <Github className="h-4 w-4" />
@@ -283,7 +283,7 @@ export const ProjectsSection = () => {
                           size="icon"
                           variant="outline"
                           className="rounded-full hover:bg-blue-500 hover:text-white transition-colors h-9 w-9"
-                          onClick={() => window.open(project.demo_urls?.[0] || project.demoUrl || project.demo_url, '_blank')}
+                          onClick={() => window.open(safeUrl(project.demo_urls?.[0] || project.demoUrl || project.demo_url), '_blank', 'noopener,noreferrer')}
                           title={t('projects.live_demo')}
                         >
                           <ExternalLink className="h-4 w-4" />

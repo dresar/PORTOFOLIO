@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Lock, Mail, Terminal } from 'lucide-react';
+import { Loader2, Lock, Mail } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import adminApi from '../services/adminApi';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -26,20 +26,14 @@ export default function LoginPage() {
   const login = useAdminAuthStore((state) => state.login);
   const navigate = useNavigate();
   const { toast } = useToast();
-  
-  // Check environment
-  const isDev = import.meta.env.DEV;
-  const isProd = import.meta.env.PROD;
 
   useEffect(() => {
-    // Add noindex meta tag for SEO protection
     const meta = document.createElement('meta');
     meta.name = "robots";
     meta.content = "noindex, nofollow";
     document.head.appendChild(meta);
 
     return () => {
-      // Cleanup
       try {
         document.head.removeChild(meta);
       } catch (e) {
@@ -92,13 +86,6 @@ export default function LoginPage() {
     }
   };
 
-  const handleDevLogin = () => {
-    form.setValue('email', 'eka.ckp16799@gmail.com');
-    form.setValue('password', 'INDAH1234');
-    // Auto submit for convenience
-    form.handleSubmit(onSubmit)();
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/40 p-4">
       <Dialog open={isDbModalOpen} onOpenChange={setIsDbModalOpen}>
@@ -122,24 +109,13 @@ export default function LoginPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {isDev && (
-              <Button 
-                type="button" 
-                variant="outline" 
-                className="w-full mb-4 border-dashed"
-                onClick={handleDevLogin}
-              >
-                <Terminal className="mr-2 h-4 w-4" />
-                Dev Quick Fill (eka.ckp16799@gmail.com)
-              </Button>
-            )}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input 
                   id="email" 
-                  placeholder="eka.ckp16799@gmail.com" 
+                  placeholder="admin@example.com" 
                   className="pl-9" 
                   {...form.register('email')} 
                 />
@@ -164,8 +140,6 @@ export default function LoginPage() {
               )}
             </div>
             
-            
-            
             <Button className="w-full" type="submit" disabled={isLoading}>
               {isLoading ? (
                 <>
@@ -176,20 +150,6 @@ export default function LoginPage() {
                 'Sign In'
               )}
             </Button>
-
-            {isDev && (
-               <Button 
-                variant="outline" 
-                className="w-full mt-2 border-dashed border-yellow-500 text-yellow-600 hover:bg-yellow-50" 
-                type="button" 
-                onClick={handleDevLogin}
-                disabled={isLoading}
-              >
-                <Terminal className="mr-2 h-4 w-4" />
-                Dev Quick Fill (eka.ckp16799@gmail.com)
-              </Button>
-            )}
-
           </form>
         </CardContent>
         <CardFooter className="flex flex-col space-y-2 text-center text-sm text-muted-foreground"></CardFooter>

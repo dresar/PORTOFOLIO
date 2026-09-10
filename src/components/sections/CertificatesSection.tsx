@@ -5,9 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { useCertificates } from '@/hooks/useCertificates';
 import { useModalStore } from '@/store/modalStore';
-import { certificateCategoriesAPI } from '@/services/api';
 import { Button } from '@/components/ui/button';
-import { normalizeMediaUrl } from '@/lib/utils';
+import { normalizeMediaUrl, safeUrl } from '@/lib/utils';
 
 export const CertificatesSection = () => {
   const { t } = useTranslation();
@@ -174,7 +173,7 @@ export const CertificatesSection = () => {
                       
                       {cert.credentialUrl && (
                         <a
-                          href={cert.credentialUrl}
+                          href={safeUrl(cert.credentialUrl)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="hidden sm:flex items-center gap-1 text-xs text-primary hover:underline font-medium"

@@ -2,7 +2,7 @@
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useModalStore } from '@/store/modalStore';
 import { Award, ExternalLink } from 'lucide-react';
-import { normalizeMediaUrl } from '@/lib/utils';
+import { normalizeMediaUrl, safeUrl } from '@/lib/utils';
 
 export const CertificateModal = () => {
   const { isOpen, modalType, certificateData, closeModal, openImagePreviewModal } = useModalStore();
@@ -54,7 +54,7 @@ export const CertificateModal = () => {
 
             {certificateData.credentialUrl && (
                 <a
-                href={certificateData.credentialUrl}
+                href={safeUrl(certificateData.credentialUrl)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity shadow-lg shadow-primary/20"

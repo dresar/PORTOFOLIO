@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useProjects } from '@/hooks/useProjects';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
-import { normalizeMediaUrl, sanitizeHtmlContent } from '@/lib/utils';
+import { normalizeMediaUrl, sanitizeHtmlContent, safeUrl } from '@/lib/utils';
 import { ArrowLeft, ExternalLink, Github, Sparkles, Loader2, Calendar, ChevronLeft, ChevronRight, Maximize2, Video } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -229,7 +229,7 @@ const ProjectDetail = () => {
                 <div className="flex flex-wrap gap-3 pt-2">
                     {project.demoUrl && (
                         <Button asChild size="sm" className="h-9">
-                            <a href={project.demoUrl} target="_blank" rel="noopener noreferrer">
+                            <a href={safeUrl(project.demoUrl)} target="_blank" rel="noopener noreferrer">
                                 <ExternalLink className="w-4 h-4 mr-2" />
                                 {t('projects.live_demo')}
                             </a>
@@ -237,7 +237,7 @@ const ProjectDetail = () => {
                     )}
                     {project.repoUrl && (
                         <Button variant="outline" asChild size="sm" className="h-9">
-                            <a href={project.repoUrl} target="_blank" rel="noopener noreferrer">
+                            <a href={safeUrl(project.repoUrl)} target="_blank" rel="noopener noreferrer">
                                 <Github className="w-4 h-4 mr-2" />
                                 {t('projects.repository')}
                             </a>
@@ -401,7 +401,7 @@ const ProjectDetail = () => {
                       {project.links.map((link: any, i: number) => (
                           <a 
                             key={i} 
-                            href={link.url} 
+                            href={safeUrl(link.url)} 
                             target="_blank" 
                             rel="noopener noreferrer"
                             className="text-primary hover:underline flex items-center gap-2"

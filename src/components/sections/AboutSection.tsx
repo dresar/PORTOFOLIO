@@ -10,7 +10,7 @@ import { useProjects } from '@/hooks/useProjects';
 import { useCertificates } from '@/hooks/useCertificates';
 import { useSkills } from '@/hooks/useSkills';
 import { useSocialLinks } from '@/hooks/useSocialLinks';
-import { normalizeMediaUrl } from '@/lib/utils';
+import { normalizeMediaUrl, sanitizeHtmlContent, safeUrl } from '@/lib/utils';
 import { SocialIcon } from '@/components/ui/SocialIcon';
 
 export const AboutSection = () => {
@@ -176,7 +176,7 @@ export const AboutSection = () => {
                 className={`text-muted-foreground text-sm sm:text-base leading-relaxed prose dark:prose-invert transition-all duration-300 ${
                   !isExpanded ? 'max-h-[110px] md:max-h-none overflow-hidden' : ''
                 }`}
-                dangerouslySetInnerHTML={{ __html: longDesc || '' }}
+                dangerouslySetInnerHTML={{ __html: sanitizeHtmlContent(longDesc || '') }}
               />
 
               {/* Mobile Gradient Fade when collapsed */}
@@ -211,7 +211,7 @@ export const AboutSection = () => {
                 return (
                   <motion.a
                     key={social.id || index}
-                    href={isEmail ? (social.url.startsWith('mailto:') ? social.url : `mailto:${social.url}`) : social.url}
+                    href={isEmail ? (social.url.startsWith('mailto:') ? social.url : `mailto:${social.url}`) : safeUrl(social.url)}
                     target={isEmail ? undefined : '_blank'}
                     rel="noopener noreferrer"
                     aria-label={`${platformName}`}

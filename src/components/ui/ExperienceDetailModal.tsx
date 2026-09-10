@@ -19,7 +19,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { normalizeMediaUrl, sanitizeHtmlContent, getCloudinaryVideoThumbnail } from '@/lib/utils';
+import { normalizeMediaUrl, sanitizeHtmlContent, getCloudinaryVideoThumbnail, safeUrl } from '@/lib/utils';
 import { CustomVideoPlayer } from '@/components/ui/CustomVideoPlayer';
 
 export const ExperienceDetailModal = () => {
@@ -165,7 +165,7 @@ export const ExperienceDetailModal = () => {
                   <div className="min-w-0">
                     <p className="text-xs text-muted-foreground">{t('common.location')}</p>
                     {experienceData.mapUrl ? (
-                      <a href={experienceData.mapUrl} target="_blank" rel="noreferrer" className="text-sm font-medium text-primary hover:underline flex items-center gap-1 truncate">
+                      <a href={safeUrl(experienceData.mapUrl)} target="_blank" rel="noreferrer" className="text-sm font-medium text-primary hover:underline flex items-center gap-1 truncate">
                         {experienceData.location} <ExternalLink className="w-3 h-3 shrink-0" />
                       </a>
                     ) : (
@@ -303,7 +303,7 @@ export const ExperienceDetailModal = () => {
               <div className="pt-2">
                 <Button asChild className="w-full sm:w-auto gap-2">
                   <a 
-                    href={experienceData.certificateUrl || experienceData.documentUrl || experienceData.credentialUrl} 
+                    href={safeUrl(experienceData.certificateUrl || experienceData.documentUrl || experienceData.credentialUrl)} 
                     target="_blank" 
                     rel="noreferrer"
                   >

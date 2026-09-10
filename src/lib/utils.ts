@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import DOMPurify from 'dompurify';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -65,7 +66,43 @@ export function sanitizeHtmlContent(raw?: string | null): string {
   // Strip markdown code block end: ```
   content = content.replace(/\s*```$/gi, '');
   
-  return content.trim();
+  // Sanitize with DOMPurify to prevent XSS while preserving rich-text formatting
+  return DOMPurify.sanitize(content.trim(), {
+    ALLOWED_TAGS: [
+      'p', 'b', 'i', 'em', 'strong', 'a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+      'ul', 'ol', 'li', 'code', 'pre', 'blockquote', 'img', 'span', 'div', 'hr',
+      'table', 'thead', 'tbody', 'tr', 'th', 'td', 'br', 'sub', 'sup', 'figure', 'figcaption'
+    ],
+    ALLOWED_ATTR: [
+      'href', 'target', 'rel', 'src', 'alt', 'class', 'style', 'width', 'height', 'title', 'loading'
+    ],
+    ALLOW_DATA_ATTR: false,
+    FORBID_TAGS: ['script', 'iframe', 'object', 'embed', 'form', 'input', 'button', 'svg', 'math'],
+    FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'onfocus', 'onblur', 'formaction'],
+  });
+}
+
+export function safeUrl(raw?: string | null, fallback = '#'): string {
+  if (!raw) return fallback;
+  const trimmed = raw.trim();
+  if (!trimmed) return fallback;
+
+  // Block javascript:, data:, vbscript: and dangerous pseudo-protocols
+  if (/^(javascript|data|vbscript):/i.test(trimmed)) {
+    return fallback;
+  }
+
+  // Allow standard web protocols, mailto, tel, and relative paths
+  if (/^(https?:\/\/|mailto:|tel:|\/|#)/i.test(trimmed)) {
+    return trimmed;
+  }
+
+  // If user entered "domain.com/path", treat as https://
+  if (/^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(\/.*)?$/.test(trimmed)) {
+    return `https://${trimmed}`;
+  }
+
+  return fallback;
 }
 
 export function getCloudinaryVideoThumbnail(url?: string | null): string {
@@ -76,3 +113,4 @@ export function getCloudinaryVideoThumbnail(url?: string | null): string {
   }
   return url;
 }
+

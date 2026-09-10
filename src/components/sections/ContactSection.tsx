@@ -10,6 +10,7 @@ import { ShinyButton } from '@/components/effects/Buttons';
 import { type SocialLink } from '@/types';
 import { toast } from 'sonner';
 import { SocialIcon } from '@/components/ui/SocialIcon';
+import { safeUrl } from '@/lib/utils';
 
 const socialIcons: Record<string, any> = {
   github: Github,
@@ -250,12 +251,12 @@ export const ContactSection = () => {
                 </div>
               </div>
 
-            {/* Google Maps Embed */}
+             {/* Google Maps Embed */}
             <div className="neon-card rounded-2xl overflow-hidden h-[300px] md:h-[320px] relative">
                {isValidMapUrl ? (
                  <iframe 
                   key={mapUrl}
-                  src={mapUrl}
+                  src={safeUrl(mapUrl)}
                   width="100%" 
                   height="100%" 
                   style={{ border: 0 }} 
@@ -279,7 +280,7 @@ export const ContactSection = () => {
                   return (
                     <a
                       key={link.id}
-                      href={link.url}
+                      href={safeUrl(link.url)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-3 rounded-full bg-background border border-border hover:border-primary hover:bg-primary/10 transition-all duration-300 group flex items-center justify-center"

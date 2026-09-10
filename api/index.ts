@@ -21,9 +21,43 @@ import {
 import { relations, sql, eq, desc, asc, and, like, ilike, inArray } from 'drizzle-orm';
 import * as dotenv from 'dotenv';
 import { IncomingMessage, ServerResponse } from 'http';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 
 // --- 1. CONFIGURATION ---
 dotenv.config();
+
+const JWT_SECRET = process.env.JWT_SECRET || 'e79c2980b182d8c39e23652f75a7c2b6941fa44a958e72ef0d3a57e3f94bd2d1';
+
+interface TokenPayload {
+  id: number;
+  email: string;
+  role: string;
+  name?: string;
+}
+
+function verifyJwtToken(req: any): TokenPayload | null {
+  try {
+    const authHeader = req.headers?.authorization;
+    if (!authHeader || typeof authHeader !== 'string') return null;
+    const parts = authHeader.trim().split(' ');
+    if (parts.length !== 2 || parts[0].toLowerCase() !== 'bearer') return null;
+    const token = parts[1];
+    if (!token || token === 'demo-token' || token === 'fake-jwt-token') return null;
+    const decoded = jwt.verify(token, JWT_SECRET) as TokenPayload;
+    return decoded;
+  } catch (err) {
+    return null;
+  }
+}
+
+function getClientIp(req: any): string {
+  const forwarded = req.headers?.['x-forwarded-for'];
+  if (typeof forwarded === 'string' && forwarded.length > 0) {
+    return forwarded.split(',')[0].trim();
+  }
+  return String(req.socket?.remoteAddress || 'unknown');
+}
 
 // Allow lazy loading of DB_URL for tests
 let pool: Pool;
@@ -501,7 +535,6 @@ const parseBody = (req: any): Promise<any> => {
 
 // Resource Map
 const resources: Record<string, any> = {
-  'users': users,
   'profile': profiles, // Map 'profile' -> profiles table
   'social-links': socialLinks,
   'projects': projects,
@@ -789,52 +822,87 @@ export default async function handler(req: any, res: any) {
         if (action === 'login') {
             if (req.method !== 'POST') return sendJSON(res, 405, { error: 'Method not allowed' });
             const body = await parseBody(req);
-            const { email, password } = body;
-            const ip = String(req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown');
-            if (isRateLimited(ip)) return sendJSON(res, 429, { error: 'Too many attempts' });
-      
-            // Allow dev quick login with user credentials
-            if (email === 'eka.ckp16799@gmail.com' && password === 'INDAH1234') {
-                return sendJSON(res, 200, { token: 'demo-token', user: { id: 1, email, name: 'Eka Syarif Maulana, S.Kom', role: 'admin' } });
-            }
+            const { email, password } = body || {};
+            if (!email || !password) return sendJSON(res, 400, { error: 'Email and password required' });
 
-            // Simple Login (In prod, verify hash)
-            // Use try-catch to safely handle DB connection errors during login
+            const ip = getClientIp(req);
+            if (isRateLimited(ip)) return sendJSON(res, 429, { error: 'Too many attempts. Please try again later.' });
+
             try {
                 const user = await getDb().query.users.findFirst({ where: eq(users.email, email) });
-                if (user && user.password === password && user.isActive) {
-                    clearAttempts(ip);
-                    return sendJSON(res, 200, { 
-                        token: 'fake-jwt-token', 
-                        user: { id: user.id, email: user.email, name: user.name, role: 'admin' } 
-                    });
+                if (user && user.isActive) {
+                    let isPasswordValid = false;
+                    const storedPass = String(user.password || '');
+                    const isBcrypt = storedPass.startsWith('$2a$') || storedPass.startsWith('$2b$') || storedPass.startsWith('$2y$');
+
+                    if (isBcrypt) {
+                        isPasswordValid = await bcrypt.compare(password, storedPass);
+                    } else if (storedPass === password) {
+                        // Plaintext match: valid and automatically migrate to bcrypt hash!
+                        isPasswordValid = true;
+                        try {
+                            const newHashedPassword = await bcrypt.hash(password, 10);
+                            await getDb().update(users).set({ password: newHashedPassword, updatedAt: new Date() }).where(eq(users.id, user.id));
+                        } catch (migrateErr) {
+                            console.error('Password auto-migration to bcrypt failed:', migrateErr);
+                        }
+                    }
+
+                    if (isPasswordValid) {
+                        clearAttempts(ip);
+                        const token = jwt.sign(
+                            { id: user.id, email: user.email, name: user.name, role: 'admin' },
+                            JWT_SECRET,
+                            { expiresIn: '7d' }
+                        );
+                        return sendJSON(res, 200, {
+                            token,
+                            user: { id: user.id, email: user.email, name: user.name, role: 'admin' }
+                        });
+                    }
                 }
             } catch (err) {
                 console.error("Login DB Error:", err);
-                // Fallthrough to invalid credentials if DB fails or user not found, 
-                // but logging error helps debugging.
             }
 
             trackFailed(ip);
             return sendJSON(res, 401, { error: 'Invalid credentials' });
         }
+
         if (action === 'register') {
             if (req.method !== 'POST') return sendJSON(res, 405, { error: 'Method not allowed' });
+            // Only authenticated admin can create new accounts if users already exist
+            const tokenUser = verifyJwtToken(req);
             const body = await parseBody(req);
             const { email, password, name } = body || {};
             if (!email || !password) return sendJSON(res, 400, { error: 'Email and password required' });
+
             try {
+                const existingUsers = await getDb().select({ count: sql`count(*)` }).from(users);
+                const userCount = Number(existingUsers?.[0]?.count || 0);
+                if (userCount > 0 && !tokenUser) {
+                    return sendJSON(res, 401, { error: 'Unauthorized. Only admins can register new accounts.' });
+                }
+
                 const existing = await getDb().query.users.findFirst({ where: eq(users.email, email) });
                 if (existing) return sendJSON(res, 409, { error: 'User already exists' });
-                const inserted = await getDb().insert(users).values({ email, password, name, isActive: true }).returning();
+
+                const hashedPassword = await bcrypt.hash(password, 10);
+                const inserted = await getDb().insert(users).values({ email, password: hashedPassword, name: name || 'Admin', isActive: true }).returning();
                 const u = inserted?.[0];
-                return sendJSON(res, 200, { id: u.id, email: u.email, name: u.name });
+                return sendJSON(res, 201, { id: u.id, email: u.email, name: u.name });
             } catch (err) {
                 return sendJSON(res, 500, { error: 'Failed to register' });
             }
         }
+
         if (action === 'me') {
-             if (req.method === 'GET') {
+            const tokenUser = verifyJwtToken(req);
+            if (!tokenUser) {
+                return sendJSON(res, 401, { error: 'Unauthorized. Invalid or missing token.' });
+            }
+
+            if (req.method === 'GET') {
                 try {
                     const [user] = await getDb()
                         .select({
@@ -845,7 +913,7 @@ export default async function handler(req: any, res: any) {
                             isActive: users.isActive,
                         })
                         .from(users)
-                        .orderBy(asc(users.id))
+                        .where(eq(users.id, tokenUser.id))
                         .limit(1);
 
                     if (user) {
@@ -855,24 +923,14 @@ export default async function handler(req: any, res: any) {
                     console.error("Auth ME DB Error:", err);
                 }
 
-                return sendJSON(res, 200, { id: 1, email: 'eka.ckp16799@gmail.com', name: 'Eka Syarif Maulana, S.Kom', avatar: null, role: 'admin' });
-             }
+                return sendJSON(res, 404, { error: 'User not found' });
+            }
 
-             if (req.method === 'PUT' || req.method === 'PATCH') {
+            if (req.method === 'PUT' || req.method === 'PATCH') {
                 const body = await parseBody(req);
                 const { name, email, avatar, password } = body || {};
 
                 try {
-                    const [existing] = await getDb()
-                        .select({ id: users.id })
-                        .from(users)
-                        .orderBy(asc(users.id))
-                        .limit(1);
-
-                    if (!existing?.id) {
-                        return sendJSON(res, 404, { error: 'User not found' });
-                    }
-
                     const updateData: any = {
                         updatedAt: new Date(),
                     };
@@ -880,9 +938,11 @@ export default async function handler(req: any, res: any) {
                     if (typeof name === 'string') updateData.name = name;
                     if (typeof email === 'string') updateData.email = email;
                     if (typeof avatar === 'string' || avatar === null) updateData.avatar = avatar;
-                    if (typeof password === 'string' && password.length > 0) updateData.password = password;
+                    if (typeof password === 'string' && password.length > 0) {
+                        updateData.password = await bcrypt.hash(password, 10);
+                    }
 
-                    await getDb().update(users).set(updateData).where(eq(users.id, existing.id));
+                    await getDb().update(users).set(updateData).where(eq(users.id, tokenUser.id));
 
                     const [updated] = await getDb()
                         .select({
@@ -893,7 +953,7 @@ export default async function handler(req: any, res: any) {
                             isActive: users.isActive,
                         })
                         .from(users)
-                        .where(eq(users.id, existing.id))
+                        .where(eq(users.id, tokenUser.id))
                         .limit(1);
 
                     return sendJSON(res, 200, { ...updated, role: 'admin' });
@@ -901,10 +961,11 @@ export default async function handler(req: any, res: any) {
                     console.error("Auth UPDATE ME DB Error:", err);
                     return sendJSON(res, 500, { error: 'Failed to update profile' });
                 }
-             }
+            }
 
-             return sendJSON(res, 405, { error: 'Method not allowed' });
+            return sendJSON(res, 405, { error: 'Method not allowed' });
         }
+
         if (action === 'reset') {
             if (req.method !== 'POST') return sendJSON(res, 405, { error: 'Method not allowed' });
             const body = await parseBody(req);
@@ -914,12 +975,13 @@ export default async function handler(req: any, res: any) {
             if (!email || !password) return sendJSON(res, 400, { error: 'Email and password required' });
             try {
                 const existing = await getDb().query.users.findFirst({ where: eq(users.email, email) });
+                const hashedPassword = await bcrypt.hash(password, 10);
                 if (!existing) {
-                    const inserted = await getDb().insert(users).values({ email, password, name: 'Admin', isActive: true }).returning();
+                    const inserted = await getDb().insert(users).values({ email, password: hashedPassword, name: 'Admin', isActive: true }).returning();
                     const u = inserted?.[0];
                     return sendJSON(res, 200, { id: u.id, email: u.email, name: u.name });
                 }
-                await getDb().update(users).set({ password, email, updatedAt: new Date() }).where(eq(users.id, existing.id));
+                await getDb().update(users).set({ password: hashedPassword, email, updatedAt: new Date() }).where(eq(users.id, existing.id));
                 return sendJSON(res, 200, { success: true });
             } catch (err) {
                 return sendJSON(res, 500, { error: 'Failed to reset password' });
@@ -953,6 +1015,9 @@ export default async function handler(req: any, res: any) {
 
     // AI
     if (resourceName === 'ai') {
+        const tokenUser = verifyJwtToken(req);
+        if (!tokenUser) return sendJSON(res, 401, { error: 'Unauthorized. AI operations require authentication.' });
+
         const apiKey = process.env.AI_API_KEY;
         const apiUrl = process.env.AI_API_URL || 'https://one.apprentice.cyou/api/v1/chat/completions';
         const model = process.env.AI_MODEL || 'gemini-2.5-flash';
@@ -1232,9 +1297,9 @@ export default async function handler(req: any, res: any) {
 
     // --- Cloudinary Endpoints ---
     if (resourceName === 'cloudinary') {
-        // All cloudinary endpoints require auth
-        const hasAuthHeader = Boolean((req as any).headers?.authorization);
-        if (!hasAuthHeader) return sendJSON(res, 403, { error: 'Forbidden' });
+        // All cloudinary endpoints require authentic admin JWT
+        const tokenUser = verifyJwtToken(req);
+        if (!tokenUser) return sendJSON(res, 401, { error: 'Unauthorized. Cloudinary operations require authentication.' });
 
         const MAX_CONFIGS = 5;
 
@@ -1561,20 +1626,16 @@ export default async function handler(req: any, res: any) {
     const isInteraction = action === 'comments' || action === 'like' || action === 'view';
     const isProduction = process.env.NODE_ENV === 'production';
     
-    const hasAuthHeader = Boolean((req as any).headers?.authorization);
-    if (isProduction && req.method === 'GET' && publicResources.includes(resourceName) && !isInteraction && !hasAuthHeader) {
+    const tokenUser = verifyJwtToken(req);
+    const isAuthenticated = Boolean(tokenUser);
+
+    if (isProduction && req.method === 'GET' && publicResources.includes(resourceName) && !isInteraction && !isAuthenticated) {
         // Cache-Control: 
         // public: Can be cached by shared caches (CDNs)
         // s-maxage=3600: Cached in Edge Cache for 1 hour (60 mins)
         // stale-while-revalidate=600: Serve stale content while revalidating for 10 mins
         res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=600');
-        
-        // ETag Support: Vercel handles ETag automatically for static content, but for dynamic API
-        // we can set a weak ETag based on timestamp to help client-side validation
-        // However, s-maxage is the primary directive for Vercel Edge Cache.
     } else {
-        // For mutation requests (POST, PUT, DELETE) OR interactions OR Development mode, 
-        // we should ideally invalidate cache or not cache at all.
         res.setHeader('Cache-Control', 'no-store, max-age=0, must-revalidate');
     }
 
@@ -1583,10 +1644,13 @@ export default async function handler(req: any, res: any) {
       return sendJSON(res, 404, { error: `Resource '${resourceName}' not found` });
     }
 
+    // Public contact form submission is allowed for POST /messages
+    const isPublicMutation = (resourceName === 'messages' && req.method === 'POST');
     const requiresAuthForGet = !publicResources.includes(resourceName) && req.method === 'GET';
-    const requiresAuthForMutation = req.method !== 'GET';
-    if ((requiresAuthForGet || requiresAuthForMutation) && !hasAuthHeader) {
-      return sendJSON(res, 403, { error: 'Forbidden' });
+    const requiresAuthForMutation = req.method !== 'GET' && !isPublicMutation;
+
+    if ((requiresAuthForGet || requiresAuthForMutation) && !isAuthenticated) {
+      return sendJSON(res, 401, { error: 'Unauthorized. Valid admin authentication required.' });
     }
 
     // Handle Bulk Delete
@@ -1789,7 +1853,8 @@ export default async function handler(req: any, res: any) {
 
     if (res.headersSent) return;
 
-    const hasAuthHeader = Boolean((req as any)?.headers?.authorization);
+    const tokenUser = verifyJwtToken(req);
+    const isAuthenticated = Boolean(tokenUser);
     const isProduction = process.env.NODE_ENV === 'production';
     const msg = String(error?.message || '');
     const code = String(error?.code || '');
@@ -1812,10 +1877,10 @@ export default async function handler(req: any, res: any) {
       code === '57P01';
 
     if (isDbError) {
-      return sendJSON(res, 503, hasAuthHeader ? { error: 'Service temporarily unavailable', code: 'DB_UNAVAILABLE' } : { error: 'Service temporarily unavailable' });
+      return sendJSON(res, 503, isAuthenticated ? { error: 'Service temporarily unavailable', code: 'DB_UNAVAILABLE' } : { error: 'Service temporarily unavailable' });
     }
 
-    if (isProduction && !hasAuthHeader) {
+    if (isProduction && !isAuthenticated) {
       return sendJSON(res, 500, { error: 'Internal Server Error' });
     }
 
