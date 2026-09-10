@@ -18,10 +18,10 @@ export function normalizeMediaUrl(raw?: string | null) {
      return url;
   }
 
-  // Articles images in public/uploads/articles are static frontend / CDN assets
+  // Articles images in public/uploads/articles are served directly via fast jsDelivr CDN from GitHub
   if (url.includes('uploads/articles')) {
     const cleanPath = url.startsWith('/') ? url : `/${url}`;
-    return cleanPath;
+    return `https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public${cleanPath}`;
   }
 
   if (import.meta.env.VITE_BACKEND_URL && url.startsWith(import.meta.env.VITE_BACKEND_URL)) {

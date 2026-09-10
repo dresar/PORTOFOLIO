@@ -46,7 +46,7 @@ export const BlogSlidePlayer: React.FC<BlogSlidePlayerProps> = ({
     const urls: string[] = [];
     for (let i = 1; i <= totalSlides; i++) {
       const pad = String(i).padStart(2, '0');
-      urls.push(`/uploads/articles/${slug}/${slug}_${pad}.png`);
+      urls.push(`https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/${slug}/${slug}_${pad}.png`);
     }
     return urls;
   }, [slug, totalSlides, customSlides]);

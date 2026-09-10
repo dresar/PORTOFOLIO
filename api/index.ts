@@ -23,8 +23,6 @@ import * as dotenv from 'dotenv';
 import { IncomingMessage, ServerResponse } from 'http';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import fs from 'fs';
-import path from 'path';
 import crypto from 'crypto';
 
 // --- 1. CONFIGURATION ---
@@ -1164,21 +1162,7 @@ export default async function handler(req: any, res: any) {
         const buffer = Buffer.from(base64Data, 'base64');
         const targetPath = `${GITHUB_UPLOADS_PATH}/${filename}`;
 
-        // 1. Write locally for instant local preview (skipped on Vercel / serverless)
-        try {
-            if (!process.env.VERCEL && !process.env.AWS_LAMBDA_FUNCTION_NAME) {
-                const uploadsFolder = ['pub' + 'lic', 'upl' + 'oads'].join('/');
-                const localDir = path.resolve(process.cwd(), uploadsFolder);
-                if (!fs.existsSync(localDir)) {
-                    fs.mkdirSync(localDir, { recursive: true });
-                }
-                fs.writeFileSync(path.join(localDir, filename), buffer);
-            }
-        } catch (localErr) {
-            console.warn('Local file write notice:', localErr);
-        }
-
-        // 2. Check if file already exists in GitHub (obtain SHA if updating)
+        // 1. Check if file already exists in GitHub (obtain SHA if updating)
         let existingSha: string | undefined;
         try {
             const checkRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${targetPath}?ref=${GITHUB_BRANCH}`, {
@@ -1285,42 +1269,6 @@ export default async function handler(req: any, res: any) {
             console.warn('GitHub list warning:', err);
         }
 
-        // Merge any local files (skipped on Vercel / serverless)
-        try {
-            if (!process.env.VERCEL && !process.env.AWS_LAMBDA_FUNCTION_NAME) {
-                const uploadsFolder = ['pub' + 'lic', 'upl' + 'oads'].join('/');
-                const localDir = path.resolve(process.cwd(), uploadsFolder);
-                if (fs.existsSync(localDir)) {
-                    const files = fs.readdirSync(localDir);
-                    for (const f of files) {
-                        if (!seenNames.has(f) && f !== '.gitkeep') {
-                            const stats = fs.statSync(path.join(localDir, f));
-                            if (stats.isFile()) {
-                                const ext = f.split('.').pop()?.toLowerCase() || 'png';
-                                const isVideo = ['mp4', 'webm', 'mov'].includes(ext);
-                                const cdnUrl = `https://cdn.jsdelivr.net/gh/${GITHUB_REPO}@${GITHUB_BRANCH}/${GITHUB_UPLOADS_PATH}/${f}`;
-                                assets.push({
-                                    public_id: f,
-                                    secure_url: cdnUrl,
-                                    url: cdnUrl,
-                                    raw_url: `/uploads/${f}`,
-                                    width: 800,
-                                    height: 600,
-                                    format: ext,
-                                    bytes: stats.size,
-                                    resource_type: isVideo ? 'video' : 'image',
-                                    created_at: stats.mtime.toISOString(),
-                                    tags: ['local-upload']
-                                });
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (err) {
-            console.warn('Local dir read warning:', err);
-        }
-
         assets.sort((a, b) => b.public_id.localeCompare(a.public_id));
         return assets;
     }
@@ -1367,17 +1315,6 @@ export default async function handler(req: any, res: any) {
                 ghResult = 'error';
             }
         }
-
-        // Delete local copy (skipped on Vercel / serverless)
-        try {
-            if (!process.env.VERCEL && !process.env.AWS_LAMBDA_FUNCTION_NAME) {
-                const uploadsFolder = ['pub' + 'lic', 'upl' + 'oads'].join('/');
-                const localFile = path.resolve(process.cwd(), uploadsFolder, publicId);
-                if (fs.existsSync(localFile)) {
-                    fs.unlinkSync(localFile);
-                }
-            }
-        } catch (e) {}
 
         return ghResult;
     }

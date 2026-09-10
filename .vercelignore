@@ -1,3 +1,4 @@
 asset/
+public/uploads/articles/
 *.md
 !README.md
