@@ -1,4 +1,5 @@
 
+import { useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useModalStore } from '@/store/modalStore';
 import { useTranslation } from 'react-i18next';
@@ -7,10 +8,13 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { CustomVideoPlayer } from '@/components/ui/CustomVideoPlayer';
 import { sanitizeHtmlContent } from '@/lib/utils';
+import { useLocalizedContent } from '@/hooks/useLocalizedContent';
 
 export const EducationDetailModal = () => {
   const { t } = useTranslation();
-  const { isOpen, modalType, educationData, closeModal, openImagePreviewModal } = useModalStore();
+  const { isOpen, modalType, educationData: rawEducationData, closeModal, openImagePreviewModal } = useModalStore();
+  const { getEducation } = useLocalizedContent();
+  const educationData = useMemo(() => getEducation(rawEducationData), [rawEducationData, getEducation]);
 
   const isModalOpen = isOpen && modalType === 'education-detail';
 

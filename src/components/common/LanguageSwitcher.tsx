@@ -1,12 +1,5 @@
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Globe } from 'lucide-react';
 
 export const LanguageSwitcher = () => {
@@ -14,41 +7,39 @@ export const LanguageSwitcher = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const changeLanguage = (lng: string) => {
-    i18n.changeLanguage(lng);
-    localStorage.setItem('i18nextLng', lng);
+  const isEn = i18n.language === 'en';
+
+  const toggleLanguage = () => {
+    const nextLang = isEn ? 'id' : 'en';
+    i18n.changeLanguage(nextLang);
+    localStorage.setItem('i18nextLng', nextLang);
 
     const pathname = location.pathname;
     const match = pathname.match(/^\/(id|en)(\/.*)?$/);
     if (match) {
       const rest = match[2] || '';
-      navigate(`/${lng}${rest}${location.search}${location.hash}`);
+      navigate(`/${nextLang}${rest}${location.search}${location.hash}`);
     } else if (pathname === '/') {
-      navigate(`/${lng}${location.search}${location.hash}`);
+      navigate(`/${nextLang}${location.search}${location.hash}`);
     } else {
-      navigate(`/${lng}${pathname}${location.search}${location.hash}`);
+      navigate(`/${nextLang}${pathname}${location.search}${location.hash}`);
     }
   };
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative">
-          <Globe className="h-5 w-5" />
-          <span className="sr-only">Switch Language</span>
-          <span className="absolute -top-1 -right-1 text-[10px] font-bold">
-            {i18n.language === 'id' ? 'ID' : 'EN'}
-          </span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => changeLanguage('id')} className={i18n.language === 'id' ? 'bg-accent' : ''}>
-          Bahasa Indonesia
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => changeLanguage('en')} className={i18n.language === 'en' ? 'bg-accent' : ''}>
-          English
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <button
+      type="button"
+      onClick={toggleLanguage}
+      className="relative inline-flex items-center gap-1.5 h-8 px-2.5 rounded-lg border border-border/60 bg-secondary/40 hover:bg-secondary/80 text-foreground transition-all duration-200 active:scale-95 cursor-pointer select-none"
+      title={isEn ? 'Klik untuk beralih ke Bahasa Indonesia' : 'Click to switch to English'}
+      aria-label="Toggle language"
+    >
+      <Globe className="h-3.5 w-3.5 text-primary" />
+      <div className="flex items-center text-[11px] font-bold tracking-wider">
+        <span className={!isEn ? 'text-primary' : 'text-muted-foreground/60'}>ID</span>
+        <span className="mx-0.5 text-muted-foreground/40 font-normal">/</span>
+        <span className={isEn ? 'text-primary' : 'text-muted-foreground/60'}>EN</span>
+      </div>
+    </button>
   );
 };

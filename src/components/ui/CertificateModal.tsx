@@ -5,9 +5,14 @@ import { useTranslation } from 'react-i18next';
 import { Award, ExternalLink } from 'lucide-react';
 import { normalizeMediaUrl, safeUrl } from '@/lib/utils';
 
+import { useMemo } from 'react';
+import { useLocalizedContent } from '@/hooks/useLocalizedContent';
+
 export const CertificateModal = () => {
   const { t } = useTranslation();
-  const { isOpen, modalType, certificateData, closeModal, openImagePreviewModal } = useModalStore();
+  const { isOpen, modalType, certificateData: rawCertificateData, closeModal, openImagePreviewModal } = useModalStore();
+  const { getCertificate } = useLocalizedContent();
+  const certificateData = useMemo(() => getCertificate(rawCertificateData), [rawCertificateData, getCertificate]);
 
   const isModalOpen = isOpen && modalType === 'certificate';
 

@@ -21,10 +21,13 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { normalizeMediaUrl, sanitizeHtmlContent, getCloudinaryVideoThumbnail, safeUrl } from '@/lib/utils';
 import { CustomVideoPlayer } from '@/components/ui/CustomVideoPlayer';
+import { useLocalizedContent } from '@/hooks/useLocalizedContent';
 
 export const ExperienceDetailModal = () => {
   const { t } = useTranslation();
-  const { isOpen, modalType, experienceData, closeModal, openImagePreviewModal } = useModalStore();
+  const { isOpen, modalType, experienceData: rawExperienceData, closeModal, openImagePreviewModal } = useModalStore();
+  const { getExperience } = useLocalizedContent();
+  const experienceData = useMemo(() => getExperience(rawExperienceData), [rawExperienceData, getExperience]);
   const [currentGalleryIndex, setCurrentGalleryIndex] = useState(0);
 
   const isModalOpen = isOpen && modalType === 'experience-detail';
