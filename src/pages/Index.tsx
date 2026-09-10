@@ -138,12 +138,13 @@ const Index = () => {
     <>
       <Helmet>
         <title>Eka Syarif Maulana, S.Kom | Senior Fullstack Web & Mobile Developer</title>
+        <meta name="google-site-verification" content="A-3mGJRovHDKeQfXHyYFueXVNCPJhdiAV8ULsFRb9Ks" />
         <meta name="google-site-verification" content="google0e7f4f807a599919" />
         <meta name="google-site-verification" content="Sc-kfSh_oBZpVn3Tn8_zIVrNI3cMcYA6e_LZYjX3MKw" />
         <meta name="description" content="Portofolio Resmi Eka Syarif Maulana, S.Kom — Senior Fullstack Web & Mobile Developer (Sarjana Komputer) berpengalaman dalam membangun aplikasi web modern, sistem basis data, dan solusi teknologi berkualitas tinggi." />
         <meta name="keywords" content="Eka Syarif Maulana, S.Kom, Eka Syarif Maulana S.Kom, Eka Syarif Maulana, Sarjana Komputer, S.Kom, Portofolio Eka Syarif Maulana S.Kom, Eka Syarif, Eka Maulana, Fullstack Developer, Web Developer Medan, React Developer, Node.js, TypeScript, Pertamina Hulu Rokan, Teknologi Informasi UMSU, Software Engineer Indonesia, Portfolio Developer, Mobile Developer" />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-        <link rel="canonical" href="https://etech.my.id/" />
+        <link rel="canonical" href="https://inka.my.id/" />
       </Helmet>
 
       <AnimatePresence mode="wait">

@@ -60,5 +60,5 @@ Disallow: /dashboard/
 Disallow: /private/
 
 # Sitemaps & LLM Context Discovery
-Sitemap: https://etech.my.id/sitemap.xml
-LLMs-Txt: https://etech.my.id/llms.txt
+Sitemap: https://inka.my.id/sitemap.xml
+LLMs-Txt: https://inka.my.id/llms.txt

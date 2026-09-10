@@ -267,8 +267,8 @@ const BlogDetail = () => {
             <title>{post.seo_title || post.title} - Eka Syarif Maulana</title>
             <meta name="description" content={post.seo_description || post.excerpt} />
             <meta name="author" content="Eka Syarif Maulana, S.Kom" />
-            <link rel="canonical" href={typeof window !== 'undefined' ? window.location.href : `https://etech.my.id/id/blog/${slug}`} />
-            <link rel="alternate" type="text/markdown" href={`https://etech.my.id/uploads/articles/${slug}/README.md`} />
+            <link rel="canonical" href={typeof window !== 'undefined' ? window.location.href : `https://inka.my.id/id/blog/${slug}`} />
+            <link rel="alternate" type="text/markdown" href={`https://inka.my.id/uploads/articles/${slug}/README.md`} />
             {post.seo_keywords && post.seo_keywords.length > 0 && (
               <meta name="keywords" content={Array.isArray(post.seo_keywords) ? post.seo_keywords.join(', ') : post.seo_keywords} />
             )}
@@ -298,16 +298,16 @@ const BlogDetail = () => {
                   "@type": "Person",
                   "name": "Eka Syarif Maulana, S.Kom",
                   "jobTitle": "Senior Fullstack Web & Mobile Developer & AI Systems Engineer",
-                  "url": "https://etech.my.id"
+                  "url": "https://inka.my.id"
                 },
                 "publisher": {
                   "@type": "Person",
                   "name": "Eka Syarif Maulana, S.Kom",
-                  "url": "https://etech.my.id"
+                  "url": "https://inka.my.id"
                 },
                 "mainEntityOfPage": {
                   "@type": "WebPage",
-                  "@id": typeof window !== 'undefined' ? window.location.href : `https://etech.my.id/id/blog/${slug}`
+                  "@id": typeof window !== 'undefined' ? window.location.href : `https://inka.my.id/id/blog/${slug}`
                 }
               })}
             </script>
