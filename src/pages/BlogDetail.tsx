@@ -5,9 +5,7 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { normalizeMediaUrl, formatCompactNumber, sanitizeHtmlContent } from '@/lib/utils';
 import { format } from 'date-fns';
-import { id as idLocale } from 'date-fns/locale';
-import { Calendar, User, ArrowLeft, Share2, Heart, Eye, MessageCircle, Send, Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Calendar, User, ArrowLeft, Share2, Heart, Eye, MessageCircle, Send, Loader2, FileText } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
@@ -242,6 +240,7 @@ const BlogDetail = () => {
             <meta name="description" content={post.seo_description || post.excerpt} />
             <meta name="author" content="Eka Syarif Maulana, S.Kom" />
             <link rel="canonical" href={typeof window !== 'undefined' ? window.location.href : `https://etech.my.id/id/blog/${slug}`} />
+            <link rel="alternate" type="text/markdown" href={`https://etech.my.id/uploads/articles/${slug}/README.md`} />
             {post.seo_keywords && post.seo_keywords.length > 0 && (
               <meta name="keywords" content={Array.isArray(post.seo_keywords) ? post.seo_keywords.join(', ') : post.seo_keywords} />
             )}
@@ -328,33 +327,27 @@ const BlogDetail = () => {
                 </p>
               </header>
 
-              {/* Featured Image */}
+              {/* Featured Image - Compact & Centered */}
               {(post.coverImageFile || post.coverImage) ? (
-                <div className="rounded-xl overflow-hidden mb-12 shadow-lg cursor-pointer group relative">
+                <div className="flex justify-center mb-10">
+                  <div className="rounded-xl overflow-hidden shadow-md cursor-pointer group relative max-w-[380px] sm:max-w-[420px] w-full border border-border/50 bg-muted/20">
                     <img 
                         src={normalizeMediaUrl(post.coverImageFile || post.coverImage)} 
                         alt={post.title} 
-                        className="w-full max-h-[500px] object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                        className="w-full max-h-[440px] object-contain group-hover:scale-[1.01] transition-transform duration-300"
                         onClick={() => openImagePreviewModal(normalizeMediaUrl(post.coverImageFile || post.coverImage), post.title)}
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
                           target.src = "https://placehold.co/1200x600?text=Blog+Post";
                         }}
                     />
+                  </div>
                 </div>
-              ) : (
-                <div className="rounded-xl overflow-hidden mb-12 shadow-lg">
-                    <img 
-                        src="https://placehold.co/1200x600?text=Blog+Post" 
-                        alt={post.title} 
-                        className="w-full max-h-[500px] object-cover"
-                    />
-                </div>
-              )}
+              ) : null}
 
               {/* Content */}
               <div 
-                className="html-theme-responsive prose prose-lg dark:prose-invert max-w-none mb-12 [&_img]:rounded-xl [&_img]:shadow-md [&_img]:border [&_img]:border-border/50 [&_img]:mx-auto [&_img]:my-6 [&_blockquote]:border-l-4 [&_blockquote]:border-primary [&_blockquote]:bg-primary/5 [&_blockquote]:p-4 [&_blockquote]:rounded-r-lg"
+                className="html-theme-responsive prose prose-lg dark:prose-invert max-w-none mb-12 [&_.overflow-hidden]:max-w-[360px] sm:[&_.overflow-hidden]:max-w-[400px] md:[&_.overflow-hidden]:max-w-[440px] [&_.overflow-hidden]:mx-auto [&_.overflow-hidden]:my-6 [&_img]:max-w-[340px] sm:[&_img]:max-w-[380px] md:[&_img]:max-w-[420px] [&_img]:max-h-[480px] [&_img]:w-auto [&_img]:h-auto [&_img]:object-contain [&_img]:mx-auto [&_img]:rounded-xl [&_img]:shadow-md [&_img]:border [&_img]:border-border/50 [&_img]:my-6 [&_img]:block [&_blockquote]:border-l-4 [&_blockquote]:border-primary [&_blockquote]:bg-primary/5 [&_blockquote]:p-4 [&_blockquote]:rounded-r-lg"
                 data-color-mode={resolvedTheme === 'dark' ? 'dark' : 'light'}
               >
                 {post.content && post.content.trim().startsWith('<') && !post.content.includes('# ') && !post.content.includes('![') ? (
@@ -448,6 +441,39 @@ const BlogDetail = () => {
                       </div>
                    </div>
                 </div>
+
+                 {/* AI-SEO & Raw Markdown Access */}
+                 <div className="bg-card border border-primary/20 bg-primary/[0.02] rounded-xl p-5 shadow-sm">
+                    <div className="flex items-center gap-2 mb-2">
+                      <FileText className="w-4 h-4 text-primary" />
+                      <h3 className="font-bold text-sm text-foreground">Format Markdown (AI-SEO)</h3>
+                    </div>
+                    <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+                      Artikel ini tersedia dalam format Markdown (.md) murni untuk konsumsi AI Agent (ChatGPT, Perplexity, Claude, Gemini) & pengembang.
+                    </p>
+                    <div className="flex flex-col gap-2">
+                      <a 
+                        href={`/uploads/articles/${slug}/README.md`} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-xs font-medium text-primary hover:underline flex items-center justify-between p-2 rounded-lg bg-primary/10 border border-primary/20"
+                      >
+                        <span>Buka File README.md</span>
+                        <span className="text-[10px] bg-primary/20 px-1.5 py-0.5 rounded font-mono">Raw .md</span>
+                      </a>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full text-xs h-8"
+                        onClick={() => {
+                          navigator.clipboard.writeText(`https://etech.my.id/uploads/articles/${slug}/README.md`);
+                          toast.success('Link Markdown berhasil disalin!');
+                        }}
+                      >
+                        Salin Tautan Markdown
+                      </Button>
+                    </div>
+                 </div>
 
                 {/* Share Desktop */}
                 <div className="hidden lg:block bg-card border border-border rounded-xl p-6 shadow-sm">
