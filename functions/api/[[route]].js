@@ -182,7 +182,7 @@ var require_limiter = __commonJS({
 var require_permessage_deflate = __commonJS({
   "node_modules/ws/lib/permessage-deflate.js"(exports, module) {
     "use strict";
-    var zlib = __require("zlib");
+    var zlib = __require("node:zlib");
     var bufferUtil = require_buffer_util();
     var Limiter = require_limiter();
     var { kStatusCode } = require_constants();
@@ -2273,14 +2273,14 @@ var require_extension = __commonJS({
 var require_websocket = __commonJS({
   "node_modules/ws/lib/websocket.js"(exports, module) {
     "use strict";
-    var EventEmitter = __require("events");
-    var https = __require("https");
-    var http = __require("http");
-    var net = __require("net");
-    var tls = __require("tls");
+    var EventEmitter = __require("node:events");
+    var https = __require("node:https");
+    var http = __require("node:http");
+    var net = __require("node:net");
+    var tls = __require("node:tls");
     var { randomBytes: randomBytes2, createHash } = __require("node:crypto");
     var { Duplex, Readable } = __require("node:stream");
-    var { URL: URL2 } = __require("url");
+    var { URL: URL2 } = __require("node:url");
     var PerMessageDeflate2 = require_permessage_deflate();
     var Receiver2 = require_receiver();
     var Sender2 = require_sender();
@@ -3312,8 +3312,8 @@ var require_subprotocol = __commonJS({
 var require_websocket_server = __commonJS({
   "node_modules/ws/lib/websocket-server.js"(exports, module) {
     "use strict";
-    var EventEmitter = __require("events");
-    var http = __require("http");
+    var EventEmitter = __require("node:events");
+    var http = __require("node:http");
     var { Duplex } = __require("node:stream");
     var { createHash } = __require("node:crypto");
     var extension2 = require_extension();
@@ -3780,7 +3780,7 @@ var require_package = __commonJS({
 // node_modules/dotenv/lib/main.js
 var require_main = __commonJS({
   "node_modules/dotenv/lib/main.js"(exports, module) {
-    var fs = __require("fs");
+    var fs = __require("node:fs");
     var path = __require("node:path");
     var os2 = __require("node:os");
     var crypto3 = __require("node:crypto");

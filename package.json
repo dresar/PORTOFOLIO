@@ -7,7 +7,7 @@
     "dev:frontend": "vite",
     "dev:server": "npx tsx watch test-server.ts",
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:frontend\"",
-    "build:functions": "esbuild src-functions/api/[[route]].ts --bundle --outfile=functions/api/[[route]].js --platform=node --format=esm --alias:crypto=node:crypto --alias:stream=node:stream --alias:util=node:util --alias:buffer=node:buffer --alias:path=node:path --alias:os=node:os",
+    "build:functions": "esbuild src-functions/api/[[route]].ts --bundle --outfile=functions/api/[[route]].js --platform=node --format=esm --alias:crypto=node:crypto --alias:stream=node:stream --alias:util=node:util --alias:buffer=node:buffer --alias:path=node:path --alias:os=node:os --alias:events=node:events --alias:url=node:url --alias:http=node:http --alias:https=node:https --alias:net=node:net --alias:tls=node:tls --alias:zlib=node:zlib --alias:fs=node:fs",
     "build": "npm run build:functions && vite build",
     "preview": "vite preview",
     "lint": "eslint .",
