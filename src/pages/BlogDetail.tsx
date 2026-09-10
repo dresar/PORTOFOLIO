@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useState, useMemo } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useBlogPostBySlug } from '@/hooks/useBlog';
 import staticPosts from '@/data/blogPosts.json';
@@ -240,20 +240,7 @@ const BlogDetail = () => {
   }
 
   if (isError || !post) {
-    return (
-      <div className="min-h-screen bg-background flex flex-col">
-        <Header />
-        <main className="flex-grow flex items-center justify-center">
-            <div className="text-center">
-                <h1 className="text-2xl font-bold mb-2">{t('blog.not_found')}</h1>
-                <Button onClick={() => navigate(getLocalizedPath('/blog'))} variant="outline">
-                    {t('blog.back_to_blog')}
-                </Button>
-            </div>
-        </main>
-        <Footer />
-      </div>
-    );
+    return <Navigate to={getLocalizedPath('/')} replace />;
   }
 
   return (

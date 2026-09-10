@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useParams, useNavigate, useLocation, Outlet } from 'react-router-dom';
+import { useParams, useNavigate, useLocation, Outlet, Navigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 export const LanguageRouteSync = () => {
@@ -43,4 +43,11 @@ export const RootLanguageRedirect = () => {
   }, [i18n.language, location.search, location.hash, navigate]);
 
   return null;
+};
+
+export const LocalizedHomeRedirect = () => {
+  const { lang } = useParams<{ lang?: string }>();
+  const normalized = (lang || '').toLowerCase();
+  const target = (normalized === 'en' || normalized === 'id') ? `/${normalized}` : '/id';
+  return <Navigate to={target} replace />;
 };

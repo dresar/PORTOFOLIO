@@ -49,8 +49,7 @@ import Index from "./pages/Index";
 import BlogList from "./pages/BlogList";
 import BlogDetail from "./pages/BlogDetail";
 import ProjectDetail from "./pages/ProjectDetail";
-import NotFound from "./pages/NotFound";
-import { LanguageRouteSync, RootLanguageRedirect } from "@/components/common/LanguageRouteSync";
+import { LanguageRouteSync, RootLanguageRedirect, LocalizedHomeRedirect } from "@/components/common/LanguageRouteSync";
 
 // Admin Pages
 const LoginPage = lazyRetry(() => import("./admin/pages/LoginPage"));
@@ -191,7 +190,8 @@ const App = () => {
                     <Route path="cloudinary" element={<CloudinaryPage />} />
                     <Route path="export-pdf" element={<ExportPdfPage />} />
 
-                    {/* Add more admin routes here */}
+                    {/* Fallback unknown admin paths to dashboard */}
+                    <Route path="*" element={<Navigate to="dashboard" replace />} />
                   </Route>
 
                   {/* Public Routes (Inside Maintenance Guard) */}
@@ -207,6 +207,8 @@ const App = () => {
                           <Route path="blog" element={<BlogList />} />
                           <Route path="blog/:slug" element={<BlogDetail />} />
                           <Route path="project/:id" element={<ProjectDetail />} />
+                          {/* Any unknown sub-path under /:lang (e.g. /en/login, /id/xyz) redirects cleanly to localized home */}
+                          <Route path="*" element={<LocalizedHomeRedirect />} />
                         </Route>
 
                         {/* Legacy fallback routes (redirects / loads seamlessly) */}
@@ -214,7 +216,8 @@ const App = () => {
                         <Route path="/blog/:slug" element={<BlogDetail />} />
                         <Route path="/project/:id" element={<ProjectDetail />} />
                         
-                        <Route path="*" element={<NotFound />} />
+                        {/* Global fallback: redirect any unknown URL directly to home */}
+                        <Route path="*" element={<RootLanguageRedirect />} />
                       </Routes>
                       {/* Global Floating Elements */}
                       <FloatingWhatsApp />
