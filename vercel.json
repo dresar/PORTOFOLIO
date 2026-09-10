@@ -1,12 +1,4 @@
 {
-  "functions": {
-    "api/**/*.ts": {
-      "excludeFiles": "{public/**,asset/**,scripts/**}"
-    },
-    "api/index.ts": {
-      "excludeFiles": "{public/**,asset/**,scripts/**}"
-    }
-  },
   "headers": [
     {
       "source": "/assets/(.*)",
