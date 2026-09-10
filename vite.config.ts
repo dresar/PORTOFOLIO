@@ -188,14 +188,15 @@ export default defineConfig(({ mode }) => ({
     target: 'es2015',
     rollupOptions: {
       output: {
-        manualChunks: {
-          // Split heavy vendor libraries into separate chunks
-          'vendor-react': ['react', 'react-dom'],
-          'vendor-motion': ['framer-motion'],
-          'vendor-query': ['@tanstack/react-query', '@tanstack/react-query-persist-client', '@tanstack/query-sync-storage-persister'],
-          'vendor-router': ['react-router-dom'],
-          'vendor-i18n': ['react-i18next', 'i18next'],
-          'vendor-ui': ['lucide-react', 'next-themes'],
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('framer-motion')) return 'vendor-motion';
+            if (id.includes('@tanstack/react-query') || id.includes('@tanstack/query-sync-storage-persister')) return 'vendor-query';
+            if (id.includes('react-router') || id.includes('@remix-run')) return 'vendor-router';
+            if (id.includes('lucide-react')) return 'vendor-icons';
+            if (id.includes('date-fns')) return 'vendor-date';
+            if (id.includes('dompurify')) return 'vendor-purify';
+          }
         },
         // Use content hash for long-term caching
         entryFileNames: 'assets/[name]-[hash].js',

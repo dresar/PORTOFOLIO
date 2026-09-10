@@ -46,9 +46,9 @@ const lazyRetry = (componentImport: () => Promise<any>) => {
 };
 
 import Index from "./pages/Index";
-import BlogList from "./pages/BlogList";
-import BlogDetail from "./pages/BlogDetail";
-import ProjectDetail from "./pages/ProjectDetail";
+const BlogList = lazyRetry(() => import("./pages/BlogList"));
+const BlogDetail = lazyRetry(() => import("./pages/BlogDetail"));
+const ProjectDetail = lazyRetry(() => import("./pages/ProjectDetail"));
 import { LanguageRouteSync, RootLanguageRedirect, LocalizedHomeRedirect } from "@/components/common/LanguageRouteSync";
 
 // Admin Pages

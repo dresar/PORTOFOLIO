@@ -9,6 +9,11 @@ export const BlobCursor = () => {
   const innerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Disable completely on touch/mobile devices to save CPU and battery
+    if (typeof window !== 'undefined' && (window.matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window)) {
+      return;
+    }
+
     const outer = outerRef.current;
     const inner = innerRef.current;
     if (!outer || !inner) return;

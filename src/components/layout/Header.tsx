@@ -42,27 +42,34 @@ export const Header = () => {
   const logoRest = logoText.slice(1);
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setIsScrolled(window.scrollY > 50);
 
-      const isHome = location.pathname === '/' || location.pathname === '/id' || location.pathname === '/en';
-      if (isHome) {
-        // Update active section based on scroll position
-        const sections = navItems.map(item => item.href.slice(1));
-        for (const section of sections.reverse()) {
-          const element = document.getElementById(section);
-          if (element) {
-            const rect = element.getBoundingClientRect();
-            if (rect.top <= 100) {
-              setActiveSection(section);
-              break;
+          const isHome = location.pathname === '/' || location.pathname === '/id' || location.pathname === '/en';
+          if (isHome) {
+            // Update active section based on scroll position
+            const sections = navItems.map(item => item.href.slice(1));
+            for (const section of sections.reverse()) {
+              const element = document.getElementById(section);
+              if (element) {
+                const rect = element.getBoundingClientRect();
+                if (rect.top <= 100) {
+                  setActiveSection(section);
+                  break;
+                }
+              }
             }
           }
-        }
+          ticking = false;
+        });
+        ticking = true;
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, [location.pathname]);
 

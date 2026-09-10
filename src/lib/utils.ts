@@ -33,11 +33,12 @@ export function normalizeMediaUrl(raw?: string | null, options?: MediaUrlOptions
     return directUrl;
   }
 
-  // Cloudinary optimization (f_auto, q_auto, width resizing)
+  // Cloudinary optimization (f_auto, q_auto:eco, width resizing)
   if (url.includes('res.cloudinary.com') && url.includes('/image/upload/')) {
     if (!url.includes('/image/upload/f_auto') && !url.includes('/image/upload/q_auto')) {
-      const w = width || 800;
-      const transform = `f_auto,q_auto,c_limit,w_${w}`;
+      const w = width || 600;
+      const q = quality ? `q_${quality}` : 'q_auto:eco';
+      const transform = `f_auto,${q},c_limit,w_${w}`;
       url = url.replace('/image/upload/', `/image/upload/${transform}/`);
     }
     return url;
@@ -46,9 +47,9 @@ export function normalizeMediaUrl(raw?: string | null, options?: MediaUrlOptions
   // ImageKit optimization (tr:w-*, q-*, f-auto)
   if (url.includes('ik.imagekit.io')) {
     if (!url.includes('tr=') && !url.includes('/tr:')) {
-      const w = width || 800;
+      const w = width || 600;
       const sep = url.includes('?') ? '&' : '?';
-      return `${url}${sep}tr=w-${w},q-${quality},f-auto`;
+      return `${url}${sep}tr=w-${w},q-${quality || 75},f-auto`;
     }
     return url;
   }
