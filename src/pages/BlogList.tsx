@@ -223,6 +223,19 @@ const BlogList = () => {
                           alt={post.title}
                           className="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-105"
                           loading="lazy"
+                          decoding="async"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            const currentSrc = target.src;
+                            if (!currentSrc.includes('cdn.jsdelivr.net')) {
+                              const match = currentSrc.match(/uploads\/articles\/.+$/);
+                              if (match) {
+                                target.src = `https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/${match[0]}`;
+                                return;
+                              }
+                            }
+                            target.src = "https://placehold.co/600x400?text=Blog+Post";
+                          }}
                         />
                       </div>
                       

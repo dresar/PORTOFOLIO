@@ -22,14 +22,13 @@ export function normalizeMediaUrl(raw?: string | null, options?: MediaUrlOptions
   const width = options?.width;
   const quality = options?.quality || 80;
 
-  // Articles images in public/uploads/articles are served via GitHub / jsDelivr CDN
+  // Articles images in public/uploads/articles are served directly from the same domain
   if (url.includes('uploads/articles')) {
-    let directUrl = url;
-    if (!url.startsWith('http')) {
-      const cleanPath = url.startsWith('/') ? url : `/${url}`;
-      directUrl = `https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public${cleanPath}`;
+    const match = url.match(/uploads\/articles\/.+$/);
+    if (match) {
+      return `/${match[0]}`;
     }
-    return directUrl; // Skip wsrv.nl to prevent ISP blocking
+    return url;
   }
 
   // Cloudinary optimization (f_auto, q_auto:eco, width resizing)
