@@ -2,6 +2,22 @@ import vercelHandler from '../../vercel-api-archive/index.ts';
 
 export async function onRequest(context: any) {
   const { request, env } = context;
+  (globalThis as any).__CF_ENV__ = env;
+  try {
+    if (typeof process === 'undefined') {
+      (globalThis as any).process = { env: { ...env } };
+    } else {
+      if (!process.env) {
+        (process as any).env = {};
+      }
+      for (const [k, v] of Object.entries(env || {})) {
+        try {
+          process.env[k] = v as string;
+        } catch (e) {}
+      }
+    }
+  } catch (e) {}
+
   const url = new URL(request.url);
   
   const isGet = request.method === 'GET';
@@ -34,6 +50,16 @@ export async function onRequest(context: any) {
     }
   }
   
+  // Parse body text if JSON
+  let parsedBody: any = null;
+  if (bodyData) {
+    try {
+      parsedBody = JSON.parse(bodyData);
+    } catch (e) {
+      parsedBody = null;
+    }
+  }
+  
   // Create mock req
   const req = {
     method: request.method,
@@ -41,6 +67,7 @@ export async function onRequest(context: any) {
     headers: Object.fromEntries(request.headers.entries()),
     socket: { remoteAddress: request.headers.get('cf-connecting-ip') || '127.0.0.1' },
     query: Object.fromEntries(url.searchParams.entries()),
+    body: parsedBody || bodyData,
     on: (event: string, callback: any) => {
       if (event === 'data' && bodyData) {
         callback(bodyData);
@@ -92,22 +119,6 @@ export async function onRequest(context: any) {
       },
       write: () => {}
     };
-
-    (globalThis as any).__CF_ENV__ = env;
-    try {
-      if (typeof process === 'undefined') {
-        (globalThis as any).process = { env: { ...env } };
-      } else {
-        if (!process.env) {
-          (process as any).env = {};
-        }
-        for (const [k, v] of Object.entries(env || {})) {
-          try {
-            process.env[k] = v as string;
-          } catch (e) {}
-        }
-      }
-    } catch (e) {}
 
     try {
       vercelHandler(req, res).catch((err: any) => {

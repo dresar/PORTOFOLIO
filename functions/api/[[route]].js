@@ -14496,6 +14496,13 @@ var sendJSON = (res, status, data) => {
   res.end(JSON.stringify(data));
 };
 var parseBody = (req) => {
+  if (req.body && typeof req.body === "object") return Promise.resolve(req.body);
+  if (typeof req.body === "string" && req.body) {
+    try {
+      return Promise.resolve(JSON.parse(req.body));
+    } catch {
+    }
+  }
   return new Promise((resolve, reject) => {
     let body = "";
     req.on("data", (chunk) => body += chunk.toString());
@@ -14942,7 +14949,7 @@ async function handler(req, res) {
         if (req.method !== "POST") return sendJSON(res, 405, { error: "Method not allowed" });
         const body = await parseBody(req);
         const { email, password, token } = body || {};
-        const secret = process.env.ADMIN_RESET_TOKEN || "";
+        const secret = getEnv("ADMIN_RESET_TOKEN");
         if (!secret || token !== secret) return sendJSON(res, 403, { error: "Forbidden" });
         if (!email || !password) return sendJSON(res, 400, { error: "Email and password required" });
         try {
@@ -14976,25 +14983,41 @@ async function handler(req, res) {
         }
       });
     }
+    const getGhToken = () => getEnv("GITHUB_TOKEN");
+    const getGhRepo = () => getEnv("GITHUB_REPO", "dresar/PORTOFOLIO");
+    const getGhBranch = () => getEnv("GITHUB_BRANCH", "main");
     async function uploadToGitHubCDN(fileBase64, customPublicId, folder) {
-      const match = fileBase64.match(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+);base64,(.+)$/);
+      const token = getGhToken();
+      if (!token) {
+        throw new Error("GITHUB_TOKEN belum dikonfigurasi di environment variables.");
+      }
+      const repo = getGhRepo();
+      const branch = getGhBranch();
       let mimeType = "image/png";
       let base64Data = fileBase64;
       let ext = "png";
-      if (match) {
-        mimeType = match[1];
-        base64Data = match[2];
-        if (mimeType.includes("jpeg") || mimeType.includes("jpg")) ext = "jpg";
-        else if (mimeType.includes("webp")) ext = "webp";
-        else if (mimeType.includes("svg")) ext = "svg";
-        else if (mimeType.includes("gif")) ext = "gif";
-        else if (mimeType.includes("pdf")) ext = "pdf";
-        else if (mimeType.includes("mp4")) ext = "mp4";
+      if (fileBase64.includes(";base64,")) {
+        const parts = fileBase64.split(";base64,");
+        const prefix = parts[0];
+        base64Data = parts.slice(1).join(";base64,").replace(/\s+/g, "");
+        const mimeMatch = prefix.match(/data:([^;]+)/);
+        if (mimeMatch) {
+          mimeType = mimeMatch[1].toLowerCase();
+        }
+      } else {
+        base64Data = base64Data.replace(/\s+/g, "");
       }
+      if (mimeType.includes("jpeg") || mimeType.includes("jpg")) ext = "jpg";
+      else if (mimeType.includes("webp")) ext = "webp";
+      else if (mimeType.includes("svg")) ext = "svg";
+      else if (mimeType.includes("gif")) ext = "gif";
+      else if (mimeType.includes("pdf")) ext = "pdf";
+      else if (mimeType.includes("mp4")) ext = "mp4";
       let filename = "";
       if (customPublicId && typeof customPublicId === "string" && customPublicId.trim().length > 0) {
-        const cleanId = customPublicId.replace(/[^a-zA-Z0-9_-]/g, "_");
-        filename = cleanId.endsWith(`.${ext}`) ? cleanId : `${cleanId}.${ext}`;
+        const strippedId = customPublicId.trim().replace(/\.[a-zA-Z0-9]+$/, "");
+        const cleanId = strippedId.replace(/[^a-zA-Z0-9_-]/g, "_");
+        filename = `${cleanId}.${ext}`;
       } else {
         filename = `media_${Date.now()}_${crypto2.randomBytes(4).toString("hex")}.${ext}`;
       }
@@ -15002,9 +15025,9 @@ async function handler(req, res) {
       const targetPath = `${GITHUB_UPLOADS_PATH}/${filename}`;
       let existingSha;
       try {
-        const checkRes = await fetch(`https://api.github.com/repos/${process.env.GITHUB_REPO || "dresar/PORTOFOLIO"}/contents/${targetPath}?ref=${process.env.GITHUB_BRANCH || "main"}`, {
+        const checkRes = await fetch(`https://api.github.com/repos/${repo}/contents/${targetPath}?ref=${branch}`, {
           headers: {
-            "Authorization": `Bearer ${process.env.GITHUB_TOKEN || ""}`,
+            "Authorization": `Bearer ${token}`,
             "Accept": "application/vnd.github.v3+json",
             "User-Agent": "Portfolio-App"
           }
@@ -15018,15 +15041,15 @@ async function handler(req, res) {
       const uploadPayload = {
         message: `upload: ${filename} via GitHub CDN`,
         content: base64Data,
-        branch: process.env.GITHUB_BRANCH || "main"
+        branch
       };
       if (existingSha) {
         uploadPayload.sha = existingSha;
       }
-      const ghRes = await fetch(`https://api.github.com/repos/${process.env.GITHUB_REPO || "dresar/PORTOFOLIO"}/contents/${targetPath}`, {
+      const ghRes = await fetch(`https://api.github.com/repos/${repo}/contents/${targetPath}`, {
         method: "PUT",
         headers: {
-          "Authorization": `Bearer ${process.env.GITHUB_TOKEN || ""}`,
+          "Authorization": `Bearer ${token}`,
           "Accept": "application/vnd.github.v3+json",
           "Content-Type": "application/json",
           "User-Agent": "Portfolio-App"
@@ -15035,12 +15058,18 @@ async function handler(req, res) {
       });
       if (!ghRes.ok) {
         const ghErr = await ghRes.text();
-        console.error("GitHub CDN Upload Error:", ghRes.status, ghErr);
-        throw new Error(`GitHub CDN Upload Failed (${ghRes.status}): ${ghErr}`);
+        let parsedMessage = ghErr;
+        try {
+          const jsonErr = JSON.parse(ghErr);
+          parsedMessage = jsonErr.message || ghErr;
+        } catch {
+        }
+        console.error("GitHub CDN Upload Error:", ghRes.status, parsedMessage);
+        throw new Error(`GitHub CDN Upload Failed (${ghRes.status}): ${parsedMessage}`);
       }
       const ghData = await ghRes.json();
-      const cdnUrl = `https://cdn.jsdelivr.net/gh/${process.env.GITHUB_REPO || "dresar/PORTOFOLIO"}@${process.env.GITHUB_BRANCH || "main"}/${targetPath}`;
-      const rawUrl = ghData.content?.download_url || `https://raw.githubusercontent.com/${process.env.GITHUB_REPO || "dresar/PORTOFOLIO"}/${process.env.GITHUB_BRANCH || "main"}/${targetPath}`;
+      const cdnUrl = `https://cdn.jsdelivr.net/gh/${repo}@${branch}/${targetPath}`;
+      const rawUrl = ghData.content?.download_url || `https://raw.githubusercontent.com/${repo}/${branch}/${targetPath}`;
       return {
         public_id: filename,
         secure_url: cdnUrl,
@@ -15053,19 +15082,23 @@ async function handler(req, res) {
         bytes: buffer.length,
         resource_type: mimeType.startsWith("video") ? "video" : "image",
         created_at: (/* @__PURE__ */ new Date()).toISOString(),
-        _account: `GitHub CDN (${process.env.GITHUB_REPO || "dresar/PORTOFOLIO"})`
+        _account: `GitHub CDN (${repo})`
       };
     }
     async function listGitHubCDNAssets() {
       const assets = [];
       const seenNames = /* @__PURE__ */ new Set();
+      const token = getGhToken();
+      const repo = getGhRepo();
+      const branch = getGhBranch();
       try {
-        const ghRes = await fetch(`https://api.github.com/repos/${process.env.GITHUB_REPO || "dresar/PORTOFOLIO"}/contents/${GITHUB_UPLOADS_PATH}?ref=${process.env.GITHUB_BRANCH || "main"}`, {
-          headers: {
-            "Authorization": `Bearer ${process.env.GITHUB_TOKEN || ""}`,
-            "Accept": "application/vnd.github.v3+json",
-            "User-Agent": "Portfolio-App"
-          }
+        const headers = {
+          "Accept": "application/vnd.github.v3+json",
+          "User-Agent": "Portfolio-App"
+        };
+        if (token) headers["Authorization"] = `Bearer ${token}`;
+        const ghRes = await fetch(`https://api.github.com/repos/${repo}/contents/${GITHUB_UPLOADS_PATH}?ref=${branch}`, {
+          headers
         });
         if (ghRes.ok) {
           const items = await ghRes.json();
@@ -15075,7 +15108,7 @@ async function handler(req, res) {
                 seenNames.add(item.name);
                 const ext = item.name.split(".").pop()?.toLowerCase() || "png";
                 const isVideo = ["mp4", "webm", "mov"].includes(ext);
-                const cdnUrl = `https://cdn.jsdelivr.net/gh/${process.env.GITHUB_REPO || "dresar/PORTOFOLIO"}@${process.env.GITHUB_BRANCH || "main"}/${item.path}`;
+                const cdnUrl = `https://cdn.jsdelivr.net/gh/${repo}@${branch}/${item.path}`;
                 assets.push({
                   public_id: item.name,
                   secure_url: cdnUrl,
@@ -15101,13 +15134,17 @@ async function handler(req, res) {
       return assets;
     }
     async function deleteFromGitHubCDN(publicId, sha) {
+      const token = getGhToken();
+      const repo = getGhRepo();
+      const branch = getGhBranch();
+      if (!token) return "error: GITHUB_TOKEN missing";
       let fileSha = sha;
       const targetPath = `${GITHUB_UPLOADS_PATH}/${publicId}`;
       if (!fileSha) {
         try {
-          const getRes = await fetch(`https://api.github.com/repos/${process.env.GITHUB_REPO || "dresar/PORTOFOLIO"}/contents/${targetPath}?ref=${process.env.GITHUB_BRANCH || "main"}`, {
+          const getRes = await fetch(`https://api.github.com/repos/${repo}/contents/${targetPath}?ref=${branch}`, {
             headers: {
-              "Authorization": `Bearer ${process.env.GITHUB_TOKEN || ""}`,
+              "Authorization": `Bearer ${token}`,
               "Accept": "application/vnd.github.v3+json",
               "User-Agent": "Portfolio-App"
             }
@@ -15122,10 +15159,10 @@ async function handler(req, res) {
       let ghResult = "ok";
       if (fileSha) {
         try {
-          const delRes = await fetch(`https://api.github.com/repos/${process.env.GITHUB_REPO || "dresar/PORTOFOLIO"}/contents/${targetPath}`, {
+          const delRes = await fetch(`https://api.github.com/repos/${repo}/contents/${targetPath}`, {
             method: "DELETE",
             headers: {
-              "Authorization": `Bearer ${process.env.GITHUB_TOKEN || ""}`,
+              "Authorization": `Bearer ${token}`,
               "Accept": "application/vnd.github.v3+json",
               "Content-Type": "application/json",
               "User-Agent": "Portfolio-App"
@@ -15133,7 +15170,7 @@ async function handler(req, res) {
             body: JSON.stringify({
               message: `delete: ${publicId} from GitHub CDN`,
               sha: fileSha,
-              branch: process.env.GITHUB_BRANCH || "main"
+              branch
             })
           });
           ghResult = delRes.ok ? "ok" : "error";
@@ -15164,9 +15201,9 @@ async function handler(req, res) {
         const body = await parseBody(req);
         const { text: text2, target = "en" } = body || {};
         if (!text2) return sendJSON(res, 400, { error: "Text is required" });
-        const apiKey = process.env.AI_API_KEY || process.env.AI_GATEWAY_API_KEY;
-        const apiUrl = process.env.AI_API_URL || (process.env.AI_GATEWAY_BASE_URL ? `${process.env.AI_GATEWAY_BASE_URL.replace(/\/+$/, "")}/chat/completions` : "https://9router.serverinka.cloud/v1/chat/completions");
-        const model = process.env.AI_MODEL || process.env.AI_GATEWAY_MODEL || "MY-COMBO";
+        const apiKey = getEnv("AI_API_KEY") || getEnv("AI_GATEWAY_API_KEY");
+        const apiUrl = getEnv("AI_API_URL") || (getEnv("AI_GATEWAY_BASE_URL") ? `${getEnv("AI_GATEWAY_BASE_URL").replace(/\/+$/, "")}/chat/completions` : "https://9router.serverinka.cloud/v1/chat/completions");
+        const model = getEnv("AI_MODEL") || getEnv("AI_GATEWAY_MODEL") || "MY-COMBO";
         if (!apiKey) return sendJSON(res, 503, { error: "AI Gateway not configured", translated: text2 });
         const systemPrompt = `You are a professional translator for portfolio content. Translate the given text to fluent ${target === "en" ? "English" : "Indonesian"}. Preserve all HTML tags, styling, emojis, and code formatting exactly as they are. Output ONLY the translated text without any explanation.`;
         const apiRes = await fetch(apiUrl, {
@@ -15202,9 +15239,9 @@ async function handler(req, res) {
     if (resourceName === "ai") {
       const tokenUser2 = await verifyJwtToken(req);
       if (!tokenUser2) return sendJSON(res, 401, { error: "Unauthorized. AI operations require authentication." });
-      const apiKey = process.env.AI_API_KEY || process.env.AI_GATEWAY_API_KEY;
-      const apiUrl = process.env.AI_API_URL || (process.env.AI_GATEWAY_BASE_URL ? `${process.env.AI_GATEWAY_BASE_URL.replace(/\/+$/, "")}/chat/completions` : "https://9router.serverinka.cloud/v1/chat/completions");
-      const model = process.env.AI_MODEL || process.env.AI_GATEWAY_MODEL || "MY-COMBO";
+      const apiKey = getEnv("AI_API_KEY") || getEnv("AI_GATEWAY_API_KEY");
+      const apiUrl = getEnv("AI_API_URL") || (getEnv("AI_GATEWAY_BASE_URL") ? `${getEnv("AI_GATEWAY_BASE_URL").replace(/\/+$/, "")}/chat/completions` : "https://9router.serverinka.cloud/v1/chat/completions");
+      const model = getEnv("AI_MODEL") || getEnv("AI_GATEWAY_MODEL") || "MY-COMBO";
       const parseUpstreamError = async (apiRes) => {
         const status = Number(apiRes?.status || 500);
         const contentType = String(apiRes?.headers?.get?.("content-type") || "");
@@ -15324,7 +15361,7 @@ async function handler(req, res) {
         try {
           const body = await parseBody(req);
           const imageDataUrl = String(body?.imageDataUrl || "");
-          const imageModel = typeof body?.model === "string" && body.model.trim() ? body.model.trim() : process.env.AI_IMAGE_MODEL || model;
+          const imageModel = typeof body?.model === "string" && body.model.trim() ? body.model.trim() : getEnv("AI_IMAGE_MODEL") || model;
           if (!imageDataUrl) return sendJSON(res, 400, { error: "imageDataUrl is required" });
           if (!/^data:image\/[a-zA-Z0-9.+-]+;base64,/.test(imageDataUrl)) {
             return sendJSON(res, 400, { error: "imageDataUrl must be a base64 data URL" });
@@ -15446,10 +15483,12 @@ async function handler(req, res) {
         }
       };
       if (action === "configs" && req.method === "GET") {
+        const curGhRepo = getGhRepo();
+        const curGhToken = getGhToken();
         const ghConfig = {
           id: 9999,
-          cloud_name: `GitHub CDN (${process.env.GITHUB_REPO || "dresar/PORTOFOLIO"})`,
-          api_key: process.env.GITHUB_TOKEN || "" ? `${(process.env.GITHUB_TOKEN || "").slice(0, 8)}\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022${(process.env.GITHUB_TOKEN || "").slice(-4)}` : "",
+          cloud_name: `GitHub CDN (${curGhRepo})`,
+          api_key: curGhToken ? `${curGhToken.slice(0, 8)}\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022${curGhToken.slice(-4)}` : "",
           api_secret: "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022",
           label: "GitHub CDN (jsDelivr Edge)",
           is_active: true,
@@ -15589,9 +15628,11 @@ async function handler(req, res) {
           }
         }
         try {
-          const ghTest = await fetch(`https://api.github.com/repos/${process.env.GITHUB_REPO || "dresar/PORTOFOLIO"}`, {
+          const testRepo = getGhRepo();
+          const testToken = getGhToken();
+          const ghTest = await fetch(`https://api.github.com/repos/${testRepo}`, {
             headers: {
-              "Authorization": `Bearer ${process.env.GITHUB_TOKEN || ""}`,
+              "Authorization": `Bearer ${testToken}`,
               "Accept": "application/vnd.github.v3+json",
               "User-Agent": "Portfolio-App"
             }
@@ -15601,8 +15642,8 @@ async function handler(req, res) {
             return sendJSON(res, 200, {
               success: true,
               status: "connected",
-              cloud_name: `GitHub CDN (${process.env.GITHUB_REPO || "dresar/PORTOFOLIO"})`,
-              repo: process.env.GITHUB_REPO || "dresar/PORTOFOLIO",
+              cloud_name: `GitHub CDN (${testRepo})`,
+              repo: testRepo,
               cdn: "jsDelivr Edge CDN",
               default_branch: ghData.default_branch,
               provider: "github"
@@ -15971,7 +16012,7 @@ async function handler(req, res) {
     if (res.headersSent) return;
     const tokenUser = await verifyJwtToken(req);
     const isAuthenticated = Boolean(tokenUser);
-    const isProduction = process.env.NODE_ENV === "production";
+    const isProduction = getEnv("NODE_ENV") === "production";
     const msg = String(error?.message || "");
     const code = String(error?.code || "");
     const dbSignals = [
@@ -16000,6 +16041,23 @@ async function handler(req, res) {
 // src-functions/api/[[route]].ts
 async function onRequest(context) {
   const { request, env } = context;
+  globalThis.__CF_ENV__ = env;
+  try {
+    if (typeof process === "undefined") {
+      globalThis.process = { env: { ...env } };
+    } else {
+      if (!process.env) {
+        process.env = {};
+      }
+      for (const [k, v2] of Object.entries(env || {})) {
+        try {
+          process.env[k] = v2;
+        } catch (e) {
+        }
+      }
+    }
+  } catch (e) {
+  }
   const url = new URL(request.url);
   const isGet = request.method === "GET";
   const isMutation = ["POST", "PUT", "PATCH", "DELETE"].includes(request.method);
@@ -16027,12 +16085,21 @@ async function onRequest(context) {
       bodyData = "";
     }
   }
+  let parsedBody = null;
+  if (bodyData) {
+    try {
+      parsedBody = JSON.parse(bodyData);
+    } catch (e) {
+      parsedBody = null;
+    }
+  }
   const req = {
     method: request.method,
     url: url.pathname + url.search,
     headers: Object.fromEntries(request.headers.entries()),
     socket: { remoteAddress: request.headers.get("cf-connecting-ip") || "127.0.0.1" },
     query: Object.fromEntries(url.searchParams.entries()),
+    body: parsedBody || bodyData,
     on: (event, callback) => {
       if (event === "data" && bodyData) {
         callback(bodyData);
@@ -16087,23 +16154,6 @@ async function onRequest(context) {
       write: () => {
       }
     };
-    globalThis.__CF_ENV__ = env;
-    try {
-      if (typeof process === "undefined") {
-        globalThis.process = { env: { ...env } };
-      } else {
-        if (!process.env) {
-          process.env = {};
-        }
-        for (const [k, v2] of Object.entries(env || {})) {
-          try {
-            process.env[k] = v2;
-          } catch (e) {
-          }
-        }
-      }
-    } catch (e) {
-    }
     try {
       handler(req, res).catch((err) => {
         console.error("Vercel Handler Error:", err);
