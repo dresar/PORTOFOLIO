@@ -50,10 +50,11 @@ export default defineConfig(({ mode }) => ({
         clientsClaim: true,
         skipWaiting: true,
         globPatterns: [
-          '**/*.{js,css,html,svg,png,ico,txt,woff2}'
+          'favicon.svg',
+          'pwa-*.png'
         ],
-        globIgnores: ['uploads/**'],
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+        globIgnores: ['uploads/**', 'assets/**'],
+        maximumFileSizeToCacheInBytes: 2 * 1024 * 1024,
         navigateFallbackDenylist: [
           /^\/admin\/.*/,
           /^\/api\/.*/,
@@ -67,16 +68,16 @@ export default defineConfig(({ mode }) => ({
         ],
         runtimeCaching: [
           {
+            // Cache hashed assets dynamically as pages are visited (On-Demand / StaleWhileRevalidate)
             urlPattern: ({ url }) => url.origin === self.location.origin && url.pathname.includes('/assets/'),
-            handler: 'NetworkFirst',
+            handler: 'StaleWhileRevalidate',
             options: {
               cacheName: 'assets-runtime-cache',
-              networkTimeoutSeconds: 10,
               expiration: {
-                maxEntries: 100,
-                maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days
+                maxEntries: 80,
+                maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
               },
-              cacheableResponse: { statuses: [200] }
+              cacheableResponse: { statuses: [0, 200] }
             }
           },
           {
@@ -84,12 +85,12 @@ export default defineConfig(({ mode }) => ({
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api-cache-v2',
-              networkTimeoutSeconds: 10,
+              networkTimeoutSeconds: 3,
               expiration: {
                 maxEntries: 100,
                 maxAgeSeconds: 60 * 60 * 12
               },
-              cacheableResponse: { statuses: [200] }
+              cacheableResponse: { statuses: [0, 200] }
             }
           },
           {
