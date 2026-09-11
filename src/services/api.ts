@@ -640,21 +640,21 @@ export const api = {
   // Experience
   experience: {
     getAll: async (): Promise<Experience[]> => {
-      return fetchWithLocalFallback<Experience[]>('/experience', 'experience_cache', []);
+      return fetchWithLocalFallback<Experience[]>('/experiences', 'experience_cache', []);
     },
     create: async (data: any): Promise<Experience> => {
-      const response = await apiClient.post<Experience>('/experience', data);
+      const response = await apiClient.post<Experience>('/experiences', data);
       return response.data;
     },
     update: async (id: number, data: any): Promise<Experience> => {
-      const response = await apiClient.put<Experience>(`/experience/${id}`, data);
+      const response = await apiClient.put<Experience>(`/experiences/${id}`, data);
       return response.data;
     },
     delete: async (id: number): Promise<void> => {
-      await apiClient.delete(`/experience/${id}`);
+      await apiClient.delete(`/experiences/${id}`);
     },
     bulkDelete: async (ids: number[]): Promise<void> => {
-      await apiClient.delete('/experience/bulk', { data: { ids } });
+      await apiClient.delete('/experiences/bulk', { data: { ids } });
     },
   },
 
