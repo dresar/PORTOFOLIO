@@ -29,11 +29,7 @@ export function normalizeMediaUrl(raw?: string | null, options?: MediaUrlOptions
       const cleanPath = url.startsWith('/') ? url : `/${url}`;
       directUrl = `https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public${cleanPath}`;
     }
-    if (!directUrl.endsWith('.svg')) {
-      const w = width || 600;
-      return `https://wsrv.nl/?url=${directUrl.replace(/^https?:\/\//, '')}&w=${w}&output=webp&q=${quality}`;
-    }
-    return directUrl;
+    return directUrl; // Skip wsrv.nl to prevent ISP blocking
   }
 
   // Cloudinary optimization (f_auto, q_auto:eco, width resizing)
