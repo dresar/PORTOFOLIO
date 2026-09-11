@@ -411,7 +411,7 @@ const getDb = () => {
     return db;
 };
 
-let didEnsureSchema = false;
+let didEnsureSchema = true;
 const ensureSchema = async () => {
     if (didEnsureSchema) return;
     try {
@@ -672,9 +672,9 @@ export default async function handler(req: any, res: any) {
     }
 
     // --- Special Routes ---
-
-    if (resourceName && resourceName !== 'health' && resourceName !== 'ai' && resourceName !== 'upload') {
+    if (resourceName === 'admin' && action === 'ensure-schema') {
       await ensureSchema();
+      return sendJSON(res, 200, { success: true, message: 'Schema ensured successfully' });
     }
 
     // Blog: Get by Slug
@@ -2082,21 +2082,20 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
       'wa-templates'
     ];
 
-    // --- CACHING MIDDLEWARE (Vercel Edge Cache) ---
-    // Apply Cache-Control headers for Public GET requests ONLY in PRODUCTION
+    // --- CACHING MIDDLEWARE (Cloudflare CDN / Edge Cache) ---
+    // Apply Cache-Control headers for Public GET requests
     // EXCLUDE comments and interactions from caching to ensure real-time updates
     const isInteraction = action === 'comments' || action === 'like' || action === 'view';
-    const isProduction = process.env.NODE_ENV === 'production';
     
     const tokenUser = await verifyJwtToken(req);
     const isAuthenticated = Boolean(tokenUser);
 
-    if (isProduction && req.method === 'GET' && publicResources.includes(resourceName) && !isInteraction && !isAuthenticated) {
+    if (req.method === 'GET' && publicResources.includes(resourceName) && !isInteraction && !isAuthenticated) {
         // Cache-Control: 
-        // public: Can be cached by shared caches (CDNs)
-        // s-maxage=3600: Cached in Edge Cache for 1 hour (60 mins)
-        // stale-while-revalidate=600: Serve stale content while revalidating for 10 mins
-        res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=600');
+        // public: Can be cached by shared CDN edge caches (Cloudflare Singapore/Jakarta)
+        // s-maxage=86400: Cached on Cloudflare CDN Edge for 24 hours (sub-20ms instant responses)
+        // stale-while-revalidate=604800: Serve stale content instantly while revalidating in background
+        res.setHeader('Cache-Control', 'public, max-age=60, s-maxage=86400, stale-while-revalidate=604800');
     } else {
         res.setHeader('Cache-Control', 'no-store, max-age=0, must-revalidate');
     }

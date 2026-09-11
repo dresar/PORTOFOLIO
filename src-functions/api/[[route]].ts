@@ -4,9 +4,29 @@ export async function onRequest(context: any) {
   const { request, env } = context;
   const url = new URL(request.url);
   
+  const isGet = request.method === 'GET';
+  const isMutation = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method);
+  const hasAuth = Boolean(request.headers.get('authorization'));
+  const cache = (typeof caches !== 'undefined' && (caches as any)?.default) ? (caches as any).default : null;
+
+  // 1. Instant Edge Cache lookup for public GET requests
+  if (cache && isGet && !hasAuth) {
+    try {
+      const cachedResponse = await cache.match(request);
+      if (cachedResponse) {
+        const cachedHeaders = new Headers(cachedResponse.headers);
+        cachedHeaders.set('CF-Edge-Cache', 'HIT');
+        return new Response(cachedResponse.body, {
+          status: cachedResponse.status,
+          headers: cachedHeaders
+        });
+      }
+    } catch (e) {}
+  }
+  
   // Read body text first
   let bodyData = '';
-  if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method)) {
+  if (isMutation) {
     try {
       bodyData = await request.text();
     } catch (e) {
@@ -48,7 +68,27 @@ export async function onRequest(context: any) {
       end: (data: any) => {
         headersSent = true;
         body = data;
-        resolve(new Response(body, { status: statusCode, headers }));
+        const response = new Response(body, { status: statusCode, headers });
+
+        // If this was a successful mutation, purge cache for this resource endpoint
+        if (cache && isMutation && (statusCode >= 200 && statusCode < 300)) {
+          try {
+            const getReq = new Request(url.origin + url.pathname, { method: 'GET' });
+            context.waitUntil(cache.delete(getReq));
+          } catch (e) {}
+        }
+
+        // Cache successful public GET responses at Cloudflare Edge
+        if (cache && isGet && !hasAuth && statusCode === 200) {
+          try {
+            const cacheControl = headers.get('Cache-Control');
+            if (cacheControl && cacheControl.includes('public')) {
+              context.waitUntil(cache.put(request, response.clone()));
+            }
+          } catch (e) {}
+        }
+
+        resolve(response);
       },
       write: () => {}
     };

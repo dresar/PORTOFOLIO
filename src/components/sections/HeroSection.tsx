@@ -6,7 +6,6 @@ import { TypewriterText } from '@/components/effects/TypewriterText';
 import { ShinyButton, BorderBeamButton } from '@/components/effects/Buttons';
 import { useProfile } from '@/hooks/useProfile';
 import { useSocialLinks } from '@/hooks/useSocialLinks';
-import { Loader2 } from 'lucide-react';
 import { useProjects } from '@/hooks/useProjects';
 import { normalizeMediaUrl, sanitizeHtmlContent, safeUrl } from '@/lib/utils';
 import { useExperience } from '@/hooks/useExperience';
@@ -25,18 +24,6 @@ export const HeroSection = () => {
   const scrollToProjects = () => {
     document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
   };
-
-  if (profileLoading || linksLoading) {
-    // Show a skeleton or loading state that isn't black screen
-    return (
-        <section id="home" className="relative min-h-[80vh] flex items-center overflow-hidden pt-16">
-            <div className="container mx-auto px-4 py-8 relative z-10 flex flex-col items-center justify-center">
-                <Loader2 className="h-12 w-12 animate-spin text-primary opacity-50" />
-                <p className="text-muted-foreground mt-4 text-sm animate-pulse">{t('common.loading')}</p>
-            </div>
-        </section>
-    );
-  }
 
   // Determine localized content
   const currentLang = i18n.language === 'en' ? 'en' : 'id';

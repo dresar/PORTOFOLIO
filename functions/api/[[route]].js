@@ -14406,7 +14406,7 @@ var getDb = () => {
   db = drizzle(getSql(), { schema });
   return db;
 };
-var didEnsureSchema = false;
+var didEnsureSchema = true;
 var ensureSchema = async () => {
   if (didEnsureSchema) return;
   try {
@@ -14628,8 +14628,9 @@ async function handler(req, res) {
         }
       }
     }
-    if (resourceName && resourceName !== "health" && resourceName !== "ai" && resourceName !== "upload") {
+    if (resourceName === "admin" && action === "ensure-schema") {
       await ensureSchema();
+      return sendJSON(res, 200, { success: true, message: "Schema ensured successfully" });
     }
     if ((resourceName === "blog-posts" || resourceName === "blog") && action === "by_slug") {
       const slug = query.slug;
@@ -15819,11 +15820,10 @@ async function handler(req, res) {
       "wa-templates"
     ];
     const isInteraction = action === "comments" || action === "like" || action === "view";
-    const isProduction = process.env.NODE_ENV === "production";
     const tokenUser = await verifyJwtToken(req);
     const isAuthenticated = Boolean(tokenUser);
-    if (isProduction && req.method === "GET" && publicResources.includes(resourceName) && !isInteraction && !isAuthenticated) {
-      res.setHeader("Cache-Control", "public, s-maxage=3600, stale-while-revalidate=600");
+    if (req.method === "GET" && publicResources.includes(resourceName) && !isInteraction && !isAuthenticated) {
+      res.setHeader("Cache-Control", "public, max-age=60, s-maxage=86400, stale-while-revalidate=604800");
     } else {
       res.setHeader("Cache-Control", "no-store, max-age=0, must-revalidate");
     }
@@ -16001,8 +16001,26 @@ async function handler(req, res) {
 async function onRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
+  const isGet = request.method === "GET";
+  const isMutation = ["POST", "PUT", "PATCH", "DELETE"].includes(request.method);
+  const hasAuth = Boolean(request.headers.get("authorization"));
+  const cache = typeof caches !== "undefined" && caches?.default ? caches.default : null;
+  if (cache && isGet && !hasAuth) {
+    try {
+      const cachedResponse = await cache.match(request);
+      if (cachedResponse) {
+        const cachedHeaders = new Headers(cachedResponse.headers);
+        cachedHeaders.set("CF-Edge-Cache", "HIT");
+        return new Response(cachedResponse.body, {
+          status: cachedResponse.status,
+          headers: cachedHeaders
+        });
+      }
+    } catch (e) {
+    }
+  }
   let bodyData = "";
-  if (["POST", "PUT", "PATCH", "DELETE"].includes(request.method)) {
+  if (isMutation) {
     try {
       bodyData = await request.text();
     } catch (e) {
@@ -16047,7 +16065,24 @@ async function onRequest(context) {
       end: (data) => {
         headersSent = true;
         body = data;
-        resolve(new Response(body, { status: statusCode, headers }));
+        const response = new Response(body, { status: statusCode, headers });
+        if (cache && isMutation && (statusCode >= 200 && statusCode < 300)) {
+          try {
+            const getReq = new Request(url.origin + url.pathname, { method: "GET" });
+            context.waitUntil(cache.delete(getReq));
+          } catch (e) {
+          }
+        }
+        if (cache && isGet && !hasAuth && statusCode === 200) {
+          try {
+            const cacheControl = headers.get("Cache-Control");
+            if (cacheControl && cacheControl.includes("public")) {
+              context.waitUntil(cache.put(request, response.clone()));
+            }
+          } catch (e) {
+          }
+        }
+        resolve(response);
       },
       write: () => {
       }
