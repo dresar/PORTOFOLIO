@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useState, useMemo } from 'react';
-import { useParams, Link, useNavigate, Navigate } from 'react-router-dom';
-import { useProjects } from '@/hooks/useProjects';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useProjects, useProject } from '@/hooks/useProjects';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { normalizeMediaUrl, sanitizeHtmlContent, safeUrl } from '@/lib/utils';
@@ -34,7 +34,9 @@ const ProjectDetail = () => {
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
   }, [id]);
-  const { projects: rawProjects, isLoading, isError } = useProjects();
+
+  const { projects: rawProjects, isLoading: isListLoading } = useProjects();
+  const { data: directProjectData, isLoading: isDirectLoading, isError: isDirectError } = useProject(id);
   const { getProject } = useLocalizedContent();
   const { resolvedTheme } = useTheme();
   const { t } = useTranslation();
@@ -43,21 +45,35 @@ const ProjectDetail = () => {
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
   const project = useMemo(() => {
-    if (!rawProjects || !id) return null;
-    const found = rawProjects.find((p: any) => p.id === Number(id));
-    return getProject(found);
-  }, [rawProjects, id, getProject]);
+    if (!id) return null;
+    // 1. Try finding in pre-fetched list (instant from cache)
+    if (rawProjects && rawProjects.length > 0) {
+      const found = rawProjects.find((p: any) => p.id === Number(id) || p.slug === id);
+      if (found) return getProject(found);
+    }
+    // 2. Direct single-project query fallback
+    if (directProjectData) {
+      const raw = (directProjectData as any)?.data || directProjectData;
+      if (raw && (raw.id || raw.title)) {
+        return getProject(raw);
+      }
+    }
+    return null;
+  }, [rawProjects, directProjectData, id, getProject]);
 
   const allImages = useMemo(() => {
     if (!project) return [];
-    const images = [];
+    const images: string[] = [];
     if (project.coverImage || project.thumbnail) {
       images.push(normalizeMediaUrl(project.coverImage || project.thumbnail));
     }
     
     // Handle legacy relation
     if (project.images && project.images.length > 0) {
-      project.images.forEach((img: any) => images.push(normalizeMediaUrl(img.image)));
+      project.images.forEach((img: any) => {
+        const url = img?.image || img?.url || (typeof img === 'string' ? img : '');
+        if (url) images.push(normalizeMediaUrl(url));
+      });
     }
 
     // Handle JSON gallery
@@ -71,12 +87,21 @@ const ProjectDetail = () => {
         }
       }
       if (Array.isArray(gallery)) {
-        gallery.forEach((img: string) => images.push(normalizeMediaUrl(img)));
+        gallery.forEach((img: any) => {
+          const url = typeof img === 'string' ? img : img?.url || img?.image || '';
+          if (url) images.push(normalizeMediaUrl(url));
+        });
       }
     }
     
-    return images;
+    // Deduplicate unique images so identical previews never repeat
+    return Array.from(new Set(images.filter(Boolean)));
   }, [project]);
+
+  const safeImageIndex = useMemo(() => {
+    if (allImages.length === 0) return 0;
+    return currentImageIndex >= allImages.length ? 0 : currentImageIndex;
+  }, [allImages.length, currentImageIndex]);
 
   useEffect(() => {
     if (!isAutoPlaying || allImages.length <= 1) return;
@@ -132,6 +157,8 @@ const ProjectDetail = () => {
     return [];
   }, [project]);
 
+  const isLoading = !project && (isDirectLoading || (isListLoading && (!rawProjects || rawProjects.length === 0)));
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex flex-col">
@@ -151,8 +178,27 @@ const ProjectDetail = () => {
     );
   }
 
-  if (isError || (!isLoading && !project)) {
-    return <Navigate to={getLocalizedPath('/')} replace />;
+  if (!isLoading && !project) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <Header />
+        <main className="flex-grow pt-32 pb-16 container mx-auto px-4 max-w-xl text-center flex flex-col items-center justify-center">
+          <div className="p-8 rounded-2xl bg-card border border-border/60 shadow-lg space-y-4 max-w-md w-full">
+            <h2 className="text-2xl font-bold text-foreground">Proyek Tidak Ditemukan</h2>
+            <p className="text-muted-foreground text-sm">
+              Proyek yang Anda cari mungkin telah diperbarui atau dipindahkan ke tautan baru.
+            </p>
+            <Button asChild className="w-full mt-4">
+              <Link to={getLocalizedPath('/')}>
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Kembali ke Beranda
+              </Link>
+            </Button>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
   }
 
   if (!project) return null;
@@ -255,21 +301,21 @@ const ProjectDetail = () => {
                 >
                     <AnimatePresence mode="wait">
                         <motion.img 
-                            key={currentImageIndex}
-                            src={allImages[currentImageIndex] || ''} 
+                            key={safeImageIndex}
+                            src={allImages[safeImageIndex] || ''} 
                             alt={project.title} 
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.5 }}
                             className="w-full h-full object-cover cursor-pointer hover:scale-[1.02] transition-transform"
-                            onClick={() => openImagePreviewModal(allImages[currentImageIndex], project.title, allImages, currentImageIndex)}
+                            onClick={() => openImagePreviewModal(allImages[safeImageIndex], project.title, allImages, safeImageIndex)}
                         />
                     </AnimatePresence>
 
                     {/* Expand Image Button Badge */}
                     <button
-                      onClick={() => openImagePreviewModal(allImages[currentImageIndex], project.title, allImages, currentImageIndex)}
+                      onClick={() => openImagePreviewModal(allImages[safeImageIndex], project.title, allImages, safeImageIndex)}
                       className="absolute top-3 right-3 p-2 rounded-lg bg-black/60 hover:bg-primary text-white backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all flex items-center gap-1.5 text-xs font-semibold shadow-lg z-20 cursor-pointer"
                       title="Perbesar"
                     >

@@ -635,8 +635,14 @@ export default async function handler(req: any, res: any) {
                 if (pathParts.length > 2) {
                     subResource = pathParts[2]; // e.g. /projects/1/details
                 }
+            } else if (pathParts[1] === 'categories') {
+                action = 'categories';
+            } else if (pathParts[1] === 'by_slug') {
+                action = 'by_slug';
+            } else if (resourceName === 'projects' || resourceName === 'blog-posts' || resourceName === 'blog') {
+                action = 'by_slug';
+                query.slug = pathParts[1];
             } else {
-                // e.g. /blog-posts/by_slug
                 action = pathParts[1];
             }
         }

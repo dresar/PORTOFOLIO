@@ -28,10 +28,17 @@ export function useProjects() {
   };
 }
 
-export function useProject(id: number | string | undefined) {
+export function useProject(idOrSlug: number | string | undefined) {
   return useQuery({
-    queryKey: ['project', id],
-    queryFn: () => projectsAPI.getById(Number(id)),
-    enabled: !!id,
+    queryKey: ['project', idOrSlug],
+    queryFn: async () => {
+      if (!idOrSlug) return null;
+      const isNum = !isNaN(Number(idOrSlug));
+      if (isNum) {
+        return projectsAPI.getById(Number(idOrSlug));
+      }
+      return projectsAPI.getOne(idOrSlug);
+    },
+    enabled: !!idOrSlug,
   });
 }
