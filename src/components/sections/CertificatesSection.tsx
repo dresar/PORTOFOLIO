@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useCertificates } from '@/hooks/useCertificates';
 import { useModalStore } from '@/store/modalStore';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { normalizeMediaUrl, safeUrl } from '@/lib/utils';
 import { certificateCategoriesAPI } from '@/services/api';
 import { useLocalizedContent } from '@/hooks/useLocalizedContent';
@@ -79,8 +80,22 @@ export const CertificatesSection = () => {
 
   if (isLoading) {
     return (
-      <section id="certificates" className="py-6 md:py-12 relative flex justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <section id="certificates" className="py-6 md:py-8 relative bg-card/50 dark:bg-transparent">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-6">
+            <Skeleton className="h-8 w-44 mx-auto mb-2" />
+            <Skeleton className="h-4 w-64 mx-auto" />
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="rounded-xl border border-border/30 p-4 space-y-3 bg-card/40">
+                <Skeleton className="h-40 w-full rounded-lg" />
+                <Skeleton className="h-5 w-2/3" />
+                <Skeleton className="h-4 w-1/2" />
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
     );
   }

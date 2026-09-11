@@ -7,7 +7,8 @@ import { useSkills } from '@/hooks/useSkills';
 import { skillCategoriesAPI } from '@/services/api';
 import { normalizeMediaUrl } from '@/lib/utils';
 import { TiltedCard } from '@/components/effects/Cards';
-import { Code2, Palette, Users, Globe, Loader2, Database, Cloud } from 'lucide-react';
+import { Code2, Palette, Users, Globe, Database, Cloud } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface SkillCategory {
   id: number;
@@ -99,8 +100,22 @@ export const SkillsSection = () => {
 
   if ((isSkillsLoading && !isSkillsError) || (isCategoriesLoading && !isCategoriesError)) {
     return (
-      <section id="skills" className="py-6 md:py-12 relative bg-card/30 flex justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <section id="skills" className="py-6 md:py-8 relative bg-card/30">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-6">
+            <Skeleton className="h-8 w-44 mx-auto mb-2" />
+            <Skeleton className="h-4 w-72 mx-auto" />
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <div key={i} className="p-4 rounded-xl border border-border/30 bg-card/40 flex flex-col items-center gap-3">
+                <Skeleton className="h-10 w-10 rounded-full" />
+                <Skeleton className="h-4 w-16" />
+                <Skeleton className="h-2 w-20 rounded-full" />
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
     );
   }

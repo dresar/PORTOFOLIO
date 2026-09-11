@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useProjects } from '@/hooks/useProjects';
 import { useProjectCategories } from '@/hooks/useProjectCategories';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { AISummaryModal } from '@/components/ui/AISummaryModal';
 import { normalizeMediaUrl, safeUrl } from '@/lib/utils';
 import { getLocalizedPath } from '@/lib/i18nNavigation';
@@ -65,8 +66,27 @@ export const ProjectsSection = () => {
 
   if (isLoading) {
     return (
-      <section id="projects" className="py-6 md:py-12 relative flex justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <section id="projects" className="py-6 md:py-8 relative">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-6">
+            <Skeleton className="h-8 w-48 mx-auto mb-2" />
+            <Skeleton className="h-4 w-80 mx-auto" />
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="rounded-xl border border-border/30 p-4 space-y-3 bg-card/40">
+                <Skeleton className="h-44 w-full rounded-lg" />
+                <Skeleton className="h-5 w-3/4" />
+                <Skeleton className="h-4 w-full" />
+                <div className="flex gap-2 pt-2">
+                  <Skeleton className="h-5 w-14 rounded-full" />
+                  <Skeleton className="h-5 w-14 rounded-full" />
+                  <Skeleton className="h-5 w-14 rounded-full" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
     );
   }

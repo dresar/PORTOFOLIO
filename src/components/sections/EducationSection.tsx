@@ -3,6 +3,7 @@ import { GraduationCap, Calendar, Award, Image as ImageIcon, Loader2, ArrowRight
 import { useTranslation } from 'react-i18next';
 import { useEducation } from '@/hooks/useEducation';
 import { useModalStore } from '@/store/modalStore';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useLocalizedContent } from '@/hooks/useLocalizedContent';
 
 export const EducationSection = () => {
@@ -129,8 +130,25 @@ export const EducationSection = () => {
 
   if (isLoading) {
     return (
-      <section id="education" className="py-6 md:py-12 relative flex justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <section id="education" className="py-6 md:py-8 relative">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <div className="text-center mb-6">
+            <Skeleton className="h-8 w-44 mx-auto mb-2" />
+            <Skeleton className="h-4 w-64 mx-auto" />
+          </div>
+          <div className="space-y-4">
+            {Array.from({ length: 2 }).map((_, i) => (
+              <div key={i} className="rounded-xl border border-border/30 p-5 space-y-3 bg-card/40">
+                <div className="flex justify-between items-center">
+                  <Skeleton className="h-5 w-52" />
+                  <Skeleton className="h-4 w-24" />
+                </div>
+                <Skeleton className="h-4 w-36" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
     );
   }
