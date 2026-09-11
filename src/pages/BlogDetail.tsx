@@ -316,10 +316,17 @@ const BlogDetail = () => {
               <Badge variant="secondary" className="font-semibold tracking-wide uppercase px-2 py-0.5 text-[11px]">
                 {post.category?.name || t('blog.default_category')}
               </Badge>
-              <span className="flex items-center">
-                <Calendar className="w-3.5 h-3.5 mr-1 text-primary" />
-                {format(new Date(post.published_at || post.created_at), 'd MMMM yyyy', { locale: idLocale })}
-              </span>
+                <span className="flex items-center">
+                  <Calendar className="w-3.5 h-3.5 mr-1 text-primary" />
+                  {(() => {
+                    try {
+                      const d = new Date(post.published_at || post.created_at);
+                      return isNaN(d.getTime()) ? 'No Date' : format(d, 'd MMMM yyyy', { locale: idLocale });
+                    } catch (e) {
+                      return 'No Date';
+                    }
+                  })()}
+                </span>
               <span className="flex items-center text-foreground font-medium">
                 <User className="w-3.5 h-3.5 mr-1 text-primary" />
                 Eka Syarif Maulana, S.Kom
@@ -485,9 +492,16 @@ const BlogDetail = () => {
                                 <div className="bg-muted/30 p-3 rounded-lg rounded-tl-none border border-border/30">
                                    <div className="flex justify-between items-start mb-1">
                                      <p className="text-xs font-bold">{comment.name}</p>
-                                     <span className="text-[10px] text-muted-foreground">
-                                         {format(new Date(comment.createdAt), 'd MMM yyyy', { locale: idLocale })}
-                                     </span>
+                                      <span className="text-[10px] text-muted-foreground">
+                                        {(() => {
+                                          try {
+                                            const d = new Date(comment.createdAt);
+                                            return isNaN(d.getTime()) ? 'No Date' : format(d, 'd MMM yyyy', { locale: idLocale });
+                                          } catch (e) {
+                                            return 'No Date';
+                                          }
+                                        })()}
+                                      </span>
                                    </div>
                                    <p className="text-xs text-muted-foreground leading-relaxed">{comment.content}</p>
                                 </div>

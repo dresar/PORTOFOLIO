@@ -228,10 +228,19 @@ const BlogList = () => {
                       
                       {/* Content: Title & Date only, no author, no tags, no excerpt */}
                       <div className="p-2.5 sm:p-3.5 flex flex-col flex-grow justify-between gap-1.5">
-                        <div className="flex items-center gap-1 text-[10px] sm:text-xs text-muted-foreground">
-                          <Calendar className="h-3 w-3 shrink-0 text-primary/70" />
-                          <span>{format(new Date(post.published_at || post.created_at), 'd MMM yyyy', { locale: id })}</span>
-                        </div>
+                          <div className="flex items-center gap-1 text-[10px] sm:text-xs text-muted-foreground">
+                            <Calendar className="h-3 w-3 shrink-0 text-primary/70" />
+                            <span>
+                              {(() => {
+                                try {
+                                  const d = new Date(post.published_at || post.created_at);
+                                  return isNaN(d.getTime()) ? 'No Date' : format(d, 'd MMM yyyy', { locale: id });
+                                } catch (e) {
+                                  return 'No Date';
+                                }
+                              })()}
+                            </span>
+                          </div>
                         
                         <h3 className="text-xs sm:text-sm font-semibold leading-snug line-clamp-2 text-foreground group-hover:text-primary transition-colors">
                           {post.title}
