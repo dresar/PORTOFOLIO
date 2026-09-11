@@ -1,0 +1,212 @@
+[
+  {
+    "id": 32,
+    "title": "Feed",
+    "slug": "feed",
+    "category": "Web App",
+    "coverImage": "https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/projects/feed-preview.png"
+  },
+  {
+    "id": 33,
+    "title": "AI Poster Prompt Studio — Canvas Visual Prompter",
+    "slug": "ai-poster-prompt-studio",
+    "category": "AI & Machine Learning",
+    "coverImage": "https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/projects/ai-poster-prompt-studio-preview.png"
+  },
+  {
+    "id": 34,
+    "title": "Script Invitation Digital",
+    "slug": "script-invitation-digital",
+    "category": "Web App",
+    "coverImage": "https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/projects/script-invitation-digital-preview.png"
+  },
+  {
+    "id": 35,
+    "title": "Pondok",
+    "slug": "pondok",
+    "category": "Web App",
+    "coverImage": "https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/projects/pondok-preview.png"
+  },
+  {
+    "id": 36,
+    "title": "Pesantren Hub — Cloud Portal Manajemen Lembaga Islam Terpadu",
+    "slug": "pesantren-hub",
+    "category": "Web App",
+    "coverImage": "https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/projects/pesantren-hub-preview.png"
+  },
+  {
+    "id": 37,
+    "title": "BrevetAI — Platform Interaktif Edukasi Perpajakan & AI Tutor",
+    "slug": "brevet",
+    "category": "Web App",
+    "coverImage": "https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/projects/brevet-preview.png"
+  },
+  {
+    "id": 38,
+    "title": "Markdown to Web Wizard — Instant Documentation Generator",
+    "slug": "md-to-web-wizard",
+    "category": "Web App",
+    "coverImage": "https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/projects/md-to-web-wizard-preview.png"
+  },
+  {
+    "id": 39,
+    "title": "Promtingfrontend",
+    "slug": "promtingfrontend",
+    "category": "Web App",
+    "coverImage": "https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/projects/promtingfrontend-preview.png"
+  },
+  {
+    "id": 40,
+    "title": "Server",
+    "slug": "server",
+    "category": "Backend & APIs",
+    "coverImage": "https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/projects/server-preview.png"
+  },
+  {
+    "id": 41,
+    "title": "Unified Ai Gateway",
+    "slug": "unified-ai-gateway",
+    "category": "AI & Machine Learning",
+    "coverImage": "https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/projects/unified-ai-gateway-preview.png"
+  },
+  {
+    "id": 42,
+    "title": "AI Workflow Studio — Node-Based Agent Automation",
+    "slug": "workflowai",
+    "category": "AI & Machine Learning",
+    "coverImage": "https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/projects/workflowai-preview.png"
+  },
+  {
+    "id": 43,
+    "title": "OneKey Hub — Multi-Tenant API Key Manager & Failover",
+    "slug": "one-key-hub",
+    "category": "Web App",
+    "coverImage": "https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/projects/one-key-hub-preview.png"
+  },
+  {
+    "id": 44,
+    "title": "SIRA Report Hub — Sistem Informasi Rapor Santri Digital",
+    "slug": "alma-report-hub",
+    "category": "Web App",
+    "coverImage": "https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/projects/alma-report-hub-preview.png"
+  },
+  {
+    "id": 45,
+    "title": "KiosPOS — Point of Sale & Inventory Management System",
+    "slug": "kiosphp",
+    "category": "Mobile App",
+    "coverImage": "https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/projects/kiosphp-preview.png"
+  },
+  {
+    "id": 46,
+    "title": "Sistem Monitoring & Evaluasi Kerja Praktek Mahasiswa",
+    "slug": "kerjapraktek",
+    "category": "Web App",
+    "coverImage": "https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/projects/kerjapraktek-preview.png"
+  },
+  {
+    "id": 47,
+    "title": "SantriDanaKu — Dompet Digital & Donasi Terpadu Pesantren",
+    "slug": "santri-dana-ku",
+    "category": "Web App",
+    "coverImage": "https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/projects/santri-dana-ku-preview.png"
+  },
+  {
+    "id": 48,
+    "title": "Studio Generator Gambar AI & Creative Prompt Canvas",
+    "slug": "gambar-ai-kreatif",
+    "category": "AI & Machine Learning",
+    "coverImage": "https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/projects/gambar-ai-kreatif-preview.png"
+  },
+  {
+    "id": 49,
+    "title": "Corn Moisture IoT Sensor & Telemetry Monitoring",
+    "slug": "tiaradwinazra",
+    "category": "Web App",
+    "coverImage": "https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/projects/tiaradwinazra-preview.png"
+  },
+  {
+    "id": 50,
+    "title": "Fix",
+    "slug": "fix",
+    "category": "Web App",
+    "coverImage": "https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/projects/fix-preview.png"
+  },
+  {
+    "id": 51,
+    "title": "1",
+    "slug": "1",
+    "category": "Web App",
+    "coverImage": "https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/projects/1-preview.png"
+  },
+  {
+    "id": 52,
+    "title": "Wergfrf",
+    "slug": "wergfrf",
+    "category": "Web App",
+    "coverImage": "https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/projects/wergfrf-preview.png"
+  },
+  {
+    "id": 53,
+    "title": "Fronednya",
+    "slug": "fronednya",
+    "category": "Web App",
+    "coverImage": "https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/projects/fronednya-preview.png"
+  },
+  {
+    "id": 54,
+    "title": "Next.Js",
+    "slug": "next-js",
+    "category": "Web App",
+    "coverImage": "https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/projects/next-js-preview.png"
+  },
+  {
+    "id": 55,
+    "title": "Biasa",
+    "slug": "biasa",
+    "category": "Web App",
+    "coverImage": "https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/projects/biasa-preview.png"
+  },
+  {
+    "id": 56,
+    "title": "Serverai1",
+    "slug": "serverai1",
+    "category": "AI & Machine Learning",
+    "coverImage": "https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/projects/serverai1-preview.png"
+  },
+  {
+    "id": 57,
+    "title": "Tiara",
+    "slug": "tiara",
+    "category": "Web App",
+    "coverImage": "https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/projects/tiara-preview.png"
+  },
+  {
+    "id": 58,
+    "title": "Portal Monitoring & Arsip Digital Pertamina Hulu Rokan",
+    "slug": "websiteptpertamina",
+    "category": "Web App",
+    "coverImage": "https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/projects/websiteptpertamina-preview.png"
+  },
+  {
+    "id": 59,
+    "title": "Vite React",
+    "slug": "vite-react",
+    "category": "Web App",
+    "coverImage": "https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/projects/vite-react-preview.png"
+  },
+  {
+    "id": 60,
+    "title": "Ekasyarif",
+    "slug": "ekasyarif",
+    "category": "Web App",
+    "coverImage": "https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/projects/ekasyarif-preview.png"
+  },
+  {
+    "id": 61,
+    "title": "Multi-Account Social Media Content Engine & TikTok Publisher",
+    "slug": "konten-media-automation",
+    "category": "Automation & Bots",
+    "coverImage": "https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/projects/konten-media-automation-preview.png"
+  }
+]
