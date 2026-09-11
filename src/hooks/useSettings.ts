@@ -6,14 +6,14 @@ export const useSettings = () => {
   const { data: settings, isLoading, error } = useQuery({
     queryKey: ['settings'],
     queryFn: siteSettingsAPI.get,
-    initialData: () => safeJsonParse(localStorage.getItem('settings_cache'), undefined),
+    initialData: () => safeJsonParse(localStorage.getItem('settings_cache'), { maintenanceMode: false }),
     retry: false, // Don't retry if failed
     refetchOnWindowFocus: false,
   });
 
   return {
     settings,
-    isLoading: isLoading && !settings,
+    isLoading: false,
     error,
   };
 };
