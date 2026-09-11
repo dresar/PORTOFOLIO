@@ -28,6 +28,19 @@ import crypto from 'node:crypto';
 
 const GITHUB_UPLOADS_PATH = 'public/uploads';
 
+export function getEnv(key: string, defaultVal = ''): string {
+  if (typeof process !== 'undefined' && process?.env?.[key]) return process.env[key];
+  if ((globalThis as any)?.__CF_ENV__?.[key]) return (globalThis as any).__CF_ENV__[key];
+  if ((globalThis as any)?.[key]) return (globalThis as any)[key];
+  const defaults: Record<string, string> = {
+    DATABASE_URL: 'postgresql://neondb_owner:npg_4IsokTFSh0Gf@ep-lucky-meadow-a93qe14n-pooler.gwc.azure.neon.tech/neondb?sslmode=require&channel_binding=require',
+    JWT_SECRET: 'e79c2980b182d8c39e23652f75a7c2b6941fa44a958e72ef0d3a57e3f94bd2d1',
+    GITHUB_REPO: 'dresar/PORTOFOLIO',
+    GITHUB_BRANCH: 'main'
+  };
+  return defaults[key] || defaultVal;
+}
+
 interface TokenPayload {
   id: number;
   email: string;
@@ -374,7 +387,7 @@ const schema = {
 let sqlClient: any = null;
 const getSql = () => {
     if (sqlClient) return sqlClient;
-    const DB_URL = process.env.DATABASE_URL;
+    const DB_URL = getEnv('DATABASE_URL');
     if (!DB_URL) throw new Error('DATABASE_URL is not configured');
     
     let normalizedUrl = DB_URL;

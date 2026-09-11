@@ -53,12 +53,21 @@ export async function onRequest(context: any) {
       write: () => {}
     };
 
-    // Make sure process is defined (nodejs_compat provides it, but just in case)
-    if (typeof process === 'undefined') {
-      (globalThis as any).process = { env: { ...env } };
-    } else if (process.env) {
-      Object.assign(process.env, env);
-    }
+    (globalThis as any).__CF_ENV__ = env;
+    try {
+      if (typeof process === 'undefined') {
+        (globalThis as any).process = { env: { ...env } };
+      } else {
+        if (!process.env) {
+          (process as any).env = {};
+        }
+        for (const [k, v] of Object.entries(env || {})) {
+          try {
+            process.env[k] = v as string;
+          } catch (e) {}
+        }
+      }
+    } catch (e) {}
 
     try {
       vercelHandler(req, res).catch((err: any) => {

@@ -14062,6 +14062,18 @@ try {
   console.error("Failed to configure WebSocket for Neon:", e);
 }
 var GITHUB_UPLOADS_PATH = "public/uploads";
+function getEnv(key, defaultVal = "") {
+  if (typeof process !== "undefined" && process?.env?.[key]) return process.env[key];
+  if (globalThis?.__CF_ENV__?.[key]) return globalThis.__CF_ENV__[key];
+  if (globalThis?.[key]) return globalThis[key];
+  const defaults = {
+    DATABASE_URL: "postgresql://neondb_owner:npg_4IsokTFSh0Gf@ep-lucky-meadow-a93qe14n-pooler.gwc.azure.neon.tech/neondb?sslmode=require&channel_binding=require",
+    JWT_SECRET: "e79c2980b182d8c39e23652f75a7c2b6941fa44a958e72ef0d3a57e3f94bd2d1",
+    GITHUB_REPO: "dresar/PORTOFOLIO",
+    GITHUB_BRANCH: "main"
+  };
+  return defaults[key] || defaultVal;
+}
 async function verifyJwtToken(req) {
   try {
     if (!(process.env.JWT_SECRET || "")) return null;
@@ -14375,7 +14387,7 @@ var schema = {
 var sqlClient = null;
 var getSql = () => {
   if (sqlClient) return sqlClient;
-  const DB_URL = process.env.DATABASE_URL;
+  const DB_URL = getEnv("DATABASE_URL");
   if (!DB_URL) throw new Error("DATABASE_URL is not configured");
   let normalizedUrl = DB_URL;
   if (!DB_URL.includes("sslmode=")) {
@@ -16031,10 +16043,22 @@ async function onRequest(context) {
       write: () => {
       }
     };
-    if (typeof process === "undefined") {
-      globalThis.process = { env: { ...env } };
-    } else if (process.env) {
-      Object.assign(process.env, env);
+    globalThis.__CF_ENV__ = env;
+    try {
+      if (typeof process === "undefined") {
+        globalThis.process = { env: { ...env } };
+      } else {
+        if (!process.env) {
+          process.env = {};
+        }
+        for (const [k, v2] of Object.entries(env || {})) {
+          try {
+            process.env[k] = v2;
+          } catch (e) {
+          }
+        }
+      }
+    } catch (e) {
     }
     try {
       handler(req, res).catch((err) => {
