@@ -18,6 +18,22 @@ adminApi.interceptors.request.use(
   (config) => {
     const token = useAdminAuthStore.getState().token;
     if (token) {
+      try {
+        const parts = token.split('.');
+        if (parts.length === 3) {
+          const payload = JSON.parse(atob(parts[1]));
+          if (payload?.exp) {
+            const tokenExpiry = payload.exp * 1000;
+            if (tokenExpiry < Date.now()) {
+              useAdminAuthStore.getState().logout();
+              if (window.location.pathname.startsWith('/admin')) {
+                window.location.href = '/admin/login';
+              }
+              return Promise.reject(new Error('Token expired'));
+            }
+          }
+        }
+      } catch (e) {}
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;

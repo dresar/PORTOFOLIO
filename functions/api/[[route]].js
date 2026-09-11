@@ -14087,7 +14087,14 @@ async function verifyJwtToken(req) {
     const isValid = await index_default.verify(token, secret);
     if (!isValid) return null;
     const decoded = index_default.decode(token);
-    return decoded.payload || decoded;
+    const payload = decoded?.payload || decoded;
+    if (payload?.exp) {
+      const tokenExpiry = payload.exp * 1e3;
+      if (tokenExpiry < Date.now()) {
+        return null;
+      }
+    }
+    return payload;
   } catch (err) {
     return null;
   }

@@ -61,7 +61,14 @@ async function verifyJwtToken(req: any): Promise<TokenPayload | null> {
     const isValid = await jwt.verify(token, secret);
     if (!isValid) return null;
     const decoded = jwt.decode(token);
-    return (decoded.payload || decoded) as TokenPayload;
+    const payload = ((decoded as any)?.payload || decoded) as any;
+    if (payload?.exp) {
+      const tokenExpiry = payload.exp * 1000;
+      if (tokenExpiry < Date.now()) {
+        return null;
+      }
+    }
+    return payload as TokenPayload;
   } catch (err) {
     return null;
   }
