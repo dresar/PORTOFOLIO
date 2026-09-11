@@ -14207,9 +14207,14 @@ var blogPosts = pgTable("blog_post", {
   excerpt: text("excerpt"),
   content: text("content").notNull(),
   coverImage: text("coverImage"),
+  coverImageFile: text("coverImageFile"),
   tags: text("tags").default("[]").notNull(),
   is_published: boolean("is_published").default(false).notNull(),
+  publish_at: timestamp("publish_at"),
   published_at: timestamp("published_at"),
+  seo_title: text("seo_title"),
+  seo_description: text("seo_description"),
+  seo_keywords: text("seo_keywords"),
   created_at: timestamp("created_at").defaultNow().notNull(),
   updated_at: timestamp("updated_at").defaultNow().notNull(),
   views: integer("views").default(0).notNull(),
@@ -14372,10 +14377,7 @@ var schema = {
   skillCategories,
   skillRelations,
   experiences,
-  education: educations,
-  // FIX: Map singular 'education' resource to 'educations' table
   educations,
-  // Keep plural just in case
   certificates,
   certificateCategories,
   certificateRelations,
@@ -14514,6 +14516,7 @@ var resources = {
   "projects": projects,
   "project-categories": projectCategories,
   "blog": blogPosts,
+  "blog-posts": blogPosts,
   "blog-categories": blogCategories,
   "blog-comments": blogComments,
   "skills": skills,
@@ -14521,6 +14524,7 @@ var resources = {
   "experiences": experiences,
   "experience": experiences,
   "education": educations,
+  "educations": educations,
   "certificates": certificates,
   "certificate-categories": certificateCategories,
   "messages": messages,
@@ -14532,6 +14536,7 @@ var resources = {
 };
 var relationMap = {
   "projects": { category: true },
+  "blog": { category: true },
   "blog-posts": { category: true },
   "skills": { category: true },
   "certificates": { category: true },
@@ -14626,7 +14631,7 @@ async function handler(req, res) {
     if (resourceName && resourceName !== "health" && resourceName !== "ai" && resourceName !== "upload") {
       await ensureSchema();
     }
-    if (resourceName === "blog-posts" && action === "by_slug") {
+    if ((resourceName === "blog-posts" || resourceName === "blog") && action === "by_slug") {
       const slug = query.slug;
       if (!slug) return sendJSON(res, 400, { error: "Slug required" });
       const post = await getDb().query.blogPosts.findFirst({
@@ -14641,7 +14646,7 @@ async function handler(req, res) {
         comments_count: Number(commentsResult.count)
       });
     }
-    if (resourceName === "blog-posts" && id) {
+    if ((resourceName === "blog-posts" || resourceName === "blog") && id) {
       if (action === "comments") {
         if (req.method === "GET") {
           const comments = await getDb().query.blogComments.findMany({
@@ -15842,7 +15847,10 @@ async function handler(req, res) {
     }
     switch (req.method) {
       case "GET":
-        const queryKey = resourceName.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+        let queryKey = resourceName.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+        if (resourceName === "blog") queryKey = "blogPosts";
+        if (resourceName === "experience") queryKey = "experiences";
+        if (resourceName === "education") queryKey = "educations";
         if (action === "by_slug") {
           const slug = query.slug;
           if (!slug) return sendJSON(res, 400, { error: "Slug required" });

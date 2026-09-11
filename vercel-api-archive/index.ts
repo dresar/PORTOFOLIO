@@ -200,9 +200,14 @@ export const blogPosts = pgTable('blog_post', {
   excerpt: text('excerpt'),
   content: text('content').notNull(),
   coverImage: text('coverImage'),
+  coverImageFile: text('coverImageFile'),
   tags: text('tags').default('[]').notNull(),
   is_published: boolean('is_published').default(false).notNull(),
+  publish_at: timestamp('publish_at'),
   published_at: timestamp('published_at'),
+  seo_title: text('seo_title'),
+  seo_description: text('seo_description'),
+  seo_keywords: text('seo_keywords'),
   created_at: timestamp('created_at').defaultNow().notNull(),
   updated_at: timestamp('updated_at').defaultNow().notNull(),
   views: integer('views').default(0).notNull(),
@@ -375,9 +380,8 @@ const schema = {
   blogPosts, blogCategories, blogPostRelations,
   blogComments, blogLikes, blogCommentRelations,
   skills, skillCategories, skillRelations,
-  experiences, 
-  education: educations, // FIX: Map singular 'education' resource to 'educations' table
-  educations, // Keep plural just in case
+  experiences,
+  educations,
   certificates, certificateCategories, certificateRelations,
   messages, waTemplates,
   siteSettings, homeContents, aboutContents
@@ -529,13 +533,15 @@ const resources: Record<string, any> = {
   'projects': projects,
   'project-categories': projectCategories,
   'blog': blogPosts,
+  'blog-posts': blogPosts,
   'blog-categories': blogCategories,
   'blog-comments': blogComments,
   'skills': skills,
   'skill-categories': skillCategories,
   'experiences': experiences,
-    'experience': experiences,
+  'experience': experiences,
   'education': educations,
+  'educations': educations,
   'certificates': certificates,
   'certificate-categories': certificateCategories,
   'messages': messages,
@@ -547,6 +553,7 @@ const resources: Record<string, any> = {
 
 const relationMap: Record<string, any> = {
   'projects': { category: true },
+  'blog': { category: true },
   'blog-posts': { category: true },
   'skills': { category: true },
   'certificates': { category: true },
@@ -671,7 +678,7 @@ export default async function handler(req: any, res: any) {
     }
 
     // Blog: Get by Slug
-    if (resourceName === 'blog-posts' && action === 'by_slug') {
+    if ((resourceName === 'blog-posts' || resourceName === 'blog') && action === 'by_slug') {
         const slug = query.slug as string;
         if (!slug) return sendJSON(res, 400, { error: 'Slug required' });
         // Include comments count or latest comments if needed, but for now just post
@@ -694,7 +701,7 @@ export default async function handler(req: any, res: any) {
     }
 
     // Blog Interactions
-    if (resourceName === 'blog-posts' && id) {
+    if ((resourceName === 'blog-posts' || resourceName === 'blog') && id) {
         // GET Comments
         if (action === 'comments') {
             if (req.method === 'GET') {
@@ -2128,7 +2135,10 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
         // MAPPING FIX: Map frontend resource names to Drizzle query keys (camelCase)
         // resourceName 'blog-posts' -> query key 'blogPosts'
         // resourceName 'project-categories' -> query key 'projectCategories'
-        const queryKey = resourceName.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+        let queryKey = resourceName.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+        if (resourceName === 'blog') queryKey = 'blogPosts';
+        if (resourceName === 'experience') queryKey = 'experiences';
+        if (resourceName === 'education') queryKey = 'educations';
         
         if (action === 'by_slug') {
              const slug = query.slug as string;
