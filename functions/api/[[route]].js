@@ -14076,14 +14076,15 @@ function getEnv(key, defaultVal = "") {
 }
 async function verifyJwtToken(req) {
   try {
-    if (!(process.env.JWT_SECRET || "")) return null;
+    const secret = getEnv("JWT_SECRET");
+    if (!secret) return null;
     const authHeader = req.headers?.authorization;
     if (!authHeader || typeof authHeader !== "string") return null;
     const parts = authHeader.trim().split(" ");
     if (parts.length !== 2 || parts[0].toLowerCase() !== "bearer") return null;
     const token = parts[1];
     if (!token || token === "demo-token" || token === "fake-jwt-token") return null;
-    const isValid = await index_default.verify(token, process.env.JWT_SECRET || "");
+    const isValid = await index_default.verify(token, secret);
     if (!isValid) return null;
     const decoded = index_default.decode(token);
     return decoded.payload || decoded;
@@ -14759,7 +14760,7 @@ async function handler(req, res) {
               if (user.pin) {
                 const tempToken = await index_default.sign(
                   { id: user.id, email: user.email, stage: "pin_required", exp: Math.floor(Date.now() / 1e3) + 5 * 60 },
-                  process.env.JWT_SECRET || ""
+                  getEnv("JWT_SECRET")
                 );
                 return sendJSON(res, 200, {
                   requirePin: true,
@@ -14769,7 +14770,7 @@ async function handler(req, res) {
               }
               const token = await index_default.sign(
                 { id: user.id, email: user.email, name: user.name, role: "admin", exp: Math.floor(Date.now() / 1e3) + 7 * 24 * 60 * 60 },
-                process.env.JWT_SECRET || ""
+                getEnv("JWT_SECRET")
               );
               return sendJSON(res, 200, {
                 token,
@@ -14793,7 +14794,7 @@ async function handler(req, res) {
         try {
           let decoded;
           try {
-            const isValid = await index_default.verify(tempToken, process.env.JWT_SECRET || "");
+            const isValid = await index_default.verify(tempToken, getEnv("JWT_SECRET"));
             if (!isValid) throw new Error("invalid");
             decoded = index_default.decode(tempToken).payload || index_default.decode(tempToken);
           } catch (jwtErr) {
@@ -14824,7 +14825,7 @@ async function handler(req, res) {
             clearAttempts(ip);
             const token = await index_default.sign(
               { id: user.id, email: user.email, name: user.name, role: "admin", exp: Math.floor(Date.now() / 1e3) + 7 * 24 * 60 * 60 },
-              process.env.JWT_SECRET || ""
+              getEnv("JWT_SECRET")
             );
             return sendJSON(res, 200, {
               token,

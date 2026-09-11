@@ -50,14 +50,15 @@ interface TokenPayload {
 
 async function verifyJwtToken(req: any): Promise<TokenPayload | null> {
   try {
-    if (!(process.env.JWT_SECRET || '')) return null;
+    const secret = getEnv('JWT_SECRET');
+    if (!secret) return null;
     const authHeader = req.headers?.authorization;
     if (!authHeader || typeof authHeader !== 'string') return null;
     const parts = authHeader.trim().split(' ');
     if (parts.length !== 2 || parts[0].toLowerCase() !== 'bearer') return null;
     const token = parts[1];
     if (!token || token === 'demo-token' || token === 'fake-jwt-token') return null;
-    const isValid = await jwt.verify(token, (process.env.JWT_SECRET || ''));
+    const isValid = await jwt.verify(token, secret);
     if (!isValid) return null;
     const decoded = jwt.decode(token);
     return (decoded.payload || decoded) as TokenPayload;
@@ -863,7 +864,7 @@ export default async function handler(req: any, res: any) {
 
                         if (user.pin) {
                             const tempToken = await jwt.sign({ id: user.id, email: user.email, stage: 'pin_required', exp: Math.floor(Date.now() / 1000) + (5 * 60) },
-                                (process.env.JWT_SECRET || ''));
+                                getEnv('JWT_SECRET'));
                             return sendJSON(res, 200, {
                                 requirePin: true,
                                 tempToken,
@@ -872,7 +873,7 @@ export default async function handler(req: any, res: any) {
                         }
 
                         const token = await jwt.sign({ id: user.id, email: user.email, name: user.name, role: 'admin', exp: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60) },
-                            (process.env.JWT_SECRET || ''));
+                            getEnv('JWT_SECRET'));
                         return sendJSON(res, 200, {
                             token,
                             user: { id: user.id, email: user.email, name: user.name, role: 'admin' }
@@ -899,7 +900,7 @@ export default async function handler(req: any, res: any) {
             try {
                 let decoded: any;
                 try {
-                    const isValid = await jwt.verify(tempToken, (process.env.JWT_SECRET || ''));
+                    const isValid = await jwt.verify(tempToken, getEnv('JWT_SECRET'));
 if (!isValid) throw new Error('invalid');
 decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
                 } catch (jwtErr) {
@@ -934,7 +935,7 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
                 if (isPinValid) {
                     clearAttempts(ip);
                     const token = await jwt.sign({ id: user.id, email: user.email, name: user.name, role: 'admin', exp: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60) },
-                        (process.env.JWT_SECRET || ''));
+                        getEnv('JWT_SECRET'));
                     return sendJSON(res, 200, {
                         token,
                         user: { id: user.id, email: user.email, name: user.name, role: 'admin' }
