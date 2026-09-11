@@ -496,7 +496,7 @@ export const api = {
   // ----------------------------------------
   projects: {
     getAll: async (params?: PaginationParams): Promise<Project[]> => {
-      return fetchWithLocalFallback<Project[]>('/projects', 'projects_cache', [], params);
+      return fetchWithLocalFallback<Project[]>('/projects', 'projects_cache_v3', [], { limit: 200, ...params });
     },
     getOne: async (idOrSlug: string | number): Promise<Project> => {
       // Determine if ID or Slug (backend logic might vary, usually slug is for public, ID for admin)

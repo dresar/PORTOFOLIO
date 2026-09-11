@@ -15871,7 +15871,7 @@ async function handler(req, res) {
     const tokenUser = await verifyJwtToken(req);
     const isAuthenticated = Boolean(tokenUser);
     if (req.method === "GET" && publicResources.includes(resourceName) && !isInteraction && !isAuthenticated) {
-      res.setHeader("Cache-Control", "public, max-age=60, s-maxage=86400, stale-while-revalidate=604800");
+      res.setHeader("Cache-Control", "public, max-age=10, s-maxage=30, stale-while-revalidate=60");
     } else {
       res.setHeader("Cache-Control", "no-store, max-age=0, must-revalidate");
     }
@@ -15930,7 +15930,7 @@ async function handler(req, res) {
             return sendJSON(res, 200, latest || {});
           }
           const page = Number(query.page) || 1;
-          const limit = Number(query.limit) || 50;
+          const limit = Number(query.limit) || (resourceName === "projects" ? 200 : 50);
           const offset = (page - 1) * limit;
           const search = query.search;
           let queryBuilder = getDb().select().from(table);
@@ -16070,7 +16070,14 @@ async function onRequest(context) {
   const isMutation = ["POST", "PUT", "PATCH", "DELETE"].includes(request.method);
   const hasAuth = Boolean(request.headers.get("authorization"));
   const cache = typeof caches !== "undefined" && caches?.default ? caches.default : null;
-  if (cache && isGet && !hasAuth) {
+  const isProjectsEndpoint = url.pathname.startsWith("/api/projects");
+  if (cache && isProjectsEndpoint) {
+    try {
+      context.waitUntil(cache.delete(request));
+    } catch (e) {
+    }
+  }
+  if (cache && isGet && !hasAuth && !isProjectsEndpoint) {
     try {
       const cachedResponse = await cache.match(request);
       if (cachedResponse) {
@@ -16147,7 +16154,7 @@ async function onRequest(context) {
           } catch (e) {
           }
         }
-        if (cache && isGet && !hasAuth && statusCode === 200) {
+        if (cache && isGet && !hasAuth && !isProjectsEndpoint && statusCode === 200) {
           try {
             const cacheControl = headers.get("Cache-Control");
             if (cacheControl && cacheControl.includes("public")) {

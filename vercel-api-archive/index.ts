@@ -2140,11 +2140,7 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
     const isAuthenticated = Boolean(tokenUser);
 
     if (req.method === 'GET' && publicResources.includes(resourceName) && !isInteraction && !isAuthenticated) {
-        // Cache-Control: 
-        // public: Can be cached by shared CDN edge caches (Cloudflare Singapore/Jakarta)
-        // s-maxage=86400: Cached on Cloudflare CDN Edge for 24 hours (sub-20ms instant responses)
-        // stale-while-revalidate=604800: Serve stale content instantly while revalidating in background
-        res.setHeader('Cache-Control', 'public, max-age=60, s-maxage=86400, stale-while-revalidate=604800');
+        res.setHeader('Cache-Control', 'public, max-age=10, s-maxage=30, stale-while-revalidate=60');
     } else {
         res.setHeader('Cache-Control', 'no-store, max-age=0, must-revalidate');
     }
@@ -2229,7 +2225,7 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
           // Get Many (List)
           // Pagination & Search
           const page = Number(query.page) || 1;
-          const limit = Number(query.limit) || 50; // Higher default for admin
+          const limit = Number(query.limit) || (resourceName === 'projects' ? 200 : 50);
           const offset = (page - 1) * limit;
           const search = query.search as string;
 

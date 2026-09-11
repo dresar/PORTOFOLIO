@@ -25,8 +25,17 @@ export async function onRequest(context: any) {
   const hasAuth = Boolean(request.headers.get('authorization'));
   const cache = (typeof caches !== 'undefined' && (caches as any)?.default) ? (caches as any).default : null;
 
-  // 1. Instant Edge Cache lookup for public GET requests
-  if (cache && isGet && !hasAuth) {
+  const isProjectsEndpoint = url.pathname.startsWith('/api/projects');
+
+  // Purge any stale cache for /api/projects
+  if (cache && isProjectsEndpoint) {
+    try {
+      context.waitUntil(cache.delete(request));
+    } catch (e) {}
+  }
+
+  // 1. Instant Edge Cache lookup for public GET requests (except projects)
+  if (cache && isGet && !hasAuth && !isProjectsEndpoint) {
     try {
       const cachedResponse = await cache.match(request);
       if (cachedResponse) {
@@ -105,8 +114,8 @@ export async function onRequest(context: any) {
           } catch (e) {}
         }
 
-        // Cache successful public GET responses at Cloudflare Edge
-        if (cache && isGet && !hasAuth && statusCode === 200) {
+        // Cache successful public GET responses at Cloudflare Edge (except projects)
+        if (cache && isGet && !hasAuth && !isProjectsEndpoint && statusCode === 200) {
           try {
             const cacheControl = headers.get('Cache-Control');
             if (cacheControl && cacheControl.includes('public')) {
