@@ -24,8 +24,11 @@ export function normalizeMediaUrl(raw?: string | null, options?: MediaUrlOptions
 
   // Articles images in public/uploads/articles are served via GitHub / jsDelivr CDN
   if (url.includes('uploads/articles')) {
-    const cleanPath = url.startsWith('/') ? url : `/${url}`;
-    const directUrl = `https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public${cleanPath}`;
+    let directUrl = url;
+    if (!url.startsWith('http')) {
+      const cleanPath = url.startsWith('/') ? url : `/${url}`;
+      directUrl = `https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public${cleanPath}`;
+    }
     if (!directUrl.endsWith('.svg')) {
       const w = width || 600;
       return `https://wsrv.nl/?url=${directUrl.replace(/^https?:\/\//, '')}&w=${w}&output=webp&q=${quality}`;
