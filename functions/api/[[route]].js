@@ -5224,7 +5224,6 @@ var Un = class Un2 extends go.Pool {
   }
 };
 a(Un, "NeonPool");
-var Mn = Un;
 Fe();
 var ct = Se(ot());
 var export_DatabaseError = ct.DatabaseError;
@@ -9598,7 +9597,7 @@ var PgDialect = class {
       }
       let selectedRelations = [];
       if (config.with) {
-        selectedRelations = Object.entries(config.with).filter((entry) => !!entry[1]).map(([tsKey, queryConfig]) => ({ tsKey, queryConfig, relation: tableConfig.relations[tsKey] }));
+        selectedRelations = Object.entries(config.with).filter((entry) => !!entry[1]).map(([tsKey, queryConfig2]) => ({ tsKey, queryConfig: queryConfig2, relation: tableConfig.relations[tsKey] }));
       }
       let extras;
       if (config.extras) {
@@ -11901,225 +11900,221 @@ var PgTransaction = class extends PgDatabase {
   }
 };
 
-// node_modules/drizzle-orm/neon-serverless/session.js
-var NeonPreparedQuery = class extends PgPreparedQuery {
-  constructor(client, queryString, params, logger, cache, queryMetadata, cacheConfig, fields, name, _isResponseInArrayMode, customResultMapper) {
-    super({ sql: queryString, params }, cache, queryMetadata, cacheConfig);
+// node_modules/drizzle-orm/neon-http/session.js
+var rawQueryConfig = {
+  arrayMode: false,
+  fullResults: true
+};
+var queryConfig = {
+  arrayMode: true,
+  fullResults: true
+};
+var NeonHttpPreparedQuery = class extends PgPreparedQuery {
+  constructor(client, query, logger, cache, queryMetadata, cacheConfig, fields, _isResponseInArrayMode, customResultMapper) {
+    super(query, cache, queryMetadata, cacheConfig);
     this.client = client;
-    this.params = params;
     this.logger = logger;
     this.fields = fields;
     this._isResponseInArrayMode = _isResponseInArrayMode;
     this.customResultMapper = customResultMapper;
-    this.rawQueryConfig = {
-      name,
-      text: queryString,
-      types: {
-        // @ts-ignore
-        getTypeParser: (typeId, format) => {
-          if (typeId === export_types.builtins.TIMESTAMPTZ) {
-            return (val) => val;
-          }
-          if (typeId === export_types.builtins.TIMESTAMP) {
-            return (val) => val;
-          }
-          if (typeId === export_types.builtins.DATE) {
-            return (val) => val;
-          }
-          if (typeId === export_types.builtins.INTERVAL) {
-            return (val) => val;
-          }
-          if (typeId === 1231) {
-            return (val) => val;
-          }
-          if (typeId === 1115) {
-            return (val) => val;
-          }
-          if (typeId === 1185) {
-            return (val) => val;
-          }
-          if (typeId === 1187) {
-            return (val) => val;
-          }
-          if (typeId === 1182) {
-            return (val) => val;
-          }
-          return export_types.getTypeParser(typeId, format);
-        }
-      }
-    };
-    this.queryConfig = {
-      name,
-      text: queryString,
-      rowMode: "array",
-      types: {
-        // @ts-ignore
-        getTypeParser: (typeId, format) => {
-          if (typeId === export_types.builtins.TIMESTAMPTZ) {
-            return (val) => val;
-          }
-          if (typeId === export_types.builtins.TIMESTAMP) {
-            return (val) => val;
-          }
-          if (typeId === export_types.builtins.DATE) {
-            return (val) => val;
-          }
-          if (typeId === export_types.builtins.INTERVAL) {
-            return (val) => val;
-          }
-          if (typeId === 1231) {
-            return (val) => val;
-          }
-          if (typeId === 1115) {
-            return (val) => val;
-          }
-          if (typeId === 1185) {
-            return (val) => val;
-          }
-          if (typeId === 1187) {
-            return (val) => val;
-          }
-          if (typeId === 1182) {
-            return (val) => val;
-          }
-          return export_types.getTypeParser(typeId, format);
-        }
-      }
-    };
+    this.clientQuery = client.query ?? client;
   }
-  static [entityKind] = "NeonPreparedQuery";
-  rawQueryConfig;
-  queryConfig;
-  async execute(placeholderValues = {}) {
-    const params = fillPlaceholders(this.params, placeholderValues);
-    this.logger.logQuery(this.rawQueryConfig.text, params);
-    const { fields, client, rawQueryConfig: rawQuery, queryConfig: query, joinsNotNullableMap, customResultMapper } = this;
+  static [entityKind] = "NeonHttpPreparedQuery";
+  clientQuery;
+  /** @internal */
+  async execute(placeholderValues = {}, token = this.authToken) {
+    const params = fillPlaceholders(this.query.params, placeholderValues);
+    this.logger.logQuery(this.query.sql, params);
+    const { fields, clientQuery, query, customResultMapper } = this;
     if (!fields && !customResultMapper) {
-      return await this.queryWithCache(rawQuery.text, params, async () => {
-        return await client.query(rawQuery, params);
+      return this.queryWithCache(query.sql, params, async () => {
+        return clientQuery(
+          query.sql,
+          params,
+          token === void 0 ? rawQueryConfig : {
+            ...rawQueryConfig,
+            authToken: token
+          }
+        );
       });
     }
-    const result = await this.queryWithCache(query.text, params, async () => {
-      return await client.query(query, params);
+    const result = await this.queryWithCache(query.sql, params, async () => {
+      return await clientQuery(
+        query.sql,
+        params,
+        token === void 0 ? queryConfig : {
+          ...queryConfig,
+          authToken: token
+        }
+      );
     });
-    return customResultMapper ? customResultMapper(result.rows) : result.rows.map((row) => mapResultRow(fields, row, joinsNotNullableMap));
+    return this.mapResult(result);
+  }
+  mapResult(result) {
+    if (!this.fields && !this.customResultMapper) {
+      return result;
+    }
+    const rows = result.rows;
+    if (this.customResultMapper) {
+      return this.customResultMapper(rows);
+    }
+    return rows.map((row) => mapResultRow(this.fields, row, this.joinsNotNullableMap));
   }
   all(placeholderValues = {}) {
-    const params = fillPlaceholders(this.params, placeholderValues);
-    this.logger.logQuery(this.rawQueryConfig.text, params);
-    return this.queryWithCache(this.rawQueryConfig.text, params, async () => {
-      return await this.client.query(this.rawQueryConfig, params);
-    }).then((result) => result.rows);
+    const params = fillPlaceholders(this.query.params, placeholderValues);
+    this.logger.logQuery(this.query.sql, params);
+    return this.clientQuery(
+      this.query.sql,
+      params,
+      this.authToken === void 0 ? rawQueryConfig : {
+        ...rawQueryConfig,
+        authToken: this.authToken
+      }
+    ).then((result) => result.rows);
   }
-  values(placeholderValues = {}) {
-    const params = fillPlaceholders(this.params, placeholderValues);
-    this.logger.logQuery(this.rawQueryConfig.text, params);
-    return this.queryWithCache(this.queryConfig.text, params, async () => {
-      return await this.client.query(this.queryConfig, params);
-    }).then((result) => result.rows);
+  /** @internal */
+  values(placeholderValues = {}, token) {
+    const params = fillPlaceholders(this.query.params, placeholderValues);
+    this.logger.logQuery(this.query.sql, params);
+    return this.clientQuery(this.query.sql, params, { arrayMode: true, fullResults: true, authToken: token }).then((result) => result.rows);
   }
   /** @internal */
   isResponseInArrayMode() {
     return this._isResponseInArrayMode;
   }
 };
-var NeonSession = class _NeonSession extends PgSession {
+var NeonHttpSession = class extends PgSession {
   constructor(client, dialect, schema2, options = {}) {
     super(dialect);
     this.client = client;
     this.schema = schema2;
     this.options = options;
+    this.clientQuery = client.query ?? client;
     this.logger = options.logger ?? new NoopLogger();
     this.cache = options.cache ?? new NoopCache();
   }
-  static [entityKind] = "NeonSession";
+  static [entityKind] = "NeonHttpSession";
+  clientQuery;
   logger;
   cache;
   prepareQuery(query, fields, name, isResponseInArrayMode, customResultMapper, queryMetadata, cacheConfig) {
-    return new NeonPreparedQuery(
+    return new NeonHttpPreparedQuery(
       this.client,
-      query.sql,
-      query.params,
+      query,
       this.logger,
       this.cache,
       queryMetadata,
       cacheConfig,
       fields,
-      name,
       isResponseInArrayMode,
       customResultMapper
     );
   }
+  async batch(queries) {
+    const preparedQueries = [];
+    const builtQueries = [];
+    for (const query of queries) {
+      const preparedQuery = query._prepare();
+      const builtQuery = preparedQuery.getQuery();
+      preparedQueries.push(preparedQuery);
+      builtQueries.push(
+        this.clientQuery(builtQuery.sql, builtQuery.params, {
+          fullResults: true,
+          arrayMode: preparedQuery.isResponseInArrayMode()
+        })
+      );
+    }
+    const batchResults = await this.client.transaction(builtQueries, queryConfig);
+    return batchResults.map((result, i) => preparedQueries[i].mapResult(result, true));
+  }
+  // change return type to QueryRows<true>
   async query(query, params) {
     this.logger.logQuery(query, params);
-    const result = await this.client.query({
-      rowMode: "array",
-      text: query,
-      values: params
-    });
+    const result = await this.clientQuery(query, params, { arrayMode: true, fullResults: true });
     return result;
   }
+  // change return type to QueryRows<false>
   async queryObjects(query, params) {
-    return this.client.query(query, params);
+    return this.clientQuery(query, params, { arrayMode: false, fullResults: true });
   }
-  async count(sql2) {
-    const res = await this.execute(sql2);
+  /** @internal */
+  async count(sql2, token) {
+    const res = await this.execute(sql2, token);
     return Number(
       res["rows"][0]["count"]
     );
   }
-  async transaction(transaction, config = {}) {
-    const session = this.client instanceof Mn ? new _NeonSession(await this.client.connect(), this.dialect, this.schema, this.options) : this;
-    const tx = new NeonTransaction(this.dialect, session, this.schema);
-    await tx.execute(sql`begin ${tx.getTransactionConfigSQL(config)}`);
-    try {
-      const result = await transaction(tx);
-      await tx.execute(sql`commit`);
-      return result;
-    } catch (error) {
-      await tx.execute(sql`rollback`);
-      throw error;
-    } finally {
-      if (this.client instanceof Mn) {
-        session.client.release();
-      }
-    }
+  async transaction(_transaction, _config = {}) {
+    throw new Error("No transactions support in neon-http driver");
   }
 };
-var NeonTransaction = class _NeonTransaction extends PgTransaction {
-  static [entityKind] = "NeonTransaction";
-  async transaction(transaction) {
-    const savepointName = `sp${this.nestedIndex + 1}`;
-    const tx = new _NeonTransaction(this.dialect, this.session, this.schema, this.nestedIndex + 1);
-    await tx.execute(sql.raw(`savepoint ${savepointName}`));
-    try {
-      const result = await transaction(tx);
-      await tx.execute(sql.raw(`release savepoint ${savepointName}`));
-      return result;
-    } catch (e) {
-      await tx.execute(sql.raw(`rollback to savepoint ${savepointName}`));
-      throw e;
-    }
+var NeonTransaction = class extends PgTransaction {
+  static [entityKind] = "NeonHttpTransaction";
+  async transaction(_transaction) {
+    throw new Error("No transactions support in neon-http driver");
   }
 };
 
-// node_modules/drizzle-orm/neon-serverless/driver.js
-var NeonDriver = class {
+// node_modules/drizzle-orm/neon-http/driver.js
+var NeonHttpDriver = class {
   constructor(client, dialect, options = {}) {
     this.client = client;
     this.dialect = dialect;
     this.options = options;
+    this.initMappers();
   }
-  static [entityKind] = "NeonDriver";
+  static [entityKind] = "NeonHttpDriver";
   createSession(schema2) {
-    return new NeonSession(this.client, this.dialect, schema2, {
+    return new NeonHttpSession(this.client, this.dialect, schema2, {
       logger: this.options.logger,
       cache: this.options.cache
     });
   }
+  initMappers() {
+    export_types.setTypeParser(export_types.builtins.TIMESTAMPTZ, (val) => val);
+    export_types.setTypeParser(export_types.builtins.TIMESTAMP, (val) => val);
+    export_types.setTypeParser(export_types.builtins.DATE, (val) => val);
+    export_types.setTypeParser(export_types.builtins.INTERVAL, (val) => val);
+    export_types.setTypeParser(1231, (val) => val);
+    export_types.setTypeParser(1115, (val) => val);
+    export_types.setTypeParser(1185, (val) => val);
+    export_types.setTypeParser(1187, (val) => val);
+    export_types.setTypeParser(1182, (val) => val);
+  }
 };
-var NeonDatabase = class extends PgDatabase {
-  static [entityKind] = "NeonServerlessDatabase";
+function wrap(target, token, cb, deep) {
+  return new Proxy(target, {
+    get(target2, p2) {
+      const element = target2[p2];
+      if (typeof element !== "function" && (typeof element !== "object" || element === null)) return element;
+      if (deep) return wrap(element, token, cb);
+      if (p2 === "query") return wrap(element, token, cb, true);
+      return new Proxy(element, {
+        apply(target3, thisArg, argArray) {
+          const res = target3.call(thisArg, ...argArray);
+          if (typeof res === "object" && res !== null && "setToken" in res && typeof res.setToken === "function") {
+            res.setToken(token);
+          }
+          return cb(target3, p2, res);
+        }
+      });
+    }
+  });
+}
+var NeonHttpDatabase = class extends PgDatabase {
+  static [entityKind] = "NeonHttpDatabase";
+  $withAuth(token) {
+    this.authToken = token;
+    return wrap(this, token, (target, p2, res) => {
+      if (p2 === "with") {
+        return wrap(res, token, (_, __, res2) => res2);
+      }
+      return res;
+    });
+  }
+  async batch(batch) {
+    return this.session.batch(batch);
+  }
 };
 function construct(client, config = {}) {
   const dialect = new PgDialect({ casing: config.casing });
@@ -12141,9 +12136,13 @@ function construct(client, config = {}) {
       tableNamesMap: tablesConfig.tableNamesMap
     };
   }
-  const driver = new NeonDriver(client, dialect, { logger, cache: config.cache });
+  const driver = new NeonHttpDriver(client, dialect, { logger, cache: config.cache });
   const session = driver.createSession(schema2);
-  const db2 = new NeonDatabase(dialect, session, schema2);
+  const db2 = new NeonHttpDatabase(
+    dialect,
+    session,
+    schema2
+  );
   db2.$client = client;
   db2.$cache = config.cache;
   if (db2.$cache) {
@@ -12153,20 +12152,18 @@ function construct(client, config = {}) {
 }
 function drizzle(...params) {
   if (typeof params[0] === "string") {
-    const instance = new Mn({
-      connectionString: params[0]
-    });
+    const instance = cs(params[0]);
     return construct(instance, params[1]);
   }
   if (isConfig(params[0])) {
-    const { connection, client, ws, ...drizzleConfig } = params[0];
-    if (ws) {
-      ce.webSocketConstructor = ws;
-    }
+    const { connection, client, ...drizzleConfig } = params[0];
     if (client) return construct(client, drizzleConfig);
-    const instance = typeof connection === "string" ? new Mn({
-      connectionString: connection
-    }) : new Mn(connection);
+    if (typeof connection === "object") {
+      const { connectionString, ...options } = connection;
+      const instance2 = cs(connectionString, options);
+      return construct(instance2, drizzleConfig);
+    }
+    const instance = cs(connection);
     return construct(instance, drizzleConfig);
   }
   return construct(params[0], params[1]);
@@ -14060,7 +14057,6 @@ var bcryptjs_default = {
 import crypto2 from "node:crypto";
 try {
   if (typeof WebSocket !== "undefined") {
-    ce.webSocketConstructor = WebSocket;
   }
 } catch (e) {
   console.error("Failed to configure WebSocket for Neon:", e);
@@ -14090,7 +14086,6 @@ function getClientIp(req) {
   }
   return String(req.socket?.remoteAddress || "unknown");
 }
-var pool;
 var loginAttempts = /* @__PURE__ */ new Map();
 var WINDOW_MS = 5 * 60 * 1e3;
 var MAX_ATTEMPTS = 10;
@@ -14120,39 +14115,6 @@ function trackFailed(ip) {
 function clearAttempts(ip) {
   loginAttempts.delete(ip);
 }
-var getPool = () => {
-  if (pool) return pool;
-  const DB_URL = process.env.DATABASE_URL;
-  if (!DB_URL) throw new Error("DATABASE_URL is not configured");
-  const isNeon = DB_URL && DB_URL.includes("neon.tech");
-  let normalizedUrl = DB_URL;
-  try {
-    const u = new URL(DB_URL);
-    u.searchParams.delete("channel_binding");
-    if (!u.searchParams.has("uselibpqcompat")) u.searchParams.set("uselibpqcompat", "true");
-    if (!u.searchParams.has("sslmode")) u.searchParams.set("sslmode", "require");
-    normalizedUrl = u.toString();
-  } catch {
-    const hasQuery = (DB_URL || "").includes("?");
-    const sep = hasQuery ? "&" : "?";
-    normalizedUrl = `${DB_URL}${sep}uselibpqcompat=true&sslmode=require`;
-  }
-  pool = new Mn({
-    connectionString: normalizedUrl,
-    connectionTimeoutMillis: 6e4,
-    idleTimeoutMillis: 1e4,
-    max: 5,
-    keepAlive: true,
-    ssl: isNeon ? { rejectUnauthorized: false } : void 0
-  });
-  pool.query("SELECT 1").catch((err) => {
-    console.error("DB connectivity check failed:", err?.code || err?.message || err);
-  });
-  pool.on("error", (err) => {
-    console.error("Unexpected error on idle client", err);
-  });
-  return pool;
-};
 var users = pgTable("user", {
   id: serial("id").primaryKey(),
   email: text("email").unique().notNull(),
@@ -14410,17 +14372,31 @@ var schema = {
   homeContents,
   aboutContents
 };
+var sqlClient = null;
+var getSql = () => {
+  if (sqlClient) return sqlClient;
+  const DB_URL = process.env.DATABASE_URL;
+  if (!DB_URL) throw new Error("DATABASE_URL is not configured");
+  let normalizedUrl = DB_URL;
+  if (!DB_URL.includes("sslmode=")) {
+    const sep = DB_URL.includes("?") ? "&" : "?";
+    normalizedUrl = DB_URL + sep + "sslmode=require";
+  }
+  sqlClient = cs(normalizedUrl);
+  return sqlClient;
+};
 var db;
 var getDb = () => {
   if (db) return db;
-  db = drizzle(getPool(), { schema });
+  db = drizzle(getSql(), { schema });
   return db;
 };
 var didEnsureSchema = false;
 var ensureSchema = async () => {
   if (didEnsureSchema) return;
   try {
-    const client = await getPool().connect();
+    const client = { query: async (q) => getSql().query(q), release: () => {
+    } };
     try {
       await client.query(`
                 CREATE TABLE IF NOT EXISTS certificate_category (
@@ -14477,7 +14453,7 @@ var ensureSchema = async () => {
     didEnsureSchema = true;
   } catch (e) {
     console.error("Schema ensure failed:", e?.code || e?.message || e);
-    throw Object.assign(new Error("DB_UNAVAILABLE"), { cause: e });
+    throw Object.assign(new Error("DB_UNAVAILABLE: " + String(e.message || e)), { cause: e });
   }
 };
 var withRetry = async (fn, retries = 3) => {
@@ -14524,13 +14500,13 @@ var resources = {
   "social-links": socialLinks,
   "projects": projects,
   "project-categories": projectCategories,
-  "blog-posts": blogPosts,
+  "blog": blogPosts,
   "blog-categories": blogCategories,
   "blog-comments": blogComments,
   "skills": skills,
   "skill-categories": skillCategories,
+  "experiences": experiences,
   "experience": experiences,
-  // Map 'experience' -> experiences table
   "education": educations,
   "certificates": certificates,
   "certificate-categories": certificateCategories,
@@ -15437,7 +15413,8 @@ async function handler(req, res) {
       const MAX_CONFIGS = 5;
       const maskSecret = (cfg) => cfg ? { ...cfg, api_secret: cfg.api_secret ? "\u2022".repeat(8) + cfg.api_secret.slice(-4) : "" } : cfg;
       const getActiveConfig = async () => {
-        const client = await getPool().connect();
+        const client = { query: async (q) => getSql().query(q), release: () => {
+        } };
         try {
           const result = await client.query(
             "SELECT * FROM cloudinary_config WHERE is_active = true ORDER BY id DESC LIMIT 1"
@@ -15460,7 +15437,8 @@ async function handler(req, res) {
           created_at: (/* @__PURE__ */ new Date()).toISOString(),
           updated_at: (/* @__PURE__ */ new Date()).toISOString()
         };
-        const client = await getPool().connect();
+        const client = { query: async (q) => getSql().query(q), release: () => {
+        } };
         try {
           const result = await client.query("SELECT * FROM cloudinary_config ORDER BY id ASC");
           return sendJSON(res, 200, [ghConfig, ...result.rows.map(maskSecret)]);
@@ -15476,7 +15454,8 @@ async function handler(req, res) {
         if (!cloud_name || !api_key || !api_secret) {
           return sendJSON(res, 400, { error: "cloud_name, api_key, and api_secret are required" });
         }
-        const client = await getPool().connect();
+        const client = { query: async (q) => getSql().query(q), release: () => {
+        } };
         try {
           const countResult = await client.query("SELECT COUNT(*) FROM cloudinary_config");
           const count = parseInt(countResult.rows[0].count, 10);
@@ -15498,7 +15477,8 @@ async function handler(req, res) {
         if (!configId) return sendJSON(res, 400, { error: "Config ID required (pass as ?id=)" });
         const body = await parseBody(req);
         const { cloud_name, api_key, api_secret, label } = body || {};
-        const client = await getPool().connect();
+        const client = { query: async (q) => getSql().query(q), release: () => {
+        } };
         try {
           const existing = await client.query("SELECT * FROM cloudinary_config WHERE id = $1", [configId]);
           if (!existing.rows[0]) return sendJSON(res, 404, { error: "Config not found" });
@@ -15520,7 +15500,8 @@ async function handler(req, res) {
       if (action === "configs" && req.method === "DELETE") {
         const configId = id ? Number(id) : null;
         if (!configId) return sendJSON(res, 400, { error: "Config ID required (pass as ?id=)" });
-        const client = await getPool().connect();
+        const client = { query: async (q) => getSql().query(q), release: () => {
+        } };
         try {
           const existing = await client.query("SELECT * FROM cloudinary_config WHERE id = $1", [configId]);
           if (!existing.rows[0]) return sendJSON(res, 404, { error: "Config not found" });
@@ -15537,7 +15518,8 @@ async function handler(req, res) {
         const body = await parseBody(req);
         const { config_id } = body || {};
         if (!config_id) return sendJSON(res, 400, { error: "config_id is required" });
-        const client = await getPool().connect();
+        const client = { query: async (q) => getSql().query(q), release: () => {
+        } };
         try {
           await client.query("UPDATE cloudinary_config SET is_active = false");
           const result = await client.query(
@@ -15554,7 +15536,8 @@ async function handler(req, res) {
         const body = await parseBody(req);
         const { config_id } = body || {};
         if (config_id && Number(config_id) !== 9999) {
-          const client = await getPool().connect();
+          const client = { query: async (q) => getSql().query(q), release: () => {
+          } };
           let cfg;
           try {
             const resDb = await client.query("SELECT * FROM cloudinary_config WHERE id = $1", [Number(config_id)]);
@@ -15628,7 +15611,8 @@ async function handler(req, res) {
         }
         if (providerFilter === "all" || providerFilter === "cloudinary") {
           try {
-            const client = await getPool().connect();
+            const client = { query: async (q) => getSql().query(q), release: () => {
+            } };
             let cldConfigs = [];
             try {
               let query2 = "SELECT * FROM cloudinary_config";
@@ -15686,7 +15670,8 @@ async function handler(req, res) {
         if (!file) return sendJSON(res, 400, { error: "file (base64 data URL) is required" });
         const targetProvider = (provider || "github").toLowerCase();
         if (targetProvider === "cloudinary") {
-          const client = await getPool().connect();
+          const client = { query: async (q) => getSql().query(q), release: () => {
+          } };
           let configToUse;
           try {
             if (config_id && Number(config_id) !== 9999) {
@@ -15764,7 +15749,8 @@ async function handler(req, res) {
           const isCloudinary = provider === "cloudinary" || id2.includes("/") || !id2.includes(".") && !sha;
           if (isCloudinary) {
             try {
-              const client = await getPool().connect();
+              const client = { query: async (q) => getSql().query(q), release: () => {
+              } };
               let targetConfig;
               try {
                 const resDb = await client.query("SELECT * FROM cloudinary_config WHERE is_active = true LIMIT 1");
@@ -15797,10 +15783,12 @@ async function handler(req, res) {
     const publicResources = [
       "projects",
       "project-categories",
+      "blog",
       "blog-posts",
       "blog-categories",
       "skills",
       "skill-categories",
+      "experiences",
       "experience",
       "education",
       "certificates",
@@ -15979,7 +15967,7 @@ async function handler(req, res) {
     ];
     const isDbError = msg === "DB_UNAVAILABLE" || dbSignals.some((s) => msg.includes(s)) || dbSignals.some((s) => code.includes(s)) || code === "57P01";
     if (isDbError) {
-      return sendJSON(res, 503, isAuthenticated ? { error: "Service temporarily unavailable", code: "DB_UNAVAILABLE" } : { error: "Service temporarily unavailable" });
+      return sendJSON(res, 503, { error: "Service temporarily unavailable", details: msg });
     }
     if (isProduction && !isAuthenticated) {
       return sendJSON(res, 500, { error: "Internal Server Error" });
