@@ -390,7 +390,7 @@ export const api = {
     home: {
       get: async (): Promise<any> => {
         const response = await apiClient.get('/home-content');
-        return response.data;
+        return Array.isArray(response.data) ? response.data[0] : response.data;
       },
       update: async (data: any): Promise<any> => {
         const response = await apiClient.post('/home-content', data);
@@ -400,7 +400,7 @@ export const api = {
     about: {
       get: async (): Promise<any> => {
         const response = await apiClient.get('/about-content');
-        return response.data;
+        return Array.isArray(response.data) ? response.data[0] : response.data;
       },
       update: async (data: any): Promise<any> => {
         const response = await apiClient.post('/about-content', data);
@@ -429,7 +429,7 @@ export const api = {
   // ----------------------------------------
   profile: {
     get: async (): Promise<Profile> => {
-      return fetchWithLocalFallback<Profile>('/profile', 'profile_cache', {
+      const data = await fetchWithLocalFallback<any>('/profile', 'profile_cache', {
         full_name: 'John Doe',
         headline: 'Software Engineer',
         bio: '',
@@ -437,6 +437,7 @@ export const api = {
         status: 'available',
         isActive: true
       } as any);
+      return Array.isArray(data) ? data[0] : data;
     },
     update: async (data: Partial<Profile>): Promise<Profile> => {
       // The backend endpoint might be /profile (POST) or /profile/:id (PUT)

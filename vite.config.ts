@@ -71,7 +71,7 @@ export default defineConfig(({ mode }) => ({
             handler: 'NetworkFirst',
             options: {
               cacheName: 'assets-runtime-cache',
-              networkTimeoutSeconds: 4,
+              networkTimeoutSeconds: 10,
               expiration: {
                 maxEntries: 100,
                 maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days
@@ -84,7 +84,7 @@ export default defineConfig(({ mode }) => ({
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api-cache-v2',
-              networkTimeoutSeconds: 3,
+              networkTimeoutSeconds: 10,
               expiration: {
                 maxEntries: 100,
                 maxAgeSeconds: 60 * 60 * 12

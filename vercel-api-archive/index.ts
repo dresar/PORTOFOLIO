@@ -519,7 +519,8 @@ const resources: Record<string, any> = {
   'blog-comments': blogComments,
   'skills': skills,
   'skill-categories': skillCategories,
-  'experiences': experiences, // Map 'experience' -> experiences table
+  'experiences': experiences,
+    'experience': experiences,
   'education': educations,
   'certificates': certificates,
   'certificate-categories': certificateCategories,
@@ -2327,6 +2328,7 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
     return sendJSON(res, 500, { error: 'Internal Server Error', details: msg || 'Unknown error' });
   }
 }
+
 
 
 
