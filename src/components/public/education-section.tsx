@@ -35,14 +35,20 @@ export function EducationSection({ educations }: { educations: Education[] }) {
                       <VIcon name="fa-solid fa-graduation-cap" className="text-cyan-400 w-4 h-4" />
                       <span>{edu.institution}</span>
                     </h3>
-                    <div className="text-sm font-semibold text-blue-400 mt-0.5">
-                      {edu.degree} &bull; <span className="text-slate-300 font-normal">{edu.fieldOfStudy}</span>
-                    </div>
+                    {(edu.degree !== '-' || edu.fieldOfStudy !== '-') && (
+                      <div className="text-sm font-semibold text-blue-400 mt-0.5">
+                        {[edu.degree !== '-' ? edu.degree : null, edu.fieldOfStudy !== '-' ? edu.fieldOfStudy : null]
+                          .filter(Boolean)
+                          .join(' • ')}
+                      </div>
+                    )}
                   </div>
 
-                  <VChip color={edu.isCurrent ? 'success' : 'default'} size="sm">
-                    {edu.startDate} - {edu.isCurrent ? 'Sekarang' : edu.endDate || '-'}
-                  </VChip>
+                  {(edu.startDate !== '-' || edu.endDate || edu.isCurrent) && (
+                    <VChip color={edu.isCurrent ? 'success' : 'default'} size="sm">
+                      {edu.startDate !== '-' ? edu.startDate : ''} {edu.isCurrent ? '- Sekarang' : (edu.endDate ? `- ${edu.endDate}` : '')}
+                    </VChip>
+                  )}
                 </div>
 
                 {edu.description && (

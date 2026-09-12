@@ -57,29 +57,27 @@ export function ProfileEditor({ profile }: { profile: Profile | null }) {
           <VCardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <VTextField
-                label="Nama Lengkap"
+                label="Nama Lengkap (Opsional)"
                 name="fullName"
                 defaultValue={profile?.fullName || 'Muhammad Fauzan Al Hafizh'}
-                required
+                placeholder="Muhammad Fauzan Al Hafizh"
                 prependInnerIcon="fa-solid fa-user"
               />
               <VTextField
-                label="Headline Profesional"
+                label="Headline Profesional (Opsional)"
                 name="headline"
                 defaultValue={profile?.headline || ''}
                 placeholder="Contoh: Software Engineer & Full-Stack Developer"
-                required
                 prependInnerIcon="fa-solid fa-code"
               />
             </div>
 
             <VTextarea
-              label="Biografi Lengkap / Filosofi Rekayasa"
+              label="Biografi Lengkap / Filosofi Rekayasa (Opsional)"
               name="bio"
               defaultValue={profile?.bio || ''}
               placeholder="Ceritakan latar belakang, fokus teknologi, dan etos kerja Anda..."
               rows={5}
-              required
             />
 
             <div className="space-y-4">

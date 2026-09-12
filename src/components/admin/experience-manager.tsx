@@ -216,11 +216,10 @@ export function ExperienceManager({ initialExperiences }: { initialExperiences: 
               required
             />
             <VTextField
-              label="Posisi / Jabatan"
+              label="Posisi / Jabatan (Opsional)"
               name="role"
               defaultValue={selectedItem?.role || ''}
               placeholder="Contoh: Senior Full-Stack Engineer"
-              required
             />
           </div>
 
@@ -240,7 +239,7 @@ export function ExperienceManager({ initialExperiences }: { initialExperiences: 
               </select>
             </div>
             <VTextField
-              label="Lokasi"
+              label="Lokasi (Opsional)"
               name="location"
               defaultValue={selectedItem?.location || ''}
               placeholder="Contoh: Jakarta, Indonesia / Remote"
@@ -249,14 +248,13 @@ export function ExperienceManager({ initialExperiences }: { initialExperiences: 
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <VTextField
-              label="Tanggal / Bulan Mulai"
+              label="Tanggal / Bulan Mulai (Opsional)"
               name="startDate"
               defaultValue={selectedItem?.startDate || ''}
               placeholder="Contoh: Jan 2023 atau 2023"
-              required
             />
             <VTextField
-              label="Tanggal Selesai"
+              label="Tanggal Selesai (Opsional)"
               name="endDate"
               defaultValue={selectedItem?.endDate || ''}
               placeholder="Contoh: Des 2024"
@@ -265,12 +263,11 @@ export function ExperienceManager({ initialExperiences }: { initialExperiences: 
           </div>
 
           <VTextarea
-            label="Deskripsi Tanggung Jawab & Pencapaian"
+            label="Deskripsi Tanggung Jawab & Pencapaian (Opsional)"
             name="description"
             defaultValue={selectedItem?.description || ''}
             placeholder="Jelaskan peran, kontribusi teknis, dan pencapaian selama bekerja..."
             rows={4}
-            required
           />
 
           <div className="flex flex-wrap items-center gap-6 pt-2">

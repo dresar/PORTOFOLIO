@@ -64,7 +64,7 @@ export function SkillsManager({ initialSkills }: { initialSkills: Skill[] }) {
     const payload = {
       name,
       category,
-      iconClass: iconClassInput,
+      iconClass: iconClassInput.trim() || 'fa-solid fa-code',
       proficiencyLevel: proficiency,
       orderIndex,
       isPublished,
@@ -259,12 +259,12 @@ export function SkillsManager({ initialSkills }: { initialSkills: Skill[] }) {
           <div className="p-3.5 rounded-lg bg-slate-950 border border-slate-800 space-y-2">
             <div className="flex items-center justify-between">
               <label className="text-xs font-semibold text-slate-300">
-                Kelas Ikon Font Awesome (e.g. fa-brands fa-react, fa-solid fa-code)
+                Kelas Ikon Font Awesome (Opsional, default: fa-solid fa-code)
               </label>
               <div className="flex items-center gap-2">
                 <span className="text-[11px] text-slate-400">Pratinjau:</span>
                 <div className="w-7 h-7 rounded bg-slate-900 border border-slate-700 flex items-center justify-center text-blue-400 text-sm">
-                  <VIcon name={iconClassInput} className="w-4 h-4" />
+                  <VIcon name={iconClassInput || 'fa-solid fa-code'} className="w-4 h-4" />
                 </div>
               </div>
             </div>
@@ -272,8 +272,7 @@ export function SkillsManager({ initialSkills }: { initialSkills: Skill[] }) {
               type="text"
               value={iconClassInput}
               onChange={(e) => setIconClassInput(e.target.value)}
-              placeholder="fa-brands fa-react"
-              required
+              placeholder="fa-solid fa-code (atau biarkan kosong)"
               className="w-full h-9 px-3 text-sm rounded-md bg-slate-900 border border-slate-700 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 font-mono text-xs"
             />
           </div>

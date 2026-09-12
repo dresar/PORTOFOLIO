@@ -42,24 +42,30 @@ export function CertificatesSection({ certificates }: { certificates: Certificat
                     <h3 className="font-bold text-sm text-white group-hover:text-amber-400 transition-colors">
                       {cert.title}
                     </h3>
-                    <p className="text-xs font-semibold text-slate-300 mt-0.5">{cert.issuer}</p>
+                    {cert.issuer && cert.issuer !== '-' && (
+                      <p className="text-xs font-semibold text-slate-300 mt-0.5">{cert.issuer}</p>
+                    )}
                   </div>
                 </div>
 
-                <div className="space-y-1 text-xs text-slate-400 pt-2 border-t border-slate-800">
-                  <div className="flex items-center justify-between">
-                    <span>Terbit:</span>
-                    <span className="font-mono text-slate-300">{cert.issueDate}</span>
+                {(cert.issueDate !== '-' || cert.credentialId) && (
+                  <div className="space-y-1 text-xs text-slate-400 pt-2 border-t border-slate-800">
+                    {cert.issueDate && cert.issueDate !== '-' && (
+                      <div className="flex items-center justify-between">
+                        <span>Terbit:</span>
+                        <span className="font-mono text-slate-300">{cert.issueDate}</span>
+                      </div>
+                    )}
+                    {cert.credentialId && (
+                      <div className="flex items-center justify-between">
+                        <span>ID Kredensial:</span>
+                        <span className="font-mono text-slate-300 text-[11px] truncate max-w-[150px]">
+                          {cert.credentialId}
+                        </span>
+                      </div>
+                    )}
                   </div>
-                  {cert.credentialId && (
-                    <div className="flex items-center justify-between">
-                      <span>ID Kredensial:</span>
-                      <span className="font-mono text-slate-300 text-[11px] truncate max-w-[150px]">
-                        {cert.credentialId}
-                      </span>
-                    </div>
-                  )}
-                </div>
+                )}
               </VCardContent>
 
               {cert.credentialUrl && (

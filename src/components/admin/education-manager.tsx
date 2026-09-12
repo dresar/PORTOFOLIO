@@ -214,31 +214,28 @@ export function EducationManager({ initialEducations }: { initialEducations: Edu
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <VTextField
-              label="Gelar Akademik"
+              label="Gelar Akademik (Opsional)"
               name="degree"
               defaultValue={selectedItem?.degree || ''}
               placeholder="Contoh: Sarjana Komputer (S.Kom)"
-              required
             />
             <VTextField
-              label="Jurusan / Program Studi"
+              label="Jurusan / Program Studi (Opsional)"
               name="fieldOfStudy"
               defaultValue={selectedItem?.fieldOfStudy || ''}
               placeholder="Contoh: Teknik Informatika"
-              required
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <VTextField
-              label="Tahun / Tanggal Mulai"
+              label="Tahun / Tanggal Mulai (Opsional)"
               name="startDate"
               defaultValue={selectedItem?.startDate || ''}
               placeholder="Contoh: 2020"
-              required
             />
             <VTextField
-              label="Tahun / Tanggal Selesai"
+              label="Tahun / Tanggal Selesai (Opsional)"
               name="endDate"
               defaultValue={selectedItem?.endDate || ''}
               placeholder="Contoh: 2024"

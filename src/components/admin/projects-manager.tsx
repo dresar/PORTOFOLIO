@@ -258,12 +258,11 @@ export function ProjectsManager({ initialProjects }: { initialProjects: Project[
           </div>
 
           <VTextarea
-            label="Deskripsi Singkat"
+            label="Deskripsi Singkat (Opsional)"
             name="description"
             defaultValue={selectedProject?.description || ''}
-            placeholder="Jelaskan ringkasan proyek dan nilai tambahnya..."
+            placeholder="Jelaskan ringkasan proyek dan nilai tambahnya (bisa dikosongkan)..."
             rows={3}
-            required
           />
 
           <VTextarea

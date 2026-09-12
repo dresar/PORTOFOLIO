@@ -229,7 +229,24 @@ export async function createProjectAction(data: unknown): Promise<ActionResponse
       };
     }
 
-    await db.insert(projects).values(validated.data);
+    let slug = validated.data.slug;
+    if (!slug) {
+      slug = validated.data.title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '') || `project-${Date.now()}`;
+    }
+
+    // Cek keunikan slug
+    const existing = await db.select({ id: projects.id }).from(projects).where(eq(projects.slug, slug)).limit(1);
+    if (existing.length > 0) {
+      slug = `${slug}-${Date.now().toString().slice(-4)}`;
+    }
+
+    await db.insert(projects).values({
+      ...validated.data,
+      slug,
+    });
     revalidatePath('/');
     revalidatePath('/admin/projects');
 
@@ -252,9 +269,17 @@ export async function updateProjectAction(id: string, data: unknown): Promise<Ac
       };
     }
 
+    let slug = validated.data.slug;
+    if (!slug) {
+      slug = validated.data.title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '') || `project-${Date.now()}`;
+    }
+
     await db
       .update(projects)
-      .set({ ...validated.data, updatedAt: new Date() })
+      .set({ ...validated.data, slug, updatedAt: new Date() })
       .where(eq(projects.id, id));
 
     revalidatePath('/');

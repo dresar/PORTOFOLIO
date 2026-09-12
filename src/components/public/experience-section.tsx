@@ -36,7 +36,7 @@ export function ExperienceSection({ experiences }: { experiences: Experience[] }
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div>
                       <h3 className="text-lg font-bold text-white group-hover:text-blue-400 transition-colors">
-                        {exp.role}
+                        {exp.role && exp.role !== '-' ? exp.role : exp.company}
                       </h3>
                       <div className="text-sm font-semibold text-slate-300 mt-0.5 flex items-center gap-2">
                         <span>{exp.company}</span>
@@ -53,15 +53,19 @@ export function ExperienceSection({ experiences }: { experiences: Experience[] }
                       <VChip color="primary" size="sm">
                         {exp.employmentType}
                       </VChip>
-                      <VChip color={exp.isCurrent ? 'success' : 'default'} size="sm">
-                        {exp.startDate} - {exp.isCurrent ? 'Sekarang' : exp.endDate || '-'}
-                      </VChip>
+                      {(exp.startDate !== '-' || exp.endDate || exp.isCurrent) && (
+                        <VChip color={exp.isCurrent ? 'success' : 'default'} size="sm">
+                          {exp.startDate !== '-' ? exp.startDate : ''} {exp.isCurrent ? '- Sekarang' : (exp.endDate ? `- ${exp.endDate}` : '')}
+                        </VChip>
+                      )}
                     </div>
                   </div>
 
-                  <p className="text-xs sm:text-sm text-slate-400 leading-relaxed pt-3 border-t border-slate-800 whitespace-pre-wrap">
-                    {exp.description}
-                  </p>
+                  {exp.description && (
+                    <p className="text-xs sm:text-sm text-slate-400 leading-relaxed pt-3 border-t border-slate-800 whitespace-pre-wrap">
+                      {exp.description}
+                    </p>
+                  )}
                 </VCardContent>
               </VCard>
             </div>

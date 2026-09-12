@@ -154,10 +154,9 @@ export function ContactSection({ profile }: { profile: Profile | null }) {
                   </div>
 
                   <VTextField
-                    label="Subjek / Topik Pembicaraan"
+                    label="Subjek / Topik Pembicaraan (Opsional)"
                     name="subject"
-                    placeholder="Contoh: Diskusi Proyek Web Application / Peluang Karier"
-                    required
+                    placeholder="Contoh: Diskusi Proyek / Peluang Kerja (Bisa dikosongkan)"
                     prependInnerIcon="fa-solid fa-pen-to-square"
                   />
 

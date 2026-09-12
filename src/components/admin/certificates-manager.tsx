@@ -223,21 +223,19 @@ export function CertificatesManager({ initialCertificates }: { initialCertificat
               required
             />
             <VTextField
-              label="Organisasi Penerbit"
+              label="Organisasi Penerbit (Opsional)"
               name="issuer"
               defaultValue={selectedItem?.issuer || ''}
               placeholder="Contoh: Amazon Web Services / Dicoding"
-              required
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <VTextField
-              label="Tanggal / Tahun Terbit"
+              label="Tanggal / Tahun Terbit (Opsional)"
               name="issueDate"
               defaultValue={selectedItem?.issueDate || ''}
               placeholder="Contoh: 2024 atau Jan 2024"
-              required
             />
             <VTextField
               label="Tanggal Kadaluarsa (Opsional)"
