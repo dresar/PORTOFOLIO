@@ -50,6 +50,7 @@ export default defineConfig(({ mode }) => ({
         clientsClaim: true,
         skipWaiting: true,
         globPatterns: [
+          'index.html',
           'favicon.svg',
           'pwa-*.png'
         ],
