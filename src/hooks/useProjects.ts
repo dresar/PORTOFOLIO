@@ -6,7 +6,7 @@ import { safeJsonParse } from '@/lib/utils';
 export function useProjects() {
   const projectsQuery = useQuery({
     queryKey: ['projects'],
-    queryFn: () => projectsAPI.getAll({ limit: 200 } as any),
+    queryFn: () => projectsAPI.getAll({ limit: 500 } as any),
     initialData: () => {
       const cached = safeJsonParse<any[]>(localStorage.getItem('projects_cache_v3'), null as any);
       return cached && cached.length > 0 ? cached : undefined;

@@ -2231,7 +2231,7 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
           // Get Many (List)
           // Pagination & Search
           const page = Number(query.page) || 1;
-          const limit = Number(query.limit) || (resourceName === 'projects' ? 200 : 50);
+          const limit = Number(query.limit) || (resourceName === 'projects' ? 500 : 50);
           const offset = (page - 1) * limit;
           const search = query.search as string;
 

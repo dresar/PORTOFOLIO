@@ -15937,7 +15937,7 @@ async function handler(req, res) {
             return sendJSON(res, 200, latest || {});
           }
           const page = Number(query.page) || 1;
-          const limit = Number(query.limit) || (resourceName === "projects" ? 200 : 50);
+          const limit = Number(query.limit) || (resourceName === "projects" ? 500 : 50);
           const offset = (page - 1) * limit;
           const search = query.search;
           let queryBuilder = getDb().select().from(table);
