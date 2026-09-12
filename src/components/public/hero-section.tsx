@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { Profile } from '@/db/schema';
 import { VBtn } from '@/components/ui/v-btn';
@@ -12,6 +12,10 @@ export function HeroSection({ profile }: { profile: Profile | null }) {
   const bio =
     profile?.bio ||
     'Membangun aplikasi web modern, skalabel, dan berkinerja tinggi dengan arsitektur rekayasa perangkat lunak terstandarisasi.';
+
+  const initialAvatar = profile?.avatarUrl || '/avatar.jpg';
+  const [imgSrc, setImgSrc] = useState(initialAvatar);
+  const [imgFailed, setImgFailed] = useState(false);
 
   return (
     <section id="hero" className="relative min-h-[90vh] flex items-center justify-center pt-24 pb-16 overflow-hidden">
@@ -114,15 +118,22 @@ export function HeroSection({ profile }: { profile: Profile | null }) {
           {/* Kolom Kanan: Avatar & Visual Badge */}
           <div className="relative flex justify-center items-center">
             <div className="relative w-64 h-64 sm:w-80 sm:h-80 rounded-2xl p-2 bg-gradient-to-b from-blue-500/20 to-slate-900/50 border border-slate-700/60 shadow-2xl shadow-blue-500/10 backdrop-blur-md">
-              {profile?.avatarUrl ? (
-                <div className="relative w-full h-full rounded-xl overflow-hidden">
+              {!imgFailed ? (
+                <div className="relative w-full h-full rounded-xl overflow-hidden bg-slate-900">
                   <Image
-                    src={profile.avatarUrl}
+                    src={imgSrc}
                     alt={fullName}
                     fill
                     sizes="(max-width: 640px) 256px, 320px"
                     className="object-cover"
                     priority
+                    onError={() => {
+                      if (imgSrc !== '/avatar.jpg') {
+                        setImgSrc('/avatar.jpg');
+                      } else {
+                        setImgFailed(true);
+                      }
+                    }}
                   />
                 </div>
               ) : (

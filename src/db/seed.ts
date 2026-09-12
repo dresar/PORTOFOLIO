@@ -38,7 +38,7 @@ async function seed() {
       fullName: 'Muhammad Fauzan Al Hafizh',
       headline: 'Full-Stack Software Engineer',
       bio: 'Halo! Saya Muhammad Fauzan Al Hafizh, seorang Software Engineer yang berfokus pada pembangunan solusi web modern, skalabel, dan berperforma tinggi. [SILAKAN PERBARUI DESKRIPSI BIOGRAFI LENGKAP PADA ADMIN PANEL]',
-      avatarUrl: 'https://raw.githubusercontent.com/dresar/PORTOFOLIO/main/asset/home_hero.png',
+      avatarUrl: 'https://raw.githubusercontent.com/dresar/PORTOFOLIO/main/asset/avatar.jpg',
       resumeUrl: '',
       location: 'Indonesia',
       email: 'fauzan.alhafizh@example.com',
