@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { Profile } from '@/db/schema';
 import { VCard } from '@/components/ui/v-card';
 import { VBtn } from '@/components/ui/v-btn';
@@ -59,15 +60,18 @@ export function AboutSection({
                   <span>Domisili: {profile?.location || 'Indonesia'}</span>
                 </div>
 
-                {profile?.resumeUrl ? (
-                  <a href={profile.resumeUrl} target="_blank" rel="noopener noreferrer">
-                    <VBtn variant="tonal" size="sm" prependIcon="fa-solid fa-download">
-                      Unduh Resume / CV
+                <div className="flex flex-wrap items-center gap-2">
+                  <Link href="/cv">
+                    <VBtn variant="tonal" size="sm" prependIcon="fa-solid fa-file-pdf" className="text-amber-400 border border-amber-500/30 hover:bg-amber-500/10">
+                      Lihat CV Online
+                    </VBtn>
+                  </Link>
+                  <a href="/cv-hafizh.pdf" download="CV_Muhammad_Fauzan_Al_Hafizh.pdf">
+                    <VBtn variant="outlined" size="sm" prependIcon="fa-solid fa-download">
+                      Unduh PDF
                     </VBtn>
                   </a>
-                ) : (
-                  <span className="text-xs text-slate-500 italic">Dokumen resume dapat diminta via kontak</span>
-                )}
+                </div>
               </div>
             </VCard>
           </div>

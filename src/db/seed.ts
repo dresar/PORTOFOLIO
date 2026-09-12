@@ -36,16 +36,16 @@ async function seed() {
   if (Number(existingProfile[0]?.value || 0) === 0) {
     await db.insert(profiles).values({
       fullName: 'Muhammad Fauzan Al Hafizh',
-      headline: 'Full-Stack Software Engineer',
-      bio: 'Halo! Saya Muhammad Fauzan Al Hafizh, seorang Software Engineer yang berfokus pada pembangunan solusi web modern, skalabel, dan berperforma tinggi. [SILAKAN PERBARUI DESKRIPSI BIOGRAFI LENGKAP PADA ADMIN PANEL]',
+      headline: 'Mahasiswa D3 Teknik Informatika – Fakultas Vokasi Universitas Sumatera Utara',
+      bio: 'Mahasiswa D3 Teknik Informatika di Universitas Sumatera Utara yang memiliki rasa ingin tahu tinggi dan ketertarikan mendalam untuk mempelajari teknologi komputer, perangkat lunak, perangkat keras, pemrograman, serta basis data. Memiliki kemampuan komunikasi dan kerja sama yang baik, mudah beradaptasi, serta aktif mengembangkan potensi melalui kegiatan akademik maupun organisasi.',
       avatarUrl: 'https://raw.githubusercontent.com/dresar/PORTOFOLIO/main/asset/avatar.jpg',
-      resumeUrl: '',
-      location: 'Indonesia',
-      email: 'fauzan.alhafizh@example.com',
-      phone: '+62 [ISI NO WHATSAPP]',
-      githubUrl: 'https://github.com',
+      resumeUrl: '/cv-hafizh.pdf',
+      location: 'Lubuk Pakam, Sumatera Utara',
+      email: 'fauzanalhafiz1007@gmail.com',
+      phone: '0853-6352-0813',
+      githubUrl: 'https://github.com/dresar',
       linkedinUrl: 'https://linkedin.com',
-      whatsappUrl: 'https://wa.me/',
+      whatsappUrl: 'https://wa.me/6285363520813',
       isAvailable: true,
     });
     console.log('Profile initialized.');
@@ -56,18 +56,29 @@ async function seed() {
   if (Number(existingEdu[0]?.value || 0) === 0) {
     await db.insert(educations).values([
       {
-        institution: '[DATA CONTOH] Universitas / Institusi Pendidikan',
-        degree: 'Sarjana Komputer (S.Kom)',
-        fieldOfStudy: 'Teknik Informatika / Ilmu Komputer',
-        startDate: '2020',
-        endDate: '2024',
-        isCurrent: false,
-        description: '[DATA CONTOH] Fokus studi rekayasa perangkat lunak, struktur data & algoritma, dan arsitektur basis data relasional. (Data ini dapat diubah di Admin Panel)',
+        institution: 'Universitas Sumatera Utara',
+        degree: 'D3 Teknik Informatika',
+        fieldOfStudy: 'Fakultas Vokasi',
+        startDate: '2026',
+        endDate: null,
+        isCurrent: true,
+        description: 'Pendidikan vokasi rekayasa perangkat lunak, struktur data, algoritma komputer, dan arsitektur basis data relasional.',
         orderIndex: 1,
         isPublished: true,
       },
+      {
+        institution: 'MAS Raudhatussalam',
+        degree: 'Madrasah Aliyah',
+        fieldOfStudy: 'Jurusan IPA (Ilmu Pengetahuan Alam)',
+        startDate: '2022',
+        endDate: '2025',
+        isCurrent: false,
+        description: 'Menyelesaikan pendidikan menengah atas peminatan Matematika & Ilmu Pengetahuan Alam (MIPA). Lulus tahun 2025.',
+        orderIndex: 2,
+        isPublished: true,
+      },
     ]);
-    console.log('Sample education initialized.');
+    console.log('Real CV educations initialized.');
   }
 
   // 4. Skills
@@ -75,71 +86,87 @@ async function seed() {
   if (Number(existingSkills[0]?.value || 0) === 0) {
     await db.insert(skills).values([
       {
-        name: 'Next.js & React',
-        category: 'Frontend',
-        iconClass: 'fa-brands fa-react',
-        proficiencyLevel: 92,
+        name: 'Python (dasar)',
+        category: 'Backend',
+        iconClass: 'fa-brands fa-python',
+        proficiencyLevel: 75,
         orderIndex: 1,
         isPublished: true,
       },
       {
-        name: 'TypeScript',
+        name: 'HTML (dasar)',
         category: 'Frontend',
-        iconClass: 'fa-solid fa-code',
-        proficiencyLevel: 88,
+        iconClass: 'fa-brands fa-html5',
+        proficiencyLevel: 80,
         orderIndex: 2,
         isPublished: true,
       },
       {
-        name: 'Tailwind CSS',
-        category: 'Frontend',
-        iconClass: 'fa-solid fa-palette',
-        proficiencyLevel: 94,
+        name: 'Bahasa C / C++ (dasar)',
+        category: 'Backend',
+        iconClass: 'fa-solid fa-code',
+        proficiencyLevel: 72,
         orderIndex: 3,
         isPublished: true,
       },
       {
-        name: 'Node.js / Express',
-        category: 'Backend',
-        iconClass: 'fa-brands fa-node-js',
-        proficiencyLevel: 86,
+        name: 'Basis Data (Database)',
+        category: 'Database',
+        iconClass: 'fa-solid fa-database',
+        proficiencyLevel: 78,
         orderIndex: 4,
         isPublished: true,
       },
       {
-        name: 'Neon PostgreSQL',
-        category: 'Database',
-        iconClass: 'fa-solid fa-database',
-        proficiencyLevel: 89,
+        name: 'Visual Studio Code',
+        category: 'Tools',
+        iconClass: 'fa-solid fa-laptop-code',
+        proficiencyLevel: 88,
         orderIndex: 5,
         isPublished: true,
       },
       {
-        name: 'Drizzle ORM',
-        category: 'Database',
-        iconClass: 'fa-solid fa-server',
-        proficiencyLevel: 88,
+        name: 'Code::Blocks',
+        category: 'Tools',
+        iconClass: 'fa-solid fa-cube',
+        proficiencyLevel: 76,
         orderIndex: 6,
         isPublished: true,
       },
       {
-        name: 'Git & GitHub',
+        name: 'Canva & Photoshop',
         category: 'Tools',
-        iconClass: 'fa-brands fa-github',
-        proficiencyLevel: 92,
+        iconClass: 'fa-solid fa-palette',
+        proficiencyLevel: 84,
         orderIndex: 7,
         isPublished: true,
       },
       {
-        name: 'Docker & Container',
-        category: 'Cloud & DevOps',
-        iconClass: 'fa-brands fa-docker',
-        proficiencyLevel: 80,
+        name: 'Microsoft Office (Word, Excel, PPT)',
+        category: 'Tools',
+        iconClass: 'fa-solid fa-file-word',
+        proficiencyLevel: 90,
         orderIndex: 8,
         isPublished: true,
       },
+      {
+        name: 'Komunikasi & Kerja Sama Tim',
+        category: 'Soft Skills',
+        iconClass: 'fa-solid fa-users',
+        proficiencyLevel: 92,
+        orderIndex: 9,
+        isPublished: true,
+      },
+      {
+        name: 'Kemampuan Beradaptasi & Rasa Ingin Tahu',
+        category: 'Soft Skills',
+        iconClass: 'fa-solid fa-brain',
+        proficiencyLevel: 95,
+        orderIndex: 10,
+        isPublished: true,
+      },
     ]);
-    console.log('Skills initialized.');
+    console.log('Real CV skills initialized.');
   }
 
   // 5. Projects
@@ -194,31 +221,31 @@ async function seed() {
   if (Number(existingExp[0]?.value || 0) === 0) {
     await db.insert(experiences).values([
       {
-        company: '[DATA CONTOH] Technology Innovation Labs',
-        role: 'Full-Stack Software Engineer',
-        employmentType: 'Full-time',
-        location: 'Jakarta, Indonesia / Remote',
-        startDate: '2023',
-        endDate: 'Sekarang',
-        isCurrent: true,
-        description: '[DATA CONTOH] Membangun dan mengelola arsitektur aplikasi berbasis Next.js dan PostgreSQL, mengoptimalkan query basis data, serta mengintegrasikan antarmuka responsif. (Dapat diubah di Admin Panel)',
+        company: 'Pondok Pesantren Raudhatussalam',
+        role: 'Pengurus Asrama',
+        employmentType: 'Organisasi',
+        location: 'Sumatera Utara',
+        startDate: '2022',
+        endDate: '2025',
+        isCurrent: false,
+        description: 'Berpartisipasi aktif dalam kegiatan organisasi dan pembinaan anggota, membangun komunikasi dan kerja sama yang solid dengan anggota serta lingkungan sekitar, melatih kedisiplinan dan tanggung jawab, serta berkontribusi dalam pelaksanaan berbagai kegiatan di lingkungan asrama.',
         orderIndex: 1,
         isPublished: true,
       },
       {
-        company: '[DATA CONTOH] Creative Digital Agency',
-        role: 'Frontend Developer',
-        employmentType: 'Contract',
-        location: 'Indonesia',
-        startDate: '2022',
-        endDate: '2023',
+        company: 'Kompetisi Olahraga Antarsekolah & Antardesa',
+        role: 'Peserta Tournament Futsal dan Mini Soccer',
+        employmentType: 'Prestasi & Tim',
+        location: 'Sumatera Utara',
+        startDate: '2023',
+        endDate: '2025',
         isCurrent: false,
-        description: '[DATA CONTOH] Mengembangkan antarmuka pengguna interaktif untuk berbagai klien korporat dengan standar aksesibilitas tinggi dan performa optimal.',
+        description: 'Mengikuti berbagai turnamen futsal dan mini soccer antarsekolah dan antardesa, mengembangkan kemampuan kerja sama tim, kedisiplinan, komunikasi taktis lapangan, dan sportivitas tinggi.',
         orderIndex: 2,
         isPublished: true,
       },
     ]);
-    console.log('Sample experiences initialized.');
+    console.log('Real CV experiences initialized.');
   }
 
   // 7. Certificates

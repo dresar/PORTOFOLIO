@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Profile } from '@/db/schema';
 import { VBtn } from '@/components/ui/v-btn';
 import { VIcon } from '@/components/ui/v-icon';
@@ -55,9 +56,14 @@ export function HeroSection({ profile }: { profile: Profile | null }) {
 
             {/* Tombol Call to Action */}
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3.5 pt-2">
+              <Link href="/cv">
+                <VBtn variant="tonal" size="lg" prependIcon="fa-solid fa-file-pdf" className="text-amber-400 border border-amber-500/30 hover:bg-amber-500/10 shadow-md shadow-amber-500/10">
+                  Lihat & Unduh CV
+                </VBtn>
+              </Link>
               <a href="#projects">
                 <VBtn variant="primary" size="lg" prependIcon="fa-solid fa-laptop-code" className="shadow-lg shadow-blue-500/20">
-                  Lihat Proyek Saya
+                  Lihat Proyek
                 </VBtn>
               </a>
               <a href="#contact">

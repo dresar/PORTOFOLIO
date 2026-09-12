@@ -90,6 +90,11 @@ export function PublicNavbar() {
 
           {/* Action CTA & Admin Link */}
           <div className="hidden sm:flex items-center gap-2.5">
+            <Link href="/cv" title="Lihat Curriculum Vitae (CV)">
+              <VBtn variant="tonal" size="sm" prependIcon="fa-solid fa-file-pdf" className="text-amber-400 border border-amber-500/30 hover:bg-amber-500/10">
+                Lihat CV
+              </VBtn>
+            </Link>
             <a href="#contact">
               <VBtn variant="primary" size="sm" prependIcon="fa-solid fa-envelope">
                 Hubungi Saya
@@ -167,6 +172,11 @@ export function PublicNavbar() {
             </div>
 
             <div className="pt-4 border-t border-slate-800 space-y-2">
+              <Link href="/cv" onClick={() => setMobileDrawerOpen(false)} className="block w-full">
+                <VBtn variant="tonal" size="md" className="w-full text-amber-400 border border-amber-500/30" prependIcon="fa-solid fa-file-pdf">
+                  Lihat & Unduh CV
+                </VBtn>
+              </Link>
               <a href="#contact" onClick={() => setMobileDrawerOpen(false)} className="block w-full">
                 <VBtn variant="primary" size="md" className="w-full" prependIcon="fa-solid fa-envelope">
                   Hubungi Saya
