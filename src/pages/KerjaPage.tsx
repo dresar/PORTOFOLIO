@@ -9,7 +9,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { useModalStore } from '@/store/modalStore';
 import { cn, formatBytes } from '@/lib/utils';
 import axios from 'axios';
 
@@ -35,7 +34,6 @@ interface KerjaDocument {
 
 export default function KerjaPage() {
   const { toast } = useToast();
-  const { openPdfPreviewModal } = useModalStore();
 
   const [isUnlocked, setIsUnlocked] = useState<boolean>(() => {
     return sessionStorage.getItem('kerja_unlocked') === 'true';
@@ -146,15 +144,6 @@ export default function KerjaPage() {
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
     toast({ title: '✓ Teks Berhasil Disalin' });
-  };
-
-  const handleOpenDocument = (doc: KerjaDocument) => {
-    const isPdf = doc.file_type === 'pdf' || /\.pdf($|\?)/i.test(doc.file_url);
-    if (isPdf) {
-      openPdfPreviewModal(doc.file_url, doc.title);
-    } else {
-      window.open(doc.file_url, '_blank');
-    }
   };
 
   const perkenalanItem = items.find(i => i.category === 'perkenalan');
@@ -512,10 +501,13 @@ export default function KerjaPage() {
                         <Button
                           size="sm"
                           variant="secondary"
-                          onClick={() => handleOpenDocument(doc)}
-                          className="h-7 text-xs px-2.5 rounded-md active:scale-[0.98]"
+                          asChild
+                          className="h-7 text-xs px-2.5 rounded-md active:scale-[0.98] gap-1"
                         >
-                          Lihat Berkas
+                          <a href={doc.file_url} target="_blank" rel="noreferrer">
+                            <span>Buka Berkas</span>
+                            <ExternalLink className="size-3" />
+                          </a>
                         </Button>
                         <Button
                           size="icon"
