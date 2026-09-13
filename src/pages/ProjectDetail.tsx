@@ -27,7 +27,7 @@ import { useLocalizedContent } from '@/hooks/useLocalizedContent';
 const ProjectDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { openImagePreviewModal, openPdfPreviewModal } = useModalStore();
+  const { openImagePreviewModal } = useModalStore();
 
   useLayoutEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' as any });
@@ -467,13 +467,15 @@ const ProjectDetail = () => {
                     {(project as any).licenseUrl && (
                       <div className="flex items-center gap-2 pt-2 border-t border-border/40">
                         <Button
-                          type="button"
+                          asChild
                           size="sm"
-                          onClick={() => openPdfPreviewModal((project as any).licenseUrl, `${project.title} - Dokumen Lisensi`)}
                           className="h-8 px-3 text-xs rounded-lg gap-1.5 font-semibold bg-emerald-600 hover:bg-emerald-700 text-white"
                         >
-                          <FileText className="size-3.5" />
-                          <span>Lihat Dokumen Lisensi</span>
+                          <a href={(project as any).licenseUrl} target="_blank" rel="noopener noreferrer">
+                            <FileText className="size-3.5" />
+                            <span>Buka Lisensi PDF</span>
+                            <ExternalLink className="size-3" />
+                          </a>
                         </Button>
                       </div>
                     )}
@@ -502,13 +504,15 @@ const ProjectDetail = () => {
                       {att.url && (
                         <div className="flex items-center gap-2 pt-2 border-t border-border/40">
                           <Button
-                            type="button"
+                            asChild
                             size="sm"
-                            onClick={() => openPdfPreviewModal(att.url, att.title || `${project.title} - Sertifikat`)}
                             className="h-8 px-3 text-xs rounded-lg gap-1.5 font-semibold bg-primary text-primary-foreground"
                           >
-                            <FileText className="size-3.5" />
-                            <span>Lihat PDF</span>
+                            <a href={att.url} target="_blank" rel="noopener noreferrer">
+                              <FileText className="size-3.5" />
+                              <span>Buka PDF</span>
+                              <ExternalLink className="size-3" />
+                            </a>
                           </Button>
                         </div>
                       )}

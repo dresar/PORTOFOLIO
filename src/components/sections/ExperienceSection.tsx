@@ -141,25 +141,24 @@ export const ExperienceSection = () => {
                   )}
                 </div>
 
-                {/* Description */}
-                <div className="flex-1 mb-3 sm:mb-4">
-                  <p className="text-muted-foreground text-xs sm:text-sm line-clamp-3 leading-relaxed">
+                <div className="flex-1 mb-2.5 sm:mb-3">
+                  <p className="text-muted-foreground text-xs leading-relaxed line-clamp-2">
                     {stripHtml(exp.description)}
                   </p>
                 </div>
 
-                {/* Action Footer Button */}
-                <div className="pt-3 border-t border-border/40 mt-auto flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground/80 font-medium">
+                <div className="pt-2.5 sm:pt-3 border-t border-border/40 mt-auto flex items-center justify-between">
+                  <span className="text-[11px] sm:text-xs text-muted-foreground/80 font-medium">
                     {exp.isCurrent ? '● Aktif' : 'Selesai'}
                   </span>
 
                   <button 
+                    type="button"
                     onClick={(e) => {
                       e.stopPropagation();
                       openExperienceDetailModal(exp);
                     }}
-                    className="relative group/btn overflow-hidden rounded-xl p-[1.5px] transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] shadow-md hover:shadow-primary/30 cursor-pointer"
+                    className="relative group/btn overflow-hidden rounded-lg sm:rounded-xl p-[1.5px] transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] shadow-sm hover:shadow-primary/30 cursor-pointer"
                   >
                     <span 
                       className="absolute inset-[-1000%] animate-[spin_3.5s_linear_infinite]"
@@ -168,7 +167,7 @@ export const ExperienceSection = () => {
                       }}
                     />
                     
-                    <span className="relative flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] bg-card/90 backdrop-blur-md text-xs font-semibold text-foreground group-hover/btn:text-primary transition-colors">
+                    <span className="relative flex items-center gap-1.5 px-3 py-1.5 rounded-[7px] sm:rounded-[10px] bg-card/90 backdrop-blur-md text-[11px] sm:text-xs font-semibold text-foreground group-hover/btn:text-primary transition-colors">
                       <span>Detail</span>
                       <ArrowRight className="w-3.5 h-3.5 text-primary transition-transform duration-300 group-hover/btn:translate-x-1" />
                     </span>

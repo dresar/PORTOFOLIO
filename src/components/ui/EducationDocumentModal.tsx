@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useModalStore } from '@/store/modalStore';
 import { FileText, ExternalLink, Download, Maximize2, Minimize2, X, Image as ImageIcon } from 'lucide-react';
@@ -10,10 +10,17 @@ export const EducationDocumentModal = () => {
 
   const isModalOpen = isOpen && modalType === 'education-document';
 
-  if (!documentUrl) return null;
+  const isPdf = !!documentUrl && (/\.pdf($|\?)/i.test(documentUrl) || documentUrl.startsWith('data:application/pdf') || (documentUrl.startsWith('blob:') && (documentTitle?.toLowerCase().includes('pdf') || true)));
+  const isImage = !!documentUrl && /\.(png|jpe?g|webp|gif|svg)($|\?)/i.test(documentUrl);
 
-  const isPdf = /\.pdf($|\?)/i.test(documentUrl) || documentUrl.startsWith('data:application/pdf') || documentUrl.startsWith('blob:') && (documentTitle?.toLowerCase().includes('pdf') || true);
-  const isImage = /\.(png|jpe?g|webp|gif|svg)($|\?)/i.test(documentUrl);
+  useEffect(() => {
+    if (isModalOpen && isPdf && documentUrl) {
+      window.open(documentUrl, '_blank', 'noopener,noreferrer');
+      closeModal();
+    }
+  }, [isModalOpen, isPdf, documentUrl, closeModal]);
+
+  if (!documentUrl) return null;
 
   const handleDownload = () => {
     const link = document.createElement('a');
@@ -29,6 +36,7 @@ export const EducationDocumentModal = () => {
   return (
     <Dialog open={isModalOpen} onOpenChange={(open) => !open && closeModal()}>
       <DialogContent
+        hideCloseButton={true}
         className={`p-0 overflow-hidden bg-card/95 backdrop-blur-md border-border/50 flex flex-col transition-all duration-200 ${
           isFullscreen
             ? 'max-w-[100vw] w-[100vw] h-[100vh] rounded-none'

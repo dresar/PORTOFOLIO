@@ -12,7 +12,7 @@ import { useLocalizedContent } from '@/hooks/useLocalizedContent';
 
 export const EducationDetailModal = () => {
   const { t } = useTranslation();
-  const { isOpen, modalType, educationData: rawEducationData, closeModal, openImagePreviewModal, openPdfPreviewModal } = useModalStore();
+  const { isOpen, modalType, educationData: rawEducationData, closeModal, openImagePreviewModal } = useModalStore();
   const { getEducation } = useLocalizedContent();
   const educationData = useMemo(() => getEducation(rawEducationData), [rawEducationData, getEducation]);
 
@@ -203,15 +203,16 @@ export const EducationDetailModal = () => {
                           </div>
 
                           <div className="flex items-center gap-1 shrink-0">
-                            <button
-                              type="button"
-                              onClick={() => openPdfPreviewModal(doc.url, doc.title || educationData.institution)}
+                            <a
+                              href={doc.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
                               className="px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition-opacity flex items-center gap-1 cursor-pointer"
-                              title="Buka Pratinjau Dokumen"
+                              title="Buka Dokumen PDF di Tab Baru"
                             >
-                              <span>Lihat PDF</span>
+                              <span>Buka PDF</span>
                               <ExternalLink className="size-3" />
-                            </button>
+                            </a>
                           </div>
                         </div>
                       );

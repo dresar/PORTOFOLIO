@@ -50,19 +50,17 @@ export const useModalStore = create<ModalState>((set) => ({
     educationData: education,
   }),
 
-  openEducationDocumentModal: (url, title) => set({
-    isOpen: true,
-    modalType: 'education-document',
-    documentUrl: url,
-    documentTitle: title,
-  }),
+  openEducationDocumentModal: (url) => {
+    if (typeof window !== 'undefined' && url) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  },
 
-  openPdfPreviewModal: (url, title = 'Pratinjau Dokumen') => set({
-    isOpen: true,
-    modalType: 'education-document',
-    documentUrl: url,
-    documentTitle: title,
-  }),
+  openPdfPreviewModal: (url) => {
+    if (typeof window !== 'undefined' && url) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  },
 
   openEducationDetailModal: (education) => set({
     isOpen: true,

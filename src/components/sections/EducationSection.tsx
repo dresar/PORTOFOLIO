@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { GraduationCap, Calendar, Award, Image as ImageIcon, Loader2, ArrowRight, FileText } from 'lucide-react';
+import { GraduationCap, Calendar, Award, ArrowRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useEducation } from '@/hooks/useEducation';
 import { useModalStore } from '@/store/modalStore';
@@ -8,7 +8,7 @@ import { useLocalizedContent } from '@/hooks/useLocalizedContent';
 
 export const EducationSection = () => {
   const { t } = useTranslation();
-  const { openEducationDetailModal, openPdfPreviewModal } = useModalStore();
+  const { openEducationDetailModal } = useModalStore();
   const { education: rawEducation = [], isLoading } = useEducation();
   const { getEducations } = useLocalizedContent();
   const education = getEducations(rawEducation);
@@ -35,9 +35,6 @@ export const EducationSection = () => {
   const renderEducationCard = (edu: any) => {
     const gallery = edu.gallery 
       ? (typeof edu.gallery === 'string' ? JSON.parse(edu.gallery) : edu.gallery)
-      : [];
-    const attachments = edu.attachments
-      ? (typeof edu.attachments === 'string' ? JSON.parse(edu.attachments) : edu.attachments)
       : [];
     const firstGalleryImage = gallery.length > 0 ? gallery[0] : null;
     const coverUrl = edu.coverImage || edu.cover_image || edu.cover_image_url || firstGalleryImage;
@@ -96,37 +93,14 @@ export const EducationSection = () => {
              </div>
           </div>
 
-          <div className="flex items-center justify-between pt-2 sm:pt-3 border-t border-border/50 mt-auto">
-            <div className="flex flex-wrap gap-1">
-              {attachments.length > 0 && (
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    const first = attachments[0];
-                    openPdfPreviewModal(first.url, first.title || `${edu.institution} - Dokumen`);
-                  }}
-                  className="text-[10px] sm:text-xs px-1.5 py-0.5 sm:px-2.5 sm:py-1 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-md flex items-center gap-1 font-medium transition-colors cursor-pointer border border-red-500/20"
-                  title="Lihat Dokumen PDF / Akreditasi"
-                >
-                  <FileText className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                  <span>Akreditasi</span>
-                </button>
-              )}
-              {edu.gallery && (typeof edu.gallery === 'string' ? JSON.parse(edu.gallery).length > 0 : edu.gallery.length > 0) && (
-                  <div className="text-[10px] sm:text-xs px-1.5 py-0.5 sm:px-2.5 sm:py-1.5 bg-primary/10 text-primary rounded-md flex items-center gap-1 font-medium">
-                      <ImageIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                      <span className="hidden sm:inline">{t('education.gallery')}</span>
-                  </div>
-              )}
-            </div>
-            
+          <div className="pt-2 sm:pt-3 border-t border-border/50 mt-auto">
             <button 
+              type="button"
               onClick={(e) => {
-                  e.stopPropagation();
-                  openEducationDetailModal(edu);
+                e.stopPropagation();
+                openEducationDetailModal(edu);
               }}
-              className="relative group/btn overflow-hidden rounded-lg sm:rounded-xl p-[1.5px] transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] shadow-sm hover:shadow-primary/30 cursor-pointer ml-auto"
+              className="relative group/btn overflow-hidden rounded-lg sm:rounded-xl p-[1.5px] transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] shadow-sm hover:shadow-primary/30 cursor-pointer w-full"
             >
               <span 
                 className="absolute inset-[-1000%] animate-[spin_3.5s_linear_infinite]"
@@ -135,7 +109,7 @@ export const EducationSection = () => {
                 }}
               />
               
-              <span className="relative flex items-center justify-center gap-1 px-2 py-1 sm:px-3 sm:py-1.5 rounded-[7px] sm:rounded-[10px] bg-card text-[10px] sm:text-xs font-semibold text-foreground group-hover/btn:text-primary transition-colors">
+              <span className="relative flex items-center justify-center gap-1.5 px-2 py-1.5 sm:px-3 sm:py-2 rounded-[7px] sm:rounded-[10px] bg-card text-[10px] sm:text-xs font-semibold text-foreground group-hover/btn:text-primary transition-colors w-full">
                 <span>{t('common.details')}</span>
                 <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary transition-transform duration-300 group-hover/btn:translate-x-1" />
               </span>

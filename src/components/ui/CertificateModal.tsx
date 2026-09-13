@@ -15,7 +15,6 @@ export const CertificateModal = () => {
     certificateData: rawCertificateData,
     closeModal,
     openImagePreviewModal,
-    openPdfPreviewModal,
   } = useModalStore();
   const { getCertificate } = useLocalizedContent();
   const certificateData: any = useMemo(
@@ -54,8 +53,10 @@ export const CertificateModal = () => {
               />
             </div>
           ) : pdfUrl ? (
-            <div
-              onClick={() => openPdfPreviewModal(pdfUrl, certificateData.name || 'Sertifikat PDF')}
+            <a
+              href={pdfUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               className="relative mb-6 rounded-xl overflow-hidden bg-red-500/10 border border-red-500/20 aspect-video flex flex-col items-center justify-center p-6 text-center cursor-pointer hover:bg-red-500/15 transition-all group shadow-sm"
             >
               <div className="size-14 rounded-2xl bg-red-500/20 text-red-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
@@ -63,13 +64,14 @@ export const CertificateModal = () => {
               </div>
               <h4 className="text-sm font-bold text-foreground">Dokumen PDF Tersedia</h4>
               <p className="text-xs text-muted-foreground mt-1 max-w-sm">
-                Klik untuk membaca dokumen sertifikat lengkap (mendukung multi-halaman & zoom).
+                Klik untuk membuka dokumen sertifikat lengkap di tab baru browser.
               </p>
-              <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-red-500 bg-red-500/10 px-3 py-1.5 rounded-lg border border-red-500/20">
+              <span className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-red-500 bg-red-500/10 px-3 py-1.5 rounded-lg border border-red-500/20">
                 <FileText className="size-3.5" />
                 <span>Buka Dokumen PDF</span>
+                <ExternalLink className="size-3" />
               </span>
-            </div>
+            </a>
           ) : null}
 
           {/* Title and Issuer */}
@@ -124,12 +126,14 @@ export const CertificateModal = () => {
           <div className="flex flex-wrap items-center gap-3">
             {pdfUrl && (
               <Button
-                type="button"
-                onClick={() => openPdfPreviewModal(pdfUrl, certificateData.name || 'Dokumen Sertifikat')}
+                asChild
                 className="h-10 px-4 rounded-lg bg-red-600 hover:bg-red-700 text-white gap-2 text-xs font-semibold shadow-md shadow-red-600/20"
               >
-                <FileText className="size-4" />
-                <span>Lihat Dokumen PDF</span>
+                <a href={pdfUrl} target="_blank" rel="noopener noreferrer">
+                  <FileText className="size-4" />
+                  <span>Buka Dokumen PDF</span>
+                  <ExternalLink className="size-3.5" />
+                </a>
               </Button>
             )}
 
