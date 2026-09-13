@@ -427,28 +427,6 @@ export default function KerjaPage() {
             animate={{ opacity: 1, y: 0 }}
             className="space-y-4"
           >
-            <div className="flex flex-wrap items-center gap-1.5 border-b border-border/40 pb-2">
-              {perkenalanItems.map((item) => {
-                const isSelected = item.id === activePerkenalanItem.id;
-                const isMem = memorizedIds.includes(item.id);
-
-                return (
-                  <Button
-                    key={item.id}
-                    size="sm"
-                    variant={isSelected ? 'secondary' : 'ghost'}
-                    onClick={() => setSelectedPerkenalanId(item.id)}
-                    className={cn(
-                      'h-7 text-xs rounded-md px-2.5 gap-1.5 transition-all',
-                      isSelected ? 'border border-border/80 bg-accent font-medium text-white' : 'text-muted-foreground'
-                    )}
-                  >
-                    {isMem && <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />}
-                    <span>{item.title.split(':')[0]}</span>
-                  </Button>
-                );
-              })}
-            </div>
 
             <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-lg border border-border/50 bg-card/40">
               <div className="space-y-0.5">
