@@ -581,7 +581,7 @@ export const api = {
   // ----------------------------------------
   skills: {
     getAll: async (): Promise<Skill[]> => {
-      return fetchWithLocalFallback<Skill[]>('/skills', 'skills_cache', Array.isArray(skillsSeed) ? (skillsSeed as any) : []);
+      return fetchWithLocalFallback<Skill[]>('/skills', 'skills_cache', []);
     },
     create: async (data: any): Promise<Skill> => {
       const response = await apiClient.post<Skill>('/skills', data);

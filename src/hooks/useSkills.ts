@@ -11,13 +11,14 @@ export const useSkills = () => {
       const cached = safeJsonParse<any[]>(localStorage.getItem('skills_cache'), null as any);
       return cached && cached.length > 0 ? cached : undefined;
     },
-    retry: 0,
-    staleTime: 300000,
+    retry: 1,
+    staleTime: 60000,
+    refetchOnWindowFocus: true,
   });
 
   const skills = useMemo(() => {
     if (Array.isArray(data)) return data;
-    if (data && Array.isArray(data.data)) return data.data;
+    if (data && Array.isArray((data as any).data)) return (data as any).data;
     return [];
   }, [data]);
 

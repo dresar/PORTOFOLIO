@@ -84,14 +84,18 @@ export const SkillsSection = () => {
     if (!currentCategory) return [];
 
     const list = skills.filter((skill: any) => {
-      if (typeof skill.category === 'object' && skill.category !== null) {
-        return skill.category.id === activeTab || skill.category.name === currentCategory.name;
-      }
-      if (typeof skill.category === 'string') {
-        return (skill.category || '').toLowerCase() === (currentCategory.name || '').toLowerCase();
-      }
-      if (typeof skill.category === 'number') return skill.category === activeTab;
-      if (typeof (skill as any).categoryId === 'number') return (skill as any).categoryId === activeTab;
+      const skillCatId = Number(skill.categoryId ?? skill.category?.id ?? (typeof skill.category === 'number' ? skill.category : NaN));
+      const targetCatId = Number(activeTab);
+      if (!isNaN(skillCatId) && skillCatId === targetCatId) return true;
+
+      const skillCatName = String(skill.category?.name || (typeof skill.category === 'string' ? skill.category : '')).trim().toLowerCase();
+      const targetCatName = String(currentCategory.name || '').trim().toLowerCase();
+      if (skillCatName && skillCatName === targetCatName) return true;
+
+      const skillCatSlug = String(skill.category?.slug || '').trim().toLowerCase();
+      const targetCatSlug = String(currentCategory.slug || '').trim().toLowerCase();
+      if (skillCatSlug && skillCatSlug === targetCatSlug) return true;
+
       return false;
     });
 
