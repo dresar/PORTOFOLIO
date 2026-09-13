@@ -293,7 +293,7 @@ function MediaGrid({ configs, activeConfig, onActivate }: {
   const [confirmDel, setConfirmDel] = useState<string | null>(null);
   const [previewImage, setPreviewImage] = useState<CloudinaryAsset | null>(null);
   const [resourceTypeTab, setResourceTypeTab] = useState<'image' | 'video'>('image');
-  const [providerFilter, setProviderFilter] = useState<'all' | 'github' | 'cloudinary'>('all');
+  const [providerFilter, setProviderFilter] = useState<'all' | 'github' | 'cloudinary' | 'r2'>('all');
   
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
@@ -384,6 +384,16 @@ function MediaGrid({ configs, activeConfig, onActivate }: {
             onClick={() => { setProviderFilter('all'); setCursor(undefined); setCursorHistory([]); }}
           >
             Semua
+          </Button>
+          <Button
+            type="button"
+            variant={providerFilter === 'r2' ? 'default' : 'ghost'}
+            size="sm"
+            className="h-7 text-xs font-medium gap-1.5 px-3"
+            onClick={() => { setProviderFilter('r2'); setCursor(undefined); setCursorHistory([]); }}
+          >
+            <span className="w-2 h-2 rounded-full bg-orange-500" />
+            Cloudflare R2
           </Button>
           <Button
             type="button"

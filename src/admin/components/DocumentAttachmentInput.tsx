@@ -98,23 +98,24 @@ export function DocumentAttachmentInput({
     try {
       const base64 = await fileToBase64(selectedFile);
       const result = await cloudinaryApi.uploadFile(base64, {
-        folder: 'portfolio/documents',
+        folder: 'documents',
         public_id: selectedFile.name.replace(/\.[^/.]+$/, ''),
+        provider: 'r2',
       });
 
-      const uploadedUrl = result.secure_url || result.url || result.local_url;
+      const uploadedUrl = result.secure_url || result.url;
       if (!uploadedUrl) throw new Error('Gagal mendapatkan URL hasil unggahan.');
 
       onChange(uploadedUrl);
       setIsUploaded(true);
       toast({
-        title: '✓ Berhasil Diunggah!',
-        description: `${selectedFile.name} telah tersimpan di CDN.`,
+        title: '✓ Tersimpan di Cloudflare R2!',
+        description: `${selectedFile.name} berhasil diunggah ke bucket R2 (https://r2.ekasyarif.my.id).`,
       });
     } catch (err: any) {
       toast({
         variant: 'destructive',
-        title: 'Gagal Mengunggah',
+        title: 'Gagal Mengunggah ke R2',
         description: err?.response?.data?.error || err.message || 'Terjadi kesalahan saat mengunggah file.',
       });
     } finally {
@@ -273,12 +274,12 @@ export function DocumentAttachmentInput({
                   className="h-7 px-2.5 text-[11px] rounded-lg gap-1 font-semibold"
                 >
                   {isUploading ? <Loader2 className="size-3 animate-spin" /> : <Upload className="size-3" />}
-                  <span>{isUploading ? 'Mengunggah...' : 'Upload ke CDN'}</span>
+                  <span>{isUploading ? 'Mengunggah ke R2...' : 'Upload ke Cloudflare R2'}</span>
                 </Button>
               ) : (
                 <span className="inline-flex items-center gap-1 text-[11px] text-emerald-500 font-semibold px-2 py-0.5 rounded bg-emerald-500/10">
                   <Check className="size-3" />
-                  <span>Terunggah</span>
+                  <span>Tersimpan di R2</span>
                 </span>
               )}
 

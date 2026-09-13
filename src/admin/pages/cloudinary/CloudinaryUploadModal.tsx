@@ -22,7 +22,7 @@ interface UploadedItem extends UploadResult {
 export function CloudinaryUploadModal({ isOpen, onClose, onInsert }: CloudinaryUploadModalProps) {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [provider, setProvider] = useState<'github' | 'cloudinary'>('github');
+  const [provider, setProvider] = useState<'github' | 'cloudinary' | 'r2'>('r2');
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploaded, setUploaded] = useState<UploadedItem[]>([]);
@@ -44,8 +44,9 @@ export function CloudinaryUploadModal({ isOpen, onClose, onInsert }: CloudinaryU
     const newFiles = Array.from(files).filter(file => {
       const isImage = file.type.startsWith('image/');
       const isVideo = file.type.startsWith('video/');
-      if (!isImage && !isVideo) {
-        toast({ variant: 'destructive', title: 'Gagal!', description: `${file.name} format tidak didukung.` });
+      const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+      if (!isImage && !isVideo && !isPdf) {
+        toast({ variant: 'destructive', title: 'Gagal!', description: `${file.name} format tidak didukung (gunakan gambar, video, atau PDF).` });
         return false;
       }
       if (file.size > 100 * 1024 * 1024) {
@@ -173,32 +174,45 @@ export function CloudinaryUploadModal({ isOpen, onClose, onInsert }: CloudinaryU
           </div>
 
           <div className="p-5 space-y-4">
-            <div className="grid grid-cols-2 gap-2 p-1 bg-muted/60 rounded-xl border border-border/50">
+            <div className="grid grid-cols-3 gap-2 p-1 bg-muted/60 rounded-xl border border-border/50">
+              <button
+                type="button"
+                onClick={() => setProvider('r2')}
+                className={cn(
+                  "flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg text-xs font-medium transition-all",
+                  provider === 'r2'
+                    ? "bg-background text-foreground shadow-sm border border-border font-semibold"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <span className="w-2 h-2 rounded-full bg-orange-500" />
+                <span className="truncate">Cloudflare R2</span>
+              </button>
               <button
                 type="button"
                 onClick={() => setProvider('github')}
                 className={cn(
-                  "flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-medium transition-all",
+                  "flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg text-xs font-medium transition-all",
                   provider === 'github'
                     ? "bg-background text-foreground shadow-sm border border-border font-semibold"
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                GitHub CDN
+                <span className="truncate">GitHub CDN</span>
               </button>
               <button
                 type="button"
                 onClick={() => setProvider('cloudinary')}
                 className={cn(
-                  "flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-medium transition-all",
+                  "flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg text-xs font-medium transition-all",
                   provider === 'cloudinary'
                     ? "bg-background text-foreground shadow-sm border border-border font-semibold"
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 <span className="w-2 h-2 rounded-full bg-sky-500" />
-                Cloudinary
+                <span className="truncate">Cloudinary</span>
               </button>
             </div>
             {queue.length === 0 ? (
@@ -217,7 +231,7 @@ export function CloudinaryUploadModal({ isOpen, onClose, onInsert }: CloudinaryU
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept="image/*,video/*"
+                  accept="image/*,video/*,application/pdf,.pdf"
                   multiple
                   className="hidden"
                   onChange={(e) => { if (e.target.files) handleFilePick(e.target.files); }}

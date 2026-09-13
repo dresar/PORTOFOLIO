@@ -36,7 +36,9 @@ export function getEnv(key: string, defaultVal = ''): string {
     DATABASE_URL: 'postgresql://neondb_owner:npg_4IsokTFSh0Gf@ep-lucky-meadow-a93qe14n-pooler.gwc.azure.neon.tech/neondb?sslmode=require&channel_binding=require',
     JWT_SECRET: 'e79c2980b182d8c39e23652f75a7c2b6941fa44a958e72ef0d3a57e3f94bd2d1',
     GITHUB_REPO: 'dresar/PORTOFOLIO',
-    GITHUB_BRANCH: 'main'
+    GITHUB_BRANCH: 'main',
+    R2_BUCKET_NAME: 'storage',
+    R2_PUBLIC_DOMAIN: 'https://r2.ekasyarif.my.id'
   };
   return defaults[key] || defaultVal;
 }
@@ -1360,6 +1362,192 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
         return ghResult;
     }
 
+    const getCfToken = () => getEnv('CLOUDFLARE_API_TOKEN');
+    const getCfAccountId = () => getEnv('CLOUDFLARE_ACCOUNT_ID');
+    const getR2Bucket = () => getEnv('R2_BUCKET_NAME', 'storage');
+    const getR2Domain = () => getEnv('R2_PUBLIC_DOMAIN', 'https://r2.ekasyarif.my.id').replace(/\/+$/, '');
+
+    async function uploadToCloudflareR2(fileBase64: string, customPublicId?: string, folder = 'documents') {
+        const token = getCfToken();
+        const accountId = getCfAccountId();
+        const bucket = getR2Bucket();
+        const publicDomain = getR2Domain();
+
+        if (!token || !accountId) {
+            throw new Error('CLOUDFLARE_API_TOKEN atau CLOUDFLARE_ACCOUNT_ID belum dikonfigurasi.');
+        }
+
+        let mimeType = 'application/pdf';
+        let base64Data = fileBase64;
+        let ext = 'pdf';
+
+        if (fileBase64.includes(';base64,')) {
+            const parts = fileBase64.split(';base64,');
+            const prefix = parts[0];
+            base64Data = parts.slice(1).join(';base64,').replace(/\s+/g, '');
+            const mimeMatch = prefix.match(/data:([^;]+)/);
+            if (mimeMatch) {
+                mimeType = mimeMatch[1].toLowerCase();
+            }
+        } else {
+            base64Data = base64Data.replace(/\s+/g, '');
+        }
+
+        if (mimeType.includes('pdf')) ext = 'pdf';
+        else if (mimeType.includes('jpeg') || mimeType.includes('jpg')) ext = 'jpg';
+        else if (mimeType.includes('png')) ext = 'png';
+        else if (mimeType.includes('webp')) ext = 'webp';
+        else if (mimeType.includes('svg')) ext = 'svg';
+        else if (mimeType.includes('gif')) ext = 'gif';
+        else if (mimeType.includes('mp4')) ext = 'mp4';
+        else if (mimeType.includes('json')) ext = 'json';
+
+        let filename = '';
+        if (customPublicId && typeof customPublicId === 'string' && customPublicId.trim().length > 0) {
+            const strippedId = customPublicId.trim().replace(/\.[a-zA-Z0-9]+$/, '');
+            const cleanId = strippedId.replace(/[^a-zA-Z0-9_.-]/g, '_');
+            filename = `${cleanId}.${ext}`;
+        } else {
+            filename = `doc_${Date.now()}_${crypto.randomBytes(4).toString('hex')}.${ext}`;
+        }
+
+        const cleanFolder = (folder || 'documents').replace(/^\/+|\/+$/g, '');
+        const r2Key = cleanFolder ? `${cleanFolder}/${filename}` : filename;
+        const buffer = Buffer.from(base64Data, 'base64');
+
+        const uploadUrl = `https://api.cloudflare.com/client/v4/accounts/${accountId}/r2/buckets/${bucket}/objects/${encodeURIComponent(r2Key)}`;
+        const r2Res = await fetch(uploadUrl, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': mimeType
+            },
+            body: buffer
+        });
+
+        if (!r2Res.ok) {
+            const errText = await r2Res.text();
+            throw new Error(`Cloudflare R2 Upload Failed (${r2Res.status}): ${errText}`);
+        }
+
+        const publicUrl = `${publicDomain}/${r2Key}`;
+
+        return {
+            public_id: r2Key,
+            key: r2Key,
+            secure_url: publicUrl,
+            url: publicUrl,
+            format: ext,
+            bytes: buffer.length,
+            resource_type: ext === 'pdf' ? 'raw' : (ext === 'mp4' ? 'video' : 'image'),
+            created_at: new Date().toISOString(),
+            provider: 'r2',
+            bucket: bucket
+        };
+    }
+
+    async function listCloudflareR2Assets() {
+        const token = getCfToken();
+        const accountId = getCfAccountId();
+        const bucket = getR2Bucket();
+        const publicDomain = getR2Domain();
+
+        if (!token || !accountId) return [];
+
+        try {
+            const res = await fetch(`https://api.cloudflare.com/client/v4/accounts/${accountId}/r2/buckets/${bucket}/objects`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!res.ok) return [];
+            const data: any = await res.json();
+            const objects = data.result || [];
+            return objects.map((obj: any) => {
+                const key = obj.key;
+                const ext = key.split('.').pop()?.toLowerCase() || '';
+                const isPdf = ext === 'pdf';
+                const isVideo = ['mp4', 'webm', 'mov'].includes(ext);
+                const isImage = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'].includes(ext);
+                const resourceType = isPdf ? 'raw' : (isVideo ? 'video' : (isImage ? 'image' : 'raw'));
+                const publicUrl = `${publicDomain}/${key}`;
+
+                return {
+                    public_id: key,
+                    key: key,
+                    secure_url: publicUrl,
+                    url: publicUrl,
+                    format: ext,
+                    bytes: Number(obj.size || 0),
+                    resource_type: resourceType,
+                    created_at: obj.last_modified || new Date().toISOString(),
+                    provider: 'r2',
+                    tags: ['r2', 'cloudflare', isPdf ? 'pdf' : 'media']
+                };
+            });
+        } catch (err) {
+            return [];
+        }
+    }
+
+    async function deleteCloudflareR2Asset(key: string) {
+        const token = getCfToken();
+        const accountId = getCfAccountId();
+        const bucket = getR2Bucket();
+
+        if (!token || !accountId) throw new Error('Cloudflare credentials missing');
+
+        const cleanKey = key.replace(/^\/+/, '');
+        const res = await fetch(`https://api.cloudflare.com/client/v4/accounts/${accountId}/r2/buckets/${bucket}/objects/${encodeURIComponent(cleanKey)}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!res.ok) {
+            const errText = await res.text();
+            throw new Error(`R2 Delete failed (${res.status}): ${errText}`);
+        }
+
+        return { success: true, key: cleanKey, provider: 'r2' };
+    }
+
+    if (resourceName === 'r2') {
+        const tokenUser = await verifyJwtToken(req);
+        if (!tokenUser) return sendJSON(res, 401, { error: 'Unauthorized. R2 operations require authentication.' });
+
+        if (action === 'upload' && req.method === 'POST') {
+            try {
+                const body = await parseBody(req);
+                const { file, folder, public_id, fileName } = body || {};
+                if (!file) return sendJSON(res, 400, { error: 'file (base64 data URL) is required' });
+                const result = await uploadToCloudflareR2(file, public_id || fileName, folder || 'documents');
+                return sendJSON(res, 200, result);
+            } catch (err: any) {
+                return sendJSON(res, 500, { error: 'Upload ke Cloudflare R2 gagal', details: err.message });
+            }
+        }
+
+        if (action === 'list' && req.method === 'GET') {
+            try {
+                const assets = await listCloudflareR2Assets();
+                return sendJSON(res, 200, { resources: assets, total: assets.length });
+            } catch (err: any) {
+                return sendJSON(res, 500, { error: 'List Cloudflare R2 gagal', details: err.message });
+            }
+        }
+
+        if (action === 'delete' && req.method === 'POST') {
+            try {
+                const body = await parseBody(req);
+                const { key, public_id } = body || {};
+                const targetKey = key || public_id;
+                if (!targetKey) return sendJSON(res, 400, { error: 'key is required' });
+                const result = await deleteCloudflareR2Asset(targetKey);
+                return sendJSON(res, 200, result);
+            } catch (err: any) {
+                return sendJSON(res, 500, { error: 'Delete Cloudflare R2 gagal', details: err.message });
+            }
+        }
+    }
+
     // Upload
     if (resourceName === 'upload') {
         const tokenUser = await verifyJwtToken(req);
@@ -1367,8 +1555,12 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
         if (req.method !== 'POST') return sendJSON(res, 405, { error: 'Method not allowed' });
         try {
             const body = await parseBody(req);
-            const { file, folder, public_id } = body || {};
+            const { file, folder, public_id, provider } = body || {};
             if (!file) return sendJSON(res, 400, { error: 'file (base64) is required' });
+            if (provider === 'r2' || (typeof file === 'string' && file.includes('data:application/pdf'))) {
+                const result = await uploadToCloudflareR2(file, public_id, folder || 'documents');
+                return sendJSON(res, 200, result);
+            }
             const result = await uploadToGitHubCDN(file, public_id, folder);
             return sendJSON(res, 200, result);
         } catch (e: any) {
@@ -1747,6 +1939,17 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
         if (action === 'configs' && req.method === 'GET') {
             const curGhRepo = getGhRepo();
             const curGhToken = getGhToken();
+            const r2Config = {
+                id: 9998,
+                cloud_name: `Cloudflare R2 (${getR2Bucket()})`,
+                api_key: getCfAccountId() ? `${getCfAccountId().slice(0, 8)}••••••••` : '',
+                api_secret: '••••••••••••••••',
+                label: 'Cloudflare R2 Storage (r2.ekasyarif.my.id)',
+                is_active: true,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+                provider: 'r2'
+            };
             const ghConfig = {
                 id: 9999,
                 cloud_name: `GitHub CDN (${curGhRepo})`,
@@ -1760,9 +1963,9 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
             const client = { query: async (q) => getSql().query(q), release: () => {} };
             try {
                 const result = await client.query('SELECT * FROM cloudinary_config ORDER BY id ASC');
-                return sendJSON(res, 200, [ghConfig, ...result.rows.map(maskSecret)]);
+                return sendJSON(res, 200, [r2Config, ghConfig, ...result.rows.map(maskSecret)]);
             } catch {
-                return sendJSON(res, 200, [ghConfig]);
+                return sendJSON(res, 200, [r2Config, ghConfig]);
             } finally {
                 client.release();
             }
@@ -1862,7 +2065,32 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
             const body = await parseBody(req);
             const { config_id } = body || {};
 
-            if (config_id && Number(config_id) !== 9999) {
+            if (config_id && Number(config_id) === 9998) {
+                try {
+                    const token = getCfToken();
+                    const accountId = getCfAccountId();
+                    const bucket = getR2Bucket();
+                    const resTest = await fetch(`https://api.cloudflare.com/client/v4/accounts/${accountId}/r2/buckets/${bucket}`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (resTest.ok) {
+                        return sendJSON(res, 200, {
+                            success: true,
+                            status: 'connected',
+                            cloud_name: `Cloudflare R2 (${bucket})`,
+                            label: 'Cloudflare R2 Storage (r2.ekasyarif.my.id)',
+                            domain: getR2Domain(),
+                            provider: 'r2'
+                        });
+                    }
+                    const errText = await resTest.text();
+                    return sendJSON(res, 400, { success: false, error: 'Koneksi Cloudflare R2 gagal', details: errText });
+                } catch (e: any) {
+                    return sendJSON(res, 500, { success: false, error: 'Gagal menghubungi server Cloudflare R2', details: e.message });
+                }
+            }
+
+            if (config_id && Number(config_id) !== 9999 && Number(config_id) !== 9998) {
                 const client = { query: async (q) => getSql().query(q), release: () => {} };
                 let cfg: any;
                 try {
@@ -1933,6 +2161,16 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
             const configIdParam = urlObj.searchParams.get('config_id');
             const allAssets: any[] = [];
 
+            if (providerFilter === 'all' || providerFilter === 'r2') {
+                try {
+                    const r2Assets = await listCloudflareR2Assets();
+                    const filteredR2 = r2Assets.filter(a => resourceType === 'all' || resourceType === 'raw' || (resourceType === 'document' && a.format === 'pdf') || a.resource_type === resourceType);
+                    allAssets.push(...filteredR2);
+                } catch (e: any) {
+                    console.warn('R2 list warning:', e.message);
+                }
+            }
+
             if (providerFilter === 'all' || providerFilter === 'github') {
                 try {
                     const ghAssets = await listGitHubCDNAssets();
@@ -1950,7 +2188,7 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
                     try {
                         let query = 'SELECT * FROM cloudinary_config';
                         const params: any[] = [];
-                        if (configIdParam && Number(configIdParam) !== 9999) {
+                        if (configIdParam && Number(configIdParam) !== 9999 && Number(configIdParam) !== 9998) {
                             query += ' WHERE id = $1';
                             params.push(Number(configIdParam));
                         } else {
@@ -2005,13 +2243,23 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
             const { file, folder, public_id: reqPublicId, provider, config_id } = body || {};
             if (!file) return sendJSON(res, 400, { error: 'file (base64 data URL) is required' });
 
-            const targetProvider = (provider || 'github').toLowerCase();
+            const targetProvider = (provider || 'r2').toLowerCase();
+
+            if (targetProvider === 'r2' || (typeof file === 'string' && file.includes('data:application/pdf') && targetProvider !== 'cloudinary')) {
+                try {
+                    const r2Result = await uploadToCloudflareR2(file, reqPublicId, folder || 'documents');
+                    return sendJSON(res, 200, r2Result);
+                } catch (r2Err: any) {
+                    console.error('Cloudflare R2 upload error:', r2Err);
+                    return sendJSON(res, 500, { error: 'Upload ke Cloudflare R2 gagal', details: r2Err.message });
+                }
+            }
 
             if (targetProvider === 'cloudinary') {
                 const client = { query: async (q) => getSql().query(q), release: () => {} };
                 let configToUse: any;
                 try {
-                    if (config_id && Number(config_id) !== 9999) {
+                    if (config_id && Number(config_id) !== 9999 && Number(config_id) !== 9998) {
                         const resDb = await client.query('SELECT * FROM cloudinary_config WHERE id = $1', [Number(config_id)]);
                         configToUse = resDb.rows[0];
                     } else {
@@ -2023,7 +2271,7 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
                 }
 
                 if (!configToUse) {
-                    return sendJSON(res, 400, { error: 'Tidak ada konfigurasi Cloudinary aktif. Silakan tambahkan konfigurasi atau pilih GitHub CDN.' });
+                    return sendJSON(res, 400, { error: 'Tidak ada konfigurasi Cloudinary aktif. Silakan tambahkan konfigurasi atau pilih Cloudflare R2.' });
                 }
 
                 try {
@@ -2094,6 +2342,16 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
 
             const results = [];
             for (const id of idsToDelete) {
+                if (provider === 'r2' || id.startsWith('documents/') || (!id.includes('.') && !sha && provider === 'r2')) {
+                    try {
+                        const delResult = await deleteCloudflareR2Asset(id);
+                        results.push({ id, status: 200, result: delResult, provider: 'r2' });
+                    } catch (e: any) {
+                        results.push({ id, status: 500, error: e.message, provider: 'r2' });
+                    }
+                    continue;
+                }
+
                 const isCloudinary = provider === 'cloudinary' || id.includes('/') || (!id.includes('.') && !sha);
                 if (isCloudinary) {
                     try {

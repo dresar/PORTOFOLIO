@@ -9,7 +9,7 @@ export interface CloudinaryConfig {
   is_active: boolean;
   created_at: string;
   updated_at: string;
-  provider?: 'github' | 'cloudinary';
+  provider?: 'github' | 'cloudinary' | 'r2';
 }
 
 export interface CloudinaryAsset {
@@ -23,7 +23,7 @@ export interface CloudinaryAsset {
   resource_type: string;
   created_at: string;
   tags?: string[];
-  provider?: 'github' | 'cloudinary';
+  provider?: 'github' | 'cloudinary' | 'r2';
   _account?: string;
   sha?: string;
 }
@@ -41,14 +41,16 @@ export interface UploadResult {
   public_id: string;
   secure_url: string;
   url: string;
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
   format: string;
   bytes: number;
   resource_type: string;
   created_at: string;
-  provider?: 'github' | 'cloudinary';
+  provider?: 'github' | 'cloudinary' | 'r2';
   _account?: string;
+  key?: string;
+  bucket?: string;
 }
 
 export const cloudinaryApi = {
@@ -81,7 +83,7 @@ export const cloudinaryApi = {
     return res.data;
   },
 
-  listAssets: async (options?: { resource_type?: string; next_cursor?: string; max_results?: number; provider?: 'all' | 'github' | 'cloudinary'; config_id?: number }): Promise<CloudinaryListResponse> => {
+  listAssets: async (options?: { resource_type?: string; next_cursor?: string; max_results?: number; provider?: 'all' | 'github' | 'cloudinary' | 'r2'; config_id?: number }): Promise<CloudinaryListResponse> => {
     const params = new URLSearchParams();
     if (options?.resource_type) params.set('resource_type', options.resource_type);
     if (options?.next_cursor) params.set('next_cursor', options.next_cursor);
@@ -92,12 +94,17 @@ export const cloudinaryApi = {
     return res.data;
   },
 
-  uploadFile: async (file: string, options?: { folder?: string; public_id?: string; provider?: 'github' | 'cloudinary'; config_id?: number }): Promise<UploadResult> => {
+  uploadFile: async (file: string, options?: { folder?: string; public_id?: string; provider?: 'github' | 'cloudinary' | 'r2'; config_id?: number }): Promise<UploadResult> => {
     const res = await adminApi.post('/cloudinary/upload', { file, ...options });
     return res.data;
   },
 
-  deleteAsset: async (public_ids: string | string[], resource_type = 'image', provider?: 'github' | 'cloudinary', sha?: string): Promise<{ success: boolean; results?: any[] }> => {
+  uploadToR2: async (file: string, options?: { folder?: string; public_id?: string; fileName?: string }): Promise<UploadResult> => {
+    const res = await adminApi.post('/r2/upload', { file, ...options });
+    return res.data;
+  },
+
+  deleteAsset: async (public_ids: string | string[], resource_type = 'image', provider?: 'github' | 'cloudinary' | 'r2', sha?: string): Promise<{ success: boolean; results?: any[] }> => {
     const data = Array.isArray(public_ids) ? { public_ids, resource_type, provider, sha } : { public_id: public_ids, resource_type, provider, sha };
     const res = await adminApi.post('/cloudinary/delete', data);
     return res.data;
