@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  Lock, Unlock, FileText,
+  Home, Lock, Unlock, FileText,
   Sparkles, AlertCircle, Eye, EyeOff,
   Download, ExternalLink, MessageSquare, Zap
 } from 'lucide-react';
@@ -307,7 +308,14 @@ export default function KerjaPage() {
       </main>
 
       <nav className="fixed bottom-0 inset-x-0 z-50 bg-[#07090e]/95 backdrop-blur-lg border-t border-slate-800/80 px-2 py-1">
-        <div className="max-w-md mx-auto grid grid-cols-4 gap-1">
+        <div className="max-w-md mx-auto grid grid-cols-5 gap-1">
+          <Link
+            to="/"
+            className="flex flex-col items-center justify-center py-1 rounded text-[10px] text-slate-400 hover:text-white transition-colors"
+          >
+            <Home className="size-3.5 mb-0.5" />
+            <span>Beranda</span>
+          </Link>
           <button
             type="button"
             onClick={() => setActiveTab('perkenalan')}
