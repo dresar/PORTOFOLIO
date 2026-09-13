@@ -16,6 +16,7 @@ import { AIGenerateModal } from '@/admin/components/AIGenerateModal';
 import { ModernLoader } from '@/components/ui/ModernLoader';
 import { useQueryClient } from '@tanstack/react-query';
 import { RichHtmlEditor } from '@/admin/components/RichHtmlEditor';
+import { MediaUploadInput } from '@/admin/components/MediaUploadInput';
 
 const experienceSchema = z.object({
   type: z.enum(['work', 'internship', 'organization']),
@@ -227,29 +228,28 @@ export default function ExperienceForm() {
               <h3 className="text-lg font-medium">Media</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="image">Logo</Label>
-                  <div className="flex gap-2">
-                    <Input id="image" {...form.register('image')} placeholder="URL" />
-                    {form.watch('image') && (
-                      <div className="h-10 w-10 relative rounded overflow-hidden border shrink-0">
-                        <img src={form.watch('image')} alt="Logo" className="h-full w-full object-contain p-1" />
-                      </div>
-                    )}
-                  </div>
-                </div>
+                <MediaUploadInput
+                  label="Logo Perusahaan / Organisasi"
+                  value={form.watch('image') || ''}
+                  onChange={(url) => form.setValue('image', url, { shouldDirty: true })}
+                  placeholder="URL logo atau unggah berkas logo..."
+                  defaultProvider="github"
+                  folder="experience/logos"
+                  aspectRatio="square"
+                  compact={true}
+                  description="Default Gambar: GitHub CDN (jsDelivr Edge)"
+                />
 
-                <div className="space-y-2">
-                  <Label htmlFor="coverImage">Sampul</Label>
-                  <div className="flex gap-2">
-                    <Input id="coverImage" {...form.register('coverImage')} placeholder="URL" />
-                    {form.watch('coverImage') && (
-                      <div className="h-10 w-16 relative rounded overflow-hidden border shrink-0">
-                        <img src={form.watch('coverImage')} alt="Sampul" className="h-full w-full object-cover" />
-                      </div>
-                    )}
-                  </div>
-                </div>
+                <MediaUploadInput
+                  label="Sampul Pengalaman"
+                  value={form.watch('coverImage') || ''}
+                  onChange={(url) => form.setValue('coverImage', url, { shouldDirty: true })}
+                  placeholder="URL sampul atau unggah berkas sampul..."
+                  defaultProvider="github"
+                  folder="experience/covers"
+                  aspectRatio="video"
+                  description="Default Gambar: GitHub CDN (jsDelivr Edge)"
+                />
               </div>
 
               <div className="space-y-2">

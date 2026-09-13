@@ -28,6 +28,7 @@ import python from 'highlight.js/lib/languages/python';
 import 'highlight.js/styles/github-dark.css';
 import { BlogCategoryManager } from './BlogCategoryManager';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { MediaUploadInput } from '@/admin/components/MediaUploadInput';
 import { ModernLoader } from '@/components/ui/ModernLoader';
 import { RichHtmlEditor } from '@/admin/components/RichHtmlEditor';
 import { format } from 'date-fns';
@@ -883,17 +884,16 @@ export default function BlogForm() {
                 </Select>
               </div>
 
-              <div className="space-y-2">
-                <Label>Sampul</Label>
-                <div className="flex gap-2">
-                    <Input value={formData.coverImage} onChange={e => setFormData({...formData, coverImage: e.target.value})} placeholder="URL" />
-                </div>
-                {formData.coverImage && (
-                    <div className="aspect-video rounded-md overflow-hidden bg-muted mt-2">
-                        <img src={formData.coverImage} className="w-full h-full object-cover" alt="Sampul" />
-                    </div>
-                )}
-              </div>
+              <MediaUploadInput
+                label="Sampul Artikel"
+                value={formData.coverImage}
+                onChange={(url) => setFormData({ ...formData, coverImage: url })}
+                placeholder="URL sampul atau unggah berkas gambar..."
+                defaultProvider="github"
+                folder="blog/covers"
+                aspectRatio="video"
+                description="Default Gambar: GitHub CDN (jsDelivr Edge)"
+              />
 
               <div className="space-y-2">
                 <Label>Tag</Label>

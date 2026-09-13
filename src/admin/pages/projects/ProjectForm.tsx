@@ -24,6 +24,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { CustomDatePicker } from "@/components/ui/CustomDatePicker";
 import { DocumentAttachmentInput } from '@/admin/components/DocumentAttachmentInput';
+import { MediaUploadInput } from '@/admin/components/MediaUploadInput';
+import { MediaPickerModal } from '@/admin/components/MediaPickerModal';
 import type { DocumentAttachment } from '@/types';
 
 const projectSchema = z.object({
@@ -112,6 +114,7 @@ export default function ProjectForm() {
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
   const [isManualSummaryOpen, setIsManualSummaryOpen] = useState(false);
   const [manualSummaryContent, setManualSummaryContent] = useState('');
+  const [isGalleryPickerOpen, setIsGalleryPickerOpen] = useState(false);
 
   const form = useForm<ProjectFormValues>({
     resolver: zodResolver(projectSchema),
@@ -375,7 +378,10 @@ export default function ProjectForm() {
   };
 
   const handleAddGalleryImage = () => {
-    const url = prompt("URL Gambar:");
+    setIsGalleryPickerOpen(true);
+  };
+
+  const handleSelectGalleryImage = (url: string) => {
     if (url) {
       const current = parsePgOrJsonArray(form.getValues('gallery'));
       const updated = [...current, url];
@@ -651,17 +657,16 @@ export default function ProjectForm() {
                 <CardTitle>Media</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="space-y-2">
-                  <Label>Sampul</Label>
-                  <div className="flex gap-2">
-                    <Input {...form.register('coverImage')} placeholder="URL" />
-                  </div>
-                  {form.watch('coverImage') && (
-                    <div className="mt-2 aspect-video rounded-md overflow-hidden border">
-                      <img src={form.watch('coverImage')} alt="Sampul" className="w-full h-full object-cover" />
-                    </div>
-                  )}
-                </div>
+                <MediaUploadInput
+                  label="Sampul Proyek"
+                  value={form.watch('coverImage') || ''}
+                  onChange={(url) => form.setValue('coverImage', url, { shouldDirty: true })}
+                  placeholder="URL sampul atau unggah berkas gambar..."
+                  defaultProvider="github"
+                  folder="projects/covers"
+                  aspectRatio="video"
+                  description="Default Gambar: GitHub CDN (jsDelivr Edge)"
+                />
 
                 <div className="space-y-2">
                   <Label>Galeri</Label>
@@ -809,6 +814,12 @@ export default function ProjectForm() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <MediaPickerModal
+        isOpen={isGalleryPickerOpen}
+        onClose={() => setIsGalleryPickerOpen(false)}
+        onSelect={handleSelectGalleryImage}
+      />
     </div>
   );
 }

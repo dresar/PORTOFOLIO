@@ -13,6 +13,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ModernLoader } from '@/components/ui/ModernLoader';
 import { extractCertificateFieldsFromImageDataUrl, extractCertificateFieldsFromText } from '../../services/aiService';
 import { DocumentAttachmentInput } from '@/admin/components/DocumentAttachmentInput';
+import { MediaUploadInput } from '@/admin/components/MediaUploadInput';
 
 export default function CertificateForm() {
   const { id } = useParams();
@@ -397,19 +398,16 @@ export default function CertificateForm() {
               <Input value={formData.credentialUrl} onChange={e => setFormData({...formData, credentialUrl: e.target.value})} placeholder="URL" />
             </div>
 
-            <div className="space-y-2">
-              <Label>Gambar Sampul / Pratinjau</Label>
-              <div className="flex gap-4 items-start">
-                <div className="flex-1">
-                  <Input value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} placeholder="URL Gambar" />
-                </div>
-                {formData.image && (
-                  <div className="h-20 w-20 rounded border overflow-hidden flex-shrink-0 bg-muted">
-                    <img src={formData.image} alt="Preview" className="w-full h-full object-cover" />
-                  </div>
-                )}
-              </div>
-            </div>
+            <MediaUploadInput
+              label="Gambar Sampul / Pratinjau Sertifikat"
+              value={formData.image}
+              onChange={(url) => setFormData({ ...formData, image: url })}
+              placeholder="URL gambar sampul atau pilih berkas gambar..."
+              defaultProvider="github"
+              folder="certificates"
+              aspectRatio="video"
+              description="Default Gambar: GitHub CDN (jsDelivr Edge)"
+            />
 
             <DocumentAttachmentInput
               label="Dokumen / PDF Sertifikat (Opsional - Multi-Halaman Didukung)"

@@ -5,7 +5,7 @@ import {
   Cloud, Plus, Trash2, CheckCircle2, Loader2, Eye, EyeOff,
   Shield, TestTube2, Save, X, AlertCircle, Image, Upload,
   RefreshCw, Copy, Check, Search, ZoomIn, Play, Video,
-  Server
+  Server, CloudUpload
 } from 'lucide-react';
 import { cloudinaryApi, formatBytes, type CloudinaryConfig, type CloudinaryAsset } from '../../services/cloudinaryApi';
 import { Button } from '@/components/ui/button';
@@ -96,6 +96,92 @@ function GitHubCdnCard() {
         <div className="p-2.5 rounded-xl bg-background/60 border border-emerald-500/10">
           <p className="text-muted-foreground text-[11px]">Akun Pemilik</p>
           <p className="font-mono font-medium text-foreground mt-0.5">eka.ckp16799</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CloudflareR2Card() {
+  const [testing, setTesting] = useState(false);
+  const [testResult, setTestResult] = useState<'ok' | 'fail' | null>(null);
+  const { toast } = useToast();
+
+  const handleTest = async () => {
+    setTesting(true);
+    setTestResult(null);
+    try {
+      const res = await cloudinaryApi.testConfig(9998);
+      if (res.success) {
+        setTestResult('ok');
+        toast({
+          title: 'Koneksi Cloudflare R2 Berhasil',
+          description: `Bucket: ${res.bucket || 'storage'} (${res.domain || 'https://r2.ekasyarif.my.id'})`,
+        });
+      } else {
+        setTestResult('fail');
+        toast({ variant: 'destructive', title: 'Koneksi Gagal', description: res.error });
+      }
+    } catch {
+      setTestResult('fail');
+      toast({ variant: 'destructive', title: 'Gagal uji koneksi Cloudflare R2' });
+    } finally {
+      setTesting(false);
+      setTimeout(() => setTestResult(null), 5000);
+    }
+  };
+
+  return (
+    <div className="relative rounded-2xl border border-orange-500/30 bg-orange-500/5 p-5 shadow-xs">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-start gap-3.5">
+          <div className="size-12 rounded-xl bg-orange-500/20 text-orange-600 dark:text-orange-400 flex items-center justify-center shrink-0">
+            <CloudUpload className="size-6" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h4 className="font-semibold text-base text-foreground">Cloudflare R2 Object Storage</h4>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-500 text-white">
+                Default PDF & Dokumen
+              </span>
+            </div>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Penyimpanan berkas dokumen, sertifikat PDF, dan aset besar dengan domain kustom r2.ekasyarif.my.id tanpa biaya egress.
+            </p>
+          </div>
+        </div>
+
+        <Button
+          size="sm"
+          variant="outline"
+          className={cn(
+            'h-8 text-xs gap-1.5 shrink-0 border-orange-500/30 rounded-lg',
+            testResult === 'ok' ? 'border-orange-600 text-orange-600' : testResult === 'fail' ? 'border-red-500 text-red-600' : ''
+          )}
+          onClick={handleTest}
+          disabled={testing}
+        >
+          {testing ? <Loader2 className="size-3.5 animate-spin" /> : <TestTube2 className="size-3.5" />}
+          {testing ? 'Menguji...' : testResult === 'ok' ? 'Koneksi Aktif ✓' : testResult === 'fail' ? 'Gagal ✗' : 'Uji Koneksi R2'}
+        </Button>
+      </div>
+
+      <div className="mt-4 pt-4 border-t border-orange-500/20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+        <div className="p-2.5 rounded-xl bg-background/60 border border-orange-500/10">
+          <p className="text-muted-foreground text-[11px]">Bucket Name</p>
+          <p className="font-mono font-medium text-foreground mt-0.5">storage</p>
+        </div>
+        <div className="p-2.5 rounded-xl bg-background/60 border border-orange-500/10">
+          <p className="text-muted-foreground text-[11px]">Domain Publik Kustom</p>
+          <p className="font-mono font-medium text-foreground mt-0.5">r2.ekasyarif.my.id</p>
+        </div>
+        <div className="p-2.5 rounded-xl bg-background/60 border border-orange-500/10">
+          <p className="text-muted-foreground text-[11px]">Edge Network</p>
+          <p className="font-mono font-medium text-foreground mt-0.5">Cloudflare Anycast CDN</p>
+        </div>
+        <div className="p-2.5 rounded-xl bg-background/60 border border-orange-500/10">
+          <p className="text-muted-foreground text-[11px]">Biaya Egress</p>
+          <p className="font-mono font-medium text-emerald-600 dark:text-emerald-400 mt-0.5">$0 (Gratis Egress)</p>
         </div>
       </div>
     </div>
@@ -749,7 +835,7 @@ export default function CloudinaryPage() {
     queryFn: cloudinaryApi.getConfigs,
   });
 
-  const cloudinaryConfigs = rawConfigs.filter(c => c.id !== 9999);
+  const cloudinaryConfigs = rawConfigs.filter(c => c.id !== 9999 && c.id !== 9998);
   const activeCldConfig = cloudinaryConfigs.find(c => c.is_active);
 
   const activateMutation = useMutation({
@@ -816,6 +902,7 @@ export default function CloudinaryPage() {
 
         <TabsContent value="config" className="mt-4 space-y-6">
           <GitHubCdnCard />
+          <CloudflareR2Card />
 
           <div className="space-y-4">
             <div className="flex items-center justify-between">

@@ -4,8 +4,24 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { useModalStore } from '@/store/modalStore';
-import { FileText, Eye, Upload, Trash2, Check, Loader2, Image as ImageIcon, ExternalLink } from 'lucide-react';
+import {
+  FileText,
+  Eye,
+  Upload,
+  Trash2,
+  Check,
+  Loader2,
+  ImageIcon,
+  Server,
+  CloudUpload,
+  Cloud,
+  FolderOpen
+} from 'lucide-react';
 import { cloudinaryApi, fileToBase64, formatBytes } from '../services/cloudinaryApi';
+import { MediaPickerModal } from './MediaPickerModal';
+import { cn } from '@/lib/utils';
+
+export type CdnProvider = 'github' | 'r2' | 'cloudinary';
 
 interface DocumentAttachmentInputProps {
   label?: string;
@@ -38,7 +54,7 @@ export function DocumentAttachmentInput({
   showNotes = false,
   titleLabel = 'Nama Dokumen / Keterangan',
   notesLabel = 'Catatan Tambahan',
-  placeholder = 'URL file atau unggah PDF / Gambar...',
+  placeholder = 'URL file atau unggah PDF / Dokumen...',
   previewTitle,
   accept = '.pdf,image/*',
   onRemove,
@@ -50,8 +66,10 @@ export function DocumentAttachmentInput({
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [localBlobUrl, setLocalBlobUrl] = useState<string>('');
+  const [provider, setProvider] = useState<CdnProvider>('r2');
   const [isUploading, setIsUploading] = useState(false);
   const [isUploaded, setIsUploaded] = useState(false);
+  const [isMediaPickerOpen, setIsMediaPickerOpen] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -61,16 +79,22 @@ export function DocumentAttachmentInput({
     };
   }, [localBlobUrl]);
 
+  const activeUrl = localBlobUrl || value;
+  const isPdf = activeUrl
+    ? /\.pdf($|\?)/i.test(activeUrl) || (selectedFile && selectedFile.type === 'application/pdf')
+    : selectedFile
+    ? selectedFile.type === 'application/pdf' || selectedFile.name.toLowerCase().endsWith('.pdf')
+    : false;
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Check size (max 25MB)
-    if (file.size > 25 * 1024 * 1024) {
+    if (file.size > 50 * 1024 * 1024) {
       toast({
         variant: 'destructive',
         title: 'File Terlalu Besar',
-        description: `Ukuran maksimal adalah 25MB. File ini ${formatBytes(file.size)}.`,
+        description: `Ukuran maksimal adalah 50MB. File ini ${formatBytes(file.size)}.`,
       });
       return;
     }
@@ -79,12 +103,18 @@ export function DocumentAttachmentInput({
       URL.revokeObjectURL(localBlobUrl);
     }
 
+    const isFilePdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+    if (isFilePdf) {
+      setProvider('r2');
+    } else {
+      setProvider('github');
+    }
+
     const blobUrl = URL.createObjectURL(file);
     setSelectedFile(file);
     setLocalBlobUrl(blobUrl);
     setIsUploaded(false);
 
-    // Auto-fill title if empty
     if (showTitle && onTitleChange && (!titleValue || titleValue.trim() === '')) {
       const cleanName = file.name.replace(/\.[^/.]+$/, '').replace(/[_-]/g, ' ');
       onTitleChange(cleanName);
@@ -97,10 +127,11 @@ export function DocumentAttachmentInput({
     setIsUploading(true);
     try {
       const base64 = await fileToBase64(selectedFile);
+      const cleanName = selectedFile.name.replace(/\.[^/.]+$/, '').replace(/[^a-zA-Z0-9_-]/g, '-');
       const result = await cloudinaryApi.uploadFile(base64, {
         folder: 'documents',
-        public_id: selectedFile.name.replace(/\.[^/.]+$/, ''),
-        provider: 'r2',
+        public_id: cleanName,
+        provider,
       });
 
       const uploadedUrl = result.secure_url || result.url;
@@ -109,22 +140,19 @@ export function DocumentAttachmentInput({
       onChange(uploadedUrl);
       setIsUploaded(true);
       toast({
-        title: '✓ Tersimpan di Cloudflare R2!',
-        description: `${selectedFile.name} berhasil diunggah ke bucket R2 (https://r2.ekasyarif.my.id).`,
+        title: provider === 'r2' ? '✓ Tersimpan di Cloudflare R2!' : '✓ Tersimpan di GitHub CDN!',
+        description: `${selectedFile.name} berhasil diunggah (${provider.toUpperCase()}).`,
       });
     } catch (err: any) {
       toast({
         variant: 'destructive',
-        title: 'Gagal Mengunggah ke R2',
+        title: 'Gagal Mengunggah',
         description: err?.response?.data?.error || err.message || 'Terjadi kesalahan saat mengunggah file.',
       });
     } finally {
       setIsUploading(false);
     }
   };
-
-  const activeUrl = localBlobUrl || value;
-  const isPdf = activeUrl ? /\.pdf($|\?)/i.test(activeUrl) || (selectedFile && selectedFile.type === 'application/pdf') : false;
 
   const handleOpenPreview = () => {
     if (!activeUrl) {
@@ -150,9 +178,8 @@ export function DocumentAttachmentInput({
   };
 
   return (
-    <div className="rounded-lg border border-border/70 bg-card/60 p-4 space-y-3.5 shadow-sm">
-      {/* Title & Remove Header */}
-      <div className="flex items-center justify-between gap-2">
+    <div className="rounded-lg border border-border/70 bg-card/60 p-4 space-y-3.5 shadow-xs">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <div className="size-7 rounded-md bg-primary/10 text-primary flex items-center justify-center border border-primary/20">
             {isPdf ? <FileText className="size-3.5" /> : <ImageIcon className="size-3.5" />}
@@ -166,6 +193,18 @@ export function DocumentAttachmentInput({
         </div>
 
         <div className="flex items-center gap-1.5">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setIsMediaPickerOpen(true)}
+            className="h-7 px-2 text-[11px] font-medium rounded-lg gap-1 border-border/80 hover:bg-muted"
+            title="Pilih dari Media Library"
+          >
+            <FolderOpen className="size-3 text-muted-foreground" />
+            <span>Pilih dari Library</span>
+          </Button>
+
           {activeUrl && (
             <Button
               type="button"
@@ -195,7 +234,60 @@ export function DocumentAttachmentInput({
         </div>
       </div>
 
-      {/* Optional Title input */}
+      <div className="flex flex-wrap items-center gap-1.5 p-1 bg-muted/50 rounded-lg border border-border/60">
+        <span className="text-[11px] font-medium text-muted-foreground px-1.5 shrink-0">Target CDN:</span>
+        <button
+          type="button"
+          onClick={() => setProvider('r2')}
+          className={cn(
+            'flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[11px] font-medium transition-all cursor-pointer',
+            provider === 'r2'
+              ? 'bg-background text-foreground shadow-xs border border-border font-semibold'
+              : 'text-muted-foreground hover:text-foreground'
+          )}
+        >
+          <span className="size-1.5 rounded-full bg-orange-500" />
+          <CloudUpload className="size-3 text-orange-500" />
+          <span>Cloudflare R2</span>
+          <span className="text-[9px] px-1 py-0.2 rounded bg-orange-500/15 text-orange-600 dark:text-orange-400 font-bold hidden sm:inline">
+            Default PDF
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setProvider('github')}
+          className={cn(
+            'flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[11px] font-medium transition-all cursor-pointer',
+            provider === 'github'
+              ? 'bg-background text-foreground shadow-xs border border-border font-semibold'
+              : 'text-muted-foreground hover:text-foreground'
+          )}
+        >
+          <span className="size-1.5 rounded-full bg-emerald-500" />
+          <Server className="size-3 text-emerald-500" />
+          <span>GitHub CDN (jsDelivr)</span>
+          <span className="text-[9px] px-1 py-0.2 rounded bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold hidden sm:inline">
+            Default Gambar
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setProvider('cloudinary')}
+          className={cn(
+            'flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[11px] font-medium transition-all cursor-pointer',
+            provider === 'cloudinary'
+              ? 'bg-background text-foreground shadow-xs border border-border font-semibold'
+              : 'text-muted-foreground hover:text-foreground'
+          )}
+        >
+          <span className="size-1.5 rounded-full bg-sky-500" />
+          <Cloud className="size-3 text-sky-500" />
+          <span>Cloudinary</span>
+        </button>
+      </div>
+
       {showTitle && onTitleChange && (
         <div className="space-y-1">
           <Label className="text-xs font-medium text-muted-foreground">{titleLabel}</Label>
@@ -208,10 +300,8 @@ export function DocumentAttachmentInput({
         </div>
       )}
 
-      {/* File Chooser & Direct URL */}
       <div className="space-y-2">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-          {/* Hidden native input */}
           <input
             ref={fileInputRef}
             type="file"
@@ -228,10 +318,9 @@ export function DocumentAttachmentInput({
             className="h-8 px-3 text-xs rounded-lg gap-1.5 shrink-0 font-medium"
           >
             <Upload className="size-3.5" />
-            <span>Pilih File PDF / Media</span>
+            <span>Pilih Berkas PDF / Gambar</span>
           </Button>
 
-          {/* URL Input */}
           <div className="flex-1 min-w-0">
             <Input
               value={value || ''}
@@ -242,14 +331,15 @@ export function DocumentAttachmentInput({
           </div>
         </div>
 
-        {/* Selected Local File Status Card */}
         {selectedFile && (
           <div className="flex items-center justify-between gap-2 p-2.5 rounded-lg bg-muted/50 border border-border/60 text-xs">
             <div className="flex items-center gap-2 min-w-0">
               <FileText className="size-4 text-primary shrink-0" />
               <div className="min-w-0">
                 <p className="font-medium truncate">{selectedFile.name}</p>
-                <p className="text-[10px] text-muted-foreground">{formatBytes(selectedFile.size)} • Lokal (Belum Disimpan)</p>
+                <p className="text-[10px] text-muted-foreground">
+                  {formatBytes(selectedFile.size)} • Target: <strong className="text-foreground uppercase">{provider}</strong>
+                </p>
               </div>
             </div>
 
@@ -274,12 +364,12 @@ export function DocumentAttachmentInput({
                   className="h-7 px-2.5 text-[11px] rounded-lg gap-1 font-semibold"
                 >
                   {isUploading ? <Loader2 className="size-3 animate-spin" /> : <Upload className="size-3" />}
-                  <span>{isUploading ? 'Mengunggah ke R2...' : 'Upload ke Cloudflare R2'}</span>
+                  <span>{isUploading ? 'Mengunggah...' : `Upload ke ${provider === 'r2' ? 'Cloudflare R2' : provider === 'github' ? 'GitHub' : 'Cloudinary'}`}</span>
                 </Button>
               ) : (
                 <span className="inline-flex items-center gap-1 text-[11px] text-emerald-500 font-semibold px-2 py-0.5 rounded bg-emerald-500/10">
                   <Check className="size-3" />
-                  <span>Tersimpan di R2</span>
+                  <span>Tersimpan</span>
                 </span>
               )}
 
@@ -298,7 +388,6 @@ export function DocumentAttachmentInput({
         )}
       </div>
 
-      {/* Optional Notes input */}
       {showNotes && onNotesChange && (
         <div className="space-y-1">
           <Label className="text-xs font-medium text-muted-foreground">{notesLabel}</Label>
@@ -310,6 +399,16 @@ export function DocumentAttachmentInput({
           />
         </div>
       )}
+
+      <MediaPickerModal
+        isOpen={isMediaPickerOpen}
+        onClose={() => setIsMediaPickerOpen(false)}
+        onSelect={(url) => {
+          onChange(url);
+          setIsMediaPickerOpen(false);
+          toast({ title: '✓ Dokumen Dipilih dari Library' });
+        }}
+      />
     </div>
   );
 }

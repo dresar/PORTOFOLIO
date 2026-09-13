@@ -11,6 +11,7 @@ import { ModernLoader } from '@/components/ui/ModernLoader';
 import { useQueryClient } from '@tanstack/react-query';
 import { RichHtmlEditor } from '@/admin/components/RichHtmlEditor';
 import { DocumentAttachmentInput } from '@/admin/components/DocumentAttachmentInput';
+import { MediaUploadInput } from '@/admin/components/MediaUploadInput';
 import type { DocumentAttachment } from '@/types';
 
 export default function EducationForm() {
@@ -438,31 +439,28 @@ export default function EducationForm() {
                 <CardTitle>Media</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Logo</Label>
-                  <div className="flex gap-2">
-                    <div className="h-10 w-10 rounded-full border bg-muted flex items-center justify-center overflow-hidden flex-shrink-0">
-                      {formData.logo ? <img src={formData.logo} className="h-full w-full object-contain rounded-full p-1" alt="Logo" /> : <ImageIcon className="h-4 w-4 text-muted-foreground" />}
-                    </div>
-                    <Input 
-                      value={formData.logo} 
-                      onChange={(e) => setFormData({...formData, logo: e.target.value})} 
-                      placeholder="URL"
-                    />
-                  </div>
-                </div>
+                <MediaUploadInput
+                  label="Logo Institusi / Kampus"
+                  value={formData.logo}
+                  onChange={(url) => setFormData({ ...formData, logo: url })}
+                  placeholder="URL logo atau unggah berkas logo..."
+                  defaultProvider="github"
+                  folder="education/logos"
+                  aspectRatio="square"
+                  compact={true}
+                  description="Default Gambar: GitHub CDN (jsDelivr Edge)"
+                />
 
-                <div className="space-y-2">
-                  <Label>Sampul</Label>
-                  <div className="aspect-video w-full rounded border bg-muted flex items-center justify-center overflow-hidden mb-2">
-                    {formData.coverImage ? <img src={formData.coverImage} className="w-full h-full object-cover" alt="Sampul" /> : <p className="text-xs text-muted-foreground">Preview</p>}
-                  </div>
-                  <Input 
-                    value={formData.coverImage} 
-                    onChange={(e) => setFormData({...formData, coverImage: e.target.value})} 
-                    placeholder="URL"
-                  />
-                </div>
+                <MediaUploadInput
+                  label="Sampul Kampus / Institusi"
+                  value={formData.coverImage}
+                  onChange={(url) => setFormData({ ...formData, coverImage: url })}
+                  placeholder="URL sampul atau unggah berkas sampul..."
+                  defaultProvider="github"
+                  folder="education/covers"
+                  aspectRatio="video"
+                  description="Default Gambar: GitHub CDN (jsDelivr Edge)"
+                />
               </CardContent>
             </Card>
 
