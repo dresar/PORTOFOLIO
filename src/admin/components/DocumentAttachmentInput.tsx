@@ -12,10 +12,8 @@ import {
   Check,
   Loader2,
   ImageIcon,
-  Server,
-  CloudUpload,
-  Cloud,
-  FolderOpen
+  FolderOpen,
+  Copy
 } from 'lucide-react';
 import { cloudinaryApi, fileToBase64, formatBytes } from '../services/cloudinaryApi';
 import { MediaPickerModal } from './MediaPickerModal';
@@ -70,6 +68,7 @@ export function DocumentAttachmentInput({
   const [isUploading, setIsUploading] = useState(false);
   const [isUploaded, setIsUploaded] = useState(false);
   const [isMediaPickerOpen, setIsMediaPickerOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -177,32 +176,42 @@ export function DocumentAttachmentInput({
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
+  const handleCopy = async () => {
+    if (!value) return;
+    await navigator.clipboard.writeText(value);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+    toast({ title: '✓ URL Disalin' });
+  };
+
   return (
-    <div className="rounded-lg border border-border/70 bg-card/60 p-4 space-y-3.5 shadow-xs">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <div className="size-7 rounded-md bg-primary/10 text-primary flex items-center justify-center border border-primary/20">
+    <div className="rounded-lg border border-border/70 bg-card/50 p-3 sm:p-3.5 space-y-3 shadow-xs">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="size-7 rounded-md bg-primary/10 text-primary flex items-center justify-center border border-primary/20 shrink-0">
             {isPdf ? <FileText className="size-3.5" /> : <ImageIcon className="size-3.5" />}
           </div>
-          <span className="text-xs font-semibold text-foreground tracking-wide uppercase">{label}</span>
-          {isPdf && (
-            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-red-500/10 text-red-500 border border-red-500/20">
-              PDF
-            </span>
-          )}
+          <div className="min-w-0 flex items-center gap-1.5">
+            <span className="text-xs font-semibold text-foreground tracking-wide block truncate">{label}</span>
+            {isPdf && (
+              <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-red-500/10 text-red-500 border border-red-500/20 shrink-0">
+                PDF
+              </span>
+            )}
+          </div>
         </div>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1 shrink-0">
           <Button
             type="button"
             variant="outline"
             size="sm"
             onClick={() => setIsMediaPickerOpen(true)}
-            className="h-7 px-2 text-[11px] font-medium rounded-lg gap-1 border-border/80 hover:bg-muted"
+            className="h-7 px-2 text-[11px] font-medium rounded-lg gap-1 border-border/80 hover:bg-muted active:scale-[0.98]"
             title="Pilih dari Media Library"
           >
             <FolderOpen className="size-3 text-muted-foreground" />
-            <span>Pilih dari Library</span>
+            <span className="hidden sm:inline">Library</span>
           </Button>
 
           {activeUrl && (
@@ -211,11 +220,11 @@ export function DocumentAttachmentInput({
               variant="outline"
               size="sm"
               onClick={handleOpenPreview}
-              className="h-7 px-2.5 text-[11px] font-medium rounded-lg gap-1 border-primary/40 text-primary hover:bg-primary/10"
+              className="h-7 px-2 text-[11px] font-medium rounded-lg gap-1 border-primary/30 text-primary hover:bg-primary/10 active:scale-[0.98]"
               title="Pratinjau Dokumen"
             >
               <Eye className="size-3" />
-              <span>Pratinjau {isPdf ? 'PDF' : 'Media'}</span>
+              <span className="hidden sm:inline">Pratinjau</span>
             </Button>
           )}
 
@@ -225,7 +234,7 @@ export function DocumentAttachmentInput({
               variant="ghost"
               size="icon"
               onClick={onRemove}
-              className="size-7 text-muted-foreground hover:text-destructive rounded-lg"
+              className="size-7 text-muted-foreground hover:text-destructive rounded-lg active:scale-[0.98]"
               title="Hapus Lampiran"
             >
               <Trash2 className="size-3.5" />
@@ -234,58 +243,61 @@ export function DocumentAttachmentInput({
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-1.5 p-1 bg-muted/50 rounded-lg border border-border/60">
-        <span className="text-[11px] font-medium text-muted-foreground px-1.5 shrink-0">Target CDN:</span>
-        <button
-          type="button"
-          onClick={() => setProvider('r2')}
-          className={cn(
-            'flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[11px] font-medium transition-all cursor-pointer',
-            provider === 'r2'
-              ? 'bg-background text-foreground shadow-xs border border-border font-semibold'
-              : 'text-muted-foreground hover:text-foreground'
-          )}
-        >
-          <span className="size-1.5 rounded-full bg-orange-500" />
-          <CloudUpload className="size-3 text-orange-500" />
-          <span>Cloudflare R2</span>
-          <span className="text-[9px] px-1 py-0.2 rounded bg-orange-500/15 text-orange-600 dark:text-orange-400 font-bold hidden sm:inline">
-            Default PDF
+      <div className="space-y-1">
+        <div className="flex items-center justify-between text-[10px] text-muted-foreground px-0.5">
+          <span className="font-medium">Target CDN</span>
+          <span className="font-normal text-muted-foreground/80">
+            {provider === 'r2' && '⚡ Default PDF (Cloudflare R2)'}
+            {provider === 'github' && '⚡ Default Gambar (jsDelivr)'}
+            {provider === 'cloudinary' && '⚡ Cloudinary Storage'}
           </span>
-        </button>
+        </div>
+        <div className="grid grid-cols-3 p-0.5 bg-muted/60 rounded-lg border border-border/60 text-center gap-0.5">
+          <button
+            type="button"
+            onClick={() => setProvider('r2')}
+            className={cn(
+              'flex items-center justify-center gap-1.5 h-7 rounded-md text-[11px] font-medium transition-all cursor-pointer active:scale-[0.98]',
+              provider === 'r2'
+                ? 'bg-background text-foreground shadow-xs border border-border/80 font-semibold'
+                : 'text-muted-foreground hover:text-foreground hover:bg-background/40'
+            )}
+            title="Cloudflare R2 Bucket"
+          >
+            <span className="size-1.5 rounded-full bg-orange-500 shrink-0" />
+            <span className="truncate">Cloudflare R2</span>
+          </button>
 
-        <button
-          type="button"
-          onClick={() => setProvider('github')}
-          className={cn(
-            'flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[11px] font-medium transition-all cursor-pointer',
-            provider === 'github'
-              ? 'bg-background text-foreground shadow-xs border border-border font-semibold'
-              : 'text-muted-foreground hover:text-foreground'
-          )}
-        >
-          <span className="size-1.5 rounded-full bg-emerald-500" />
-          <Server className="size-3 text-emerald-500" />
-          <span>GitHub CDN (jsDelivr)</span>
-          <span className="text-[9px] px-1 py-0.2 rounded bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold hidden sm:inline">
-            Default Gambar
-          </span>
-        </button>
+          <button
+            type="button"
+            onClick={() => setProvider('github')}
+            className={cn(
+              'flex items-center justify-center gap-1.5 h-7 rounded-md text-[11px] font-medium transition-all cursor-pointer active:scale-[0.98]',
+              provider === 'github'
+                ? 'bg-background text-foreground shadow-xs border border-border/80 font-semibold'
+                : 'text-muted-foreground hover:text-foreground hover:bg-background/40'
+            )}
+            title="GitHub CDN (jsDelivr Edge)"
+          >
+            <span className="size-1.5 rounded-full bg-emerald-500 shrink-0" />
+            <span className="truncate">GitHub</span>
+          </button>
 
-        <button
-          type="button"
-          onClick={() => setProvider('cloudinary')}
-          className={cn(
-            'flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[11px] font-medium transition-all cursor-pointer',
-            provider === 'cloudinary'
-              ? 'bg-background text-foreground shadow-xs border border-border font-semibold'
-              : 'text-muted-foreground hover:text-foreground'
-          )}
-        >
-          <span className="size-1.5 rounded-full bg-sky-500" />
-          <Cloud className="size-3 text-sky-500" />
-          <span>Cloudinary</span>
-        </button>
+          <button
+            type="button"
+            onClick={() => setProvider('cloudinary')}
+            className={cn(
+              'flex items-center justify-center gap-1.5 h-7 rounded-md text-[11px] font-medium transition-all cursor-pointer active:scale-[0.98]',
+              provider === 'cloudinary'
+                ? 'bg-background text-foreground shadow-xs border border-border/80 font-semibold'
+                : 'text-muted-foreground hover:text-foreground hover:bg-background/40'
+            )}
+            title="Cloudinary Media Storage"
+          >
+            <span className="size-1.5 rounded-full bg-sky-500 shrink-0" />
+            <span className="truncate">Cloudinary</span>
+          </button>
+        </div>
       </div>
 
       {showTitle && onTitleChange && (
@@ -295,98 +307,95 @@ export function DocumentAttachmentInput({
             value={titleValue || ''}
             onChange={(e) => onTitleChange(e.target.value)}
             placeholder="Contoh: Sertifikat Akreditasi BAN-PT Baik Sekali (2025 - 2030)"
-            className="h-8 text-xs rounded-lg"
+            className="h-8 text-xs rounded-lg border-border/70 focus-visible:ring-1 focus-visible:ring-primary/40"
           />
         </div>
       )}
 
-      <div className="space-y-2">
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept={accept}
-            onChange={handleFileChange}
-            className="hidden"
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept={accept}
+        onChange={handleFileChange}
+        className="hidden"
+      />
+
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => fileInputRef.current?.click()}
+          className="h-8 px-3 text-xs rounded-lg gap-1.5 shrink-0 font-medium active:scale-[0.98] border-border/80 hover:bg-muted"
+        >
+          <Upload className="size-3.5" />
+          <span>Pilih Berkas PDF / Gambar</span>
+        </Button>
+
+        <div className="relative flex-1 min-w-0">
+          <Input
+            value={value || ''}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={placeholder}
+            className="h-8 w-full pr-8 text-xs font-mono rounded-lg border-border/70 focus-visible:ring-1 focus-visible:ring-primary/40 truncate"
           />
+          {value && (
+            <button
+              type="button"
+              onClick={handleCopy}
+              className="absolute right-1 top-1 text-muted-foreground hover:text-foreground size-6 flex items-center justify-center rounded-md hover:bg-muted/80 transition-all cursor-pointer active:scale-95"
+              title="Salin URL"
+            >
+              {copied ? <Check className="size-3 text-emerald-500" /> : <Copy className="size-3" />}
+            </button>
+          )}
+        </div>
+      </div>
 
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => fileInputRef.current?.click()}
-            className="h-8 px-3 text-xs rounded-lg gap-1.5 shrink-0 font-medium"
-          >
-            <Upload className="size-3.5" />
-            <span>Pilih Berkas PDF / Gambar</span>
-          </Button>
+      {selectedFile && (
+        <div className="flex items-center justify-between gap-2 p-2.5 rounded-lg bg-muted/40 border border-border/70 text-xs">
+          <div className="flex items-center gap-2 min-w-0">
+            <FileText className="size-4 text-primary shrink-0" />
+            <div className="min-w-0">
+              <p className="font-medium text-foreground truncate">{selectedFile.name}</p>
+              <p className="text-[10px] text-muted-foreground">
+                {formatBytes(selectedFile.size)} • Target: <strong className="text-foreground uppercase">{provider}</strong>
+              </p>
+            </div>
+          </div>
 
-          <div className="flex-1 min-w-0">
-            <Input
-              value={value || ''}
-              onChange={(e) => onChange(e.target.value)}
-              placeholder={placeholder}
-              className="h-8 text-xs font-mono rounded-lg"
-            />
+          <div className="flex items-center gap-1 shrink-0">
+            {!isUploaded ? (
+              <Button
+                type="button"
+                size="sm"
+                onClick={handleUpload}
+                disabled={isUploading}
+                className="h-7 px-2.5 text-[11px] rounded-lg gap-1 font-semibold active:scale-[0.98]"
+              >
+                {isUploading ? <Loader2 className="size-3 animate-spin" /> : <Upload className="size-3" />}
+                <span>{isUploading ? 'Mengunggah...' : `Upload ke ${provider.toUpperCase()}`}</span>
+              </Button>
+            ) : (
+              <span className="inline-flex items-center gap-1 text-[11px] text-emerald-500 font-semibold px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20">
+                <Check className="size-3" />
+                <span>Tersimpan</span>
+              </span>
+            )}
+
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={handleClearSelectedFile}
+              className="size-7 rounded-lg text-muted-foreground hover:text-foreground active:scale-[0.98]"
+              title="Batal pilih file"
+            >
+              <Trash2 className="size-3" />
+            </Button>
           </div>
         </div>
-
-        {selectedFile && (
-          <div className="flex items-center justify-between gap-2 p-2.5 rounded-lg bg-muted/50 border border-border/60 text-xs">
-            <div className="flex items-center gap-2 min-w-0">
-              <FileText className="size-4 text-primary shrink-0" />
-              <div className="min-w-0">
-                <p className="font-medium truncate">{selectedFile.name}</p>
-                <p className="text-[10px] text-muted-foreground">
-                  {formatBytes(selectedFile.size)} • Target: <strong className="text-foreground uppercase">{provider}</strong>
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-1.5 shrink-0">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleOpenPreview}
-                className="h-7 px-2 text-[11px] rounded-lg gap-1"
-              >
-                <Eye className="size-3" />
-                <span className="hidden sm:inline">Tes Pratinjau</span>
-              </Button>
-
-              {!isUploaded ? (
-                <Button
-                  type="button"
-                  size="sm"
-                  onClick={handleUpload}
-                  disabled={isUploading}
-                  className="h-7 px-2.5 text-[11px] rounded-lg gap-1 font-semibold"
-                >
-                  {isUploading ? <Loader2 className="size-3 animate-spin" /> : <Upload className="size-3" />}
-                  <span>{isUploading ? 'Mengunggah...' : `Upload ke ${provider === 'r2' ? 'Cloudflare R2' : provider === 'github' ? 'GitHub' : 'Cloudinary'}`}</span>
-                </Button>
-              ) : (
-                <span className="inline-flex items-center gap-1 text-[11px] text-emerald-500 font-semibold px-2 py-0.5 rounded bg-emerald-500/10">
-                  <Check className="size-3" />
-                  <span>Tersimpan</span>
-                </span>
-              )}
-
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                onClick={handleClearSelectedFile}
-                className="size-7 rounded-lg text-muted-foreground hover:text-foreground"
-                title="Batal pilih file"
-              >
-                <Trash2 className="size-3" />
-              </Button>
-            </div>
-          </div>
-        )}
-      </div>
+      )}
 
       {showNotes && onNotesChange && (
         <div className="space-y-1">
@@ -395,7 +404,7 @@ export function DocumentAttachmentInput({
             value={notesValue || ''}
             onChange={(e) => onNotesChange(e.target.value)}
             placeholder="Catatan tambahan (misal: Berlaku hingga 2030 / Lisensi MIT)"
-            className="h-8 text-xs rounded-lg"
+            className="h-8 text-xs rounded-lg border-border/70 focus-visible:ring-1 focus-visible:ring-primary/40"
           />
         </div>
       )}
