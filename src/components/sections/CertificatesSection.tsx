@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Award, Calendar, ExternalLink, Loader2, ArrowRight, FileText, Filter } from 'lucide-react';
+import { Award, Calendar, ExternalLink, Loader2, ArrowRight, FileText, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { useCertificates } from '@/hooks/useCertificates';
@@ -265,34 +265,35 @@ export const CertificatesSection = () => {
           </AnimatePresence>
         </motion.div>
         
-        {/* Pagination Controls */}
-        {!isMobile && totalPages > 1 && (
-          <div className="flex justify-center gap-4 mt-12">
-            <button
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 mt-6 sm:mt-8">
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8 rounded-lg border-border/70 bg-card hover:bg-muted active:scale-[0.96] transition-transform cursor-pointer"
               onClick={handlePrevPage}
               disabled={currentPage === 1}
-              className={`px-6 py-2 rounded-full font-medium transition-all ${
-                currentPage === 1
-                  ? 'bg-muted text-muted-foreground cursor-not-allowed opacity-50'
-                  : 'bg-primary/10 text-primary hover:bg-primary/20'
-              }`}
+              aria-label={t('common.previous')}
             >
-              {t('common.previous')}
-            </button>
-            <span className="flex items-center text-muted-foreground text-sm">
-              {t('common.page_info', { current: currentPage, total: totalPages })}
-            </span>
-            <button
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+
+            <div className="flex items-center justify-center px-3 h-8 rounded-lg bg-muted/60 border border-border/50 text-xs font-medium select-none">
+              <span className="text-foreground font-semibold">{currentPage}</span>
+              <span className="mx-1 text-muted-foreground">/</span>
+              <span className="text-muted-foreground">{totalPages}</span>
+            </div>
+
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8 rounded-lg border-border/70 bg-card hover:bg-muted active:scale-[0.96] transition-transform cursor-pointer"
               onClick={handleNextPage}
               disabled={currentPage === totalPages}
-              className={`px-6 py-2 rounded-full font-medium transition-all ${
-                currentPage === totalPages
-                  ? 'bg-muted text-muted-foreground cursor-not-allowed opacity-50'
-                  : 'bg-primary text-primary-foreground hover:bg-primary/90'
-              }`}
+              aria-label={t('common.next')}
             >
-              {t('common.next')}
-            </button>
+              <ChevronRight className="h-4 w-4" />
+            </Button>
           </div>
         )}
 

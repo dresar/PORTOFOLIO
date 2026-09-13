@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ExternalLink, Github, ArrowRight, Loader2, AlertCircle, Sparkles, Eye, Filter } from 'lucide-react';
+import { ExternalLink, Github, ArrowRight, Loader2, AlertCircle, Sparkles, Eye, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useProjects } from '@/hooks/useProjects';
 import { useProjectCategories } from '@/hooks/useProjectCategories';
@@ -309,31 +309,29 @@ export const ProjectsSection = () => {
                     })()}
                   </div>
 
-                  <div className="flex items-center justify-between pt-4 border-t mt-4 gap-2">
-                    <div className="flex gap-2">
-                      {/* GitHub Button */}
+                  <div className="flex items-center justify-between pt-3 border-t border-border/40 mt-3 gap-1.5">
+                    <div className="flex items-center gap-1.5 shrink-0">
                       {(project.repo_urls?.length > 0 || project.repoUrl || project.github_url) && (
                         <Button
                           size="icon"
                           variant="outline"
-                          className="rounded-full hover:bg-black hover:text-white transition-colors h-9 w-9"
+                          className="rounded-lg hover:bg-black hover:text-white transition-colors h-8 w-8 border-border/70"
                           onClick={() => window.open(safeUrl(project.repo_urls?.[0] || project.repoUrl || project.github_url), '_blank', 'noopener,noreferrer')}
                           title={t('projects.repository')}
                         >
-                          <Github className="h-4 w-4" />
+                          <Github className="h-3.5 w-3.5" />
                         </Button>
                       )}
 
-                      {/* Demo Button */}
                       {(project.demo_urls?.length > 0 || project.demoUrl || project.demo_url) && (
                         <Button
                           size="icon"
                           variant="outline"
-                          className="rounded-full hover:bg-blue-500 hover:text-white transition-colors h-9 w-9"
+                          className="rounded-lg hover:bg-blue-500 hover:text-white transition-colors h-8 w-8 border-border/70"
                           onClick={() => window.open(safeUrl(project.demo_urls?.[0] || project.demoUrl || project.demo_url), '_blank', 'noopener,noreferrer')}
                           title={t('projects.live_demo')}
                         >
-                          <ExternalLink className="h-4 w-4" />
+                          <ExternalLink className="h-3.5 w-3.5" />
                         </Button>
                       )}
                     </div>
@@ -341,7 +339,7 @@ export const ProjectsSection = () => {
                     <button
                       type="button"
                       onClick={() => navigate(getLocalizedPath(`/project/${project.id}`))}
-                      className="w-full inline-flex h-8 sm:h-9 items-center justify-center gap-1.5 rounded-lg bg-primary/10 hover:bg-primary text-primary hover:text-primary-foreground border border-primary/20 text-[11px] sm:text-xs font-semibold transition-all duration-200 active:scale-[0.98] cursor-pointer group flex-1"
+                      className="w-full inline-flex h-8 items-center justify-center gap-1 rounded-lg bg-primary/10 hover:bg-primary text-primary hover:text-primary-foreground border border-primary/20 text-[11px] sm:text-xs font-semibold transition-all duration-200 active:scale-[0.98] cursor-pointer group flex-1"
                     >
                       <span>{t('projects.view_details')}</span>
                       <ArrowRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
@@ -353,7 +351,6 @@ export const ProjectsSection = () => {
           </AnimatePresence>
         </div>
 
-        {/* AI Summary Modal */}
         <AISummaryModal
           isOpen={!!summaryProject}
           onClose={() => setSummaryProject(null)}
@@ -361,32 +358,40 @@ export const ProjectsSection = () => {
           startIndex={summaryIndex}
         />
 
-        {/* Empty State */}
         {displayedProjects.length === 0 && (
           <div className="text-center py-20">
             <p className="text-muted-foreground">{t('projects.not_found')}</p>
           </div>
         )}
 
-        {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex justify-center mt-12 gap-2">
+          <div className="flex items-center justify-center gap-2 mt-6 sm:mt-8">
             <Button
               variant="outline"
+              size="icon"
+              className="h-8 w-8 rounded-lg border-border/70 bg-card hover:bg-muted active:scale-[0.96] transition-transform cursor-pointer"
               onClick={handlePrevPage}
               disabled={currentPage === 1}
+              aria-label={t('common.previous')}
             >
-              {t('common.previous')}
+              <ChevronLeft className="h-4 w-4" />
             </Button>
-            <span className="flex items-center px-4 text-sm font-medium">
-              {t('common.page_info', { current: currentPage, total: totalPages })}
-            </span>
+
+            <div className="flex items-center justify-center px-3 h-8 rounded-lg bg-muted/60 border border-border/50 text-xs font-medium select-none">
+              <span className="text-foreground font-semibold">{currentPage}</span>
+              <span className="mx-1 text-muted-foreground">/</span>
+              <span className="text-muted-foreground">{totalPages}</span>
+            </div>
+
             <Button
               variant="outline"
+              size="icon"
+              className="h-8 w-8 rounded-lg border-border/70 bg-card hover:bg-muted active:scale-[0.96] transition-transform cursor-pointer"
               onClick={handleNextPage}
               disabled={currentPage === totalPages}
+              aria-label={t('common.next')}
             >
-              {t('common.next')}
+              <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
         )}
