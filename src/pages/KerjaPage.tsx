@@ -4,7 +4,7 @@ import {
   Lock, Unlock, ShieldCheck, FileText, Check, Copy,
   RefreshCw, Sparkles, AlertCircle, Eye, EyeOff,
   Download, ExternalLink, MessageSquare, Zap,
-  Play, Square, RotateCcw, Search, CheckCircle2, Bookmark
+  Play, Square, RotateCcw, Search, CheckCircle2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -50,7 +50,6 @@ export default function KerjaPage() {
   const [loadingData, setLoadingData] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const [selectedPerkenalanId, setSelectedPerkenalanId] = useState<number | null>(null);
   const [qaSearch, setQaSearch] = useState('');
 
   const [memorizedIds, setMemorizedIds] = useState<number[]>(() => {
@@ -115,14 +114,8 @@ export default function KerjaPage() {
     try {
       const res = await axios.get('/api/kerja/public-data');
       if (res.data) {
-        const fetchedItems: KerjaItem[] = res.data.items || [];
-        setItems(fetchedItems);
+        setItems(res.data.items || []);
         setDocuments(res.data.documents || []);
-
-        const firstPerkenalan = fetchedItems.find(i => i.category === 'perkenalan');
-        if (firstPerkenalan && selectedPerkenalanId === null) {
-          setSelectedPerkenalanId(firstPerkenalan.id);
-        }
       }
     } catch (e: any) {
       toast({
@@ -199,7 +192,7 @@ export default function KerjaPage() {
     return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
   };
 
-  const perkenalanItems = items.filter(i => i.category === 'perkenalan');
+  const perkenalanItem = items.find(i => i.category === 'perkenalan');
   const tipsItems = items.filter(i => i.category === 'tips');
   const qaItems = items.filter(i => i.category === 'qa');
 
@@ -209,36 +202,34 @@ export default function KerjaPage() {
     return item.title.toLowerCase().includes(q) || item.content_raw.toLowerCase().includes(q);
   });
 
-  const activePerkenalanItem = perkenalanItems.find(i => i.id === selectedPerkenalanId) || perkenalanItems[0];
-
   const totalItemsCount = items.length;
   const memorizedCount = memorizedIds.filter(id => items.some(i => i.id === id)).length;
   const memorizedPercent = totalItemsCount > 0 ? Math.round((memorizedCount / totalItemsCount) * 100) : 0;
 
   if (!isUnlocked) {
     return (
-      <div className="min-h-screen bg-[#07090e] text-slate-100 flex flex-col items-center justify-center p-4 relative overflow-hidden">
+      <div className="min-h-screen bg-[#07090e] text-slate-100 flex flex-col items-center justify-center p-3 sm:p-4 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(14,165,233,0.15),rgba(255,255,255,0))]" />
 
         <motion.div
           animate={shake ? { x: [-10, 10, -8, 8, -4, 4, 0] } : {}}
           transition={{ duration: 0.4 }}
-          className="relative w-full max-w-md bg-card/80 backdrop-blur-xl border border-border/60 rounded-2xl p-6 sm:p-8 shadow-2xl shadow-sky-950/20"
+          className="relative w-full max-w-sm bg-card/85 backdrop-blur-xl border border-border/60 rounded-xl p-5 sm:p-6 shadow-2xl"
         >
-          <div className="flex flex-col items-center text-center space-y-3">
-            <div className="size-12 rounded-xl bg-sky-500/15 border border-sky-500/30 flex items-center justify-center text-sky-400">
-              <Lock className="size-6" />
+          <div className="flex flex-col items-center text-center space-y-2">
+            <div className="size-10 rounded-lg bg-sky-500/15 border border-sky-500/30 flex items-center justify-center text-sky-400">
+              <Lock className="size-5" />
             </div>
             <div>
-              <h1 className="text-xl font-bold tracking-tight text-white">Vault Kerja & Wawancara</h1>
-              <p className="text-xs text-muted-foreground mt-1 max-w-xs">
-                Halaman privat persiapan wawancara dan berkas penting terenkripsi.
+              <h1 className="text-base font-bold tracking-tight text-white">Vault Kerja</h1>
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                Masukkan PIN akses persiapan wawancara.
               </p>
             </div>
           </div>
 
-          <form onSubmit={handleVerifyPin} className="mt-6 space-y-4">
-            <div className="space-y-1.5">
+          <form onSubmit={handleVerifyPin} className="mt-4 space-y-3">
+            <div className="space-y-1">
               <div className="relative">
                 <Input
                   ref={pinInputRef}
@@ -246,26 +237,26 @@ export default function KerjaPage() {
                   inputMode="numeric"
                   pattern="[0-9]*"
                   maxLength={12}
-                  placeholder="Masukkan 6-digit PIN"
+                  placeholder="PIN 6-digit"
                   value={pin}
                   onChange={(e) => {
                     setPin(e.target.value);
                     if (pinError) setPinError(null);
                   }}
-                  className="h-11 text-center font-mono text-lg tracking-widest bg-muted/40 border-border/60 rounded-xl pr-10 focus-visible:ring-sky-500"
+                  className="h-10 text-center font-mono text-base tracking-widest bg-muted/40 border-border/60 rounded-lg pr-9 focus-visible:ring-sky-500"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPinText(p => !p)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 >
-                  {showPinText ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                  {showPinText ? <EyeOff className="size-3.5" /> : <Eye className="size-3.5" />}
                 </button>
               </div>
 
               {pinError && (
-                <p className="text-xs text-destructive text-center flex items-center justify-center gap-1 mt-1 font-medium">
-                  <AlertCircle className="size-3.5 shrink-0" />
+                <p className="text-[11px] text-destructive text-center flex items-center justify-center gap-1 mt-1 font-medium">
+                  <AlertCircle className="size-3 shrink-0" />
                   <span>{pinError}</span>
                 </p>
               )}
@@ -274,16 +265,16 @@ export default function KerjaPage() {
             <Button
               type="submit"
               disabled={loadingPin || !pin.trim()}
-              className="w-full h-9 text-xs rounded-lg font-semibold gap-2 active:scale-[0.98]"
+              className="w-full h-8 text-xs rounded-lg font-semibold gap-1.5 active:scale-[0.98]"
             >
-              {loadingPin ? <RefreshCw className="size-3.5 animate-spin" /> : <Unlock className="size-3.5" />}
-              {loadingPin ? 'Memverifikasi...' : 'Buka Akses'}
+              {loadingPin ? <RefreshCw className="size-3 animate-spin" /> : <Unlock className="size-3" />}
+              <span>{loadingPin ? 'Memverifikasi...' : 'Buka Akses'}</span>
             </Button>
           </form>
 
-          <div className="mt-6 pt-4 border-t border-border/40 text-center">
-            <p className="text-[11px] text-muted-foreground">
-              Akses dilindungi PIN internal pemilik portofolio.
+          <div className="mt-4 pt-3 border-t border-border/40 text-center">
+            <p className="text-[10px] text-muted-foreground">
+              Akses privat internal pemilik portofolio.
             </p>
           </div>
         </motion.div>
@@ -293,63 +284,58 @@ export default function KerjaPage() {
 
   return (
     <div className="min-h-screen bg-[#07090e] text-slate-100 flex flex-col selection:bg-sky-500/30 selection:text-sky-200">
-      <header className="sticky top-0 z-40 bg-[#07090e]/90 backdrop-blur-md border-b border-border/50 px-4 sm:px-6 py-2.5">
-        <div className="max-w-5xl mx-auto flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <div className="size-7 rounded-md bg-sky-500/20 text-sky-400 border border-sky-500/30 flex items-center justify-center shrink-0">
-              <ShieldCheck className="size-4" />
+      <header className="sticky top-0 z-40 bg-[#07090e]/95 backdrop-blur-md border-b border-border/50 px-2.5 sm:px-6 py-2">
+        <div className="max-w-5xl mx-auto flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <div className="size-6 rounded bg-sky-500/20 text-sky-400 border border-sky-500/30 flex items-center justify-center shrink-0">
+              <ShieldCheck className="size-3.5" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-sm text-white">Vault Kerja</span>
-                <span className="text-[10px] text-emerald-400 font-mono">PRIVATE</span>
-              </div>
-            </div>
+            <span className="font-bold text-xs sm:text-sm text-white truncate">Vault Kerja</span>
+            <span className="hidden sm:inline-block px-1.5 py-0.2 rounded text-[9px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20">
+              PRIVATE
+            </span>
           </div>
 
-          <div className="flex items-center gap-2">
-            <div className="hidden sm:flex items-center gap-2 bg-card/70 border border-border/50 px-2.5 py-1 rounded-md text-xs">
-              <span className="text-[11px] text-muted-foreground">Hafalan:</span>
-              <span className="font-mono text-xs font-semibold text-emerald-400">
+          <div className="flex items-center gap-1.5 shrink-0">
+            <div className="hidden sm:flex items-center gap-1.5 bg-card/70 border border-border/50 px-2 py-0.5 rounded text-[11px]">
+              <span className="text-muted-foreground">Hafalan:</span>
+              <span className="font-mono font-semibold text-emerald-400">
                 {memorizedCount}/{totalItemsCount} ({memorizedPercent}%)
               </span>
             </div>
 
-            <div className="flex items-center gap-1 bg-card/80 border border-border/50 px-2 py-0.5 rounded-md">
-              <span className="text-xs font-mono font-medium text-sky-400 min-w-[36px] text-center">
+            <div className="flex items-center gap-1 bg-card/80 border border-border/50 px-1.5 py-0.5 rounded text-xs">
+              <span className="text-[11px] font-mono text-sky-400 min-w-[32px] text-center">
                 {formatTimer(timerSeconds)}
               </span>
               {!isTimerRunning ? (
-                <Button
-                  size="sm"
-                  variant="ghost"
+                <button
+                  type="button"
                   onClick={() => setIsTimerRunning(true)}
-                  className="h-6 w-6 p-0 rounded text-slate-300 hover:text-white"
-                  title="Mulai Timer Latihan"
+                  className="size-5 flex items-center justify-center rounded text-slate-300 hover:text-white"
+                  title="Mulai Latihan"
                 >
-                  <Play className="size-3" />
-                </Button>
+                  <Play className="size-2.5" />
+                </button>
               ) : (
-                <Button
-                  size="sm"
-                  variant="ghost"
+                <button
+                  type="button"
                   onClick={() => setIsTimerRunning(false)}
-                  className="h-6 w-6 p-0 rounded text-amber-400"
-                  title="Jeda Timer"
+                  className="size-5 flex items-center justify-center rounded text-amber-400"
+                  title="Jeda"
                 >
-                  <Square className="size-2.5" />
-                </Button>
+                  <Square className="size-2" />
+                </button>
               )}
               {timerSeconds > 0 && !isTimerRunning && (
-                <Button
-                  size="sm"
-                  variant="ghost"
+                <button
+                  type="button"
                   onClick={() => setTimerSeconds(0)}
-                  className="h-6 w-6 p-0 rounded text-muted-foreground hover:text-white"
-                  title="Reset Timer"
+                  className="size-5 flex items-center justify-center rounded text-muted-foreground hover:text-white"
+                  title="Reset"
                 >
-                  <RotateCcw className="size-2.5" />
-                </Button>
+                  <RotateCcw className="size-2" />
+                </button>
               )}
             </div>
 
@@ -358,173 +344,172 @@ export default function KerjaPage() {
               size="sm"
               onClick={fetchKerjaData}
               disabled={loadingData}
-              className="h-7 w-7 p-0 rounded-md shrink-0"
-              title="Perbarui Data"
+              className="h-6 w-6 p-0 rounded shrink-0"
+              title="Perbarui"
             >
-              <RefreshCw className={cn('size-3', loadingData && 'animate-spin')} />
+              <RefreshCw className={cn('size-2.5', loadingData && 'animate-spin')} />
             </Button>
 
             <Button
               variant="destructive"
               size="sm"
               onClick={handleLock}
-              className="h-7 text-xs px-2.5 rounded-md active:scale-[0.98]"
+              className="h-6 text-[10px] sm:text-xs px-2 rounded active:scale-[0.98]"
             >
-              <Lock className="size-3 mr-1" />
+              <Lock className="size-2.5 mr-1" />
               <span>Kunci</span>
             </Button>
           </div>
         </div>
       </header>
 
-      <main className="flex-1 max-w-5xl w-full mx-auto p-4 sm:p-6 space-y-5">
-        <div className="flex items-center gap-1.5 bg-card/60 p-1 rounded-lg border border-border/50 overflow-x-auto scrollbar-none">
+      <main className="flex-1 max-w-5xl w-full mx-auto px-2 sm:px-6 py-2.5 sm:py-5 space-y-3 sm:space-y-4">
+        <div className="flex items-center gap-1 bg-card/60 p-1 rounded-lg border border-border/40 overflow-x-auto scrollbar-none w-full">
           <Button
             type="button"
             variant={activeTab === 'perkenalan' ? 'default' : 'ghost'}
             size="sm"
             onClick={() => setActiveTab('perkenalan')}
-            className="h-7 text-xs font-medium rounded-md px-3 shrink-0"
+            className="h-7 text-xs font-medium rounded-md px-2.5 sm:px-3 shrink-0"
           >
             <Sparkles className="size-3 mr-1 text-sky-400" />
-            Perkenalan Diri ({perkenalanItems.length})
+            Perkenalan
           </Button>
           <Button
             type="button"
             variant={activeTab === 'tips' ? 'default' : 'ghost'}
             size="sm"
             onClick={() => setActiveTab('tips')}
-            className="h-7 text-xs font-medium rounded-md px-3 shrink-0"
+            className="h-7 text-xs font-medium rounded-md px-2.5 sm:px-3 shrink-0"
           >
             <Zap className="size-3 mr-1 text-amber-400" />
-            Panduan HRD ({tipsItems.length})
+            Tips HRD
           </Button>
           <Button
             type="button"
             variant={activeTab === 'qa' ? 'default' : 'ghost'}
             size="sm"
             onClick={() => setActiveTab('qa')}
-            className="h-7 text-xs font-medium rounded-md px-3 shrink-0"
+            className="h-7 text-xs font-medium rounded-md px-2.5 sm:px-3 shrink-0"
           >
             <MessageSquare className="size-3 mr-1 text-emerald-400" />
-            Tanya-Jawab Q&A ({qaItems.length})
+            Q&A ({qaItems.length})
           </Button>
           <Button
             type="button"
             variant={activeTab === 'dokumen' ? 'default' : 'ghost'}
             size="sm"
             onClick={() => setActiveTab('dokumen')}
-            className="h-7 text-xs font-medium rounded-md px-3 shrink-0"
+            className="h-7 text-xs font-medium rounded-md px-2.5 sm:px-3 shrink-0"
           >
             <FileText className="size-3 mr-1 text-rose-400" />
-            Berkas & Sertifikat ({documents.length})
+            Berkas ({documents.length})
           </Button>
         </div>
 
-        {activeTab === 'perkenalan' && activePerkenalanItem && (
+        {activeTab === 'perkenalan' && perkenalanItem && (
           <motion.div
-            initial={{ opacity: 0, y: 6 }}
+            initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
-            className="space-y-4"
+            className="space-y-3 w-full"
           >
-
-            <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-lg border border-border/50 bg-card/40">
-              <div className="space-y-0.5">
-                <h2 className="text-sm font-semibold text-white">
-                  {activePerkenalanItem.title}
+            <div className="flex items-center justify-between gap-2 p-2 sm:p-3 rounded-lg border border-border/40 bg-card/40">
+              <div className="min-w-0">
+                <h2 className="text-xs sm:text-sm font-semibold text-white truncate">
+                  {perkenalanItem.title}
                 </h2>
-                <p className="text-[11px] text-muted-foreground">
-                  Baca santai, wajar, dan kontak mata hangat.
+                <p className="text-[10px] sm:text-[11px] text-muted-foreground truncate">
+                  Naskah lengkap percakapan wajar dan santai.
                 </p>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 shrink-0">
                 <Button
                   size="sm"
-                  variant={memorizedIds.includes(activePerkenalanItem.id) ? 'default' : 'outline'}
-                  onClick={() => toggleMemorized(activePerkenalanItem.id)}
-                  className="h-7 text-xs gap-1.5 rounded-md active:scale-[0.98]"
+                  variant={memorizedIds.includes(perkenalanItem.id) ? 'default' : 'outline'}
+                  onClick={() => toggleMemorized(perkenalanItem.id)}
+                  className="h-6 text-[11px] px-2 rounded active:scale-[0.98] gap-1"
                 >
                   <CheckCircle2 className="size-3" />
                   <span>
-                    {memorizedIds.includes(activePerkenalanItem.id) ? 'Sudah Dihafal' : 'Tandai Dihafal'}
+                    {memorizedIds.includes(perkenalanItem.id) ? 'Dihafal' : 'Tandai'}
                   </span>
                 </Button>
 
                 <Button
                   size="sm"
                   variant="secondary"
-                  onClick={() => handleCopyText(activePerkenalanItem.content_raw, `raw-${activePerkenalanItem.id}`)}
-                  className="h-7 text-xs gap-1.5 rounded-md active:scale-[0.98]"
+                  onClick={() => handleCopyText(perkenalanItem.content_raw, `raw-${perkenalanItem.id}`)}
+                  className="h-6 text-[11px] px-2 rounded active:scale-[0.98] gap-1"
                 >
-                  {copiedId === `raw-${activePerkenalanItem.id}` ? <Check className="size-3 text-emerald-400" /> : <Copy className="size-3" />}
-                  <span>Salin Teks</span>
+                  {copiedId === `raw-${perkenalanItem.id}` ? <Check className="size-3 text-emerald-400" /> : <Copy className="size-3" />}
+                  <span>Salin</span>
                 </Button>
               </div>
             </div>
 
             <div
-              className="rounded-xl border border-border/50 bg-card/60 p-5 sm:p-6 shadow-sm"
-              dangerouslySetInnerHTML={{ __html: activePerkenalanItem.content_html }}
+              className="w-full rounded-xl border border-border/40 bg-card/40 p-2 sm:p-4 shadow-sm"
+              dangerouslySetInnerHTML={{ __html: perkenalanItem.content_html }}
             />
           </motion.div>
         )}
 
         {activeTab === 'tips' && (
           <motion.div
-            initial={{ opacity: 0, y: 6 }}
+            initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
-            className="space-y-4"
+            className="space-y-2.5 w-full"
           >
-            <div className="p-3.5 rounded-lg border border-border/50 bg-card/40">
-              <h2 className="text-sm font-semibold text-white">Panduan & Tips Wawancara HRD</h2>
-              <p className="text-[11px] text-muted-foreground mt-0.5">
-                Prinsip penting sikap, pernafasan, dan etika saat sesi wawancara kerja.
+            <div className="p-2 sm:p-3 rounded-lg border border-border/40 bg-card/40">
+              <h2 className="text-xs sm:text-sm font-semibold text-white">Panduan & Tips Wawancara HRD</h2>
+              <p className="text-[10px] sm:text-[11px] text-muted-foreground">
+                Prinsip sikap, pernafasan, dan etika saat sesi wawancara.
               </p>
             </div>
 
-            <div className="space-y-3.5">
+            <div className="space-y-2.5">
               {tipsItems.map((tip) => {
                 const isMem = memorizedIds.includes(tip.id);
 
                 return (
                   <div
                     key={tip.id}
-                    className="p-4 sm:p-5 rounded-xl border border-border/50 bg-card/60 space-y-3"
+                    className="p-3 sm:p-4 rounded-xl border border-border/40 bg-card/60 space-y-2"
                   >
-                    <div className="flex items-center justify-between gap-2 border-b border-border/40 pb-2.5">
-                      <h3 className="text-xs font-semibold text-white flex items-center gap-2">
-                        {isMem && <CheckCircle2 className="size-3.5 text-emerald-400 shrink-0" />}
-                        <span>{tip.title}</span>
+                    <div className="flex items-center justify-between gap-2 border-b border-border/30 pb-1.5">
+                      <h3 className="text-xs font-semibold text-white flex items-center gap-1.5 truncate">
+                        {isMem && <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />}
+                        <span className="truncate">{tip.title}</span>
                       </h3>
 
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1 shrink-0">
                         <Button
                           size="sm"
                           variant="ghost"
                           onClick={() => toggleMemorized(tip.id)}
                           className={cn(
-                            'h-6 text-[11px] px-2 rounded',
+                            'h-5 text-[10px] px-1.5 rounded',
                             isMem ? 'text-emerald-400' : 'text-muted-foreground'
                           )}
                         >
-                          <CheckCircle2 className="size-3 mr-1" />
+                          <CheckCircle2 className="size-2.5 mr-0.5" />
                           <span>{isMem ? 'Hafal' : 'Tandai'}</span>
                         </Button>
                         <Button
                           size="sm"
                           variant="ghost"
                           onClick={() => handleCopyText(tip.content_raw, `tip-${tip.id}`)}
-                          className="h-6 text-[11px] px-2 rounded text-muted-foreground hover:text-white"
+                          className="h-5 text-[10px] px-1.5 rounded text-muted-foreground hover:text-white"
                         >
-                          {copiedId === `tip-${tip.id}` ? <Check className="size-3 text-emerald-400 mr-1" /> : <Copy className="size-3 mr-1" />}
+                          {copiedId === `tip-${tip.id}` ? <Check className="size-2.5 text-emerald-400 mr-0.5" /> : <Copy className="size-2.5 mr-0.5" />}
                           <span>Salin</span>
                         </Button>
                       </div>
                     </div>
 
                     <div
-                      className="text-xs"
+                      className="text-xs leading-relaxed"
                       dangerouslySetInnerHTML={{ __html: tip.content_html }}
                     />
                   </div>
@@ -536,34 +521,34 @@ export default function KerjaPage() {
 
         {activeTab === 'qa' && (
           <motion.div
-            initial={{ opacity: 0, y: 6 }}
+            initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
-            className="space-y-4"
+            className="space-y-2.5 w-full"
           >
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-lg border border-border/50 bg-card/40">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 sm:p-3 rounded-lg border border-border/40 bg-card/40">
               <div>
-                <h2 className="text-sm font-semibold text-white">Bank Tanya-Jawab Wawancara ({qaItems.length})</h2>
-                <p className="text-[11px] text-muted-foreground mt-0.5">
-                  Pertanyaan HRD dan User beserta strategi jawaban kunci terarah.
+                <h2 className="text-xs sm:text-sm font-semibold text-white">Bank Tanya-Jawab ({qaItems.length})</h2>
+                <p className="text-[10px] sm:text-[11px] text-muted-foreground">
+                  Simulasi pertanyaan HRD & User beserta respon kunci.
                 </p>
               </div>
 
-              <div className="relative w-full sm:w-64">
-                <Search className="size-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <div className="relative w-full sm:w-56">
+                <Search className="size-3 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   type="text"
-                  placeholder="Cari pertanyaan atau topik..."
+                  placeholder="Cari pertanyaan..."
                   value={qaSearch}
                   onChange={(e) => setQaSearch(e.target.value)}
-                  className="h-7 pl-8 pr-3 text-xs bg-muted/30 border-border/50 rounded-md"
+                  className="h-6 pl-7 pr-2.5 text-xs bg-muted/30 border-border/40 rounded"
                 />
               </div>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2">
               {filteredQaItems.length === 0 ? (
-                <div className="p-8 text-center text-xs text-muted-foreground border border-dashed border-border/50 rounded-xl">
-                  Tidak ada pertanyaan yang sesuai pencarian "{qaSearch}".
+                <div className="p-6 text-center text-xs text-muted-foreground border border-dashed border-border/40 rounded-lg">
+                  Tidak ada pertanyaan yang sesuai "{qaSearch}".
                 </div>
               ) : (
                 filteredQaItems.map((qa) => {
@@ -573,16 +558,16 @@ export default function KerjaPage() {
                     <div
                       key={qa.id}
                       className={cn(
-                        'p-4 rounded-xl border bg-card/60 transition-all space-y-3',
-                        isMem ? 'border-emerald-500/30' : 'border-border/50'
+                        'p-2.5 sm:p-3.5 rounded-xl border bg-card/60 space-y-2',
+                        isMem ? 'border-emerald-500/30' : 'border-border/40'
                       )}
                     >
-                      <div className="flex items-start justify-between gap-2 border-b border-border/30 pb-2">
-                        <div className="flex items-center gap-2">
-                          <span className="size-5 rounded bg-muted/60 text-muted-foreground font-mono text-[10px] flex items-center justify-center font-semibold shrink-0">
+                      <div className="flex items-start justify-between gap-2 border-b border-border/30 pb-1.5">
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <span className="size-4 rounded bg-muted/60 text-muted-foreground font-mono text-[9px] flex items-center justify-center font-semibold shrink-0">
                             {qa.order}
                           </span>
-                          <h3 className="font-semibold text-xs text-white">
+                          <h3 className="font-semibold text-xs text-white truncate">
                             {qa.title}
                           </h3>
                         </div>
@@ -593,27 +578,27 @@ export default function KerjaPage() {
                             variant="ghost"
                             onClick={() => toggleMemorized(qa.id)}
                             className={cn(
-                              'h-6 text-[11px] px-2 rounded',
-                              isMem ? 'text-emerald-400 font-medium' : 'text-muted-foreground'
+                              'h-5 text-[10px] px-1.5 rounded',
+                              isMem ? 'text-emerald-400' : 'text-muted-foreground'
                             )}
                           >
-                            <CheckCircle2 className="size-3 mr-1" />
+                            <CheckCircle2 className="size-2.5 mr-0.5" />
                             <span>{isMem ? 'Dikuasai' : 'Tandai'}</span>
                           </Button>
                           <Button
                             size="sm"
                             variant="ghost"
                             onClick={() => handleCopyText(qa.content_raw, `qa-${qa.id}`)}
-                            className="h-6 text-[11px] px-2 rounded text-muted-foreground hover:text-white"
+                            className="h-5 text-[10px] px-1.5 rounded text-muted-foreground hover:text-white"
                           >
-                            {copiedId === `qa-${qa.id}` ? <Check className="size-3 text-emerald-400 mr-1" /> : <Copy className="size-3 mr-1" />}
+                            {copiedId === `qa-${qa.id}` ? <Check className="size-2.5 text-emerald-400 mr-0.5" /> : <Copy className="size-2.5 mr-0.5" />}
                             <span>Salin</span>
                           </Button>
                         </div>
                       </div>
 
                       <div
-                        className="text-xs"
+                        className="text-xs leading-relaxed"
                         dangerouslySetInnerHTML={{ __html: qa.content_html }}
                       />
                     </div>
@@ -626,30 +611,30 @@ export default function KerjaPage() {
 
         {activeTab === 'dokumen' && (
           <motion.div
-            initial={{ opacity: 0, y: 6 }}
+            initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
-            className="space-y-4"
+            className="space-y-2.5 w-full"
           >
-            <div className="p-3.5 rounded-lg border border-border/50 bg-card/40">
-              <h2 className="text-sm font-semibold text-white">Lemari Dokumen & Sertifikat</h2>
-              <p className="text-[11px] text-muted-foreground mt-0.5">
-                Berkas asli PDF dan berkas pendukung tersimpan secara aman.
+            <div className="p-2 sm:p-3 rounded-lg border border-border/40 bg-card/40">
+              <h2 className="text-xs sm:text-sm font-semibold text-white">Lemari Dokumen & Sertifikat</h2>
+              <p className="text-[10px] sm:text-[11px] text-muted-foreground">
+                Aset berkas PDF dan sertifikat resmi pendukung.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
               {documents.map((doc) => {
                 return (
                   <div
                     key={doc.id}
-                    className="p-3.5 rounded-xl border border-border/50 bg-card/70 flex flex-col justify-between space-y-3"
+                    className="p-3 rounded-xl border border-border/40 bg-card/70 flex flex-col justify-between space-y-2"
                   >
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       <div className="flex items-start justify-between gap-2">
-                        <div className="size-8 rounded-lg bg-red-500/15 text-red-400 border border-red-500/25 flex items-center justify-center shrink-0">
-                          <FileText className="size-4" />
+                        <div className="size-7 rounded-lg bg-red-500/15 text-red-400 border border-red-500/25 flex items-center justify-center shrink-0">
+                          <FileText className="size-3.5" />
                         </div>
-                        <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-muted uppercase text-muted-foreground">
+                        <span className="px-1.5 py-0.2 rounded text-[9px] font-semibold bg-muted uppercase text-muted-foreground">
                           {doc.file_type}
                         </span>
                       </div>
@@ -658,7 +643,7 @@ export default function KerjaPage() {
                           {doc.title}
                         </h3>
                         {doc.description && (
-                          <p className="text-[11px] text-muted-foreground mt-1 line-clamp-2">
+                          <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-2">
                             {doc.description}
                           </p>
                         )}
@@ -666,7 +651,7 @@ export default function KerjaPage() {
                     </div>
 
                     <div className="pt-2 border-t border-border/40 flex items-center justify-between gap-2">
-                      <span className="text-[11px] font-mono text-muted-foreground">
+                      <span className="text-[10px] font-mono text-muted-foreground">
                         {formatBytes(doc.file_size)}
                       </span>
                       <div className="flex items-center gap-1">
@@ -674,7 +659,7 @@ export default function KerjaPage() {
                           size="sm"
                           variant="secondary"
                           asChild
-                          className="h-6 text-[11px] px-2 rounded active:scale-[0.98] gap-1"
+                          className="h-6 text-[10px] px-2 rounded active:scale-[0.98] gap-1"
                         >
                           <a href={doc.file_url} target="_blank" rel="noreferrer">
                             <span>Buka</span>
