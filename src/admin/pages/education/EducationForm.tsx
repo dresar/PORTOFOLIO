@@ -5,11 +5,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Save, Trash2, Plus, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { ArrowLeft, Save, Trash2, Plus, Image as ImageIcon, Loader2, FileText } from 'lucide-react';
 import { api } from '../../services/api';
 import { ModernLoader } from '@/components/ui/ModernLoader';
 import { useQueryClient } from '@tanstack/react-query';
 import { RichHtmlEditor } from '@/admin/components/RichHtmlEditor';
+import { DocumentAttachmentInput } from '@/admin/components/DocumentAttachmentInput';
+import type { DocumentAttachment } from '@/types';
 
 export default function EducationForm() {
   const { id } = useParams();
@@ -32,7 +34,9 @@ export default function EducationForm() {
     location: '',
     mapUrl: '',
     description: '',
-    gallery: '[]'
+    gallery: '[]',
+    attachments: '[]',
+    notes: '',
   });
 
   useEffect(() => {
@@ -65,7 +69,9 @@ export default function EducationForm() {
             location: edu.location || '',
             mapUrl: edu.mapUrl || '',
             description: edu.description || '',
-            gallery: typeof edu.gallery === 'string' ? edu.gallery : JSON.stringify(edu.gallery || [])
+            gallery: typeof edu.gallery === 'string' ? edu.gallery : JSON.stringify(edu.gallery || []),
+            attachments: typeof edu.attachments === 'string' ? edu.attachments : JSON.stringify(edu.attachments || []),
+            notes: edu.notes || '',
         });
       }
     } catch (error) {
@@ -87,6 +93,8 @@ export default function EducationForm() {
         logo_url: formData.logo,
         cover_image: formData.coverImage,
         endDate: formData.endDate || null,
+        attachments: formData.attachments,
+        notes: formData.notes,
       };
 
       if (id && id !== 'new') {
@@ -119,6 +127,53 @@ export default function EducationForm() {
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const parsedAttachments: DocumentAttachment[] = (() => {
+    try {
+      return JSON.parse(formData.attachments || '[]');
+    } catch {
+      return [];
+    }
+  })();
+
+  const handleAddAttachment = () => {
+    const newDoc: DocumentAttachment = {
+      id: `doc_${Date.now()}`,
+      title: 'Sertifikat Akreditasi',
+      url: '',
+      type: 'pdf',
+      notes: '',
+    };
+    setFormData(prev => ({
+      ...prev,
+      attachments: JSON.stringify([...parsedAttachments, newDoc]),
+    }));
+  };
+
+  const handleUpdateAttachment = (index: number, updatedFields: Partial<DocumentAttachment>) => {
+    const updated = parsedAttachments.map((item, idx) => {
+      if (idx === index) {
+        const merged = { ...item, ...updatedFields };
+        if (merged.url) {
+          merged.type = /\.pdf($|\?)/i.test(merged.url) ? 'pdf' : 'image';
+        }
+        return merged;
+      }
+      return item;
+    });
+    setFormData(prev => ({
+      ...prev,
+      attachments: JSON.stringify(updated),
+    }));
+  };
+
+  const handleRemoveAttachment = (index: number) => {
+    const updated = parsedAttachments.filter((_, idx) => idx !== index);
+    setFormData(prev => ({
+      ...prev,
+      attachments: JSON.stringify(updated),
+    }));
   };
 
   const handleAddGalleryImage = () => {
@@ -281,6 +336,64 @@ export default function EducationForm() {
                     placeholder="Deskripsi"
                   />
                 </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-3">
+                <div>
+                  <CardTitle className="text-base font-semibold flex items-center gap-2">
+                    <FileText className="size-4 text-primary" />
+                    <span>Lampiran Dokumen & Akreditasi (Opsional)</span>
+                  </CardTitle>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Unggah sertifikat akreditasi BAN-PT, ijazah, atau dokumen PDF lainnya.
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleAddAttachment}
+                  className="h-8 text-xs rounded-lg gap-1.5 font-medium"
+                >
+                  <Plus className="size-3.5" /> Tambah Dokumen
+                </Button>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {parsedAttachments.map((att, idx) => (
+                  <DocumentAttachmentInput
+                    key={att.id || idx}
+                    label={`Dokumen ${idx + 1}`}
+                    value={att.url}
+                    onChange={(url) => handleUpdateAttachment(idx, { url })}
+                    titleValue={att.title}
+                    onTitleChange={(title) => handleUpdateAttachment(idx, { title })}
+                    notesValue={att.notes}
+                    onNotesChange={(notes) => handleUpdateAttachment(idx, { notes })}
+                    showTitle={true}
+                    showNotes={true}
+                    removable={true}
+                    onRemove={() => handleRemoveAttachment(idx)}
+                    previewTitle={att.title || formData.institution}
+                  />
+                ))}
+
+                {parsedAttachments.length === 0 && (
+                  <div className="py-6 text-center text-muted-foreground bg-muted/20 rounded-lg border border-dashed">
+                    <FileText className="size-8 mx-auto mb-2 opacity-50" />
+                    <p className="text-xs">Belum ada lampiran dokumen akreditasi atau PDF.</p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleAddAttachment}
+                      className="mt-3 h-8 text-xs rounded-lg gap-1.5 font-medium"
+                    >
+                      <Plus className="size-3.5" /> Tambah Dokumen
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
 

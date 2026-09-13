@@ -14188,6 +14188,9 @@ var projects = pgTable("project", {
   categoryId: integer("categoryId").references(() => projectCategories.id),
   gallery: text("gallery").default("[]").notNull(),
   summaries: text("summaries").default("[]").notNull(),
+  attachments: text("attachments").default("[]"),
+  license: text("license"),
+  licenseUrl: text("licenseUrl"),
   is_published: boolean("is_published").default(true).notNull(),
   order: integer("order").default(0).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
@@ -14304,7 +14307,8 @@ var educations = pgTable("education", {
   mapUrl: text("mapUrl"),
   description: text("description"),
   gallery: text("gallery").default("[]"),
-  attachments: text("attachments").default("[]")
+  attachments: text("attachments").default("[]"),
+  notes: text("notes")
 });
 var certificateCategories = pgTable("certificate_category", {
   id: serial("id").primaryKey(),
@@ -14319,6 +14323,9 @@ var certificates = pgTable("certificate", {
   expiryDate: timestamp("expiryDate"),
   credentialUrl: text("credentialUrl"),
   image: text("image"),
+  pdfUrl: text("pdfUrl"),
+  notes: text("notes"),
+  attachments: text("attachments").default("[]"),
   verified: boolean("verified").default(false).notNull(),
   credentialId: text("credentialId"),
   categoryId: integer("categoryId").references(() => certificateCategories.id)

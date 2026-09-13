@@ -81,6 +81,15 @@ export interface Experience {
   location?: string | null;
 }
 
+export interface DocumentAttachment {
+  id?: string;
+  title: string;
+  url: string;
+  type?: 'pdf' | 'image' | 'link' | 'document';
+  notes?: string;
+  fileSize?: string;
+}
+
 export interface Education {
   id?: number;
   institution: string;
@@ -90,9 +99,13 @@ export interface Education {
   endDate?: string | null;
   gpa?: string | null;
   logo?: string | null;
+  coverImage?: string | null;
+  location?: string | null;
+  mapUrl?: string | null;
   description?: string | null;
-  attachments: any[]; // JSON array
-  gallery: any[]; // JSON array
+  attachments?: DocumentAttachment[] | any;
+  gallery: any[];
+  notes?: string | null;
 }
 
 export interface ProjectCategory {
@@ -122,7 +135,7 @@ export interface Project {
   repoUrl?: string | null;
   video_url?: string | null;
   is_featured: boolean;
-  links: any[]; // JSON array
+  links: any[];
   order: number;
   createdAt: string;
   updatedAt: string;
@@ -130,6 +143,9 @@ export interface Project {
   is_published: boolean;
   publish_at?: string | null;
   images?: ProjectImage[];
+  attachments?: DocumentAttachment[] | any;
+  license?: string | null;
+  licenseUrl?: string | null;
 }
 
 export interface CertificateCategory {
@@ -146,6 +162,9 @@ export interface Certificate {
   expiryDate?: string | null;
   credentialUrl?: string | null;
   image?: string | null;
+  pdfUrl?: string | null;
+  notes?: string | null;
+  attachments?: DocumentAttachment[] | any;
   verified: boolean;
   credentialId?: string | null;
   category?: CertificateCategory | number | null;

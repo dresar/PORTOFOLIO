@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Award, Calendar, ExternalLink, Loader2, ArrowRight } from 'lucide-react';
+import { Award, Calendar, ExternalLink, Loader2, ArrowRight, FileText } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { useCertificates } from '@/hooks/useCertificates';
@@ -161,7 +161,7 @@ export const CertificatesSection = () => {
                 <div className="glass-strong rounded-xl overflow-hidden hover:glow-primary transition-all duration-300 cursor-pointer h-full flex flex-col dark:bg-card/50 bg-white shadow-sm hover:shadow-md border border-border/50">
                   {/* Image/Thumbnail */}
                   <div className="relative aspect-video sm:h-48 bg-muted overflow-hidden">
-                    {cert.image ? (
+                    {cert.image && !/\.pdf($|\?)/i.test(cert.image) ? (
                       <img
                         src={normalizeMediaUrl(cert.image, { width: 450 })}
                         alt={cert.name}
@@ -169,9 +169,21 @@ export const CertificatesSection = () => {
                         decoding="async"
                         className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                       />
+                    ) : (cert.pdfUrl || (cert.image && /\.pdf($|\?)/i.test(cert.image))) ? (
+                      <div className="w-full h-full flex flex-col items-center justify-center bg-red-500/10 text-red-500 gap-2 p-3 text-center">
+                        <FileText className="w-8 h-8 sm:w-10 sm:h-10" />
+                        <span className="text-[11px] font-semibold">Dokumen PDF (Multi-Halaman)</span>
+                      </div>
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-primary/10">
                         <Award className="w-8 h-8 sm:w-12 sm:h-12 text-primary/50" />
+                      </div>
+                    )}
+
+                    {(cert.pdfUrl || (cert.image && /\.pdf($|\?)/i.test(cert.image))) && (
+                      <div className="absolute top-2 right-2 px-2 py-0.5 rounded-md bg-red-500/90 text-white text-[10px] font-bold tracking-wider flex items-center gap-1 shadow-md">
+                        <FileText className="size-3" />
+                        <span>PDF</span>
                       </div>
                     )}
                   </div>

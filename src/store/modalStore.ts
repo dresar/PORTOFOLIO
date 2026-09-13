@@ -20,6 +20,7 @@ interface ModalState {
   
   openEducationGalleryModal: (education: Education) => void;
   openEducationDocumentModal: (url: string, title: string) => void;
+  openPdfPreviewModal: (url: string, title?: string) => void;
   openEducationDetailModal: (education: Education) => void;
   openCertificateModal: (certificate: Certificate) => void;
   openExperienceGalleryModal: (experience: any) => void;
@@ -50,6 +51,13 @@ export const useModalStore = create<ModalState>((set) => ({
   }),
 
   openEducationDocumentModal: (url, title) => set({
+    isOpen: true,
+    modalType: 'education-document',
+    documentUrl: url,
+    documentTitle: title,
+  }),
+
+  openPdfPreviewModal: (url, title = 'Pratinjau Dokumen') => set({
     isOpen: true,
     modalType: 'education-document',
     documentUrl: url,

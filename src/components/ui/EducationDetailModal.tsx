@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useModalStore } from '@/store/modalStore';
 import { useTranslation } from 'react-i18next';
-import { GraduationCap, Calendar, Award, MapPin, Building, Globe, Image as ImageIcon } from 'lucide-react';
+import { GraduationCap, Calendar, Award, MapPin, Building, Globe, Image as ImageIcon, FileText, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { CustomVideoPlayer } from '@/components/ui/CustomVideoPlayer';
@@ -12,7 +12,7 @@ import { useLocalizedContent } from '@/hooks/useLocalizedContent';
 
 export const EducationDetailModal = () => {
   const { t } = useTranslation();
-  const { isOpen, modalType, educationData: rawEducationData, closeModal, openImagePreviewModal } = useModalStore();
+  const { isOpen, modalType, educationData: rawEducationData, closeModal, openImagePreviewModal, openPdfPreviewModal } = useModalStore();
   const { getEducation } = useLocalizedContent();
   const educationData = useMemo(() => getEducation(rawEducationData), [rawEducationData, getEducation]);
 
@@ -42,6 +42,17 @@ export const EducationDetailModal = () => {
     }
   } catch (e) {
     gallery = [];
+  }
+
+  let attachments: any[] = [];
+  try {
+    if (Array.isArray(educationData.attachments)) {
+      attachments = educationData.attachments;
+    } else if (typeof educationData.attachments === 'string') {
+      attachments = JSON.parse(educationData.attachments);
+    }
+  } catch (e) {
+    attachments = [];
   }
 
   return (
@@ -160,11 +171,60 @@ export const EducationDetailModal = () => {
                 </div>
              )}
 
+              {/* Official Documents & Accreditation */}
+              {attachments.length > 0 && (
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-primary" />
+                    <span>Dokumen Resmi & Akreditasi</span>
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {attachments.map((doc: any, idx: number) => {
+                      const isPdf = /\.pdf($|\?)/i.test(doc.url) || doc.type === 'pdf';
+                      return (
+                        <div
+                          key={idx}
+                          className="p-3.5 rounded-xl border border-border/60 bg-muted/30 hover:bg-muted/50 transition-colors flex items-center justify-between gap-3 group"
+                        >
+                          <div className="flex items-center gap-3 min-w-0">
+                            <div className="size-9 rounded-lg bg-red-500/10 text-red-500 flex items-center justify-center shrink-0 border border-red-500/20">
+                              <FileText className="size-4" />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-xs sm:text-sm font-semibold truncate text-foreground group-hover:text-primary transition-colors">
+                                {doc.title || 'Dokumen Akreditasi'}
+                              </p>
+                              {doc.notes ? (
+                                <p className="text-[11px] text-muted-foreground truncate">{doc.notes}</p>
+                              ) : (
+                                <p className="text-[11px] text-muted-foreground">{isPdf ? 'Format PDF' : 'Media'}</p>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-1 shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => openPdfPreviewModal(doc.url, doc.title || educationData.institution)}
+                              className="px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition-opacity flex items-center gap-1 cursor-pointer"
+                              title="Buka Pratinjau Dokumen"
+                            >
+                              <span>Lihat PDF</span>
+                              <ExternalLink className="size-3" />
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {/* Description */}
               {educationData.description && (
                  <div className="mb-6">
                      <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
-                         <FileTextIcon className="w-4 h-4 text-primary" />
+                         <FileText className="w-4 h-4 text-primary" />
                          {t('common.description')}
                      </h3>
                      <div 
@@ -195,24 +255,3 @@ export const EducationDetailModal = () => {
     </Dialog>
   );
 };
-
-function FileTextIcon({ className }: { className?: string }) {
-    return (
-        <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="2" 
-            strokeLinecap="round" 
-            strokeLinejoin="round" 
-            className={className}
-        >
-            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-            <polyline points="14 2 14 8 20 8" />
-            <line x1="16" x2="8" y1="13" y2="13" />
-            <line x1="16" x2="8" y1="17" y2="17" />
-            <line x1="10" x2="8" y1="9" y2="9" />
-        </svg>
-    );
-}

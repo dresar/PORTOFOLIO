@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { GraduationCap, Calendar, Award, Image as ImageIcon, Loader2, ArrowRight } from 'lucide-react';
+import { GraduationCap, Calendar, Award, Image as ImageIcon, Loader2, ArrowRight, FileText } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useEducation } from '@/hooks/useEducation';
 import { useModalStore } from '@/store/modalStore';
@@ -8,7 +8,7 @@ import { useLocalizedContent } from '@/hooks/useLocalizedContent';
 
 export const EducationSection = () => {
   const { t } = useTranslation();
-  const { openEducationDetailModal } = useModalStore();
+  const { openEducationDetailModal, openPdfPreviewModal } = useModalStore();
   const { education: rawEducation = [], isLoading } = useEducation();
   const { getEducations } = useLocalizedContent();
   const education = getEducations(rawEducation);
@@ -35,6 +35,9 @@ export const EducationSection = () => {
   const renderEducationCard = (edu: any) => {
     const gallery = edu.gallery 
       ? (typeof edu.gallery === 'string' ? JSON.parse(edu.gallery) : edu.gallery)
+      : [];
+    const attachments = edu.attachments
+      ? (typeof edu.attachments === 'string' ? JSON.parse(edu.attachments) : edu.attachments)
       : [];
     const firstGalleryImage = gallery.length > 0 ? gallery[0] : null;
     const coverUrl = edu.coverImage || edu.cover_image || edu.cover_image_url || firstGalleryImage;
@@ -94,7 +97,22 @@ export const EducationSection = () => {
           </div>
 
           <div className="flex items-center justify-between pt-2 sm:pt-3 border-t border-border/50 mt-auto">
-            <div className="flex gap-1">
+            <div className="flex flex-wrap gap-1">
+              {attachments.length > 0 && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const first = attachments[0];
+                    openPdfPreviewModal(first.url, first.title || `${edu.institution} - Dokumen`);
+                  }}
+                  className="text-[10px] sm:text-xs px-1.5 py-0.5 sm:px-2.5 sm:py-1 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-md flex items-center gap-1 font-medium transition-colors cursor-pointer border border-red-500/20"
+                  title="Lihat Dokumen PDF / Akreditasi"
+                >
+                  <FileText className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                  <span>Akreditasi</span>
+                </button>
+              )}
               {edu.gallery && (typeof edu.gallery === 'string' ? JSON.parse(edu.gallery).length > 0 : edu.gallery.length > 0) && (
                   <div className="text-[10px] sm:text-xs px-1.5 py-0.5 sm:px-2.5 sm:py-1.5 bg-primary/10 text-primary rounded-md flex items-center gap-1 font-medium">
                       <ImageIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5" />

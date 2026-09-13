@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { api } from '../../services/api';
-import { Loader2, Plus, Trash2, ArrowLeft, Sparkles, Wand2 } from 'lucide-react';
+import { Loader2, Plus, Trash2, ArrowLeft, Sparkles, Wand2, FileText, ShieldCheck } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
@@ -23,6 +23,8 @@ import { RichHtmlEditor } from '@/admin/components/RichHtmlEditor';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { CustomDatePicker } from "@/components/ui/CustomDatePicker";
+import { DocumentAttachmentInput } from '@/admin/components/DocumentAttachmentInput';
+import type { DocumentAttachment } from '@/types';
 
 const projectSchema = z.object({
   title: z.string().min(1, "Wajib diisi"),
@@ -36,6 +38,9 @@ const projectSchema = z.object({
   repoUrl: z.string().optional(),
   tech: z.string().optional(),
   gallery: z.string().optional(),
+  attachments: z.string().optional(),
+  license: z.string().optional(),
+  licenseUrl: z.string().optional(),
   is_published: z.boolean().default(true),
   custom_created_at: z.date().optional(),
   order: z.coerce.number().default(0),
@@ -114,6 +119,9 @@ export default function ProjectForm() {
       is_published: true,
       tech: '',
       gallery: '[]',
+      attachments: '[]',
+      license: '',
+      licenseUrl: '',
       content: '',
       description: '',
       order: 0
@@ -147,6 +155,9 @@ export default function ProjectForm() {
           repoUrl: project.repoUrl || '',
           tech: parsePgOrJsonArray(project.tech).join(', '),
           gallery: JSON.stringify(parsePgOrJsonArray(project.gallery)),
+          attachments: typeof project.attachments === 'string' ? project.attachments : JSON.stringify(project.attachments || []),
+          license: project.license || '',
+          licenseUrl: project.licenseUrl || '',
           is_published: project.is_published,
           custom_created_at: project.custom_created_at ? new Date(project.custom_created_at) : undefined,
           order: project.order ?? 0,
@@ -378,6 +389,45 @@ export default function ProjectForm() {
     form.setValue('gallery', JSON.stringify(updated), { shouldDirty: true });
   };
 
+  const parsedAttachments: DocumentAttachment[] = (() => {
+    try {
+      const val = form.watch('attachments');
+      return safeJsonParse(val, []);
+    } catch {
+      return [];
+    }
+  })();
+
+  const handleAddProjectAttachment = () => {
+    const newDoc: DocumentAttachment = {
+      id: `doc_${Date.now()}`,
+      title: 'Sertifikat Proyek / HKI',
+      url: '',
+      type: 'pdf',
+      notes: '',
+    };
+    form.setValue('attachments', JSON.stringify([...parsedAttachments, newDoc]), { shouldDirty: true });
+  };
+
+  const handleUpdateProjectAttachment = (index: number, updatedFields: Partial<DocumentAttachment>) => {
+    const updated = parsedAttachments.map((item, idx) => {
+      if (idx === index) {
+        const merged = { ...item, ...updatedFields };
+        if (merged.url) {
+          merged.type = /\.pdf($|\?)/i.test(merged.url) ? 'pdf' : 'image';
+        }
+        return merged;
+      }
+      return item;
+    });
+    form.setValue('attachments', JSON.stringify(updated), { shouldDirty: true });
+  };
+
+  const handleRemoveProjectAttachment = (index: number) => {
+    const updated = parsedAttachments.filter((_, idx) => idx !== index);
+    form.setValue('attachments', JSON.stringify(updated), { shouldDirty: true });
+  };
+
   const onError = (errors: any) => {
     if (errors.categoryId) {
       toast({ variant: "destructive", title: "Gagal!", description: "Kategori wajib dipilih." });
@@ -536,6 +586,61 @@ export default function ProjectForm() {
                     ))
                   )}
                 </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-3">
+                <div>
+                  <CardTitle className="text-base font-semibold flex items-center gap-2">
+                    <ShieldCheck className="size-4 text-primary" />
+                    <span>Lisensi & Dokumen Sertifikat Proyek (Opsional)</span>
+                  </CardTitle>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Tambahkan informasi lisensi, sertifikat HKI/Hak Cipta, atau file dokumen PDF proyek.
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleAddProjectAttachment}
+                  className="h-8 text-xs rounded-lg gap-1.5 font-medium"
+                >
+                  <Plus className="size-3.5" /> Tambah Dokumen Lain
+                </Button>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <DocumentAttachmentInput
+                  label="Dokumen Lisensi / Hak Cipta Utama (PDF / Media)"
+                  value={form.watch('licenseUrl') || ''}
+                  onChange={(url) => form.setValue('licenseUrl', url, { shouldDirty: true })}
+                  notesValue={form.watch('license') || ''}
+                  onNotesChange={(license) => form.setValue('license', license, { shouldDirty: true })}
+                  showTitle={false}
+                  showNotes={true}
+                  notesLabel="Nama Lisensi / Keterangan Hak Cipta"
+                  placeholder="URL PDF lisensi atau unggah file lisensi/HKI..."
+                  previewTitle={`${form.watch('title') || 'Proyek'} - Dokumen Lisensi`}
+                />
+
+                {parsedAttachments.map((att, idx) => (
+                  <DocumentAttachmentInput
+                    key={att.id || idx}
+                    label={`Lampiran Dokumen ${idx + 1}`}
+                    value={att.url}
+                    onChange={(url) => handleUpdateProjectAttachment(idx, { url })}
+                    titleValue={att.title}
+                    onTitleChange={(title) => handleUpdateProjectAttachment(idx, { title })}
+                    notesValue={att.notes}
+                    onNotesChange={(notes) => handleUpdateProjectAttachment(idx, { notes })}
+                    showTitle={true}
+                    showNotes={true}
+                    removable={true}
+                    onRemove={() => handleRemoveProjectAttachment(idx)}
+                    previewTitle={att.title || form.watch('title')}
+                  />
+                ))}
               </CardContent>
             </Card>
           </div>

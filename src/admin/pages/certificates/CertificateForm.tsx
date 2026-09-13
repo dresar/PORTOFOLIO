@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ModernLoader } from '@/components/ui/ModernLoader';
 import { extractCertificateFieldsFromImageDataUrl, extractCertificateFieldsFromText } from '../../services/aiService';
+import { DocumentAttachmentInput } from '@/admin/components/DocumentAttachmentInput';
 
 export default function CertificateForm() {
   const { id } = useParams();
@@ -40,6 +41,8 @@ export default function CertificateForm() {
     expiryDate: '',
     credentialUrl: '',
     image: '',
+    pdfUrl: '',
+    notes: '',
     verified: false,
     credentialId: '',
     categoryId: 0
@@ -77,6 +80,8 @@ export default function CertificateForm() {
           expiryDate: cert.expiryDate ? new Date(cert.expiryDate).toISOString().split('T')[0] : '',
           credentialUrl: cert.credentialUrl || '',
           image: cert.image || '',
+          pdfUrl: cert.pdfUrl || '',
+          notes: cert.notes || '',
           verified: cert.verified || false,
           credentialId: cert.credentialId || '',
           categoryId: cert.categoryId || 0
@@ -101,7 +106,7 @@ export default function CertificateForm() {
     }
 
     if (!formData.categoryId || formData.categoryId === 0) {
-      toast({ variant: "destructive", title: "Gagal!", description: "Kategori wajib dipilih." });
+      toast({ variant: "destructive", title: "Kategori wajib dipilih." });
       return;
     }
 
@@ -112,6 +117,8 @@ export default function CertificateForm() {
         issueDate: new Date(formData.issueDate),
         expiryDate: formData.expiryDate ? new Date(formData.expiryDate) : null,
         image: formData.image === '' ? null : formData.image,
+        pdfUrl: formData.pdfUrl === '' ? null : formData.pdfUrl,
+        notes: formData.notes === '' ? null : formData.notes,
         credentialUrl: formData.credentialUrl === '' ? null : formData.credentialUrl,
         credentialId: formData.credentialId === '' ? null : formData.credentialId,
       };
@@ -391,10 +398,10 @@ export default function CertificateForm() {
             </div>
 
             <div className="space-y-2">
-              <Label>Gambar</Label>
+              <Label>Gambar Sampul / Pratinjau</Label>
               <div className="flex gap-4 items-start">
                 <div className="flex-1">
-                  <Input value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} placeholder="URL" />
+                  <Input value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} placeholder="URL Gambar" />
                 </div>
                 {formData.image && (
                   <div className="h-20 w-20 rounded border overflow-hidden flex-shrink-0 bg-muted">
@@ -403,6 +410,19 @@ export default function CertificateForm() {
                 )}
               </div>
             </div>
+
+            <DocumentAttachmentInput
+              label="Dokumen / PDF Sertifikat (Opsional - Multi-Halaman Didukung)"
+              value={formData.pdfUrl}
+              onChange={(url) => setFormData({ ...formData, pdfUrl: url })}
+              notesValue={formData.notes}
+              onNotesChange={(notes) => setFormData({ ...formData, notes })}
+              showTitle={false}
+              showNotes={true}
+              notesLabel="Catatan / Keterangan Sertifikat (Opsional)"
+              placeholder="URL file PDF sertifikat (misal: 2 halaman atau transkrip)..."
+              previewTitle={formData.name || 'Sertifikat PDF'}
+            />
             
             <div className="flex justify-end gap-2 pt-4">
               <Button type="button" variant="outline" onClick={() => navigate('/admin/certificates')}>Batal</Button>

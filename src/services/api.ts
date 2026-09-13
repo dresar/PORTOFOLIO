@@ -9,7 +9,6 @@
 
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { useAdminAuthStore } from '../admin/store/adminAuthStore';
-import skillsSeed from '../../skill_category.json';
 
 // ==========================================
 // CONFIGURATION

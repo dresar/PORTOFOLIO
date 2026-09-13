@@ -4,7 +4,7 @@ import { useProjects, useProject } from '@/hooks/useProjects';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { normalizeMediaUrl, sanitizeHtmlContent, safeUrl } from '@/lib/utils';
-import { ArrowLeft, ExternalLink, Github, Sparkles, Loader2, Calendar, ChevronLeft, ChevronRight, Maximize2, Video } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Github, Sparkles, Loader2, Calendar, ChevronLeft, ChevronRight, Maximize2, Video, FileText, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -27,7 +27,7 @@ import { useLocalizedContent } from '@/hooks/useLocalizedContent';
 const ProjectDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { openImagePreviewModal } = useModalStore();
+  const { openImagePreviewModal, openPdfPreviewModal } = useModalStore();
 
   useLayoutEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' as any });
@@ -153,6 +153,18 @@ const ProjectDetail = () => {
       }
     } catch (e) {
       console.warn("Failed to parse project tech stack", e);
+    }
+    return [];
+  }, [project]);
+
+  const projectAttachments = useMemo<any[]>(() => {
+    if (!project || !(project as any).attachments) return [];
+    try {
+      const raw = (project as any).attachments;
+      if (Array.isArray(raw)) return raw;
+      if (typeof raw === 'string') return JSON.parse(raw);
+    } catch (e) {
+      return [];
     }
     return [];
   }, [project]);
@@ -429,6 +441,84 @@ const ProjectDetail = () => {
                 )}
              </div>
           </div>
+
+          {/* License & Certification Documents */}
+          {((project as any).license || (project as any).licenseUrl || projectAttachments.length > 0) && (
+            <div className="mt-12 pt-8 border-t border-border/50">
+              <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-foreground">
+                <ShieldCheck className="w-5 h-5 text-primary" />
+                <span>Lisensi & Dokumen Sertifikasi Proyek</span>
+              </h3>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {((project as any).license || (project as any).licenseUrl) && (
+                  <div className="p-4 rounded-xl border border-border/60 bg-muted/30 flex flex-col justify-between gap-3">
+                    <div className="flex items-start gap-3">
+                      <div className="size-9 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0 border border-emerald-500/20">
+                        <ShieldCheck className="size-5" />
+                      </div>
+                      <div className="min-w-0">
+                        <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Lisensi Proyek</span>
+                        <h4 className="text-sm font-semibold text-foreground">
+                          {(project as any).license || 'Lisensi Resmi Proyek'}
+                        </h4>
+                      </div>
+                    </div>
+
+                    {(project as any).licenseUrl && (
+                      <div className="flex items-center gap-2 pt-2 border-t border-border/40">
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={() => openPdfPreviewModal((project as any).licenseUrl, `${project.title} - Dokumen Lisensi`)}
+                          className="h-8 px-3 text-xs rounded-lg gap-1.5 font-semibold bg-emerald-600 hover:bg-emerald-700 text-white"
+                        >
+                          <FileText className="size-3.5" />
+                          <span>Lihat Dokumen Lisensi</span>
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {projectAttachments.map((att: any, idx: number) => {
+                  return (
+                    <div
+                      key={idx}
+                      className="p-4 rounded-xl border border-border/60 bg-muted/30 flex flex-col justify-between gap-3"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="size-9 rounded-lg bg-red-500/10 text-red-500 flex items-center justify-center shrink-0 border border-red-500/20">
+                          <FileText className="size-5" />
+                        </div>
+                        <div className="min-w-0">
+                          <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Dokumen / Sertifikat</span>
+                          <h4 className="text-sm font-semibold text-foreground truncate">
+                            {att.title || 'Sertifikat Proyek'}
+                          </h4>
+                          {att.notes && <p className="text-xs text-muted-foreground truncate">{att.notes}</p>}
+                        </div>
+                      </div>
+
+                      {att.url && (
+                        <div className="flex items-center gap-2 pt-2 border-t border-border/40">
+                          <Button
+                            type="button"
+                            size="sm"
+                            onClick={() => openPdfPreviewModal(att.url, att.title || `${project.title} - Sertifikat`)}
+                            className="h-8 px-3 text-xs rounded-lg gap-1.5 font-semibold bg-primary text-primary-foreground"
+                          >
+                            <FileText className="size-3.5" />
+                            <span>Lihat PDF</span>
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* Additional Links */}
           {project.links && project.links.length > 0 && (
