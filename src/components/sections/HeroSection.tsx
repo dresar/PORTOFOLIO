@@ -230,7 +230,7 @@ export const HeroSection = () => {
                     height={362}
                     className="w-full h-full object-cover object-top"
                     loading="eager"
-                    fetchPriority="high"
+                    {...({ fetchpriority: 'high' } as any)}
                     decoding="async"
                   />
                 ) : (

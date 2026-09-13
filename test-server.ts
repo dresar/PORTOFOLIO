@@ -1,7 +1,9 @@
 import http from 'http';
 import handler from './vercel-api-archive/index.ts';
 import dotenv from 'dotenv';
+import dns from 'dns';
 
+dns.setDefaultResultOrder('ipv4first');
 dotenv.config();
 
 let port = Number(process.env.PORT || 3004);
