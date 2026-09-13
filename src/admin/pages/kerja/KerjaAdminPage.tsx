@@ -271,13 +271,31 @@ export default function KerjaAdminPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium">Kategori</Label>
-                  <Input
-                    value={editingItem.category}
-                    onChange={e => setEditingItem({ ...editingItem, category: e.target.value })}
-                    className="h-8 text-xs rounded-lg font-mono"
-                    placeholder="perkenalan / tips / qa"
-                    required
-                  />
+                  <div className="flex items-center gap-1.5">
+                    <select
+                      value={['perkenalan', 'tips', 'qa'].includes(editingItem.category) ? editingItem.category : 'custom'}
+                      onChange={e => {
+                        if (e.target.value !== 'custom') {
+                          setEditingItem({ ...editingItem, category: e.target.value });
+                        }
+                      }}
+                      className="h-8 text-xs rounded-lg font-mono bg-muted/40 border border-input px-2.5 text-foreground focus:outline-none focus:ring-1 focus:ring-sky-500"
+                    >
+                      <option value="perkenalan">perkenalan (Perkenalan Diri)</option>
+                      <option value="tips">tips (Panduan HRD)</option>
+                      <option value="qa">qa (Tanya-Jawab Q&A)</option>
+                      <option value="custom">Kustom...</option>
+                    </select>
+                    {!['perkenalan', 'tips', 'qa'].includes(editingItem.category) && (
+                      <Input
+                        value={editingItem.category}
+                        onChange={e => setEditingItem({ ...editingItem, category: e.target.value })}
+                        className="h-8 text-xs rounded-lg font-mono flex-1"
+                        placeholder="Nama kategori..."
+                        required
+                      />
+                    )}
+                  </div>
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium">Urutan Tampil</Label>
