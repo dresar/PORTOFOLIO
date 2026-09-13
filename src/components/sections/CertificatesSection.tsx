@@ -217,25 +217,17 @@ export const CertificatesSection = () => {
                     </div>
 
                     {/* Action Button on Card Bottom */}
-                    <div className="pt-2 sm:pt-3 border-t border-border/40 mt-auto">
+                    <div className="pt-2 sm:pt-2.5 border-t border-border/40 mt-auto">
                       <button 
+                        type="button"
                         onClick={(e) => {
                           e.stopPropagation();
                           openCertificateModal(cert);
                         }}
-                        className="relative group/btn overflow-hidden rounded-lg sm:rounded-xl p-[1.5px] transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] shadow-sm hover:shadow-primary/30 cursor-pointer w-full"
+                        className="w-full inline-flex h-8 sm:h-9 items-center justify-center gap-1.5 rounded-lg bg-primary/10 hover:bg-primary text-primary hover:text-primary-foreground border border-primary/20 text-[11px] sm:text-xs font-semibold transition-all duration-200 active:scale-[0.98] cursor-pointer group"
                       >
-                        <span 
-                          className="absolute inset-[-1000%] animate-[spin_3.5s_linear_infinite]"
-                          style={{
-                            background: 'conic-gradient(from 90deg at 50% 50%, #0000 0%, #38bdf8 50%, #818cf8 75%, #0000 100%)',
-                          }}
-                        />
-                        
-                        <span className="relative flex items-center justify-center gap-1 sm:gap-2 px-2 py-1 sm:px-3 sm:py-2 rounded-[7px] sm:rounded-[10px] bg-card text-[10px] sm:text-xs font-bold text-foreground group-hover/btn:text-primary transition-colors w-full">
-                          <span>{t('certificates.view')}</span>
-                          <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary transition-transform duration-300 group-hover/btn:translate-x-1" />
-                        </span>
+                        <span>{t('certificates.view')}</span>
+                        <ArrowRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
                       </button>
                     </div>
                   </div>

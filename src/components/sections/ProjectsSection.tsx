@@ -314,22 +314,12 @@ export const ProjectsSection = () => {
                     </div>
 
                     <button
+                      type="button"
                       onClick={() => navigate(getLocalizedPath(`/project/${project.id}`))}
-                      className="relative group/btn overflow-hidden rounded-xl p-[1.5px] transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] shadow-md hover:shadow-primary/30 cursor-pointer flex-1 ml-auto"
+                      className="w-full inline-flex h-8 sm:h-9 items-center justify-center gap-1.5 rounded-lg bg-primary/10 hover:bg-primary text-primary hover:text-primary-foreground border border-primary/20 text-[11px] sm:text-xs font-semibold transition-all duration-200 active:scale-[0.98] cursor-pointer group flex-1"
                     >
-                      {/* Rotating Neon Conic Gradient Beam */}
-                      <span 
-                        className="absolute inset-[-1000%] animate-[spin_3.5s_linear_infinite]"
-                        style={{
-                          background: 'conic-gradient(from 90deg at 50% 50%, #0000 0%, #38bdf8 50%, #818cf8 75%, #0000 100%)',
-                        }}
-                      />
-                      
-                      {/* Inner Button Content */}
-                      <span className="relative flex items-center justify-center gap-2 px-4 py-2 rounded-[10px] bg-card text-xs font-bold text-foreground group-hover/btn:text-primary transition-colors w-full">
-                        <span>{t('projects.view_details')}</span>
-                        <ArrowRight className="w-3.5 h-3.5 text-primary transition-transform duration-300 group-hover/btn:translate-x-1" />
-                      </span>
+                      <span>{t('projects.view_details')}</span>
+                      <ArrowRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
                     </button>
                   </div>
                 </div>
