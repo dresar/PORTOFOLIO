@@ -99,23 +99,34 @@ export const ExperienceDetailModal = () => {
         <DialogTitle className="sr-only">Detail Pengalaman - {experienceData?.role} {experienceData?.company ? `di ${experienceData.company}` : ''}</DialogTitle>
         <DialogDescription className="sr-only">Ringkasan rincian pengalaman kerja dan teknologi yang digunakan</DialogDescription>
         <ScrollArea className="max-h-[85vh]">
-          {/* Cover Header */}
-          <div className="relative h-36 md:h-48 bg-primary/10 w-full overflow-hidden">
-            {coverUrl ? (
-              <img 
-                src={normalizeMediaUrl(coverUrl)} 
-                alt={experienceData.company} 
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20">
-                <Briefcase className="w-16 h-16 text-primary/40" />
-              </div>
-            )}
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
+          <div className="relative">
+            <div 
+              className="relative h-36 md:h-48 bg-primary/10 w-full overflow-hidden cursor-zoom-in group"
+              onClick={() => {
+                if (coverUrl) {
+                  openImagePreviewModal(
+                    normalizeMediaUrl(coverUrl),
+                    `${experienceData?.role || experienceData?.title || 'Pengalaman'} - ${experienceData?.company || ''}`
+                  );
+                }
+              }}
+              title="Perbesar gambar cover"
+            >
+              {coverUrl ? (
+                <img 
+                  src={normalizeMediaUrl(coverUrl)} 
+                  alt={experienceData.company} 
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20">
+                  <Briefcase className="w-16 h-16 text-primary/40" />
+                </div>
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
+            </div>
 
-            {/* Logo Avatar */}
-            <div className="absolute -bottom-6 left-6 md:left-8 w-20 h-20 md:w-24 md:h-24 rounded-2xl border-4 border-background bg-white p-2 shadow-xl flex items-center justify-center overflow-hidden z-10">
+            <div className="absolute -bottom-5 sm:-bottom-6 left-5 sm:left-8 size-14 sm:size-20 rounded-xl sm:rounded-2xl border-3 sm:border-4 border-background bg-white p-1 sm:p-2 shadow-xl flex items-center justify-center overflow-hidden z-10">
               {logoUrl ? (
                 <img 
                   src={normalizeMediaUrl(logoUrl)} 
@@ -123,7 +134,7 @@ export const ExperienceDetailModal = () => {
                   className="w-full h-full object-contain"
                 />
               ) : (
-                <Briefcase className="w-10 h-10 text-primary" />
+                <Briefcase className="w-7 h-7 sm:w-10 sm:h-10 text-primary" />
               )}
             </div>
           </div>
