@@ -1,12 +1,13 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ExternalLink, Github, ArrowRight, Loader2, AlertCircle, Sparkles, Eye } from 'lucide-react';
+import { ExternalLink, Github, ArrowRight, Loader2, AlertCircle, Sparkles, Eye, Filter } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useProjects } from '@/hooks/useProjects';
 import { useProjectCategories } from '@/hooks/useProjectCategories';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AISummaryModal } from '@/components/ui/AISummaryModal';
 import { normalizeMediaUrl, safeUrl } from '@/lib/utils';
 import { getLocalizedPath } from '@/lib/i18nNavigation';
@@ -137,19 +138,43 @@ export const ProjectsSection = () => {
           </p>
         </motion.div>
 
-        {/* Filters */}
-        <div className="flex flex-wrap justify-center gap-2 mb-8">
+        <div className="sm:hidden w-full max-w-[260px] mx-auto mb-6">
+          <Select 
+            value={String(activeFilter)} 
+            onValueChange={(val) => handleFilterChange(val === 'all' ? 'all' : Number(val))}
+          >
+            <SelectTrigger className="h-9 w-full rounded-lg border-border/70 bg-card/90 backdrop-blur text-xs font-medium shadow-sm hover:border-primary/50 transition-colors">
+              <div className="flex items-center gap-2 min-w-0">
+                <Filter className="w-3.5 h-3.5 text-primary shrink-0" />
+                <SelectValue placeholder={t('projects.all_projects')} />
+              </div>
+            </SelectTrigger>
+            <SelectContent className="rounded-xl border-border/70 bg-popover/95 backdrop-blur-xl z-50 max-h-64 shadow-xl">
+              {filters.map((filter) => (
+                <SelectItem 
+                  key={filter.id} 
+                  value={String(filter.id)}
+                  className="text-xs py-2 cursor-pointer font-medium"
+                >
+                  {filter.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="hidden sm:flex flex-wrap justify-center gap-1.5 md:gap-2 mb-8">
           {filters.map((filter) => (
             <motion.button
               key={filter.id}
               onClick={() => handleFilterChange(filter.id)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`px-3.5 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-all duration-200 cursor-pointer ${
                 activeFilter === filter.id
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted hover:bg-muted/80 text-muted-foreground'
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'bg-muted/70 hover:bg-muted text-muted-foreground hover:text-foreground'
               }`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
             >
               {filter.label}
             </motion.button>

@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Award, Calendar, ExternalLink, Loader2, ArrowRight, FileText } from 'lucide-react';
+import { Award, Calendar, ExternalLink, Loader2, ArrowRight, FileText, Filter } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { useCertificates } from '@/hooks/useCertificates';
 import { useModalStore } from '@/store/modalStore';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { normalizeMediaUrl, safeUrl } from '@/lib/utils';
 import { certificateCategoriesAPI } from '@/services/api';
 import { useLocalizedContent } from '@/hooks/useLocalizedContent';
@@ -118,12 +119,39 @@ export const CertificatesSection = () => {
           </p>
         </motion.div>
 
-        {/* Category Filter */}
-        <div className="flex flex-wrap justify-center gap-2 mb-8">
+        <div className="sm:hidden w-full max-w-[260px] mx-auto mb-6">
+          <Select 
+            value={String(selectedCategory)} 
+            onValueChange={(val) => handleCategoryChange(val === 'all' ? 'all' : Number(val))}
+          >
+            <SelectTrigger className="h-9 w-full rounded-lg border-border/70 bg-card/90 backdrop-blur text-xs font-medium shadow-sm hover:border-primary/50 transition-colors">
+              <div className="flex items-center gap-2 min-w-0">
+                <Filter className="w-3.5 h-3.5 text-primary shrink-0" />
+                <SelectValue placeholder={t('common.all')} />
+              </div>
+            </SelectTrigger>
+            <SelectContent className="rounded-xl border-border/70 bg-popover/95 backdrop-blur-xl z-50 max-h-64 shadow-xl">
+              <SelectItem value="all" className="text-xs py-2 cursor-pointer font-medium">
+                {t('common.all')}
+              </SelectItem>
+              {categories.map((cat: any) => (
+                <SelectItem 
+                  key={cat.id} 
+                  value={String(cat.id)}
+                  className="text-xs py-2 cursor-pointer font-medium"
+                >
+                  {cat.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="hidden sm:flex flex-wrap justify-center gap-1.5 md:gap-2 mb-8">
           <Button
             variant={selectedCategory === 'all' ? 'default' : 'outline'}
             onClick={() => handleCategoryChange('all')}
-            className="rounded-full"
+            className="rounded-lg h-8 px-3 text-xs font-medium cursor-pointer"
             size="sm"
           >
             {t('common.all')}
@@ -133,7 +161,7 @@ export const CertificatesSection = () => {
               key={cat.id}
               variant={selectedCategory === cat.id ? 'default' : 'outline'}
               onClick={() => handleCategoryChange(cat.id)}
-              className="rounded-full"
+              className="rounded-lg h-8 px-3 text-xs font-medium cursor-pointer"
               size="sm"
             >
               {cat.name}

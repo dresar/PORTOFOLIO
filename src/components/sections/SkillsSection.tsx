@@ -7,8 +7,9 @@ import { useSkills } from '@/hooks/useSkills';
 import { skillCategoriesAPI } from '@/services/api';
 import { normalizeMediaUrl } from '@/lib/utils';
 import { TiltedCard } from '@/components/effects/Cards';
-import { Code2, Palette, Users, Globe, Database, Cloud } from 'lucide-react';
+import { Code2, Palette, Users, Globe, Database, Cloud, Filter } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface SkillCategory {
   id: number;
@@ -142,24 +143,49 @@ export const SkillsSection = () => {
           </p>
         </motion.div>
 
-        {/* Tabs */}
-        <div className="flex flex-wrap justify-center gap-2 mb-6">
+        <div className="sm:hidden w-full max-w-[260px] mx-auto mb-6">
+          <Select 
+            value={activeTab ? String(activeTab) : ''} 
+            onValueChange={(val) => setActiveTab(Number(val))}
+          >
+            <SelectTrigger className="h-9 w-full rounded-lg border-border/70 bg-card/90 backdrop-blur text-xs font-medium shadow-sm hover:border-primary/50 transition-colors">
+              <div className="flex items-center gap-2 min-w-0">
+                <Filter className="w-3.5 h-3.5 text-primary shrink-0" />
+                <SelectValue placeholder={t('sections.skills.title')} />
+              </div>
+            </SelectTrigger>
+            <SelectContent className="rounded-xl border-border/70 bg-popover/95 backdrop-blur-xl z-50 max-h-64 shadow-xl">
+              {effectiveCategories.map((cat) => (
+                <SelectItem 
+                  key={cat.id} 
+                  value={String(cat.id)}
+                  className="text-xs py-2 cursor-pointer font-medium"
+                >
+                  {cat.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="hidden sm:flex flex-wrap justify-center gap-1.5 md:gap-2 mb-6">
           {effectiveCategories.map((category) => {
             const Icon = getIconForCategory(category.slug);
+            const isActive = activeTab === category.id;
             return (
               <motion.button
                 key={category.id}
                 onClick={() => setActiveTab(category.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  activeTab === category.id
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-card text-muted-foreground hover:text-foreground hover:bg-muted'
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-all duration-200 cursor-pointer ${
+                  isActive
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'bg-muted/70 hover:bg-muted text-muted-foreground hover:text-foreground'
                 }`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
               >
-                <Icon className="w-4 h-4" />
-                {category.name}
+                <Icon className="w-3.5 h-3.5" />
+                <span>{category.name}</span>
               </motion.button>
             );
           })}
