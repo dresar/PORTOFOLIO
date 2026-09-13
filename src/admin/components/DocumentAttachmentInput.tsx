@@ -11,15 +11,13 @@ import {
   Trash2,
   Check,
   Loader2,
-  ImageIcon,
   FolderOpen,
   Copy
 } from 'lucide-react';
-import { cloudinaryApi, fileToBase64, formatBytes } from '../services/cloudinaryApi';
+import { mediaApi, fileToBase64, formatBytes } from '../services/mediaApi';
 import { MediaPickerModal } from './MediaPickerModal';
-import { cn } from '@/lib/utils';
 
-export type CdnProvider = 'github' | 'r2' | 'cloudinary';
+export type CdnProvider = 'github';
 
 interface DocumentAttachmentInputProps {
   label?: string;
@@ -52,7 +50,7 @@ export function DocumentAttachmentInput({
   showNotes = false,
   titleLabel = 'Nama Dokumen / Keterangan',
   notesLabel = 'Catatan Tambahan',
-  placeholder = 'URL file atau unggah PDF / Dokumen...',
+  placeholder = '/media/uploads/... atau unggah PDF',
   previewTitle,
   accept = '.pdf,image/*',
   onRemove,
@@ -64,7 +62,6 @@ export function DocumentAttachmentInput({
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [localBlobUrl, setLocalBlobUrl] = useState<string>('');
-  const [provider, setProvider] = useState<CdnProvider>('r2');
   const [isUploading, setIsUploading] = useState(false);
   const [isUploaded, setIsUploaded] = useState(false);
   const [isMediaPickerOpen, setIsMediaPickerOpen] = useState(false);
@@ -102,21 +99,14 @@ export function DocumentAttachmentInput({
       URL.revokeObjectURL(localBlobUrl);
     }
 
-    const isFilePdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
-    if (isFilePdf) {
-      setProvider('r2');
-    } else {
-      setProvider('github');
-    }
-
     const blobUrl = URL.createObjectURL(file);
     setSelectedFile(file);
     setLocalBlobUrl(blobUrl);
     setIsUploaded(false);
 
-    if (showTitle && onTitleChange && (!titleValue || titleValue.trim() === '')) {
-      const cleanName = file.name.replace(/\.[^/.]+$/, '').replace(/[_-]/g, ' ');
-      onTitleChange(cleanName);
+    if (showTitle && onTitleChange && !titleValue) {
+      const suggestedTitle = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
+      onTitleChange(suggestedTitle);
     }
   };
 
@@ -127,10 +117,9 @@ export function DocumentAttachmentInput({
     try {
       const base64 = await fileToBase64(selectedFile);
       const cleanName = selectedFile.name.replace(/\.[^/.]+$/, '').replace(/[^a-zA-Z0-9_-]/g, '-');
-      const result = await cloudinaryApi.uploadFile(base64, {
-        folder: 'documents',
-        public_id: cleanName,
-        provider,
+      const result = await mediaApi.uploadFile(base64, {
+        folder: 'uploads',
+        public_id: cleanName
       });
 
       const uploadedUrl = result.secure_url || result.url;
@@ -139,34 +128,21 @@ export function DocumentAttachmentInput({
       onChange(uploadedUrl);
       setIsUploaded(true);
       toast({
-        title: provider === 'r2' ? '✓ Tersimpan di Cloudflare R2!' : '✓ Tersimpan di GitHub CDN!',
-        description: `${selectedFile.name} berhasil diunggah (${provider.toUpperCase()}).`,
+        title: '✓ Dokumen Terunggah',
+        description: `${selectedFile.name} berhasil disimpan di GitHub Storage.`,
       });
     } catch (err: any) {
       toast({
         variant: 'destructive',
-        title: 'Gagal Mengunggah',
-        description: err?.response?.data?.error || err.message || 'Terjadi kesalahan saat mengunggah file.',
+        title: 'Gagal Unggah',
+        description: err?.response?.data?.error || err.message || 'Terjadi kesalahan saat unggah dokumen.',
       });
     } finally {
       setIsUploading(false);
     }
   };
 
-  const handleOpenPreview = () => {
-    if (!activeUrl) {
-      toast({
-        variant: 'destructive',
-        title: 'Belum Ada File',
-        description: 'Pilih file atau masukkan URL dokumen terlebih dahulu.',
-      });
-      return;
-    }
-    const docTitle = titleValue || previewTitle || (selectedFile ? selectedFile.name : 'Pratinjau Dokumen');
-    openPdfPreviewModal(activeUrl, docTitle);
-  };
-
-  const handleClearSelectedFile = () => {
+  const handleClear = () => {
     if (localBlobUrl && localBlobUrl.startsWith('blob:')) {
       URL.revokeObjectURL(localBlobUrl);
     }
@@ -174,6 +150,12 @@ export function DocumentAttachmentInput({
     setLocalBlobUrl('');
     setIsUploaded(false);
     if (fileInputRef.current) fileInputRef.current.value = '';
+    onChange('');
+  };
+
+  const handleOpenPreview = () => {
+    if (!activeUrl) return;
+    openPdfPreviewModal(activeUrl, previewTitle || titleValue || selectedFile?.name || 'Dokumen');
   };
 
   const handleCopy = async () => {
@@ -185,20 +167,13 @@ export function DocumentAttachmentInput({
   };
 
   return (
-    <div className="rounded-lg border border-border/70 bg-card/50 p-3 sm:p-3.5 space-y-3 shadow-xs">
+    <div className="rounded-lg border border-border/80 bg-card/60 p-3 space-y-3 shadow-xs">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
-          <div className="size-7 rounded-md bg-primary/10 text-primary flex items-center justify-center border border-primary/20 shrink-0">
-            {isPdf ? <FileText className="size-3.5" /> : <ImageIcon className="size-3.5" />}
+          <div className="size-7 rounded-md bg-red-500/10 text-red-500 flex items-center justify-center border border-red-500/20 shrink-0">
+            <FileText className="size-3.5" />
           </div>
-          <div className="min-w-0 flex items-center gap-1.5">
-            <span className="text-xs font-semibold text-foreground tracking-wide block truncate">{label}</span>
-            {isPdf && (
-              <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-red-500/10 text-red-500 border border-red-500/20 shrink-0">
-                PDF
-              </span>
-            )}
-          </div>
+          <span className="text-xs font-semibold text-foreground tracking-wide truncate">{label}</span>
         </div>
 
         <div className="flex items-center gap-1 shrink-0">
@@ -208,7 +183,7 @@ export function DocumentAttachmentInput({
             size="sm"
             onClick={() => setIsMediaPickerOpen(true)}
             className="h-7 px-2 text-[11px] font-medium rounded-lg gap-1 border-border/80 hover:bg-muted active:scale-[0.98]"
-            title="Pilih dari Media Library"
+            title="Pilih dari Library"
           >
             <FolderOpen className="size-3 text-muted-foreground" />
             <span className="hidden sm:inline">Library</span>
@@ -217,14 +192,13 @@ export function DocumentAttachmentInput({
           {activeUrl && (
             <Button
               type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleOpenPreview}
-              className="h-7 px-2 text-[11px] font-medium rounded-lg gap-1 border-primary/30 text-primary hover:bg-primary/10 active:scale-[0.98]"
-              title="Pratinjau Dokumen"
+              variant="ghost"
+              size="icon"
+              onClick={handleClear}
+              className="size-7 text-muted-foreground hover:text-destructive rounded-lg active:scale-[0.98]"
+              title="Reset File"
             >
-              <Eye className="size-3" />
-              <span className="hidden sm:inline">Pratinjau</span>
+              <Trash2 className="size-3.5" />
             </Button>
           )}
 
@@ -234,83 +208,14 @@ export function DocumentAttachmentInput({
               variant="ghost"
               size="icon"
               onClick={onRemove}
-              className="size-7 text-muted-foreground hover:text-destructive rounded-lg active:scale-[0.98]"
-              title="Hapus Lampiran"
+              className="size-7 text-destructive hover:bg-destructive/10 rounded-lg active:scale-[0.98]"
+              title="Hapus Lampiran Ini"
             >
               <Trash2 className="size-3.5" />
             </Button>
           )}
         </div>
       </div>
-
-      <div className="space-y-1">
-        <div className="flex items-center justify-between text-[10px] text-muted-foreground px-0.5">
-          <span className="font-medium">Target CDN</span>
-          <span className="font-normal text-muted-foreground/80">
-            {provider === 'r2' && '⚡ Default PDF (Cloudflare R2)'}
-            {provider === 'github' && '⚡ Default Gambar (jsDelivr)'}
-            {provider === 'cloudinary' && '⚡ Cloudinary Storage'}
-          </span>
-        </div>
-        <div className="grid grid-cols-3 p-0.5 bg-muted/60 rounded-lg border border-border/60 text-center gap-0.5">
-          <button
-            type="button"
-            onClick={() => setProvider('r2')}
-            className={cn(
-              'flex items-center justify-center gap-1.5 h-7 rounded-md text-[11px] font-medium transition-all cursor-pointer active:scale-[0.98]',
-              provider === 'r2'
-                ? 'bg-background text-foreground shadow-xs border border-border/80 font-semibold'
-                : 'text-muted-foreground hover:text-foreground hover:bg-background/40'
-            )}
-            title="Cloudflare R2 Bucket"
-          >
-            <span className="size-1.5 rounded-full bg-orange-500 shrink-0" />
-            <span className="truncate">Cloudflare R2</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setProvider('github')}
-            className={cn(
-              'flex items-center justify-center gap-1.5 h-7 rounded-md text-[11px] font-medium transition-all cursor-pointer active:scale-[0.98]',
-              provider === 'github'
-                ? 'bg-background text-foreground shadow-xs border border-border/80 font-semibold'
-                : 'text-muted-foreground hover:text-foreground hover:bg-background/40'
-            )}
-            title="GitHub CDN (jsDelivr Edge)"
-          >
-            <span className="size-1.5 rounded-full bg-emerald-500 shrink-0" />
-            <span className="truncate">GitHub</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setProvider('cloudinary')}
-            className={cn(
-              'flex items-center justify-center gap-1.5 h-7 rounded-md text-[11px] font-medium transition-all cursor-pointer active:scale-[0.98]',
-              provider === 'cloudinary'
-                ? 'bg-background text-foreground shadow-xs border border-border/80 font-semibold'
-                : 'text-muted-foreground hover:text-foreground hover:bg-background/40'
-            )}
-            title="Cloudinary Media Storage"
-          >
-            <span className="size-1.5 rounded-full bg-sky-500 shrink-0" />
-            <span className="truncate">Cloudinary</span>
-          </button>
-        </div>
-      </div>
-
-      {showTitle && onTitleChange && (
-        <div className="space-y-1">
-          <Label className="text-xs font-medium text-muted-foreground">{titleLabel}</Label>
-          <Input
-            value={titleValue || ''}
-            onChange={(e) => onTitleChange(e.target.value)}
-            placeholder="Contoh: Sertifikat Akreditasi BAN-PT Baik Sekali (2025 - 2030)"
-            className="h-8 text-xs rounded-lg border-border/70 focus-visible:ring-1 focus-visible:ring-primary/40"
-          />
-        </div>
-      )}
 
       <input
         ref={fileInputRef}
@@ -320,91 +225,161 @@ export function DocumentAttachmentInput({
         className="hidden"
       />
 
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => fileInputRef.current?.click()}
-          className="h-8 px-3 text-xs rounded-lg gap-1.5 shrink-0 font-medium active:scale-[0.98] border-border/80 hover:bg-muted"
-        >
-          <Upload className="size-3.5" />
-          <span>Pilih Berkas PDF / Gambar</span>
-        </Button>
-
-        <div className="relative flex-1 min-w-0">
+      {showTitle && onTitleChange && (
+        <div className="space-y-1">
+          <Label className="text-[11px] font-medium text-muted-foreground">{titleLabel}</Label>
           <Input
-            value={value || ''}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder={placeholder}
-            className="h-8 w-full pr-8 text-xs font-mono rounded-lg border-border/70 focus-visible:ring-1 focus-visible:ring-primary/40 truncate"
+            value={titleValue || ''}
+            onChange={(e) => onTitleChange(e.target.value)}
+            placeholder="Contoh: Ijazah Sarjana, Sertifikat Akreditasi BAN-PT"
+            className="h-8 text-xs rounded-lg border-border/80"
           />
-          {value && (
-            <button
-              type="button"
-              onClick={handleCopy}
-              className="absolute right-1 top-1 text-muted-foreground hover:text-foreground size-6 flex items-center justify-center rounded-md hover:bg-muted/80 transition-all cursor-pointer active:scale-95"
-              title="Salin URL"
-            >
-              {copied ? <Check className="size-3 text-emerald-500" /> : <Copy className="size-3" />}
-            </button>
-          )}
         </div>
-      </div>
+      )}
 
-      {selectedFile && (
-        <div className="flex items-center justify-between gap-2 p-2.5 rounded-lg bg-muted/40 border border-border/70 text-xs">
-          <div className="flex items-center gap-2 min-w-0">
-            <FileText className="size-4 text-primary shrink-0" />
-            <div className="min-w-0">
-              <p className="font-medium text-foreground truncate">{selectedFile.name}</p>
-              <p className="text-[10px] text-muted-foreground">
-                {formatBytes(selectedFile.size)} • Target: <strong className="text-foreground uppercase">{provider}</strong>
-              </p>
+      {selectedFile ? (
+        <div className="rounded-lg border border-border/80 bg-muted/40 p-2.5 space-y-2">
+          <div className="flex items-center justify-between gap-2 min-w-0">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="size-7 rounded-md bg-red-500/10 text-red-500 flex items-center justify-center shrink-0">
+                <FileText className="size-3.5" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-semibold text-foreground truncate">{selectedFile.name}</p>
+                <p className="text-[10px] text-muted-foreground">
+                  {formatBytes(selectedFile.size)} • Storage: <strong className="text-foreground">GitHub</strong>
+                </p>
+              </div>
             </div>
+
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                setSelectedFile(null);
+                setLocalBlobUrl('');
+              }}
+              className="size-6 text-muted-foreground hover:text-destructive rounded-md shrink-0"
+              title="Batalkan File"
+            >
+              <Trash2 className="size-3" />
+            </Button>
           </div>
 
-          <div className="flex items-center gap-1 shrink-0">
+          <div className="flex items-center gap-1.5 pt-0.5">
             {!isUploaded ? (
               <Button
                 type="button"
                 size="sm"
                 onClick={handleUpload}
                 disabled={isUploading}
-                className="h-7 px-2.5 text-[11px] rounded-lg gap-1 font-semibold active:scale-[0.98]"
+                className="h-7 flex-1 px-2.5 text-[11px] rounded-lg gap-1.5 font-semibold active:scale-[0.98]"
               >
                 {isUploading ? <Loader2 className="size-3 animate-spin" /> : <Upload className="size-3" />}
-                <span>{isUploading ? 'Mengunggah...' : `Upload ke ${provider.toUpperCase()}`}</span>
+                <span className="truncate">{isUploading ? 'Mengunggah...' : 'Unggah Dokumen'}</span>
               </Button>
             ) : (
-              <span className="inline-flex items-center gap-1 text-[11px] text-emerald-500 font-semibold px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20">
+              <div className="flex-1 inline-flex items-center justify-center gap-1 h-7 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold px-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
                 <Check className="size-3" />
-                <span>Tersimpan</span>
-              </span>
+                <span>Sukses Tersimpan</span>
+              </div>
             )}
 
             <Button
               type="button"
-              variant="ghost"
-              size="icon"
-              onClick={handleClearSelectedFile}
-              className="size-7 rounded-lg text-muted-foreground hover:text-foreground active:scale-[0.98]"
-              title="Batal pilih file"
+              variant="outline"
+              size="sm"
+              onClick={() => fileInputRef.current?.click()}
+              className="h-7 px-2.5 text-[11px] rounded-lg text-muted-foreground hover:text-foreground active:scale-[0.98]"
             >
-              <Trash2 className="size-3" />
+              Ganti
             </Button>
           </div>
         </div>
+      ) : activeUrl ? (
+        <div className="rounded-lg border border-border/80 bg-muted/30 p-2.5 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="size-8 rounded-md bg-red-500/10 text-red-500 border border-red-500/20 flex items-center justify-center shrink-0">
+              <FileText className="size-4" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs font-medium text-foreground truncate max-w-[140px] sm:max-w-xs">{titleValue || activeUrl.split('/').pop() || 'Dokumen PDF'}</p>
+              <div className="flex items-center gap-1 mt-0.5">
+                <span className="size-1.5 rounded-full shrink-0 bg-emerald-500" />
+                <span className="text-[10px] text-muted-foreground">GitHub Storage</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1 shrink-0">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleOpenPreview}
+              className="h-7 px-2 text-[11px] rounded-lg gap-1 border-primary/30 text-primary hover:bg-primary/10 active:scale-[0.98]"
+              title="Buka Pratinjau PDF"
+            >
+              <Eye className="size-3" />
+              <span className="hidden sm:inline">Pratinjau</span>
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => fileInputRef.current?.click()}
+              className="size-7 rounded-lg text-muted-foreground hover:text-foreground active:scale-[0.98]"
+              title="Ganti Berkas"
+            >
+              <Upload className="size-3" />
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <div
+          onClick={() => fileInputRef.current?.click()}
+          className="rounded-lg border border-dashed border-border/80 hover:border-primary/50 bg-muted/15 hover:bg-muted/30 transition-all p-3 text-center cursor-pointer flex flex-col items-center justify-center gap-1 py-3"
+        >
+          <div className="size-7 rounded-md bg-muted flex items-center justify-center text-muted-foreground">
+            <Upload className="size-3.5" />
+          </div>
+          <p className="text-xs font-medium text-foreground">
+            Pilih dokumen PDF atau <span className="text-primary underline underline-offset-2">telusuri</span>
+          </p>
+          <p className="text-[10px] text-muted-foreground">
+            Format PDF, Dokumen (Maks. 50MB)
+          </p>
+        </div>
       )}
 
+      <div className="relative flex items-center w-full">
+        <Input
+          value={value || ''}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className="h-8 w-full pr-8 text-xs font-mono rounded-lg border-border/70 focus-visible:ring-1 focus-visible:ring-primary/40 truncate"
+        />
+        {value && (
+          <button
+            type="button"
+            onClick={handleCopy}
+            className="absolute right-1 text-muted-foreground hover:text-foreground size-6 flex items-center justify-center rounded-md hover:bg-muted/80 transition-all cursor-pointer active:scale-95"
+            title="Salin URL"
+          >
+            {copied ? <Check className="size-3 text-emerald-500" /> : <Copy className="size-3" />}
+          </button>
+        )}
+      </div>
+
       {showNotes && onNotesChange && (
-        <div className="space-y-1">
-          <Label className="text-xs font-medium text-muted-foreground">{notesLabel}</Label>
+        <div className="space-y-1 pt-1">
+          <Label className="text-[11px] font-medium text-muted-foreground">{notesLabel}</Label>
           <Input
             value={notesValue || ''}
             onChange={(e) => onNotesChange(e.target.value)}
-            placeholder="Catatan tambahan (misal: Berlaku hingga 2030 / Lisensi MIT)"
-            className="h-8 text-xs rounded-lg border-border/70 focus-visible:ring-1 focus-visible:ring-primary/40"
+            placeholder="Keterangan tambahan dokumen..."
+            className="h-8 text-xs rounded-lg border-border/80"
           />
         </div>
       )}

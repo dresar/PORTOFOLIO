@@ -19,30 +19,29 @@ export function normalizeMediaUrl(raw?: string | null, options?: MediaUrlOptions
   let url = raw.trim();
   if (!url) return "";
 
-  const width = options?.width;
-  const quality = options?.quality || 80;
+  if (url.includes('cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/')) {
+    return `/media/${url.split('public/')[1]}`;
+  }
 
-  // Articles images in public/uploads/articles are served directly from the same domain
+  if (url.startsWith('/media/') || url.startsWith('media/')) {
+    return `/${url.replace(/^\/+/, '')}`;
+  }
+
+  if (url.startsWith('/uploads/') || url.startsWith('uploads/')) {
+    return `/media/${url.replace(/^\/+/, '')}`;
+  }
+
   if (url.includes('uploads/articles')) {
     const match = url.match(/uploads\/articles\/.+$/);
     if (match) {
-      return `/${match[0]}`;
+      return `/media/${match[0]}`;
     }
     return url;
   }
 
-  // Cloudinary optimization (f_auto, q_auto:eco, width resizing)
-  if (url.includes('res.cloudinary.com') && url.includes('/image/upload/')) {
-    if (!url.includes('/image/upload/f_auto') && !url.includes('/image/upload/q_auto')) {
-      const w = width || 600;
-      const q = quality ? `q_${quality}` : 'q_auto:eco';
-      const transform = `f_auto,${q},c_limit,w_${w}`;
-      url = url.replace('/image/upload/', `/image/upload/${transform}/`);
-    }
-    return url;
-  }
+  const width = options?.width;
+  const quality = options?.quality || 80;
 
-  // ImageKit optimization (tr:w-*, q-*, f-auto)
   if (url.includes('ik.imagekit.io')) {
     if (!url.includes('tr=') && !url.includes('/tr:')) {
       const w = width || 600;
@@ -52,7 +51,6 @@ export function normalizeMediaUrl(raw?: string | null, options?: MediaUrlOptions
     return url;
   }
 
-  // Unsplash images
   if (url.includes('images.unsplash.com')) {
     if (width) {
       const sep = url.includes('?') ? '&' : '?';
@@ -61,7 +59,6 @@ export function normalizeMediaUrl(raw?: string | null, options?: MediaUrlOptions
     return url;
   }
 
-  // Heavy third-party images (Wikimedia, Vecteezy, Google Content) proxy via wsrv.nl
   if (
     (url.startsWith('http://') || url.startsWith('https://')) &&
     !url.endsWith('.svg') &&
@@ -72,7 +69,6 @@ export function normalizeMediaUrl(raw?: string | null, options?: MediaUrlOptions
     return `https://wsrv.nl/?url=${url.replace(/^https?:\/\//, '')}&w=${w}&output=webp&q=${quality}`;
   }
 
-  // If it's already a full URL (http:// or https://)
   if (url.startsWith('http://') || url.startsWith('https://')) {
      return url;
   }
@@ -81,10 +77,8 @@ export function normalizeMediaUrl(raw?: string | null, options?: MediaUrlOptions
       url = url.replace(import.meta.env.VITE_BACKEND_URL, "");
   }
 
-  // Handle paths starting with /media, /static, /uploads or just filenames
   const baseUrl = BACKEND_BASE_URL.endsWith('/') ? BACKEND_BASE_URL.slice(0, -1) : BACKEND_BASE_URL;
   
-  // Clean up leading slash
   if (url.startsWith('/')) {
     url = url.substring(1);
   }
@@ -162,12 +156,13 @@ export function safeUrl(raw?: string | null, fallback = '#'): string {
   return fallback;
 }
 
-export function getCloudinaryVideoThumbnail(url?: string | null): string {
+export function getVideoThumbnail(url?: string | null): string {
   if (!url) return '';
   if (url.includes('/video/upload/')) {
-    // Cloudinary automatically generates an image frame poster thumbnail when changing video extension to .jpg
     return url.replace(/\.(mp4|webm|mov|mkv|avi)$/i, '.jpg');
   }
   return url;
 }
+
+export const getCloudinaryVideoThumbnail = getVideoThumbnail;
 

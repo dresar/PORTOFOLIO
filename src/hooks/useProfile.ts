@@ -9,8 +9,8 @@ export const DEFAULT_PROFILE = {
   role: '["Senior Fullstack Developer","System Analyst","Artificial Intelligence (AI) Engineer"]',
   bio: "Saya adalah lulusan Program Studi Teknologi Informasi Universitas Muhammadiyah Sumatera Utara (UMSU) yang memiliki minat besar dalam bidang teknologi, pengembangan perangkat lunak, dan transformasi digital. Saya memiliki kemampuan dalam pengembangan aplikasi web dan mobile, pengelolaan basis data, serta pemanfaatan teknologi untuk menyelesaikan berbagai permasalahan.",
   shortBio: "Membantu bisnis tumbuh melalui teknologi yang tepat",
-  heroImage: "https://res.cloudinary.com/dpgybasuh/image/upload/v1783171293/portfolio/j8e5fm2qiwwbnhvu63u9.jpg",
-  aboutImage: "https://res.cloudinary.com/dpgybasuh/image/upload/v1783171293/portfolio/j8e5fm2qiwwbnhvu63u9.jpg",
+  heroImage: "/media/uploads/about_profile.jpg",
+  aboutImage: "/media/uploads/about_profile.jpg",
   resumeUrl: "https://go.fliplink.me/view/C0F05869-43CD-4124-9E6D-A7F9F9FC807A",
   location: "3.6163, 98.6744",
   email: "eka.ckp16799@gmail.com",
@@ -27,7 +27,7 @@ export const useProfile = () => {
     queryKey: ['profile'],
     queryFn: profileAPI.get,
     initialData: () => safeJsonParse(localStorage.getItem('profile_cache'), DEFAULT_PROFILE),
-    retry: false, // Don't retry if failed, just show fallback
+    retry: false,
     refetchOnWindowFocus: false,
   });
 

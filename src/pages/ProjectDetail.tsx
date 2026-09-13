@@ -130,7 +130,7 @@ const ProjectDetail = () => {
 
   const isDirectVideo = useMemo(() => {
     if (!rawVideoUrl) return false;
-    return /\.(mp4|webm|mov|mkv|avi)($|\?)/i.test(rawVideoUrl) || rawVideoUrl.includes('/video/upload/') || rawVideoUrl.includes('cloudinary.com');
+    return /\.(mp4|webm|mov|mkv|avi)($|\?)/i.test(rawVideoUrl) || rawVideoUrl.includes('/video/upload/');
   }, [rawVideoUrl]);
 
   const youtubeEmbedUrl = useMemo(() => {
@@ -390,7 +390,6 @@ const ProjectDetail = () => {
             </div>
           </div>
 
-          {/* Video Showcase Section (Cloudinary CDN / MP4 / YouTube) */}
           {rawVideoUrl && (
             <div className="mt-10 pt-8 border-t border-border/50 space-y-4">
               <h3 className="text-xl font-bold flex items-center gap-2 text-foreground">

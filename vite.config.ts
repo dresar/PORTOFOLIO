@@ -137,19 +137,6 @@ export default defineConfig(({ mode }) => ({
               cacheName: 'github-cdn-cache',
               expiration: {
                 maxEntries: 200,
-                maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
-              },
-              cacheableResponse: { statuses: [0, 200] }
-            }
-          },
-          {
-            // Cache Cloudinary images (fallback compatibility)
-            urlPattern: /^https:\/\/res\.cloudinary\.com\/.*/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'cloudinary-cache',
-              expiration: {
-                maxEntries: 100,
                 maxAgeSeconds: 60 * 60 * 24 * 30
               },
               cacheableResponse: { statuses: [0, 200] }

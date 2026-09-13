@@ -27,14 +27,12 @@ export async function onRequest(context: any) {
 
   const isProjectsEndpoint = url.pathname.startsWith('/api/projects');
 
-  // Purge any stale cache for /api/projects
   if (cache && isProjectsEndpoint) {
     try {
       context.waitUntil(cache.delete(request));
     } catch (e) {}
   }
 
-  // 1. Instant Edge Cache lookup for public GET requests (except projects)
   if (cache && isGet && !hasAuth && !isProjectsEndpoint) {
     try {
       const cachedResponse = await cache.match(request);
@@ -49,7 +47,6 @@ export async function onRequest(context: any) {
     } catch (e) {}
   }
   
-  // Read body text first
   let bodyData = '';
   if (isMutation) {
     try {
@@ -59,7 +56,6 @@ export async function onRequest(context: any) {
     }
   }
   
-  // Parse body text if JSON
   let parsedBody: any = null;
   if (bodyData) {
     try {
@@ -69,7 +65,6 @@ export async function onRequest(context: any) {
     }
   }
   
-  // Create mock req
   const req = {
     method: request.method,
     url: url.pathname + url.search,
@@ -93,7 +88,6 @@ export async function onRequest(context: any) {
     let body: any = null;
     let headersSent = false;
 
-    // Create mock res
     const res = {
       get statusCode() { return statusCode; },
       set statusCode(code) { statusCode = code; },
@@ -106,7 +100,6 @@ export async function onRequest(context: any) {
         body = data;
         const response = new Response(body, { status: statusCode, headers });
 
-        // If this was a successful mutation, purge cache for this resource endpoint
         if (cache && isMutation && (statusCode >= 200 && statusCode < 300)) {
           try {
             const getReq = new Request(url.origin + url.pathname, { method: 'GET' });
@@ -114,7 +107,6 @@ export async function onRequest(context: any) {
           } catch (e) {}
         }
 
-        // Cache successful public GET responses at Cloudflare Edge (except projects)
         if (cache && isGet && !hasAuth && !isProjectsEndpoint && statusCode === 200) {
           try {
             const cacheControl = headers.get('Cache-Control');

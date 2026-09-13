@@ -19,12 +19,8 @@ import { IncomingMessage, ServerResponse } from 'node:http';
 import jwt from '@tsndr/cloudflare-worker-jwt';
 import bcrypt from 'bcryptjs';
 import crypto from 'node:crypto';
-
-// --- 1. CONFIGURATION ---
-
-
-
-
+import fs from 'node:fs';
+import path from 'node:path';
 
 const GITHUB_UPLOADS_PATH = 'public/uploads';
 
@@ -36,9 +32,7 @@ export function getEnv(key: string, defaultVal = ''): string {
     DATABASE_URL: 'postgresql://neondb_owner:npg_4IsokTFSh0Gf@ep-lucky-meadow-a93qe14n-pooler.gwc.azure.neon.tech/neondb?sslmode=require&channel_binding=require',
     JWT_SECRET: 'e79c2980b182d8c39e23652f75a7c2b6941fa44a958e72ef0d3a57e3f94bd2d1',
     GITHUB_REPO: 'dresar/PORTOFOLIO',
-    GITHUB_BRANCH: 'main',
-    R2_BUCKET_NAME: 'storage',
-    R2_PUBLIC_DOMAIN: 'https://r2.ekasyarif.my.id'
+    GITHUB_BRANCH: 'main'
   };
   return defaults[key] || defaultVal;
 }
@@ -469,23 +463,7 @@ const ensureSchema = async () => {
             await client.query(`ALTER TABLE project ADD COLUMN IF NOT EXISTS "summaries" text DEFAULT '[]'`);
             await client.query(`ALTER TABLE project ADD COLUMN IF NOT EXISTS "custom_created_at" timestamp`);
             await client.query(`ALTER TABLE experience ADD COLUMN IF NOT EXISTS "coverImage" text`);
-            await client.query(`ALTER TABLE experience ADD COLUMN IF NOT EXISTS "cover_image" text`);
             await client.query(`ALTER TABLE experience ADD COLUMN IF NOT EXISTS "gallery" text DEFAULT '[]'`);
-            // Cloudinary config table (multi-account, max 5)
-            await client.query(`
-                CREATE TABLE IF NOT EXISTS cloudinary_config (
-                    id SERIAL PRIMARY KEY,
-                    cloud_name TEXT NOT NULL,
-                    api_key TEXT NOT NULL,
-                    api_secret TEXT NOT NULL,
-                    label TEXT NOT NULL DEFAULT '',
-                    is_active BOOLEAN NOT NULL DEFAULT false,
-                    created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-                    updated_at TIMESTAMP DEFAULT NOW() NOT NULL
-                );
-            `);
-            await client.query(`ALTER TABLE cloudinary_config ADD COLUMN IF NOT EXISTS label TEXT NOT NULL DEFAULT ''`);
-            await client.query(`ALTER TABLE cloudinary_config ADD COLUMN IF NOT EXISTS is_active BOOLEAN NOT NULL DEFAULT false`);
         } finally {
             client.release();
         }
@@ -618,8 +596,60 @@ export default async function handler(req: any, res: any) {
     const { url } = req;
     const urlObj = new URL(url, `http://${req.headers.host}`);
     const query = Object.fromEntries(urlObj.searchParams.entries());
-    
-    // Parse Path
+
+    if (urlObj.pathname.startsWith('/media/')) {
+      let subpath = urlObj.pathname.replace(/^\/media\/?/, '');
+      if (subpath.startsWith('public/')) subpath = subpath.slice(7);
+
+      const localFsPath = path.join(process.cwd(), 'public', subpath);
+      const ext = subpath.split('.').pop()?.toLowerCase() || '';
+      const mimeMap: Record<string, string> = {
+        pdf: 'application/pdf',
+        png: 'image/png',
+        jpg: 'image/jpeg',
+        jpeg: 'image/jpeg',
+        webp: 'image/webp',
+        svg: 'image/svg+xml',
+        gif: 'image/gif',
+        mp4: 'video/mp4',
+        webm: 'video/webm'
+      };
+
+      if (fs.existsSync(localFsPath) && fs.statSync(localFsPath).isFile()) {
+        res.setHeader('Content-Type', mimeMap[ext] || 'application/octet-stream');
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.statusCode = 200;
+        fs.createReadStream(localFsPath).pipe(res);
+        return;
+      }
+
+      const upstreamUrl = `https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/${subpath}`;
+      const fallbackUrl = `https://raw.githubusercontent.com/dresar/PORTOFOLIO/main/public/${subpath}`;
+      try {
+        let ghRes = await fetch(upstreamUrl, { headers: { 'User-Agent': 'Portfolio-Media-Proxy' } });
+        if (!ghRes.ok) {
+          ghRes = await fetch(fallbackUrl, { headers: { 'User-Agent': 'Portfolio-Media-Proxy' } });
+        }
+        if (!ghRes.ok) {
+          res.statusCode = ghRes.status;
+          res.end('Media Not Found');
+          return;
+        }
+        res.setHeader('Content-Type', mimeMap[ext] || ghRes.headers.get('content-type') || 'application/octet-stream');
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.statusCode = 200;
+        const arrayBuf = await ghRes.arrayBuffer();
+        res.end(Buffer.from(arrayBuf));
+        return;
+      } catch (err: any) {
+        res.statusCode = 500;
+        res.end('Failed to proxy media: ' + err.message);
+        return;
+      }
+    }
+
     let resourceName = (req.query?.resource || query.resource) as string;
     let id = (req.query?.id || query.id) as string;
     let action = (req.query?.action || query.action) as string;
@@ -1238,29 +1268,27 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
             throw new Error(`GitHub CDN Upload Failed (${ghRes.status}): ${parsedMessage}`);
         }
 
-        const ghData: any = await ghRes.json();
-        const cdnUrl = `https://cdn.jsdelivr.net/gh/${repo}@${branch}/${targetPath}`;
-        const rawUrl = ghData.content?.download_url || `https://raw.githubusercontent.com/${repo}/${branch}/${targetPath}`;
+        const cleanUrl = `/media/uploads/${filename}`;
+        try {
+            const localDest = path.join(process.cwd(), 'public', 'uploads', filename);
+            fs.mkdirSync(path.dirname(localDest), { recursive: true });
+            fs.writeFileSync(localDest, buffer);
+        } catch (e) {}
 
         return {
             public_id: filename,
-            secure_url: cdnUrl,
-            url: cdnUrl,
-            raw_url: rawUrl,
-            local_url: `/uploads/${filename}`,
-            width: 800,
-            height: 600,
+            secure_url: cleanUrl,
+            url: cleanUrl,
             format: ext,
             bytes: buffer.length,
-            resource_type: mimeType.startsWith('video') ? 'video' : 'image',
+            resource_type: mimeType.startsWith('video') ? 'video' : (mimeType.includes('pdf') ? 'raw' : 'image'),
             created_at: new Date().toISOString(),
-            _account: `GitHub CDN (${repo})`
+            provider: 'github'
         };
     }
 
     async function listGitHubCDNAssets() {
         const assets: any[] = [];
-        const seenNames = new Set<string>();
         const token = getGhToken();
         const repo = getGhRepo();
         const branch = getGhBranch();
@@ -1281,31 +1309,27 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
                 if (Array.isArray(items)) {
                     for (const item of items) {
                         if (item.type === 'file' && item.name !== '.gitkeep') {
-                            seenNames.add(item.name);
                             const ext = item.name.split('.').pop()?.toLowerCase() || 'png';
                             const isVideo = ['mp4', 'webm', 'mov'].includes(ext);
-                            const cdnUrl = `https://cdn.jsdelivr.net/gh/${repo}@${branch}/${item.path}`;
+                            const cleanUrl = `/media/uploads/${item.name}`;
                             assets.push({
                                 public_id: item.name,
-                                secure_url: cdnUrl,
-                                url: cdnUrl,
-                                raw_url: item.download_url,
+                                secure_url: cleanUrl,
+                                url: cleanUrl,
                                 sha: item.sha,
                                 width: 800,
                                 height: 600,
                                 format: ext,
                                 bytes: item.size || 0,
-                                resource_type: isVideo ? 'video' : 'image',
+                                resource_type: isVideo ? 'video' : (ext === 'pdf' ? 'raw' : 'image'),
                                 created_at: new Date().toISOString(),
-                                tags: ['github-cdn']
+                                provider: 'github'
                             });
                         }
                     }
                 }
             }
-        } catch (err) {
-            console.warn('GitHub list warning:', err);
-        }
+        } catch (err) {}
 
         assets.sort((a, b) => b.public_id.localeCompare(a.public_id));
         return assets;
@@ -1316,6 +1340,13 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
         const repo = getGhRepo();
         const branch = getGhBranch();
         if (!token) return 'error: GITHUB_TOKEN missing';
+
+        try {
+            const localDest = path.join(process.cwd(), 'public', 'uploads', publicId);
+            if (fs.existsSync(localDest)) {
+                fs.unlinkSync(localDest);
+            }
+        } catch (e) {}
 
         let fileSha = sha;
         const targetPath = `${GITHUB_UPLOADS_PATH}/${publicId}`;
@@ -1362,214 +1393,21 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
         return ghResult;
     }
 
-    const getCfToken = () => getEnv('CLOUDFLARE_API_TOKEN');
-    const getCfAccountId = () => getEnv('CLOUDFLARE_ACCOUNT_ID');
-    const getR2Bucket = () => getEnv('R2_BUCKET_NAME', 'storage');
-    const getR2Domain = () => getEnv('R2_PUBLIC_DOMAIN', 'https://r2.ekasyarif.my.id').replace(/\/+$/, '');
-
-    async function uploadToCloudflareR2(fileBase64: string, customPublicId?: string, folder = 'documents') {
-        const token = getCfToken();
-        const accountId = getCfAccountId();
-        const bucket = getR2Bucket();
-        const publicDomain = getR2Domain();
-
-        if (!token || !accountId) {
-            throw new Error('CLOUDFLARE_API_TOKEN atau CLOUDFLARE_ACCOUNT_ID belum dikonfigurasi.');
-        }
-
-        let mimeType = 'application/pdf';
-        let base64Data = fileBase64;
-        let ext = 'pdf';
-
-        if (fileBase64.includes(';base64,')) {
-            const parts = fileBase64.split(';base64,');
-            const prefix = parts[0];
-            base64Data = parts.slice(1).join(';base64,').replace(/\s+/g, '');
-            const mimeMatch = prefix.match(/data:([^;]+)/);
-            if (mimeMatch) {
-                mimeType = mimeMatch[1].toLowerCase();
-            }
-        } else {
-            base64Data = base64Data.replace(/\s+/g, '');
-        }
-
-        if (mimeType.includes('pdf')) ext = 'pdf';
-        else if (mimeType.includes('jpeg') || mimeType.includes('jpg')) ext = 'jpg';
-        else if (mimeType.includes('png')) ext = 'png';
-        else if (mimeType.includes('webp')) ext = 'webp';
-        else if (mimeType.includes('svg')) ext = 'svg';
-        else if (mimeType.includes('gif')) ext = 'gif';
-        else if (mimeType.includes('mp4')) ext = 'mp4';
-        else if (mimeType.includes('json')) ext = 'json';
-
-        let filename = '';
-        if (customPublicId && typeof customPublicId === 'string' && customPublicId.trim().length > 0) {
-            const strippedId = customPublicId.trim().replace(/\.[a-zA-Z0-9]+$/, '');
-            const cleanId = strippedId.replace(/[^a-zA-Z0-9_.-]/g, '_');
-            filename = `${cleanId}.${ext}`;
-        } else {
-            filename = `doc_${Date.now()}_${crypto.randomBytes(4).toString('hex')}.${ext}`;
-        }
-
-        const cleanFolder = (folder || 'documents').replace(/^\/+|\/+$/g, '');
-        const r2Key = cleanFolder ? `${cleanFolder}/${filename}` : filename;
-        const buffer = Buffer.from(base64Data, 'base64');
-
-        const uploadUrl = `https://api.cloudflare.com/client/v4/accounts/${accountId}/r2/buckets/${bucket}/objects/${encodeURIComponent(r2Key)}`;
-        const r2Res = await fetch(uploadUrl, {
-            method: 'PUT',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': mimeType
-            },
-            body: buffer
-        });
-
-        if (!r2Res.ok) {
-            const errText = await r2Res.text();
-            throw new Error(`Cloudflare R2 Upload Failed (${r2Res.status}): ${errText}`);
-        }
-
-        const publicUrl = `${publicDomain}/${r2Key}`;
-
-        return {
-            public_id: r2Key,
-            key: r2Key,
-            secure_url: publicUrl,
-            url: publicUrl,
-            format: ext,
-            bytes: buffer.length,
-            resource_type: ext === 'pdf' ? 'raw' : (ext === 'mp4' ? 'video' : 'image'),
-            created_at: new Date().toISOString(),
-            provider: 'r2',
-            bucket: bucket
-        };
-    }
-
-    async function listCloudflareR2Assets() {
-        const token = getCfToken();
-        const accountId = getCfAccountId();
-        const bucket = getR2Bucket();
-        const publicDomain = getR2Domain();
-
-        if (!token || !accountId) return [];
-
-        try {
-            const res = await fetch(`https://api.cloudflare.com/client/v4/accounts/${accountId}/r2/buckets/${bucket}/objects`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (!res.ok) return [];
-            const data: any = await res.json();
-            const objects = data.result || [];
-            return objects.map((obj: any) => {
-                const key = obj.key;
-                const ext = key.split('.').pop()?.toLowerCase() || '';
-                const isPdf = ext === 'pdf';
-                const isVideo = ['mp4', 'webm', 'mov'].includes(ext);
-                const isImage = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'].includes(ext);
-                const resourceType = isPdf ? 'raw' : (isVideo ? 'video' : (isImage ? 'image' : 'raw'));
-                const publicUrl = `${publicDomain}/${key}`;
-
-                return {
-                    public_id: key,
-                    key: key,
-                    secure_url: publicUrl,
-                    url: publicUrl,
-                    format: ext,
-                    bytes: Number(obj.size || 0),
-                    resource_type: resourceType,
-                    created_at: obj.last_modified || new Date().toISOString(),
-                    provider: 'r2',
-                    tags: ['r2', 'cloudflare', isPdf ? 'pdf' : 'media']
-                };
-            });
-        } catch (err) {
-            return [];
-        }
-    }
-
-    async function deleteCloudflareR2Asset(key: string) {
-        const token = getCfToken();
-        const accountId = getCfAccountId();
-        const bucket = getR2Bucket();
-
-        if (!token || !accountId) throw new Error('Cloudflare credentials missing');
-
-        const cleanKey = key.replace(/^\/+/, '');
-        const res = await fetch(`https://api.cloudflare.com/client/v4/accounts/${accountId}/r2/buckets/${bucket}/objects/${encodeURIComponent(cleanKey)}`, {
-            method: 'DELETE',
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-
-        if (!res.ok) {
-            const errText = await res.text();
-            throw new Error(`R2 Delete failed (${res.status}): ${errText}`);
-        }
-
-        return { success: true, key: cleanKey, provider: 'r2' };
-    }
-
-    if (resourceName === 'r2') {
-        const tokenUser = await verifyJwtToken(req);
-        if (!tokenUser) return sendJSON(res, 401, { error: 'Unauthorized. R2 operations require authentication.' });
-
-        if (action === 'upload' && req.method === 'POST') {
-            try {
-                const body = await parseBody(req);
-                const { file, folder, public_id, fileName } = body || {};
-                if (!file) return sendJSON(res, 400, { error: 'file (base64 data URL) is required' });
-                const result = await uploadToCloudflareR2(file, public_id || fileName, folder || 'documents');
-                return sendJSON(res, 200, result);
-            } catch (err: any) {
-                return sendJSON(res, 500, { error: 'Upload ke Cloudflare R2 gagal', details: err.message });
-            }
-        }
-
-        if (action === 'list' && req.method === 'GET') {
-            try {
-                const assets = await listCloudflareR2Assets();
-                return sendJSON(res, 200, { resources: assets, total: assets.length });
-            } catch (err: any) {
-                return sendJSON(res, 500, { error: 'List Cloudflare R2 gagal', details: err.message });
-            }
-        }
-
-        if (action === 'delete' && req.method === 'POST') {
-            try {
-                const body = await parseBody(req);
-                const { key, public_id } = body || {};
-                const targetKey = key || public_id;
-                if (!targetKey) return sendJSON(res, 400, { error: 'key is required' });
-                const result = await deleteCloudflareR2Asset(targetKey);
-                return sendJSON(res, 200, result);
-            } catch (err: any) {
-                return sendJSON(res, 500, { error: 'Delete Cloudflare R2 gagal', details: err.message });
-            }
-        }
-    }
-
-    // Upload
     if (resourceName === 'upload') {
         const tokenUser = await verifyJwtToken(req);
         if (!tokenUser) return sendJSON(res, 401, { error: 'Unauthorized. Upload requires authentication.' });
         if (req.method !== 'POST') return sendJSON(res, 405, { error: 'Method not allowed' });
         try {
             const body = await parseBody(req);
-            const { file, folder, public_id, provider } = body || {};
+            const { file, folder, public_id } = body || {};
             if (!file) return sendJSON(res, 400, { error: 'file (base64) is required' });
-            if (provider === 'r2' || (typeof file === 'string' && file.includes('data:application/pdf'))) {
-                const result = await uploadToCloudflareR2(file, public_id, folder || 'documents');
-                return sendJSON(res, 200, result);
-            }
             const result = await uploadToGitHubCDN(file, public_id, folder);
             return sendJSON(res, 200, result);
         } catch (e: any) {
-            console.error('Upload Error:', e);
             return sendJSON(res, 500, { error: 'Upload failed', details: e.message });
         }
     }
 
-    // Translate (Public endpoint powered by 9Router AI)
     if (resourceName === 'translate') {
         if (req.method !== 'POST') return sendJSON(res, 405, { error: 'Method not allowed' });
         try {
@@ -1908,224 +1746,28 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
         return res.end('google-site-verification: googleSc-kfSh_oBZpVn3Tn8_zIVrNI3cMcYA6e_LZYjX3MKw.html');
     }
 
-    // --- Cloudinary Endpoints ---
-    if (resourceName === 'cloudinary') {
-        // All cloudinary endpoints require authentic admin JWT
+    if (resourceName === 'cloudinary' || resourceName === 'media') {
         const tokenUser = await verifyJwtToken(req);
-        if (!tokenUser) return sendJSON(res, 401, { error: 'Unauthorized. Cloudinary operations require authentication.' });
+        if (!tokenUser) return sendJSON(res, 401, { error: 'Unauthorized.' });
 
-        const MAX_CONFIGS = 5;
-
-        // Helper: mask api_secret for safe client display
-        const maskSecret = (cfg: any) => cfg ? { ...cfg, api_secret: cfg.api_secret ? '•'.repeat(8) + cfg.api_secret.slice(-4) : '' } : cfg;
-
-        // Helper: get active cloudinary config from DB (full, unmasked)
-        const getActiveConfig = async () => {
-            const client = { query: async (q) => getSql().query(q), release: () => {} };
-            try {
-                const result = await client.query(
-                    'SELECT * FROM cloudinary_config WHERE is_active = true ORDER BY id DESC LIMIT 1'
-                );
-                if (result.rows.length > 0) return result.rows[0];
-                // Fallback to any config if none is active
-                const fallback = await client.query('SELECT * FROM cloudinary_config ORDER BY id DESC LIMIT 1');
-                return fallback.rows[0] || null;
-            } finally {
-                client.release();
-            }
-        };
-
-        // ── GET /api/cloudinary/configs ─ List all configs (masked) ──────────
         if (action === 'configs' && req.method === 'GET') {
             const curGhRepo = getGhRepo();
             const curGhToken = getGhToken();
-            const r2Config = {
-                id: 9998,
-                cloud_name: `Cloudflare R2 (${getR2Bucket()})`,
-                api_key: getCfAccountId() ? `${getCfAccountId().slice(0, 8)}••••••••` : '',
+            const ghConfig = {
+                id: 1,
+                cloud_name: `GitHub Storage (${curGhRepo})`,
+                api_key: curGhToken ? `${curGhToken.slice(0, 8)}••••••••${curGhToken.slice(-4)}` : '',
                 api_secret: '••••••••••••••••',
-                label: 'Cloudflare R2 Storage (r2.ekasyarif.my.id)',
+                label: 'GitHub Storage (First-Party /media/)',
                 is_active: true,
                 created_at: new Date().toISOString(),
                 updated_at: new Date().toISOString(),
-                provider: 'r2'
+                provider: 'github'
             };
-            const ghConfig = {
-                id: 9999,
-                cloud_name: `GitHub CDN (${curGhRepo})`,
-                api_key: curGhToken ? `${curGhToken.slice(0, 8)}••••••••${curGhToken.slice(-4)}` : '',
-                api_secret: '••••••••••••••••',
-                label: 'GitHub CDN (jsDelivr Edge)',
-                is_active: true,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-            };
-            const client = { query: async (q) => getSql().query(q), release: () => {} };
-            try {
-                const result = await client.query('SELECT * FROM cloudinary_config ORDER BY id ASC');
-                return sendJSON(res, 200, [r2Config, ghConfig, ...result.rows.map(maskSecret)]);
-            } catch {
-                return sendJSON(res, 200, [r2Config, ghConfig]);
-            } finally {
-                client.release();
-            }
-        }
-
-        // ── POST /api/cloudinary/configs ─ Add new config (max 5) ────────────
-        if (action === 'configs' && req.method === 'POST') {
-            const body = await parseBody(req);
-            const { cloud_name, api_key, api_secret, label } = body || {};
-            if (!cloud_name || !api_key || !api_secret) {
-                return sendJSON(res, 400, { error: 'cloud_name, api_key, and api_secret are required' });
-            }
-            const client = { query: async (q) => getSql().query(q), release: () => {} };
-            try {
-                const countResult = await client.query('SELECT COUNT(*) FROM cloudinary_config');
-                const count = parseInt(countResult.rows[0].count, 10);
-                if (count >= MAX_CONFIGS) {
-                    return sendJSON(res, 429, { error: `Maximum ${MAX_CONFIGS} configurations allowed. Delete one to add a new one.` });
-                }
-                // If this is the first config, auto-activate it
-                const isFirst = count === 0;
-                const result = await client.query(
-                    'INSERT INTO cloudinary_config (cloud_name, api_key, api_secret, label, is_active) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-                    [cloud_name, api_key, api_secret, label || cloud_name, isFirst]
-                );
-                return sendJSON(res, 201, maskSecret(result.rows[0]));
-            } finally {
-                client.release();
-            }
-        }
-
-        // ── PUT /api/cloudinary/configs ─ Update a config ────────────────────
-        if (action === 'configs' && (req.method === 'PUT' || req.method === 'PATCH')) {
-            const configId = id ? Number(id) : null;
-            if (!configId) return sendJSON(res, 400, { error: 'Config ID required (pass as ?id=)' });
-            const body = await parseBody(req);
-            const { cloud_name, api_key, api_secret, label } = body || {};
-            const client = { query: async (q) => getSql().query(q), release: () => {} };
-            try {
-                const existing = await client.query('SELECT * FROM cloudinary_config WHERE id = $1', [configId]);
-                if (!existing.rows[0]) return sendJSON(res, 404, { error: 'Config not found' });
-                const updated = await client.query(
-                    `UPDATE cloudinary_config SET
-                        cloud_name = COALESCE($1, cloud_name),
-                        api_key    = COALESCE($2, api_key),
-                        api_secret = COALESCE($3, api_secret),
-                        label      = COALESCE($4, label),
-                        updated_at = NOW()
-                    WHERE id = $5 RETURNING *`,
-                    [cloud_name || null, api_key || null, api_secret || null, label || null, configId]
-                );
-                return sendJSON(res, 200, maskSecret(updated.rows[0]));
-            } finally {
-                client.release();
-            }
-        }
-
-        // ── DELETE /api/cloudinary/configs ─ Delete a config ─────────────────
-        if (action === 'configs' && req.method === 'DELETE') {
-            const configId = id ? Number(id) : null;
-            if (!configId) return sendJSON(res, 400, { error: 'Config ID required (pass as ?id=)' });
-            const client = { query: async (q) => getSql().query(q), release: () => {} };
-            try {
-                const existing = await client.query('SELECT * FROM cloudinary_config WHERE id = $1', [configId]);
-                if (!existing.rows[0]) return sendJSON(res, 404, { error: 'Config not found' });
-                await client.query('DELETE FROM cloudinary_config WHERE id = $1', [configId]);
-                // If deleted config was active, activate the latest remaining
-                if (existing.rows[0].is_active) {
-                    await client.query('UPDATE cloudinary_config SET is_active = true WHERE id = (SELECT id FROM cloudinary_config ORDER BY id DESC LIMIT 1)');
-                }
-                return sendJSON(res, 200, { success: true });
-            } finally {
-                client.release();
-            }
-        }
-
-        // ── POST /api/cloudinary/activate ─ Set active config ────────────────
-        if (action === 'activate' && req.method === 'POST') {
-            const body = await parseBody(req);
-            const { config_id } = body || {};
-            if (!config_id) return sendJSON(res, 400, { error: 'config_id is required' });
-            const client = { query: async (q) => getSql().query(q), release: () => {} };
-            try {
-                await client.query('UPDATE cloudinary_config SET is_active = false');
-                const result = await client.query(
-                    'UPDATE cloudinary_config SET is_active = true WHERE id = $1 RETURNING *',
-                    [Number(config_id)]
-                );
-                if (!result.rows[0]) return sendJSON(res, 404, { error: 'Config not found' });
-                return sendJSON(res, 200, { success: true, active: maskSecret(result.rows[0]) });
-            } finally {
-                client.release();
-            }
+            return sendJSON(res, 200, [ghConfig]);
         }
 
         if (action === 'test' && req.method === 'POST') {
-            const body = await parseBody(req);
-            const { config_id } = body || {};
-
-            if (config_id && Number(config_id) === 9998) {
-                try {
-                    const token = getCfToken();
-                    const accountId = getCfAccountId();
-                    const bucket = getR2Bucket();
-                    const resTest = await fetch(`https://api.cloudflare.com/client/v4/accounts/${accountId}/r2/buckets/${bucket}`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    if (resTest.ok) {
-                        return sendJSON(res, 200, {
-                            success: true,
-                            status: 'connected',
-                            cloud_name: `Cloudflare R2 (${bucket})`,
-                            label: 'Cloudflare R2 Storage (r2.ekasyarif.my.id)',
-                            domain: getR2Domain(),
-                            provider: 'r2'
-                        });
-                    }
-                    const errText = await resTest.text();
-                    return sendJSON(res, 400, { success: false, error: 'Koneksi Cloudflare R2 gagal', details: errText });
-                } catch (e: any) {
-                    return sendJSON(res, 500, { success: false, error: 'Gagal menghubungi server Cloudflare R2', details: e.message });
-                }
-            }
-
-            if (config_id && Number(config_id) !== 9999 && Number(config_id) !== 9998) {
-                const client = { query: async (q) => getSql().query(q), release: () => {} };
-                let cfg: any;
-                try {
-                    const resDb = await client.query('SELECT * FROM cloudinary_config WHERE id = $1', [Number(config_id)]);
-                    cfg = resDb.rows[0];
-                } finally {
-                    client.release();
-                }
-
-                if (!cfg) {
-                    return sendJSON(res, 404, { success: false, error: 'Konfigurasi tidak ditemukan' });
-                }
-
-                try {
-                    const auth = Buffer.from(`${cfg.api_key}:${cfg.api_secret}`).toString('base64');
-                    const pingRes = await fetch(`https://api.cloudinary.com/v1_1/${cfg.cloud_name}/ping`, {
-                        headers: { 'Authorization': `Basic ${auth}` }
-                    });
-                    if (pingRes.ok) {
-                        return sendJSON(res, 200, {
-                            success: true,
-                            status: 'connected',
-                            cloud_name: cfg.cloud_name,
-                            label: cfg.label,
-                            provider: 'cloudinary'
-                        });
-                    } else {
-                        const err = await pingRes.text();
-                        return sendJSON(res, 400, { success: false, error: 'Koneksi Cloudinary gagal: credentials tidak valid', details: err });
-                    }
-                } catch (e: any) {
-                    return sendJSON(res, 500, { success: false, error: 'Gagal menghubungi server Cloudinary', details: e.message });
-                }
-            }
-
             try {
                 const testRepo = getGhRepo();
                 const testToken = getGhToken();
@@ -2138,12 +1780,11 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
                 });
                 if (ghTest.ok) {
                     const ghData: any = await ghTest.json();
-                    return sendJSON(res, 200, { 
-                        success: true, 
-                        status: 'connected', 
-                        cloud_name: `GitHub CDN (${testRepo})`,
+                    return sendJSON(res, 200, {
+                        success: true,
+                        status: 'connected',
+                        cloud_name: `GitHub Storage (${testRepo})`,
                         repo: testRepo,
-                        cdn: 'jsDelivr Edge CDN',
                         default_branch: ghData.default_branch,
                         provider: 'github'
                     });
@@ -2156,237 +1797,48 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
         }
 
         if (action === 'list' && req.method === 'GET') {
-            const providerFilter = (urlObj.searchParams.get('provider') || 'all').toLowerCase();
             const resourceType = urlObj.searchParams.get('resource_type') || 'image';
-            const configIdParam = urlObj.searchParams.get('config_id');
-            const allAssets: any[] = [];
-
-            if (providerFilter === 'all' || providerFilter === 'r2') {
-                try {
-                    const r2Assets = await listCloudflareR2Assets();
-                    const filteredR2 = r2Assets.filter(a => resourceType === 'all' || resourceType === 'raw' || (resourceType === 'document' && a.format === 'pdf') || a.resource_type === resourceType);
-                    allAssets.push(...filteredR2);
-                } catch (e: any) {
-                    console.warn('R2 list warning:', e.message);
-                }
+            try {
+                const ghAssets = await listGitHubCDNAssets();
+                const filtered = ghAssets.filter(a => resourceType === 'all' || a.resource_type === resourceType);
+                return sendJSON(res, 200, {
+                    resources: filtered,
+                    total: filtered.length
+                });
+            } catch (e: any) {
+                return sendJSON(res, 500, { error: 'Failed to list media', details: e.message });
             }
-
-            if (providerFilter === 'all' || providerFilter === 'github') {
-                try {
-                    const ghAssets = await listGitHubCDNAssets();
-                    const filteredGh = ghAssets.filter(a => resourceType === 'all' || a.resource_type === resourceType);
-                    allAssets.push(...filteredGh.map(a => ({ ...a, provider: 'github' })));
-                } catch (e: any) {
-                    console.warn('GitHub CDN list warning:', e.message);
-                }
-            }
-
-            if (providerFilter === 'all' || providerFilter === 'cloudinary') {
-                try {
-                    const client = { query: async (q) => getSql().query(q), release: () => {} };
-                    let cldConfigs: any[] = [];
-                    try {
-                        let query = 'SELECT * FROM cloudinary_config';
-                        const params: any[] = [];
-                        if (configIdParam && Number(configIdParam) !== 9999 && Number(configIdParam) !== 9998) {
-                            query += ' WHERE id = $1';
-                            params.push(Number(configIdParam));
-                        } else {
-                            query += ' ORDER BY is_active DESC, id ASC';
-                        }
-                        const resDb = await client.query(query, params);
-                        cldConfigs = resDb.rows;
-                    } finally {
-                        client.release();
-                    }
-
-                    const targetConfig = cldConfigs.find(c => c.is_active) || cldConfigs[0];
-                    if (targetConfig) {
-                        const auth = Buffer.from(`${targetConfig.api_key}:${targetConfig.api_secret}`).toString('base64');
-                        const cldType = resourceType === 'video' ? 'video' : 'image';
-                        const cldUrl = `https://api.cloudinary.com/v1_1/${targetConfig.cloud_name}/resources/${cldType}?max_results=50`;
-                        const cldRes = await fetch(cldUrl, {
-                            headers: { 'Authorization': `Basic ${auth}` }
-                        });
-                        if (cldRes.ok) {
-                            const cldData: any = await cldRes.json();
-                            const cldAssets = (cldData.resources || []).map((r: any) => ({
-                                public_id: r.public_id,
-                                secure_url: r.secure_url,
-                                url: r.url,
-                                width: r.width,
-                                height: r.height,
-                                format: r.format,
-                                bytes: r.bytes,
-                                resource_type: r.resource_type || cldType,
-                                created_at: r.created_at,
-                                provider: 'cloudinary',
-                                _account: targetConfig.cloud_name,
-                                tags: r.tags || ['cloudinary']
-                            }));
-                            allAssets.push(...cldAssets);
-                        }
-                    }
-                } catch (cldErr: any) {
-                    console.warn('Cloudinary list warning:', cldErr.message);
-                }
-            }
-
-            return sendJSON(res, 200, {
-                resources: allAssets,
-                total: allAssets.length
-            });
         }
 
         if (action === 'upload' && req.method === 'POST') {
             const body = await parseBody(req);
-            const { file, folder, public_id: reqPublicId, provider, config_id } = body || {};
+            const { file, folder, public_id: reqPublicId } = body || {};
             if (!file) return sendJSON(res, 400, { error: 'file (base64 data URL) is required' });
-
-            const targetProvider = (provider || 'r2').toLowerCase();
-
-            if (targetProvider === 'r2' || (typeof file === 'string' && file.includes('data:application/pdf') && targetProvider !== 'cloudinary')) {
-                try {
-                    const r2Result = await uploadToCloudflareR2(file, reqPublicId, folder || 'documents');
-                    return sendJSON(res, 200, r2Result);
-                } catch (r2Err: any) {
-                    console.error('Cloudflare R2 upload error:', r2Err);
-                    return sendJSON(res, 500, { error: 'Upload ke Cloudflare R2 gagal', details: r2Err.message });
-                }
-            }
-
-            if (targetProvider === 'cloudinary') {
-                const client = { query: async (q) => getSql().query(q), release: () => {} };
-                let configToUse: any;
-                try {
-                    if (config_id && Number(config_id) !== 9999 && Number(config_id) !== 9998) {
-                        const resDb = await client.query('SELECT * FROM cloudinary_config WHERE id = $1', [Number(config_id)]);
-                        configToUse = resDb.rows[0];
-                    } else {
-                        const resDb = await client.query('SELECT * FROM cloudinary_config WHERE is_active = true LIMIT 1');
-                        configToUse = resDb.rows[0] || (await client.query('SELECT * FROM cloudinary_config ORDER BY id ASC LIMIT 1')).rows[0];
-                    }
-                } finally {
-                    client.release();
-                }
-
-                if (!configToUse) {
-                    return sendJSON(res, 400, { error: 'Tidak ada konfigurasi Cloudinary aktif. Silakan tambahkan konfigurasi atau pilih Cloudflare R2.' });
-                }
-
-                try {
-                    const timestamp = Math.round(Date.now() / 1000);
-                    const params: Record<string, any> = { timestamp };
-                    if (folder) params.folder = folder;
-                    if (reqPublicId) params.public_id = reqPublicId;
-
-                    const sortedKeys = Object.keys(params).sort();
-                    const strToSign = sortedKeys.map(k => `${k}=${params[k]}`).join('&') + configToUse.api_secret;
-                    const signature = crypto.createHash('sha1').update(strToSign).digest('hex');
-
-                    const formParts = [
-                        `file=${encodeURIComponent(file)}`,
-                        `api_key=${configToUse.api_key}`,
-                        `timestamp=${timestamp}`,
-                        `signature=${signature}`,
-                    ];
-                    if (folder) formParts.push(`folder=${encodeURIComponent(folder)}`);
-                    if (reqPublicId) formParts.push(`public_id=${encodeURIComponent(reqPublicId)}`);
-
-                    const uploadUrl = `https://api.cloudinary.com/v1_1/${configToUse.cloud_name}/auto/upload`;
-                    const uploadRes = await fetch(uploadUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: formParts.join('&')
-                    });
-                    
-                    const uploadData: any = await uploadRes.json();
-                    if (!uploadRes.ok) {
-                        throw new Error(uploadData.error?.message || 'Cloudinary upload rejected');
-                    }
-
-                    return sendJSON(res, 200, {
-                        public_id: uploadData.public_id,
-                        secure_url: uploadData.secure_url,
-                        url: uploadData.url,
-                        width: uploadData.width,
-                        height: uploadData.height,
-                        format: uploadData.format,
-                        bytes: uploadData.bytes,
-                        resource_type: uploadData.resource_type,
-                        created_at: uploadData.created_at,
-                        provider: 'cloudinary',
-                        _account: configToUse.cloud_name
-                    });
-                } catch (cldErr: any) {
-                    console.error('Cloudinary upload error:', cldErr);
-                    return sendJSON(res, 500, { error: 'Upload ke Cloudinary gagal', details: cldErr.message });
-                }
-            }
 
             try {
                 const uploadResult = await uploadToGitHubCDN(file, reqPublicId, folder);
-                return sendJSON(res, 200, { ...uploadResult, provider: 'github' });
+                return sendJSON(res, 200, uploadResult);
             } catch (ghErr: any) {
-                console.error('GitHub CDN upload failed:', ghErr);
-                return sendJSON(res, 500, { error: 'Upload ke GitHub CDN gagal', details: ghErr.message });
+                return sendJSON(res, 500, { error: 'Upload ke GitHub gagal', details: ghErr.message });
             }
         }
 
         if (action === 'delete' && req.method === 'POST') {
             const body = await parseBody(req);
-            const { public_id, public_ids, sha, provider, resource_type } = body || {};
-            
+            const { public_id, public_ids, sha } = body || {};
             const idsToDelete = Array.isArray(public_ids) ? public_ids : (public_id ? [public_id] : []);
             if (idsToDelete.length === 0) return sendJSON(res, 400, { error: 'public_id or public_ids is required' });
 
             const results = [];
-            for (const id of idsToDelete) {
-                if (provider === 'r2' || id.startsWith('documents/') || (!id.includes('.') && !sha && provider === 'r2')) {
-                    try {
-                        const delResult = await deleteCloudflareR2Asset(id);
-                        results.push({ id, status: 200, result: delResult, provider: 'r2' });
-                    } catch (e: any) {
-                        results.push({ id, status: 500, error: e.message, provider: 'r2' });
-                    }
-                    continue;
-                }
-
-                const isCloudinary = provider === 'cloudinary' || id.includes('/') || (!id.includes('.') && !sha);
-                if (isCloudinary) {
-                    try {
-                        const client = { query: async (q) => getSql().query(q), release: () => {} };
-                        let targetConfig: any;
-                        try {
-                            const resDb = await client.query('SELECT * FROM cloudinary_config WHERE is_active = true LIMIT 1');
-                            targetConfig = resDb.rows[0] || (await client.query('SELECT * FROM cloudinary_config ORDER BY id ASC LIMIT 1')).rows[0];
-                        } finally {
-                            client.release();
-                        }
-
-                        if (targetConfig) {
-                            const auth = Buffer.from(`${targetConfig.api_key}:${targetConfig.api_secret}`).toString('base64');
-                            const cldType = resource_type === 'video' ? 'video' : 'image';
-                            const delUrl = `https://api.cloudinary.com/v1_1/${targetConfig.cloud_name}/resources/${cldType}/upload?public_ids[]=${encodeURIComponent(id)}`;
-                            const delRes = await fetch(delUrl, {
-                                method: 'DELETE',
-                                headers: { 'Authorization': `Basic ${auth}` }
-                            });
-                            results.push({ id, status: delRes.status, provider: 'cloudinary' });
-                        }
-                    } catch (e: any) {
-                        results.push({ id, status: 500, error: e.message, provider: 'cloudinary' });
-                    }
-                } else {
-                    const resStatus = await deleteFromGitHubCDN(id, sha);
-                    results.push({ id, status: 200, result: resStatus, provider: 'github' });
-                }
+            for (const itemKey of idsToDelete) {
+                const resStatus = await deleteFromGitHubCDN(itemKey, sha);
+                results.push({ id: itemKey, status: 200, result: resStatus, provider: 'github' });
             }
 
             return sendJSON(res, 200, { success: true, results });
         }
 
-        return sendJSON(res, 404, { error: `Cloudinary action '${action}' not found` });
+        return sendJSON(res, 404, { error: `Media action '${action}' not found` });
     }
 
     // --- Generic CRUD ---

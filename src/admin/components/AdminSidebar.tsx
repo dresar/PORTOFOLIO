@@ -20,7 +20,7 @@ import {
   User,
   Bot,
   Mail,
-  Cloud
+  ImageIcon
 } from 'lucide-react';
 import { useAdminAuthStore } from '../store/adminAuthStore';
 import { cn } from '@/lib/utils';
@@ -46,7 +46,7 @@ const menuItems = [
   { icon: FileText, label: 'Blog', path: '/admin/blog' },
   { icon: MessageSquare, label: 'Komentar', path: '/admin/blog/comments' },
   { icon: MessageCircle, label: 'WhatsApp', path: '/admin/communication/wa' },
-  { icon: Cloud, label: 'Media CDN', path: '/admin/cloudinary' },
+  { icon: ImageIcon, label: 'Media Library', path: '/admin/media' },
   { icon: Bot, label: 'AI Settings', path: '/admin/ai-settings' },
   { icon: FileText, label: 'Ekspor PDF', path: '/admin/export-pdf' },
   { icon: Settings, label: 'Pengaturan', path: '/admin/settings' },

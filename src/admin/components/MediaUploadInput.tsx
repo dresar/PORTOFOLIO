@@ -15,11 +15,11 @@ import {
   Copy,
   ExternalLink
 } from 'lucide-react';
-import { cloudinaryApi, fileToBase64, formatBytes } from '../services/cloudinaryApi';
+import { mediaApi, fileToBase64, formatBytes } from '../services/mediaApi';
 import { MediaPickerModal } from './MediaPickerModal';
 import { cn } from '@/lib/utils';
 
-export type CdnProvider = 'github' | 'r2' | 'cloudinary';
+export type CdnProvider = 'github';
 
 interface MediaUploadInputProps {
   label?: string;
@@ -27,7 +27,7 @@ interface MediaUploadInputProps {
   onChange: (url: string) => void;
   placeholder?: string;
   accept?: string;
-  defaultProvider?: CdnProvider;
+  defaultProvider?: string;
   folder?: string;
   description?: string;
   previewHeight?: string;
@@ -39,10 +39,9 @@ export function MediaUploadInput({
   label = 'Media / Gambar',
   value,
   onChange,
-  placeholder = 'https://... atau pilih berkas untuk diunggah',
+  placeholder = '/media/uploads/... atau pilih berkas',
   accept = 'image/*,.pdf',
-  defaultProvider,
-  folder = 'portfolio',
+  folder = 'uploads',
   description,
   aspectRatio = 'auto',
   compact = false,
@@ -53,7 +52,6 @@ export function MediaUploadInput({
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [localBlobUrl, setLocalBlobUrl] = useState<string>('');
-  const [provider, setProvider] = useState<CdnProvider>(defaultProvider || 'github');
   const [isUploading, setIsUploading] = useState(false);
   const [isUploaded, setIsUploaded] = useState(false);
   const [isMediaPickerOpen, setIsMediaPickerOpen] = useState(false);
@@ -89,17 +87,6 @@ export function MediaUploadInput({
       URL.revokeObjectURL(localBlobUrl);
     }
 
-    const isFilePdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
-    if (isFilePdf) {
-      setProvider('r2');
-      toast({
-        title: 'Dokumen PDF Terdeteksi',
-        description: 'Target CDN otomatis dialihkan ke Cloudflare R2.',
-      });
-    } else {
-      setProvider('github');
-    }
-
     const blobUrl = URL.createObjectURL(file);
     setSelectedFile(file);
     setLocalBlobUrl(blobUrl);
@@ -125,10 +112,9 @@ export function MediaUploadInput({
     try {
       const base64 = await fileToBase64(selectedFile);
       const cleanName = selectedFile.name.replace(/\.[^/.]+$/, '').replace(/[^a-zA-Z0-9_-]/g, '-');
-      const result = await cloudinaryApi.uploadFile(base64, {
+      const result = await mediaApi.uploadFile(base64, {
         folder,
-        public_id: cleanName,
-        provider,
+        public_id: cleanName
       });
 
       const uploadedUrl = result.secure_url || result.url;
@@ -137,8 +123,8 @@ export function MediaUploadInput({
       onChange(uploadedUrl);
       setIsUploaded(true);
       toast({
-        title: provider === 'r2' ? '✓ Tersimpan di Cloudflare R2!' : '✓ Tersimpan di GitHub CDN!',
-        description: `${selectedFile.name} berhasil diunggah (${provider.toUpperCase()}).`,
+        title: '✓ Tersimpan di GitHub Storage!',
+        description: `${selectedFile.name} berhasil diunggah.`,
       });
     } catch (err: any) {
       toast({
@@ -177,20 +163,6 @@ export function MediaUploadInput({
     } else {
       window.open(activeUrl, '_blank');
     }
-  };
-
-  const getCdnBadgeLabel = (url: string) => {
-    if (url.includes('r2.ekasyarif.my.id')) return 'Cloudflare R2';
-    if (url.includes('jsdelivr.net') || url.includes('github')) return 'GitHub CDN';
-    if (url.includes('cloudinary.com')) return 'Cloudinary';
-    return 'URL Eksternal';
-  };
-
-  const getCdnDotColor = (url: string) => {
-    if (url.includes('r2.ekasyarif.my.id')) return 'bg-orange-500';
-    if (url.includes('jsdelivr.net') || url.includes('github')) return 'bg-emerald-500';
-    if (url.includes('cloudinary.com')) return 'bg-sky-500';
-    return 'bg-zinc-400';
   };
 
   return (
@@ -234,63 +206,6 @@ export function MediaUploadInput({
         </div>
       </div>
 
-      <div className="space-y-1">
-        <div className="flex items-center justify-between text-[10px] text-muted-foreground px-0.5">
-          <span className="font-medium">Target CDN</span>
-          <span className="font-normal text-muted-foreground/80">
-            {provider === 'github' && '⚡ Default Gambar (jsDelivr)'}
-            {provider === 'r2' && '⚡ Default PDF / Berkas'}
-            {provider === 'cloudinary' && '⚡ Cloudinary Storage'}
-          </span>
-        </div>
-        <div className="grid grid-cols-3 p-0.5 bg-muted/60 rounded-lg border border-border/60 text-center gap-0.5">
-          <button
-            type="button"
-            onClick={() => setProvider('github')}
-            className={cn(
-              'flex items-center justify-center gap-1.5 h-7 rounded-md text-[11px] font-medium transition-all cursor-pointer active:scale-[0.98]',
-              provider === 'github'
-                ? 'bg-background text-foreground shadow-xs border border-border/80 font-semibold'
-                : 'text-muted-foreground hover:text-foreground hover:bg-background/40'
-            )}
-            title="GitHub CDN (jsDelivr Edge)"
-          >
-            <span className="size-1.5 rounded-full bg-emerald-500 shrink-0" />
-            <span className="truncate">GitHub</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setProvider('r2')}
-            className={cn(
-              'flex items-center justify-center gap-1.5 h-7 rounded-md text-[11px] font-medium transition-all cursor-pointer active:scale-[0.98]',
-              provider === 'r2'
-                ? 'bg-background text-foreground shadow-xs border border-border/80 font-semibold'
-                : 'text-muted-foreground hover:text-foreground hover:bg-background/40'
-            )}
-            title="Cloudflare R2 Bucket"
-          >
-            <span className="size-1.5 rounded-full bg-orange-500 shrink-0" />
-            <span className="truncate">Cloudflare R2</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setProvider('cloudinary')}
-            className={cn(
-              'flex items-center justify-center gap-1.5 h-7 rounded-md text-[11px] font-medium transition-all cursor-pointer active:scale-[0.98]',
-              provider === 'cloudinary'
-                ? 'bg-background text-foreground shadow-xs border border-border/80 font-semibold'
-                : 'text-muted-foreground hover:text-foreground hover:bg-background/40'
-            )}
-            title="Cloudinary Media Storage"
-          >
-            <span className="size-1.5 rounded-full bg-sky-500 shrink-0" />
-            <span className="truncate">Cloudinary</span>
-          </button>
-        </div>
-      </div>
-
       <input
         ref={fileInputRef}
         type="file"
@@ -309,7 +224,7 @@ export function MediaUploadInput({
               <div className="min-w-0">
                 <p className="text-xs font-semibold text-foreground truncate">{selectedFile.name}</p>
                 <p className="text-[10px] text-muted-foreground">
-                  {formatBytes(selectedFile.size)} • Target: <strong className="uppercase text-foreground">{provider}</strong>
+                  {formatBytes(selectedFile.size)} • Storage: <strong className="text-foreground">GitHub</strong>
                 </p>
               </div>
             </div>
@@ -339,7 +254,7 @@ export function MediaUploadInput({
                 className="h-7 flex-1 px-2.5 text-[11px] rounded-lg gap-1.5 font-semibold active:scale-[0.98]"
               >
                 {isUploading ? <Loader2 className="size-3 animate-spin" /> : <Upload className="size-3" />}
-                <span className="truncate">{isUploading ? 'Mengunggah...' : `Unggah ke ${provider.toUpperCase()}`}</span>
+                <span className="truncate">{isUploading ? 'Mengunggah...' : 'Unggah ke Storage'}</span>
               </Button>
             ) : (
               <div className="flex-1 inline-flex items-center justify-center gap-1 h-7 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold px-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
@@ -369,8 +284,8 @@ export function MediaUploadInput({
               <div className="min-w-0">
                 <p className="text-xs font-medium text-foreground truncate max-w-[140px] sm:max-w-xs">{activeUrl.split('/').pop() || 'Dokumen PDF'}</p>
                 <div className="flex items-center gap-1 mt-0.5">
-                  <span className={cn('size-1.5 rounded-full shrink-0', getCdnDotColor(activeUrl))} />
-                  <span className="text-[10px] text-muted-foreground">{getCdnBadgeLabel(activeUrl)}</span>
+                  <span className="size-1.5 rounded-full shrink-0 bg-emerald-500" />
+                  <span className="text-[10px] text-muted-foreground">GitHub Storage</span>
                 </div>
               </div>
             </div>
@@ -418,8 +333,8 @@ export function MediaUploadInput({
             </div>
 
             <div className="absolute top-1.5 left-1.5 flex items-center gap-1 bg-black/70 backdrop-blur-xs text-white text-[10px] font-medium px-2 py-0.5 rounded-md border border-white/10 shadow-xs">
-              <span className={cn('size-1.5 rounded-full shrink-0', getCdnDotColor(activeUrl))} />
-              <span className="truncate max-w-[110px]">{getCdnBadgeLabel(activeUrl)}</span>
+              <span className="size-1.5 rounded-full shrink-0 bg-emerald-500" />
+              <span className="truncate max-w-[110px]">GitHub Storage</span>
             </div>
 
             <div className="absolute top-1.5 right-1.5 flex items-center gap-1 bg-black/70 backdrop-blur-xs p-0.5 rounded-md border border-white/10 shadow-xs">

@@ -20,13 +20,15 @@ const API_URL = isProd
   ? (envUrl && !/localhost|127\.0\.0\.1/i.test(envUrl) ? envUrl : '/api')
   : (envUrl || 'http://localhost:3004/api');
 
-const apiClient: AxiosInstance = axios.create({
+export const apiClient: AxiosInstance = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 60000, // 60 seconds timeout for AI generation
+  timeout: 60000,
 });
+
+export const adminApi = apiClient;
 
 // Request Interceptor
 apiClient.interceptors.request.use(

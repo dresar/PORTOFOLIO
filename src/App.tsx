@@ -73,7 +73,7 @@ const ExperienceForm = lazyRetry(() => import("./admin/pages/experience/Experien
 const BlogListAdmin = lazyRetry(() => import("./admin/pages/blog/BlogList"));
 const BlogFormAdmin = lazyRetry(() => import("./admin/pages/blog/BlogForm"));
 const CommentList = lazyRetry(() => import("./admin/pages/blog/CommentList"));
-const CloudinaryPage = lazyRetry(() => import("./admin/pages/cloudinary/CloudinaryPage"));
+const MediaPage = lazyRetry(() => import("./admin/pages/media/MediaPage"));
 const ExportPdfPage = lazyRetry(() => import("./admin/pages/ExportPdfPage"));
 
 import { AdminLayout } from "./admin/components/AdminLayout";
@@ -187,7 +187,8 @@ const App = () => {
                     <Route path="experience/new" element={<ExperienceForm />} />
                     <Route path="experience/edit/:id" element={<ExperienceForm />} />
                     <Route path="ai-settings" element={<AISettingsPage />} />
-                    <Route path="cloudinary" element={<CloudinaryPage />} />
+                    <Route path="media" element={<MediaPage />} />
+                    <Route path="cloudinary" element={<Navigate to="/admin/media" replace />} />
                     <Route path="export-pdf" element={<ExportPdfPage />} />
 
                     {/* Fallback unknown admin paths to dashboard */}
