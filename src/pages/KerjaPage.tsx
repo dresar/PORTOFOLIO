@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import {
   Lock, Unlock, FileText,
   Sparkles, AlertCircle, Eye, EyeOff,
-  Download, ExternalLink, MessageSquare, Zap, Search
+  Download, ExternalLink, MessageSquare, Zap
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -46,7 +46,6 @@ export default function KerjaPage() {
   const [activeTab, setActiveTab] = useState<'perkenalan' | 'tips' | 'qa' | 'dokumen'>('perkenalan');
   const [items, setItems] = useState<KerjaItem[]>([]);
   const [documents, setDocuments] = useState<KerjaDocument[]>([]);
-  const [qaSearch, setQaSearch] = useState('');
 
   const pinInputRef = useRef<HTMLInputElement>(null);
 
@@ -125,14 +124,8 @@ export default function KerjaPage() {
   };
 
   const perkenalanItem = items.find(i => i.category === 'perkenalan');
-  const tipsItems = items.filter(i => i.category === 'tips');
-  const qaItems = items.filter(i => i.category === 'qa');
-
-  const filteredQaItems = qaItems.filter(item => {
-    if (!qaSearch.trim()) return true;
-    const q = qaSearch.toLowerCase();
-    return item.title.toLowerCase().includes(q) || item.content_raw.toLowerCase().includes(q);
-  });
+  const tipsItem = items.find(i => i.category === 'tips');
+  const qaItem = items.find(i => i.category === 'qa');
 
   if (!isUnlocked) {
     return (
@@ -220,87 +213,29 @@ export default function KerjaPage() {
           </motion.div>
         )}
 
-        {activeTab === 'tips' && (
+        {activeTab === 'tips' && tipsItem && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="w-full space-y-1.5"
+            className="w-full"
           >
-            <div className="px-1 py-1">
-              <h2 className="text-xs font-bold text-white">Panduan & Tips Wawancara HRD</h2>
-              <p className="text-[10px] text-slate-400">Prinsip dasar sikap dan respon saat interview.</p>
-            </div>
-
-            <div className="space-y-1.5">
-              {tipsItems.map((tip) => (
-                <div
-                  key={tip.id}
-                  className="w-full p-2.5 rounded-lg border border-slate-800 bg-slate-900/80 space-y-1.5"
-                >
-                  <h3 className="text-xs font-semibold text-sky-400">
-                    {tip.title}
-                  </h3>
-                  <div
-                    className="text-[11px] leading-relaxed text-slate-300"
-                    dangerouslySetInnerHTML={{ __html: tip.content_html }}
-                  />
-                </div>
-              ))}
-            </div>
+            <div
+              className="w-full"
+              dangerouslySetInnerHTML={{ __html: tipsItem.content_html }}
+            />
           </motion.div>
         )}
 
-        {activeTab === 'qa' && (
+        {activeTab === 'qa' && qaItem && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="w-full space-y-1.5"
+            className="w-full"
           >
-            <div className="flex items-center justify-between gap-2 px-1 py-1">
-              <div>
-                <h2 className="text-xs font-bold text-white">Tanya-Jawab ({qaItems.length})</h2>
-                <p className="text-[10px] text-slate-400">Pertanyaan umum HRD & respon terarah.</p>
-              </div>
-
-              <div className="relative w-36 sm:w-48">
-                <Search className="size-3 absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  type="text"
-                  placeholder="Cari..."
-                  value={qaSearch}
-                  onChange={(e) => setQaSearch(e.target.value)}
-                  className="h-6 pl-6 pr-2 text-[10px] bg-slate-900/80 border-slate-800 rounded"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              {filteredQaItems.length === 0 ? (
-                <div className="p-4 text-center text-xs text-muted-foreground border border-dashed border-slate-800 rounded-lg">
-                  Tidak ada pertanyaan yang sesuai.
-                </div>
-              ) : (
-                filteredQaItems.map((qa) => (
-                  <div
-                    key={qa.id}
-                    className="w-full p-2.5 rounded-lg border border-slate-800 bg-slate-900/80 space-y-1"
-                  >
-                    <div className="flex items-center gap-1.5">
-                      <span className="size-4 rounded bg-sky-500/15 text-sky-400 font-mono text-[9px] flex items-center justify-center font-semibold shrink-0">
-                        {qa.order}
-                      </span>
-                      <h3 className="font-semibold text-xs text-white">
-                        {qa.title}
-                      </h3>
-                    </div>
-                    <div
-                      className="text-[11px] leading-relaxed text-slate-300 pl-5"
-                      dangerouslySetInnerHTML={{ __html: qa.content_html }}
-                    />
-                  </div>
-                ))
-              )}
-            </div>
+            <div
+              className="w-full"
+              dangerouslySetInnerHTML={{ __html: qaItem.content_html }}
+            />
           </motion.div>
         )}
 
@@ -310,56 +245,62 @@ export default function KerjaPage() {
             animate={{ opacity: 1 }}
             className="w-full space-y-1.5"
           >
-            <div className="px-1 py-1">
+            <div className="px-1 py-0.5">
               <h2 className="text-xs font-bold text-white">Berkas & Dokumen ({documents.length})</h2>
               <p className="text-[10px] text-slate-400">File berkas PDF & sertifikat pendukung.</p>
             </div>
 
             <div className="space-y-1.5">
-              {documents.map((doc) => (
-                <div
-                  key={doc.id}
-                  className="w-full p-2.5 rounded-lg border border-slate-800 bg-slate-900/80 flex items-center justify-between gap-2"
-                >
-                  <div className="flex items-center gap-2 min-w-0">
-                    <div className="size-7 rounded bg-red-500/15 text-red-400 border border-red-500/25 flex items-center justify-center shrink-0">
-                      <FileText className="size-3.5" />
-                    </div>
-                    <div className="min-w-0">
-                      <h3 className="font-semibold text-xs text-white truncate" title={doc.title}>
-                        {doc.title}
-                      </h3>
-                      <p className="text-[10px] text-slate-400 truncate">
-                        {formatBytes(doc.file_size)} · {doc.file_type.toUpperCase()}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-1 shrink-0">
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      asChild
-                      className="h-6 text-[10px] px-2 rounded active:scale-[0.98] gap-1"
-                    >
-                      <a href={doc.file_url} target="_blank" rel="noreferrer">
-                        <span>Buka</span>
-                        <ExternalLink className="size-2.5" />
-                      </a>
-                    </Button>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      asChild
-                      className="size-6 rounded"
-                    >
-                      <a href={doc.file_url} target="_blank" rel="noreferrer" download title="Unduh">
-                        <Download className="size-3" />
-                      </a>
-                    </Button>
-                  </div>
+              {documents.length === 0 ? (
+                <div className="p-4 text-center text-xs text-muted-foreground border border-dashed border-slate-800 rounded-lg">
+                  Belum ada dokumen yang diunggah.
                 </div>
-              ))}
+              ) : (
+                documents.map((doc) => (
+                  <div
+                    key={doc.id}
+                    className="w-full p-2.5 rounded-lg border border-slate-800 bg-slate-900/80 flex items-center justify-between gap-2"
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className="size-7 rounded bg-red-500/15 text-red-400 border border-red-500/25 flex items-center justify-center shrink-0">
+                        <FileText className="size-3.5" />
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="font-semibold text-xs text-white truncate" title={doc.title}>
+                          {doc.title}
+                        </h3>
+                        <p className="text-[10px] text-slate-400 truncate">
+                          {formatBytes(doc.file_size)} · {doc.file_type.toUpperCase()}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-1 shrink-0">
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        asChild
+                        className="h-6 text-[10px] px-2 rounded active:scale-[0.98] gap-1"
+                      >
+                        <a href={doc.file_url} target="_blank" rel="noreferrer">
+                          <span>Buka</span>
+                          <ExternalLink className="size-2.5" />
+                        </a>
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        asChild
+                        className="size-6 rounded"
+                      >
+                        <a href={doc.file_url} target="_blank" rel="noreferrer" download title="Unduh">
+                          <Download className="size-3" />
+                        </a>
+                      </Button>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </motion.div>
         )}
