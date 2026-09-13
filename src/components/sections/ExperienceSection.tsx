@@ -1,12 +1,10 @@
 import { motion } from 'framer-motion';
-import { Briefcase, Calendar, MapPin, Building2, Loader2, Eye, ArrowRight, Info } from 'lucide-react';
+import { Briefcase, Calendar, MapPin, Building2, ArrowRight, Image as ImageIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useExperience } from '@/hooks/useExperience';
 import { normalizeMediaUrl } from '@/lib/utils';
 import { useModalStore } from '@/store/modalStore';
-import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useEffect, useState, useRef } from 'react';
 import { useLocalizedContent } from '@/hooks/useLocalizedContent';
 
 export const ExperienceSection = () => {
@@ -14,20 +12,7 @@ export const ExperienceSection = () => {
   const { experiences: rawExperiences = [], isLoading } = useExperience();
   const { getExperiences } = useLocalizedContent();
   const experiences = getExperiences(rawExperiences);
-  const { openExperienceGalleryModal, openExperienceDetailModal } = useModalStore();
-  const [isMobile, setIsMobile] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
+  const { openExperienceDetailModal } = useModalStore();
 
   if (isLoading) {
     return (
@@ -55,10 +40,10 @@ export const ExperienceSection = () => {
   }
 
   const formatDate = (dateString: string | Date | undefined) => {
-      if (!dateString) return '';
-      const date = new Date(dateString);
-      const locale = t('common.present') === 'Sekarang' ? 'id-ID' : 'en-US';
-      return date.toLocaleDateString(locale, { month: 'short', year: 'numeric' });
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const locale = t('common.present') === 'Sekarang' ? 'id-ID' : 'en-US';
+    return date.toLocaleDateString(locale, { month: 'short', year: 'numeric' });
   };
 
   const stripHtml = (htmlString?: string) => {
@@ -66,10 +51,140 @@ export const ExperienceSection = () => {
     return htmlString.replace(/<[^>]*>?/gm, '');
   };
 
+  const renderExperienceCard = (exp: any) => {
+    let gallery: any[] = [];
+    if (exp.gallery) {
+      if (Array.isArray(exp.gallery)) {
+        gallery = exp.gallery;
+      } else if (typeof exp.gallery === 'string') {
+        try {
+          if (exp.gallery.startsWith('[')) {
+            gallery = JSON.parse(exp.gallery);
+          } else if (exp.gallery.trim()) {
+            gallery = [exp.gallery];
+          }
+        } catch {
+          gallery = [];
+        }
+      }
+    }
+
+    const firstGalleryImage = gallery.find((item: any) => {
+      const u = typeof item === 'string' ? item : item?.url;
+      return u && !/\.(mp4|webm|mov|mkv|avi)($|\?)/i.test(u);
+    });
+
+    const firstImageStr = firstGalleryImage 
+      ? (typeof firstGalleryImage === 'string' ? firstGalleryImage : firstGalleryImage?.url) 
+      : (gallery[0] ? (typeof gallery[0] === 'string' ? gallery[0] : gallery[0]?.url) : null);
+
+    const coverUrl = exp.coverImage || exp.cover_image || exp.banner || firstImageStr || exp.image;
+    const logoUrl = exp.image || exp.logo || exp.companyLogo;
+
+    return (
+      <div 
+        className="glass-strong rounded-xl sm:rounded-2xl overflow-hidden hover:glow-primary transition-all duration-300 h-full flex flex-col border border-border/50 dark:bg-card/50 bg-white shadow-sm hover:shadow-md cursor-pointer group"
+        onClick={() => openExperienceDetailModal(exp)}
+      >
+        <div className="relative shrink-0 w-full aspect-[16/8] sm:aspect-[16/7] overflow-hidden bg-muted flex items-center justify-center">
+          {coverUrl ? (
+            <img 
+              src={normalizeMediaUrl(coverUrl)} 
+              alt={exp.company} 
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+              loading="lazy"
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-primary/10 via-secondary/15 to-primary/5 flex items-center justify-center">
+              <Briefcase className="w-8 h-8 sm:w-10 sm:h-10 text-primary/30" />
+            </div>
+          )}
+
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300" />
+
+          <div className="absolute top-2 right-2 sm:top-2.5 sm:right-2.5 z-10 flex items-center gap-1.5">
+            {gallery.length > 0 && (
+              <span className="px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-md text-[10px] font-semibold text-white border border-white/10 flex items-center gap-1">
+                <ImageIcon className="w-3 h-3 text-primary" />
+                <span>Bukti ({gallery.length})</span>
+              </span>
+            )}
+            <span className="px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-md text-[10px] font-semibold text-emerald-400 border border-emerald-500/20">
+              {exp.isCurrent ? '● Aktif' : 'Selesai'}
+            </span>
+          </div>
+
+          {logoUrl && (
+            <div className="absolute -bottom-3 sm:-bottom-4 left-3 sm:left-4 w-9 h-9 sm:w-11 sm:h-11 rounded-xl border-2 border-background bg-white p-1 shadow-md flex items-center justify-center overflow-hidden z-10">
+              <img 
+                src={normalizeMediaUrl(logoUrl)} 
+                alt={`${exp.company} logo`} 
+                className="w-full h-full object-contain"
+              />
+            </div>
+          )}
+        </div>
+
+        <div className="pt-4 sm:pt-5 px-3 sm:px-5 pb-3 sm:pb-4 flex flex-col flex-1">
+          <div className="mb-2">
+            <h3 className="text-sm sm:text-base font-heading font-bold mb-0.5 leading-snug line-clamp-1 group-hover:text-primary transition-colors">
+              {exp.role}
+            </h3>
+            <div className="text-primary font-medium text-xs flex items-center gap-1.5">
+              <Building2 className="w-3.5 h-3.5 shrink-0" />
+              <span className="line-clamp-1">{exp.company}</span>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-1.5 text-[10px] sm:text-xs text-muted-foreground mb-2 sm:mb-2.5">
+            <div className="flex items-center gap-1 bg-secondary/50 px-2 py-0.5 rounded-md">
+              <Calendar className="w-3 h-3 shrink-0" />
+              <span>{formatDate(exp.startDate)} - {exp.isCurrent ? t('common.present') : (exp.endDate ? formatDate(exp.endDate) : t('common.present'))}</span>
+            </div>
+            {exp.location && (
+              <div className="flex items-center gap-1 bg-secondary/50 px-2 py-0.5 rounded-md">
+                <MapPin className="w-3 h-3 shrink-0" />
+                <span className="truncate">{exp.location}</span>
+              </div>
+            )}
+          </div>
+
+          <div className="flex-1 mb-2.5">
+            <p className="text-muted-foreground text-[11px] sm:text-xs leading-relaxed line-clamp-2">
+              {stripHtml(exp.description)}
+            </p>
+          </div>
+
+          <div className="pt-2 sm:pt-2.5 border-t border-border/40 mt-auto flex items-center justify-end">
+            <button 
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                openExperienceDetailModal(exp);
+              }}
+              className="relative group/btn overflow-hidden rounded-lg sm:rounded-xl p-[1.5px] transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] shadow-sm hover:shadow-primary/30 cursor-pointer w-full"
+            >
+              <span 
+                className="absolute inset-[-1000%] animate-[spin_3.5s_linear_infinite]"
+                style={{
+                  background: 'conic-gradient(from 90deg at 50% 50%, #0000 0%, #38bdf8 50%, #818cf8 75%, #0000 100%)',
+                }}
+              />
+              
+              <span className="relative flex items-center justify-center gap-1.5 px-2 py-1.5 sm:px-3 sm:py-2 rounded-[7px] sm:rounded-[10px] bg-card text-[10px] sm:text-xs font-semibold text-foreground group-hover/btn:text-primary transition-colors w-full">
+                <span>{t('common.details')}</span>
+                <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary transition-transform duration-300 group-hover/btn:translate-x-1" />
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <section id="experience" className="py-6 md:py-8 relative bg-card/30">
       <div className="container mx-auto px-4">
-        {/* Section Header */}
         <motion.div
           className="text-center mb-6"
           initial={{ opacity: 0, y: 20 }}
@@ -84,7 +199,6 @@ export const ExperienceSection = () => {
           </p>
         </motion.div>
 
-        {/* Experience Static Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           {experiences.map((exp: any, index: number) => (
             <motion.div
@@ -95,85 +209,7 @@ export const ExperienceSection = () => {
               transition={{ delay: index * 0.1 }}
               className="h-full"
             >
-              <div 
-                className="glass-strong rounded-2xl p-4 sm:p-6 hover:glow-primary transition-all duration-300 h-full flex flex-col border border-border/50 dark:bg-card/50 bg-white shadow-sm hover:shadow-md cursor-pointer group"
-                onClick={() => openExperienceDetailModal(exp)}
-              >
-                {/* Header */}
-                <div className="flex items-start gap-3 sm:gap-4 mb-3 sm:mb-4">
-                  <div className="shrink-0">
-                    {exp.image ? (
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl overflow-hidden bg-white border border-border">
-                        <img 
-                          src={normalizeMediaUrl(exp.image)} 
-                          alt={exp.company} 
-                          className="w-full h-full object-contain p-1"
-                        />
-                      </div>
-                    ) : (
-                      <div className="p-2.5 sm:p-3 rounded-xl bg-primary/10">
-                        <Briefcase className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div>
-                      <h3 className="text-base sm:text-xl font-heading font-bold mb-0.5 sm:mb-1 leading-tight line-clamp-2 group-hover:text-primary transition-colors">{exp.role}</h3>
-                      <div className="text-primary font-medium text-xs sm:text-sm flex items-center gap-1.5">
-                        <Building2 className="w-3.5 h-3.5" />
-                        <span className="line-clamp-1">{exp.company}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Meta Info */}
-                <div className="flex flex-wrap gap-2 text-xs text-muted-foreground mb-3 sm:mb-4">
-                  <div className="flex items-center gap-1.5 bg-secondary/50 px-2 py-1 rounded-md">
-                    <Calendar className="w-3.5 h-3.5" />
-                    {formatDate(exp.startDate)} - {exp.isCurrent ? t('common.present') : (exp.endDate ? formatDate(exp.endDate) : t('common.present'))}
-                  </div>
-                  {exp.location && (
-                    <div className="flex items-center gap-1.5 bg-secondary/50 px-2 py-1 rounded-md">
-                      <MapPin className="w-3.5 h-3.5" />
-                      {exp.location}
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex-1 mb-2.5 sm:mb-3">
-                  <p className="text-muted-foreground text-xs leading-relaxed line-clamp-2">
-                    {stripHtml(exp.description)}
-                  </p>
-                </div>
-
-                <div className="pt-2.5 sm:pt-3 border-t border-border/40 mt-auto flex items-center justify-between">
-                  <span className="text-[11px] sm:text-xs text-muted-foreground/80 font-medium">
-                    {exp.isCurrent ? '● Aktif' : 'Selesai'}
-                  </span>
-
-                  <button 
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openExperienceDetailModal(exp);
-                    }}
-                    className="relative group/btn overflow-hidden rounded-lg sm:rounded-xl p-[1.5px] transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] shadow-sm hover:shadow-primary/30 cursor-pointer"
-                  >
-                    <span 
-                      className="absolute inset-[-1000%] animate-[spin_3.5s_linear_infinite]"
-                      style={{
-                        background: 'conic-gradient(from 90deg at 50% 50%, #0000 0%, #38bdf8 50%, #818cf8 75%, #0000 100%)',
-                      }}
-                    />
-                    
-                    <span className="relative flex items-center gap-1.5 px-3 py-1.5 rounded-[7px] sm:rounded-[10px] bg-card/90 backdrop-blur-md text-[11px] sm:text-xs font-semibold text-foreground group-hover/btn:text-primary transition-colors">
-                      <span>Detail</span>
-                      <ArrowRight className="w-3.5 h-3.5 text-primary transition-transform duration-300 group-hover/btn:translate-x-1" />
-                    </span>
-                  </button>
-                </div>
-              </div>
+              {renderExperienceCard(exp)}
             </motion.div>
           ))}
         </div>
