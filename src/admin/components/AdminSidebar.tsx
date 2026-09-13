@@ -20,7 +20,8 @@ import {
   User,
   Bot,
   Mail,
-  ImageIcon
+  ImageIcon,
+  ShieldCheck
 } from 'lucide-react';
 import { useAdminAuthStore } from '../store/adminAuthStore';
 import { cn } from '@/lib/utils';
@@ -47,6 +48,7 @@ const menuItems = [
   { icon: MessageSquare, label: 'Komentar', path: '/admin/blog/comments' },
   { icon: MessageCircle, label: 'WhatsApp', path: '/admin/communication/wa' },
   { icon: ImageIcon, label: 'Media Library', path: '/admin/media' },
+  { icon: ShieldCheck, label: 'Vault Kerja', path: '/admin/kerja' },
   { icon: Bot, label: 'AI Settings', path: '/admin/ai-settings' },
   { icon: FileText, label: 'Ekspor PDF', path: '/admin/export-pdf' },
   { icon: Settings, label: 'Pengaturan', path: '/admin/settings' },

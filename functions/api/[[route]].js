@@ -14376,6 +14376,35 @@ var aboutContents = pgTable("about_content", {
   long_description_id: text("long_description_id"),
   aboutImage: text("aboutImage")
 });
+var kerjaConfigs = pgTable("kerja_config", {
+  id: serial("id").primaryKey(),
+  key: text("key").unique().notNull(),
+  value: text("value").notNull(),
+  updated_at: timestamp("updated_at").defaultNow().notNull()
+});
+var kerjaItems = pgTable("kerja_items", {
+  id: serial("id").primaryKey(),
+  category: text("category").notNull(),
+  title: text("title").notNull(),
+  content_html: text("content_html").notNull(),
+  content_raw: text("content_raw").notNull(),
+  order: integer("order").default(0).notNull(),
+  is_active: boolean("is_active").default(true).notNull(),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  updated_at: timestamp("updated_at").defaultNow().notNull()
+});
+var kerjaDocuments = pgTable("kerja_documents", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  category: text("category").notNull(),
+  file_url: text("file_url").notNull(),
+  file_type: text("file_type").default("pdf").notNull(),
+  file_size: integer("file_size").default(0).notNull(),
+  description: text("description"),
+  order: integer("order").default(0).notNull(),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  updated_at: timestamp("updated_at").defaultNow().notNull()
+});
 var schema = {
   users,
   profiles,
@@ -14401,7 +14430,10 @@ var schema = {
   waTemplates,
   siteSettings,
   homeContents,
-  aboutContents
+  aboutContents,
+  kerjaConfigs,
+  kerjaItems,
+  kerjaDocuments
 };
 var sqlClient = null;
 var getSql = () => {
@@ -14538,9 +14570,11 @@ var resources = {
   "messages": messages,
   "wa-templates": waTemplates,
   "settings": siteSettings,
-  // Map 'settings' -> siteSettings table
   "home-content": homeContents,
-  "about-content": aboutContents
+  "about-content": aboutContents,
+  "kerja-items": kerjaItems,
+  "kerja-documents": kerjaDocuments,
+  "kerja-config": kerjaConfigs
 };
 var relationMap = {
   "projects": { category: true },
@@ -15606,6 +15640,64 @@ async function handler(req, res) {
         return sendJSON(res, 200, { success: true, results });
       }
       return sendJSON(res, 404, { error: `Media action '${action}' not found` });
+    }
+    if (resourceName === "kerja") {
+      if (action === "verify-pin" && req.method === "POST") {
+        const body = await parseBody(req);
+        const inputPin = String(body?.pin || "").trim();
+        if (!inputPin) return sendJSON(res, 400, { success: false, error: "PIN wajib diisi." });
+        let dbPin = "280219";
+        try {
+          const configRow = await getDb().select().from(kerjaConfigs).where(eq(kerjaConfigs.key, "pin")).limit(1);
+          if (configRow.length > 0 && configRow[0].value) {
+            dbPin = configRow[0].value.trim();
+          }
+        } catch (e) {
+        }
+        if (inputPin === dbPin) {
+          const token = crypto2.randomBytes(24).toString("hex");
+          return sendJSON(res, 200, { success: true, token, message: "PIN terverifikasi." });
+        }
+        return sendJSON(res, 401, { success: false, error: "PIN yang Anda masukkan salah." });
+      }
+      if (action === "public-data" && req.method === "GET") {
+        try {
+          const items = await getDb().select().from(kerjaItems).where(eq(kerjaItems.is_active, true)).orderBy(asc(kerjaItems.order), asc(kerjaItems.id));
+          const documents = await getDb().select().from(kerjaDocuments).orderBy(asc(kerjaDocuments.order), asc(kerjaDocuments.id));
+          return sendJSON(res, 200, { items, documents });
+        } catch (e) {
+          return sendJSON(res, 500, { error: "Gagal memuat data kerja", details: e.message });
+        }
+      }
+      if (action === "config") {
+        const tokenUser2 = await verifyJwtToken(req);
+        if (!tokenUser2) return sendJSON(res, 401, { error: "Unauthorized." });
+        if (req.method === "GET") {
+          try {
+            const configs = await getDb().select().from(kerjaConfigs);
+            return sendJSON(res, 200, configs);
+          } catch (e) {
+            return sendJSON(res, 500, { error: "Failed to fetch config", details: e.message });
+          }
+        }
+        if (req.method === "POST" || req.method === "PUT") {
+          const body = await parseBody(req);
+          const { key, value } = body || {};
+          if (!key || value === void 0) return sendJSON(res, 400, { error: "key and value are required" });
+          try {
+            const existing = await getDb().select().from(kerjaConfigs).where(eq(kerjaConfigs.key, key)).limit(1);
+            if (existing.length > 0) {
+              await getDb().update(kerjaConfigs).set({ value: String(value).trim(), updated_at: /* @__PURE__ */ new Date() }).where(eq(kerjaConfigs.key, key));
+            } else {
+              await getDb().insert(kerjaConfigs).values({ key, value: String(value).trim(), updated_at: /* @__PURE__ */ new Date() });
+            }
+            return sendJSON(res, 200, { success: true, key, value });
+          } catch (e) {
+            return sendJSON(res, 500, { error: "Failed to update config", details: e.message });
+          }
+        }
+      }
+      return sendJSON(res, 404, { error: `Kerja action '${action}' not found` });
     }
     const publicResources = [
       "projects",

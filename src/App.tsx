@@ -75,6 +75,8 @@ const BlogFormAdmin = lazyRetry(() => import("./admin/pages/blog/BlogForm"));
 const CommentList = lazyRetry(() => import("./admin/pages/blog/CommentList"));
 const MediaPage = lazyRetry(() => import("./admin/pages/media/MediaPage"));
 const ExportPdfPage = lazyRetry(() => import("./admin/pages/ExportPdfPage"));
+const KerjaPage = lazyRetry(() => import("./pages/KerjaPage"));
+const KerjaAdminPage = lazyRetry(() => import("./admin/pages/kerja/KerjaAdminPage"));
 
 import { AdminLayout } from "./admin/components/AdminLayout";
 
@@ -149,6 +151,7 @@ const App = () => {
                 <Routes>
                   {/* Admin Routes (Outside Maintenance Guard) */}
                   <Route path="/admin/login" element={<LoginPage />} />
+                  <Route path="/kerja" element={<KerjaPage />} />
                   <Route path="/admin" element={<AdminLayout />}>
                     <Route index element={<Navigate to="dashboard" />} />
                     <Route path="dashboard" element={<DashboardPage />} />
@@ -188,6 +191,7 @@ const App = () => {
                     <Route path="experience/edit/:id" element={<ExperienceForm />} />
                     <Route path="ai-settings" element={<AISettingsPage />} />
                     <Route path="media" element={<MediaPage />} />
+                    <Route path="kerja" element={<KerjaAdminPage />} />
                     <Route path="cloudinary" element={<Navigate to="/admin/media" replace />} />
                     <Route path="export-pdf" element={<ExportPdfPage />} />
 
