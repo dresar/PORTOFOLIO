@@ -1339,6 +1339,7 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
                         if (item.type === 'file' && item.name !== '.gitkeep') {
                             const ext = item.name.split('.').pop()?.toLowerCase() || 'png';
                             const isVideo = ['mp4', 'webm', 'mov'].includes(ext);
+                            const cleanUrl = `/media/uploads/${item.name}`;
                             const tsMatch = item.name.match(/media_(\d+)_/);
                             const itemCreatedAt = tsMatch ? new Date(parseInt(tsMatch[1], 10)).toISOString() : undefined;
                             assets.push({
