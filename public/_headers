@@ -1,4 +1,4 @@
-﻿# Cloudflare Pages Headers
+# Cloudflare Pages Headers
 /*
   X-Content-Type-Options: nosniff
   X-Frame-Options: SAMEORIGIN
@@ -24,6 +24,9 @@
 
 /sitemap.xml
   Cache-Control: public, max-age=3600, must-revalidate
+
+/sitemap.xsl
+  Cache-Control: public, max-age=86400, must-revalidate
 
 /robots.txt
   Cache-Control: public, max-age=86400, must-revalidate

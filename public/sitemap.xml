@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="/sitemap.xsl"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://ekasyarif.my.id</loc>
-    <lastmod>2026-09-10</lastmod>
+    <lastmod>2026-09-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="id" href="https://ekasyarif.my.id" />
@@ -11,7 +12,7 @@
   </url>
   <url>
     <loc>https://ekasyarif.my.id/id</loc>
-    <lastmod>2026-09-10</lastmod>
+    <lastmod>2026-09-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="id" href="https://ekasyarif.my.id/id" />
@@ -19,7 +20,7 @@
   </url>
   <url>
     <loc>https://ekasyarif.my.id/en</loc>
-    <lastmod>2026-09-10</lastmod>
+    <lastmod>2026-09-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="id" href="https://ekasyarif.my.id/id" />
@@ -27,7 +28,7 @@
   </url>
   <url>
     <loc>https://ekasyarif.my.id/id/blog</loc>
-    <lastmod>2026-09-10</lastmod>
+    <lastmod>2026-09-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="id" href="https://ekasyarif.my.id/id/blog" />
@@ -35,7 +36,7 @@
   </url>
   <url>
     <loc>https://ekasyarif.my.id/en/blog</loc>
-    <lastmod>2026-09-10</lastmod>
+    <lastmod>2026-09-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="id" href="https://ekasyarif.my.id/id/blog" />
@@ -43,7 +44,7 @@
   </url>
   <url>
     <loc>https://ekasyarif.my.id/id/projects</loc>
-    <lastmod>2026-09-10</lastmod>
+    <lastmod>2026-09-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="id" href="https://ekasyarif.my.id/id/projects" />
@@ -51,7 +52,7 @@
   </url>
   <url>
     <loc>https://ekasyarif.my.id/en/projects</loc>
-    <lastmod>2026-09-10</lastmod>
+    <lastmod>2026-09-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="id" href="https://ekasyarif.my.id/id/projects" />
@@ -59,7 +60,7 @@
   </url>
   <url>
     <loc>https://ekasyarif.my.id/id/certificates</loc>
-    <lastmod>2026-09-10</lastmod>
+    <lastmod>2026-09-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="id" href="https://ekasyarif.my.id/id/certificates" />
@@ -67,7 +68,7 @@
   </url>
   <url>
     <loc>https://ekasyarif.my.id/en/certificates</loc>
-    <lastmod>2026-09-10</lastmod>
+    <lastmod>2026-09-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="id" href="https://ekasyarif.my.id/id/certificates" />

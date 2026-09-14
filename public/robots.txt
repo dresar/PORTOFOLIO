@@ -1,78 +1,56 @@
+# ==============================================================================
+# Robots.txt for Eka Syarif Maulana Portfolio & Inka.tech Knowledge Base
+# Standard: RFC 9309 & AI Search Optimization (GEO / AEO) Standard
+# ==============================================================================
+
+# Search Engine Web Crawlers
 User-agent: Googlebot
 Allow: /
-Disallow: /kerja
-Disallow: /kerja/
 
 User-agent: Bingbot
 Allow: /
-Disallow: /kerja
-Disallow: /kerja/
 
 User-agent: Twitterbot
 Allow: /
-Disallow: /kerja
-Disallow: /kerja/
 
 User-agent: facebookexternalhit
 Allow: /
-Disallow: /kerja
-Disallow: /kerja/
 
 User-agent: LinkedInBot
 Allow: /
-Disallow: /kerja
-Disallow: /kerja/
 
 User-agent: TelegramBot
 Allow: /
-Disallow: /kerja
-Disallow: /kerja/
 
+# AI Search & LLM Retrieval Crawlers (Explicitly Allowed for Citation & AEO)
 User-agent: GPTBot
 Allow: /
-Disallow: /kerja
-Disallow: /kerja/
 
 User-agent: ChatGPT-User
 Allow: /
-Disallow: /kerja
-Disallow: /kerja/
 
 User-agent: PerplexityBot
 Allow: /
-Disallow: /kerja
-Disallow: /kerja/
 
 User-agent: ClaudeBot
 Allow: /
-Disallow: /kerja
-Disallow: /kerja/
 
 User-agent: Claude-Web
 Allow: /
-Disallow: /kerja
-Disallow: /kerja/
 
 User-agent: Google-Extended
 Allow: /
-Disallow: /kerja
-Disallow: /kerja/
 
 User-agent: Applebot-Extended
 Allow: /
-Disallow: /kerja
-Disallow: /kerja/
 
 User-agent: Amazonbot
 Allow: /
-Disallow: /kerja
-Disallow: /kerja/
 
 User-agent: cohere-ai
 Allow: /
-Disallow: /kerja
-Disallow: /kerja/
 
+# General Policy
 User-agent: *
 Allow: /
 Disallow: /admin/
@@ -80,8 +58,7 @@ Disallow: /api/
 Disallow: /login/
 Disallow: /dashboard/
 Disallow: /private/
-Disallow: /kerja
-Disallow: /kerja/
 
+# Sitemaps & LLM Context Discovery
 Sitemap: https://ekasyarif.my.id/sitemap.xml
 LLMs-Txt: https://ekasyarif.my.id/llms.txt
