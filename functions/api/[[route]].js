@@ -15209,7 +15209,25 @@ async function handler(req, res) {
         }
       } catch (err) {
       }
-      assets.sort((a2, b2) => b2.public_id.localeCompare(a2.public_id));
+      assets.sort((a2, b2) => {
+        const getTs = (id2) => {
+          const m2 = id2.match(/media_(\d+)_/);
+          if (m2) {
+            const n = parseInt(m2[1], 10);
+            if (!isNaN(n)) return n;
+          }
+          const any13 = id2.match(/(\d{13})/);
+          if (any13) {
+            const n = parseInt(any13[1], 10);
+            if (!isNaN(n)) return n;
+          }
+          return 0;
+        };
+        const tsA = getTs(a2.public_id);
+        const tsB = getTs(b2.public_id);
+        if (tsA !== tsB) return tsB - tsA;
+        return b2.public_id.localeCompare(a2.public_id);
+      });
       return assets;
     }
     async function deleteFromGitHubCDN(publicId, sha) {

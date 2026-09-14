@@ -5,7 +5,8 @@ import {
   FileImage, Trash2, Video, FileText
 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
-import { mediaApi, fileToBase64, formatBytes, type UploadResult } from '../../services/mediaApi';
+import { mediaApi, formatBytes, type UploadResult } from '../../services/mediaApi';
+import { compressImageToWebP } from '@/lib/mediaUtils';
 import { Button } from '@/components/ui/button';
 import { cn, isVideoUrl } from '@/lib/utils';
 import { VideoThumbnail } from '@/components/ui/VideoThumbnail';
@@ -107,10 +108,14 @@ export function MediaUploadModal({ isOpen, onClose, onInsert }: MediaUploadModal
       setQueue(prev => prev.map((item, idx) => idx === i ? { ...item, status: 'uploading' } : item));
 
       try {
-        const base64 = await fileToBase64(queue[i].file);
+        // Compress raster images to ultra-crisp, lightweight WebP
+        const compressed = await compressImageToWebP(queue[i].file, { quality: 0.88, maxDimension: 1920 });
         setQueue(prev => prev.map((item, idx) => idx === i ? { ...item, progress: 40 } : item));
 
-        const result = await mediaApi.uploadFile(base64, { folder: 'portfolio' });
+        const result = await mediaApi.uploadFile(compressed.base64, {
+          folder: 'portfolio',
+          public_id: compressed.fileName
+        });
 
         setQueue(prev => prev.map((item, idx) => idx === i ? { ...item, status: 'success', progress: 100, result } : item));
         setUploaded(prev => [{ ...result }, ...prev]);

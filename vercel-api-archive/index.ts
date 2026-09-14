@@ -1359,7 +1359,25 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
             }
         } catch (err) {}
 
-        assets.sort((a, b) => b.public_id.localeCompare(a.public_id));
+        assets.sort((a, b) => {
+            const getTs = (id: string) => {
+                const m = id.match(/media_(\d+)_/);
+                if (m) {
+                    const n = parseInt(m[1], 10);
+                    if (!isNaN(n)) return n;
+                }
+                const any13 = id.match(/(\d{13})/);
+                if (any13) {
+                    const n = parseInt(any13[1], 10);
+                    if (!isNaN(n)) return n;
+                }
+                return 0;
+            };
+            const tsA = getTs(a.public_id);
+            const tsB = getTs(b.public_id);
+            if (tsA !== tsB) return tsB - tsA;
+            return b.public_id.localeCompare(a.public_id);
+        });
         return assets;
     }
 

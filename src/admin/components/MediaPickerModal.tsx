@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X,
@@ -21,6 +21,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { useModalStore } from '@/store/modalStore';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { mediaApi, formatBytes, type MediaAsset } from '../services/mediaApi';
+import { isNewUpload, formatMediaName, sortAssetsNewestFirst } from '@/lib/mediaUtils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn, isVideoUrl } from '@/lib/utils';
@@ -55,7 +56,8 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
     staleTime: 30_000,
   });
 
-  const assets: MediaAsset[] = data?.resources || [];
+  const rawAssets: MediaAsset[] = data?.resources || [];
+  const assets: MediaAsset[] = useMemo(() => sortAssetsNewestFirst(rawAssets), [rawAssets]);
   const filtered = assets.filter(
     (a) => !search || a.public_id.toLowerCase().includes(search.toLowerCase())
   );
@@ -251,6 +253,14 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
                           className="aspect-square overflow-hidden cursor-pointer relative bg-muted/40"
                           onClick={() => handleOpenAssetPreview(asset)}
                         >
+                          {/* NEW Badge (within 5 minutes of upload) */}
+                          {isNewUpload(asset, 5) && (
+                            <div className="absolute top-1.5 right-1.5 z-20 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-500 text-white shadow-lg border border-white/25 flex items-center gap-1 animate-pulse select-none">
+                              <span className="size-1.5 rounded-full bg-white animate-ping" />
+                              NEW
+                            </div>
+                          )}
+
                           {isVideo ? (
                             <div className="size-full bg-black flex items-center justify-center relative">
                               <VideoThumbnail
@@ -258,9 +268,11 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
                                 className="size-full object-cover opacity-90 transition-transform duration-300 group-hover:scale-105"
                                 showBadge={false}
                               />
-                              <div className="absolute top-1.5 right-1.5 bg-purple-600/90 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-1 shadow-xs z-10">
-                                <Video className="size-2.5" /> VIDEO
-                              </div>
+                              {!isNewUpload(asset, 5) && (
+                                <div className="absolute top-1.5 right-1.5 bg-purple-600/90 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-1 shadow-xs z-10">
+                                  <Video className="size-2.5" /> VIDEO
+                                </div>
+                              )}
                               <div className="absolute inset-0 m-auto size-7 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-white pointer-events-none z-10">
                                 <Play className="size-3 fill-white ml-0.5" />
                               </div>
@@ -335,7 +347,7 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
 
                         <div className="p-1.5 border-t border-border/40">
                           <p className="text-xs text-foreground truncate font-medium" title={asset.public_id}>
-                            {asset.public_id.split('/').pop()}
+                            {formatMediaName(asset.public_id)}
                           </p>
                           <p className="text-[10px] text-muted-foreground font-mono">{formatBytes(asset.bytes || 0)}</p>
                         </div>

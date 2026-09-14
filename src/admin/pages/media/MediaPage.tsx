@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -8,6 +8,7 @@ import {
   FileText, ImageIcon, X, ExternalLink
 } from 'lucide-react';
 import { mediaApi, formatBytes, type MediaAsset } from '../../services/mediaApi';
+import { isNewUpload, formatMediaName, sortAssetsNewestFirst } from '@/lib/mediaUtils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
@@ -37,7 +38,8 @@ export default function MediaPage() {
     staleTime: 30_000,
   });
 
-  const assets: MediaAsset[] = data?.resources || [];
+  const rawAssets: MediaAsset[] = data?.resources || [];
+  const assets: MediaAsset[] = useMemo(() => sortAssetsNewestFirst(rawAssets), [rawAssets]);
 
   const deleteMutation = useMutation({
     mutationFn: (asset: MediaAsset) => mediaApi.deleteAsset(asset.public_id, asset.resource_type, 'github', asset.sha),
@@ -319,19 +321,28 @@ export default function MediaPage() {
                     />
                   )}
 
+                  {/* NEW Badge (within 5 minutes of upload) */}
+                  {isNewUpload(asset, 5) && (
+                    <div className="absolute top-2 right-2 z-20 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-500 text-white shadow-lg border border-white/25 flex items-center gap-1 animate-pulse select-none">
+                      <span className="size-1.5 rounded-full bg-white animate-ping" />
+                      NEW
+                    </div>
+                  )}
+
                   <div
                     className={cn(
-                      'absolute top-2 left-2 z-20 size-5 rounded-md border flex items-center justify-center transition-all',
+                      'absolute top-2 left-2 z-20 size-4 rounded-sm border flex items-center justify-center transition-all cursor-pointer',
                       selectedIds.has(asset.public_id)
-                        ? 'bg-primary border-primary'
-                        : 'bg-black/30 border-white/50 opacity-0 group-hover:opacity-100'
+                        ? 'bg-primary border-primary shadow-sm'
+                        : 'bg-black/60 border-white/50 opacity-0 group-hover:opacity-100 hover:border-primary'
                     )}
                     onClick={(e) => {
                       e.stopPropagation();
                       toggleSelect(asset.public_id);
                     }}
+                    title="Pilih berkas"
                   >
-                    {selectedIds.has(asset.public_id) && <Check className="size-3 text-white stroke-[3]" />}
+                    {selectedIds.has(asset.public_id) && <Check className="size-2.5 text-white stroke-[3]" />}
                   </div>
 
                   {!selectedIds.has(asset.public_id) && (
@@ -401,7 +412,7 @@ export default function MediaPage() {
 
                 <div className="p-2 border-t border-border/40 bg-card">
                   <p className="text-xs font-medium truncate text-foreground" title={asset.public_id}>
-                    {asset.public_id.split('/').pop()}
+                    {formatMediaName(asset.public_id)}
                   </p>
                   <div className="flex items-center justify-between text-[10px] text-muted-foreground font-mono mt-0.5">
                     <span className="uppercase">{asset.format || 'file'}</span>

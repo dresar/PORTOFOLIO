@@ -16,7 +16,8 @@ import {
   ExternalLink,
   Video
 } from 'lucide-react';
-import { mediaApi, fileToBase64, formatBytes } from '../services/mediaApi';
+import { mediaApi, formatBytes } from '../services/mediaApi';
+import { compressImageToWebP } from '@/lib/mediaUtils';
 import { MediaPickerModal } from './MediaPickerModal';
 import { cn, isVideoUrl } from '@/lib/utils';
 import { VideoThumbnail } from '@/components/ui/VideoThumbnail';
@@ -118,11 +119,10 @@ export function MediaUploadInput({
 
     setIsUploading(true);
     try {
-      const base64 = await fileToBase64(selectedFile);
-      const cleanName = selectedFile.name.replace(/\.[^/.]+$/, '').replace(/[^a-zA-Z0-9_-]/g, '-');
-      const result = await mediaApi.uploadFile(base64, {
+      const compressed = await compressImageToWebP(selectedFile, { quality: 0.88, maxDimension: 1920 });
+      const result = await mediaApi.uploadFile(compressed.base64, {
         folder,
-        public_id: cleanName
+        public_id: compressed.fileName
       });
 
       const uploadedUrl = result.secure_url || result.url;
@@ -132,7 +132,7 @@ export function MediaUploadInput({
       setIsUploaded(true);
       toast({
         title: '✓ Tersimpan di GitHub Storage!',
-        description: `${selectedFile.name} berhasil diunggah.`,
+        description: `${compressed.originalName} berhasil diunggah (WebP).`,
       });
     } catch (err: any) {
       toast({
