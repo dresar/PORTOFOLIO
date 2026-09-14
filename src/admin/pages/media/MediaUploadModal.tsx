@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X, Upload, ImageIcon, Copy, Check, Loader2,
@@ -165,10 +166,10 @@ export function MediaUploadModal({ isOpen, onClose, onInsert }: MediaUploadModal
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <AnimatePresence>
       <motion.div
-        className="fixed inset-0 z-[110] flex items-center justify-center p-4"
+        className="fixed inset-0 z-[10001] flex items-center justify-center p-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -184,6 +185,7 @@ export function MediaUploadModal({ isOpen, onClose, onInsert }: MediaUploadModal
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.95, opacity: 0 }}
           transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+          onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-center justify-between px-5 py-4 border-b border-border/50">
             <div className="flex items-center gap-3">
@@ -196,6 +198,7 @@ export function MediaUploadModal({ isOpen, onClose, onInsert }: MediaUploadModal
               </div>
             </div>
             <Button
+              type="button"
               variant="ghost"
               size="icon"
               onClick={handleClose}
@@ -225,7 +228,11 @@ export function MediaUploadModal({ isOpen, onClose, onInsert }: MediaUploadModal
                   accept="image/*,video/*,application/pdf,.pdf"
                   multiple
                   className="hidden"
-                  onChange={(e) => { if (e.target.files) handleFilePick(e.target.files); }}
+                  onClick={(e) => e.stopPropagation()}
+                  onChange={(e) => {
+                    if (e.target.files) handleFilePick(e.target.files);
+                    e.target.value = '';
+                  }}
                 />
                 <div className="flex flex-col items-center gap-3 pointer-events-none">
                   <div className={cn('size-14 rounded-xl flex items-center justify-center transition-colors', isDragging ? 'bg-primary/20 text-primary' : 'bg-muted text-muted-foreground')}>
@@ -300,6 +307,7 @@ export function MediaUploadModal({ isOpen, onClose, onInsert }: MediaUploadModal
                       <div className="shrink-0">
                         {item.status === 'pending' && !uploading && (
                           <Button
+                            type="button"
                             variant="ghost"
                             size="icon"
                             className="size-7 rounded-md text-muted-foreground hover:text-destructive"
@@ -313,6 +321,7 @@ export function MediaUploadModal({ isOpen, onClose, onInsert }: MediaUploadModal
                         )}
                         {item.status === 'error' && !uploading && (
                           <Button
+                            type="button"
                             variant="ghost"
                             size="icon"
                             className="size-7 rounded-md text-destructive"
@@ -329,6 +338,7 @@ export function MediaUploadModal({ isOpen, onClose, onInsert }: MediaUploadModal
                 <div className="flex gap-2 pt-1">
                   {!uploading && (
                     <Button
+                      type="button"
                       variant="outline"
                       size="sm"
                       className="flex-1 h-8 text-xs rounded-lg active:scale-[0.98]"
@@ -338,6 +348,7 @@ export function MediaUploadModal({ isOpen, onClose, onInsert }: MediaUploadModal
                     </Button>
                   )}
                   <Button
+                    type="button"
                     size="sm"
                     onClick={handleUpload}
                     disabled={uploading || queue.every(i => i.status === 'success')}
@@ -380,6 +391,7 @@ export function MediaUploadModal({ isOpen, onClose, onInsert }: MediaUploadModal
 
                       <div className="flex gap-1 shrink-0">
                         <Button
+                          type="button"
                           size="icon"
                           variant="ghost"
                           className="size-7 rounded-md"
@@ -390,6 +402,7 @@ export function MediaUploadModal({ isOpen, onClose, onInsert }: MediaUploadModal
                         </Button>
                         {onInsert && (
                           <Button
+                            type="button"
                             size="sm"
                             variant="default"
                             className="h-7 text-xs px-2.5 rounded-md active:scale-[0.98]"
@@ -407,6 +420,7 @@ export function MediaUploadModal({ isOpen, onClose, onInsert }: MediaUploadModal
           </div>
         </motion.div>
       </motion.div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }

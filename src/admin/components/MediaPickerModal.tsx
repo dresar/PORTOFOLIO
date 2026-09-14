@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X,
@@ -105,11 +106,11 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <>
       <AnimatePresence>
         <motion.div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          className="fixed inset-0 z-[10000] flex items-center justify-center p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -122,6 +123,7 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+            onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between px-4 py-3 border-b border-border/50 shrink-0">
               <div className="flex items-center gap-2.5">
@@ -134,16 +136,38 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
                 </div>
               </div>
               <div className="flex items-center gap-1.5">
-                <Button size="sm" onClick={() => setShowUpload(true)} className="gap-1.5 h-8 text-xs rounded-lg active:scale-[0.98]">
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowUpload(true);
+                  }}
+                  className="gap-1.5 h-8 text-xs rounded-lg active:scale-[0.98]"
+                >
                   <Upload className="size-3.5" /> Upload Media
                 </Button>
-                <Button variant="ghost" size="icon" onClick={() => refetch()} className="rounded-lg size-8">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    refetch();
+                  }}
+                  className="rounded-lg size-8"
+                  title="Muat ulang data"
+                >
                   <RefreshCw className="size-3.5" />
                 </Button>
                 <Button
+                  type="button"
                   variant="ghost"
                   size="icon"
-                  onClick={onClose}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onClose();
+                  }}
                   className="rounded-lg hover:bg-destructive/10 hover:text-destructive size-8"
                 >
                   <X className="size-4" />
@@ -306,6 +330,7 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
                             </Button>
                           )}
                           <Button
+                            type="button"
                             size="sm"
                             variant="secondary"
                             className="w-full h-7 text-xs gap-1 rounded-md"
@@ -317,6 +342,7 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
                           {confirmDelete === asset.public_id ? (
                             <div className="flex gap-1 w-full">
                               <Button
+                                type="button"
                                 size="sm"
                                 variant="destructive"
                                 className="flex-1 h-7 text-xs rounded-md"
@@ -326,6 +352,7 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
                                 {deleteMutation.isPending ? <Loader2 className="size-3 animate-spin" /> : 'Ya'}
                               </Button>
                               <Button
+                                type="button"
                                 size="sm"
                                 variant="outline"
                                 className="flex-1 h-7 text-xs rounded-md"
@@ -336,6 +363,7 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
                             </div>
                           ) : (
                             <Button
+                              type="button"
                               size="sm"
                               variant="outline"
                               className="w-full h-7 text-xs gap-1 rounded-md hover:bg-destructive hover:text-white hover:border-destructive"
@@ -367,8 +395,14 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
         onClose={() => {
           setShowUpload(false);
           qc.invalidateQueries({ queryKey: ['media-assets-picker'] });
+          qc.invalidateQueries({ queryKey: ['media-assets'] });
+          refetch();
         }}
-        onInsert={onSelect}
+        onInsert={(url) => {
+          setShowUpload(false);
+          onSelect?.(url);
+          onClose();
+        }}
       />
 
       <AnimatePresence>
@@ -377,7 +411,7 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md"
+            className="fixed inset-0 z-[10002] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md"
             onClick={() => setPreviewAsset(null)}
           >
             <motion.div
@@ -395,6 +429,7 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Button
+                    type="button"
                     size="sm"
                     variant="secondary"
                     className="h-7 gap-1 text-primary text-xs rounded-md"
@@ -404,6 +439,7 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
                     <span>Salin</span>
                   </Button>
                   <Button
+                    type="button"
                     size="sm"
                     variant="ghost"
                     asChild
@@ -414,6 +450,7 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
                     </a>
                   </Button>
                   <Button
+                    type="button"
                     size="icon"
                     variant="ghost"
                     className="size-7 rounded-md hover:bg-destructive/10 hover:text-destructive"
@@ -451,6 +488,7 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </>,
+    document.body
   );
 }
