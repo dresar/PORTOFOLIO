@@ -87,6 +87,21 @@ export const mediaApi = {
         provider: 'github'
       }
     };
+  },
+
+  getFolders: async (): Promise<{ folders: string[]; mapping: Record<string, string> }> => {
+    const res = await adminApi.get('/media/folders');
+    return res.data;
+  },
+
+  moveFiles: async (public_ids: string[], folder: string): Promise<{ success: boolean; count?: number; folder?: string }> => {
+    const res = await adminApi.post('/media/move', { public_ids, folder });
+    return res.data;
+  },
+
+  manageFolder: async (name: string, action: 'create' | 'delete' | 'rename', new_name?: string): Promise<{ success: boolean }> => {
+    const res = await adminApi.post('/media/folder', { name, action, new_name });
+    return res.data;
   }
 };
 

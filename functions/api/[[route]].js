@@ -15651,6 +15651,92 @@ async function handler(req, res) {
         }
         return sendJSON(res, 200, { success: true, results });
       }
+      if (action === "folders" && req.method === "GET") {
+        try {
+          const client = { query: async (q, p2) => getSql().query(q, p2), release: () => {
+          } };
+          await client.query(`
+                    CREATE TABLE IF NOT EXISTS media_file_folder (
+                        public_id TEXT PRIMARY KEY,
+                        folder_name TEXT NOT NULL,
+                        updated_at TIMESTAMP DEFAULT NOW()
+                    );
+                `);
+          await client.query(`
+                    CREATE TABLE IF NOT EXISTS media_folder (
+                        id SERIAL PRIMARY KEY,
+                        name TEXT NOT NULL UNIQUE,
+                        color TEXT DEFAULT 'indigo',
+                        created_at TIMESTAMP DEFAULT NOW()
+                    );
+                `);
+          const fRes = await client.query("SELECT name, color FROM media_folder ORDER BY name ASC");
+          const mRes = await client.query("SELECT public_id, folder_name FROM media_file_folder");
+          const mapping = {};
+          for (const r of mRes?.rows || []) {
+            mapping[r.public_id] = r.folder_name;
+          }
+          const customFolders = (fRes?.rows || []).map((r) => r.name);
+          return sendJSON(res, 200, { folders: customFolders, mapping });
+        } catch (err) {
+          return sendJSON(res, 200, { folders: [], mapping: {} });
+        }
+      }
+      if (action === "move" && req.method === "POST") {
+        try {
+          const body = await parseBody(req);
+          const { public_ids, folder } = body || {};
+          const ids = Array.isArray(public_ids) ? public_ids : [];
+          if (ids.length > 0 && folder) {
+            const client = { query: async (q, p2) => getSql().query(q, p2), release: () => {
+            } };
+            await client.query(`
+                        CREATE TABLE IF NOT EXISTS media_file_folder (
+                            public_id TEXT PRIMARY KEY,
+                            folder_name TEXT NOT NULL,
+                            updated_at TIMESTAMP DEFAULT NOW()
+                        );
+                    `);
+            for (const pid of ids) {
+              await client.query(
+                "INSERT INTO media_file_folder (public_id, folder_name, updated_at) VALUES ($1, $2, NOW()) ON CONFLICT (public_id) DO UPDATE SET folder_name = $2, updated_at = NOW()",
+                [pid, folder]
+              );
+            }
+          }
+          return sendJSON(res, 200, { success: true, count: ids.length, folder });
+        } catch (err) {
+          return sendJSON(res, 500, { error: "Failed to move media", details: err?.message });
+        }
+      }
+      if (action === "folder" && req.method === "POST") {
+        try {
+          const body = await parseBody(req);
+          const { name, action: folderAction, new_name } = body || {};
+          const client = { query: async (q, p2) => getSql().query(q, p2), release: () => {
+          } };
+          await client.query(`
+                    CREATE TABLE IF NOT EXISTS media_folder (
+                        id SERIAL PRIMARY KEY,
+                        name TEXT NOT NULL UNIQUE,
+                        color TEXT DEFAULT 'indigo',
+                        created_at TIMESTAMP DEFAULT NOW()
+                    );
+                `);
+          if (folderAction === "create" && name) {
+            await client.query("INSERT INTO media_folder (name) VALUES ($1) ON CONFLICT (name) DO NOTHING", [name.trim()]);
+          } else if (folderAction === "delete" && name) {
+            await client.query("DELETE FROM media_folder WHERE name = $1", [name.trim()]);
+            await client.query("UPDATE media_file_folder SET folder_name = $1 WHERE folder_name = $2", ["Umum", name.trim()]);
+          } else if (folderAction === "rename" && name && new_name) {
+            await client.query("UPDATE media_folder SET name = $1 WHERE name = $2", [new_name.trim(), name.trim()]);
+            await client.query("UPDATE media_file_folder SET folder_name = $1 WHERE folder_name = $2", [new_name.trim(), name.trim()]);
+          }
+          return sendJSON(res, 200, { success: true });
+        } catch (err) {
+          return sendJSON(res, 500, { error: "Folder operation failed", details: err?.message });
+        }
+      }
       return sendJSON(res, 404, { error: `Media action '${action}' not found` });
     }
     if (resourceName === "kerja") {

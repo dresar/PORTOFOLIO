@@ -13,6 +13,7 @@ import {
   RefreshCw,
   AlertCircle,
   FolderOpen,
+  Folder,
   Video,
   Play,
   FileText,
@@ -23,6 +24,7 @@ import { useModalStore } from '@/store/modalStore';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { mediaApi, formatBytes, type MediaAsset } from '../services/mediaApi';
 import { isNewUpload, formatMediaName, sortAssetsNewestFirst } from '@/lib/mediaUtils';
+import { useMediaFolderStore } from '@/admin/store/mediaFolderStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn, isVideoUrl } from '@/lib/utils';
@@ -40,6 +42,8 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
   const { toast } = useToast();
   const { openPdfPreviewModal } = useModalStore();
   const qc = useQueryClient();
+  const { getAllFolders, getFileFolder } = useMediaFolderStore();
+  const [selectedFolder, setSelectedFolder] = useState<string>('all');
   const [search, setSearch] = useState('');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [showUpload, setShowUpload] = useState(false);
@@ -60,9 +64,15 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
 
   const rawAssets: MediaAsset[] = data?.resources || [];
   const assets: MediaAsset[] = useMemo(() => sortAssetsNewestFirst(rawAssets), [rawAssets]);
-  const filtered = assets.filter(
-    (a) => !search || a.public_id.toLowerCase().includes(search.toLowerCase())
-  );
+  const allFolders = getAllFolders();
+
+  const filtered = assets.filter((a) => {
+    if (selectedFolder !== 'all') {
+      const f = getFileFolder(a.public_id);
+      if (f !== selectedFolder) return false;
+    }
+    return !search || a.public_id.toLowerCase().includes(search.toLowerCase());
+  });
 
   const deleteMutation = useMutation({
     mutationFn: (asset: MediaAsset) =>
@@ -225,6 +235,40 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
                     className="pl-9 h-8 text-xs rounded-lg"
                   />
                 </div>
+              </div>
+
+              <div className="flex items-center gap-1.5 overflow-x-auto py-1 text-xs">
+                <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground shrink-0 mr-0.5">
+                  Folder:
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedFolder('all')}
+                  className={cn(
+                    'px-2 py-0.5 rounded-md text-[11px] font-medium transition-colors shrink-0 border',
+                    selectedFolder === 'all'
+                      ? 'bg-primary text-white border-primary'
+                      : 'bg-muted/40 border-border/60 text-muted-foreground hover:text-foreground'
+                  )}
+                >
+                  Semua
+                </button>
+                {allFolders.map((f) => (
+                  <button
+                    key={f}
+                    type="button"
+                    onClick={() => setSelectedFolder(f)}
+                    className={cn(
+                      'px-2 py-0.5 rounded-md text-[11px] font-medium transition-colors shrink-0 border flex items-center gap-1',
+                      selectedFolder === f
+                        ? 'bg-primary text-white border-primary'
+                        : 'bg-muted/40 border-border/60 text-muted-foreground hover:text-foreground'
+                    )}
+                  >
+                    <Folder className="size-2.5 fill-current/20" />
+                    <span>{f}</span>
+                  </button>
+                ))}
               </div>
             </div>
 
