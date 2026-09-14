@@ -15156,17 +15156,11 @@ async function handler(req, res) {
         console.error("GitHub CDN Upload Error:", ghRes.status, parsedMessage);
         throw new Error(`GitHub CDN Upload Failed (${ghRes.status}): ${parsedMessage}`);
       }
-      const cleanUrl = `/media/uploads/${filename}`;
-      try {
-        const localDest = path.join(process.cwd(), "public", "uploads", filename);
-        fs.mkdirSync(path.dirname(localDest), { recursive: true });
-        fs.writeFileSync(localDest, buffer);
-      } catch (e) {
-      }
+      const cdnUrl = `https://cdn.jsdelivr.net/gh/${repo}@${branch}/public/uploads/${filename}`;
       return {
         public_id: filename,
-        secure_url: cleanUrl,
-        url: cleanUrl,
+        secure_url: cdnUrl,
+        url: cdnUrl,
         format: ext,
         bytes: buffer.length,
         resource_type: mimeType.startsWith("video") ? "video" : mimeType.includes("pdf") ? "raw" : "image",

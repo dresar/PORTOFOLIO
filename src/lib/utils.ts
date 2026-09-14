@@ -36,10 +36,12 @@ export function normalizeMediaUrl(raw?: string | null, options?: MediaUrlOptions
     return `https:${url}`;
   }
 
-  let cleanPath = '';
   if (url.includes('cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/')) {
-    cleanPath = `/media/${url.split('public/')[1]}`;
-  } else if (url.startsWith('/media/') || url.startsWith('media/')) {
+    return url;
+  }
+
+  let cleanPath = '';
+  if (url.startsWith('/media/') || url.startsWith('media/')) {
     cleanPath = `/${url.replace(/^\/+/, '')}`;
   } else if (url.startsWith('/uploads/') || url.startsWith('uploads/')) {
     cleanPath = `/media/${url.replace(/^\/+/, '')}`;

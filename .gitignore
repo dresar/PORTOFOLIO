@@ -18,3 +18,14 @@ build/
 *.local
 .wrangler/
 functions-dist/
+
+# Screenshot documentation (stored in GitHub, not needed locally)
+asset/
+
+# Media uploads — semua file di-serve via jsDelivr CDN dari GitHub
+# Jangan track binary lokal, cukup upload via admin panel → tersimpan di GitHub
+public/uploads/**
+!public/uploads/.gitkeep
+!public/uploads/articles/**
+!public/uploads/articles/
+scratch/
