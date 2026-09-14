@@ -16,7 +16,8 @@ async function onRequest(context) {
         const webpSubpath = subpath.replace(/\.(png|jpe?g)$/i, ".webp");
         const webpUrl = new URL(`/${webpSubpath}`, request.url);
         const webpRes = await env.ASSETS.fetch(webpUrl.toString());
-        if (webpRes.status === 200) {
+        const webpType = webpRes.headers.get("content-type") || "";
+        if (webpRes.status === 200 && webpType.includes("image/webp")) {
           const resHeaders = new Headers(webpRes.headers);
           resHeaders.set("Content-Type", "image/webp");
           resHeaders.set("Cache-Control", "public, max-age=31536000, s-maxage=31536000, immutable");
@@ -30,7 +31,8 @@ async function onRequest(context) {
       }
       const assetUrl = new URL(`/${subpath}`, request.url);
       const assetRes = await env.ASSETS.fetch(assetUrl.toString());
-      if (assetRes.status === 200) {
+      const assetType = assetRes.headers.get("content-type") || "";
+      if (assetRes.status === 200 && !assetType.includes("text/html")) {
         const resHeaders = new Headers(assetRes.headers);
         resHeaders.set("Cache-Control", "public, max-age=31536000, s-maxage=31536000, immutable");
         resHeaders.set("Access-Control-Allow-Origin", "*");

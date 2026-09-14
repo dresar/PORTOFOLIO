@@ -202,6 +202,15 @@ export const ProjectsSection = () => {
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     loading="lazy"
                     decoding="async"
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      const raw = project.coverImage || project.thumbnail || project.image;
+                      if (raw && !target.src.includes('cdn.jsdelivr.net') && raw.includes('cdn.jsdelivr.net')) {
+                        target.src = raw;
+                        return;
+                      }
+                      target.src = '/placeholder.svg';
+                    }}
                   />
                   
                   {/* AI Summary Button - Top Right */}
