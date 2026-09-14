@@ -174,64 +174,64 @@ Ikuti langkah-langkah berikut untuk menjalankan proyek secara lokal:
 
 ### Halaman Publik (Landing Page)
 
-![Hero Section](asset/home_hero.png)
+![Hero Section](https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/asset/home_hero.png)
 *Gambar: Hero Section / Beranda Utama*
 
-![Tentang Saya](asset/home_about.png)
+![Tentang Saya](https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/asset/home_about.png)
 *Gambar: Bagian Tentang Saya (About)*
 
-![Pendidikan](asset/home_education.png)
+![Pendidikan](https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/asset/home_education.png)
 *Gambar: Riwayat Pendidikan*
 
-![Keahlian Teknis](asset/home_skills.png)
+![Keahlian Teknis](https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/asset/home_skills.png)
 *Gambar: Daftar Keahlian Teknis (Skills)*
 
-![Proyek Unggulan](asset/home_projects.png)
+![Proyek Unggulan](https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/asset/home_projects.png)
 *Gambar: Daftar Proyek (Projects)*
 
-![Pengalaman Kerja](asset/home_experience.png)
+![Pengalaman Kerja](https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/asset/home_experience.png)
 *Gambar: Riwayat Pengalaman Kerja*
 
-![Sertifikasi](asset/home_certifications.png)
+![Sertifikasi](https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/asset/home_certifications.png)
 *Gambar: Daftar Sertifikasi*
 
-![Artikel Blog](asset/home_articles.png)
+![Artikel Blog](https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/asset/home_articles.png)
 *Gambar: Artikel Terbaru (Blog)*
 
-![Kontak](asset/home_contact.png)
+![Kontak](https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/asset/home_contact.png)
 *Gambar: Hubungi Saya (Contact)*
 
-![Kontak WhatsApp](asset/home_contact_whatsapp.png)
+![Kontak WhatsApp](https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/asset/home_contact_whatsapp.png)
 *Gambar: Hubungi Saya via WhatsApp Modal*
 
 ### Panel Admin (Admin Dashboard)
 
-![Dashboard Utama](asset/admin_dashboard.png)
+![Dashboard Utama](https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/asset/admin_dashboard.png)
 *Gambar: Admin Panel - Dashboard*
 
-![Pesan Masuk](asset/admin_inbox.png)
+![Pesan Masuk](https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/asset/admin_inbox.png)
 *Gambar: Admin Panel - Kotak Masuk (Inbox)*
 
-![Kelola Tentang Saya](asset/admin_about.png)
+![Kelola Tentang Saya](https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/asset/admin_about.png)
 *Gambar: Admin Panel - Tentang Saya*
 
-![Kelola Pengalaman](asset/admin_experience.png)
+![Kelola Pengalaman](https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/asset/admin_experience.png)
 *Gambar: Admin Panel - Pengalaman Kerja*
 
-![Kelola Proyek](asset/admin_projects.png)
+![Kelola Proyek](https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/asset/admin_projects.png)
 *Gambar: Admin Panel - Proyek*
 
-![Kelola Keahlian](asset/admin_skills.png)
+![Kelola Keahlian](https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/asset/admin_skills.png)
 *Gambar: Admin Panel - Keahlian*
 
-![Kelola Pendidikan](asset/admin_education.png)
+![Kelola Pendidikan](https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/asset/admin_education.png)
 *Gambar: Admin Panel - Pendidikan*
 
-![Kelola Sertifikat](asset/admin_certificates.png)
+![Kelola Sertifikat](https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/asset/admin_certificates.png)
 *Gambar: Admin Panel - Sertifikat*
 
-![Kelola Artikel Blog](asset/admin_articles.png)
+![Kelola Artikel Blog](https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/asset/admin_articles.png)
 *Gambar: Admin Panel - Artikel Blog*
 
-![Kelola Media Cloudinary](asset/admin_cloudinary.png)
-*Gambar: Admin Panel - Media Cloudinary*
+![Kelola Media Library](https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/asset/admin_cloudinary.png)
+*Gambar: Admin Panel - Media Library (CDN)*
