@@ -810,8 +810,8 @@ export default function ProjectForm() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsManualSummaryOpen(false)}>Batal</Button>
-            <Button onClick={handleSaveManualSummary}>Simpan</Button>
+            <Button type="button" variant="outline" onClick={() => setIsManualSummaryOpen(false)}>Batal</Button>
+            <Button type="button" onClick={handleSaveManualSummary}>Simpan</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

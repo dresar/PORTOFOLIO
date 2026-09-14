@@ -10,6 +10,7 @@ import { useAdminPrefetch } from '../hooks/useAdminPrefetch';
 import { Loader2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { AdminDebugConsole } from './AdminDebugConsole';
 
 export function AdminLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -59,6 +60,7 @@ export function AdminLayout() {
       </div>
 
       <AIAssistant />
+      <AdminDebugConsole />
       <Toaster />
 
       <MediaPickerModal 

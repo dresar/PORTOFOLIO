@@ -241,7 +241,7 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
                     <p className="font-medium text-xs">Gagal memuat media</p>
                     <p className="text-[11px] text-muted-foreground mt-0.5">Periksa koneksi server penyimpanan</p>
                   </div>
-                  <Button size="sm" variant="outline" onClick={() => refetch()} className="rounded-lg h-7 text-xs">
+                  <Button type="button" size="sm" variant="outline" onClick={() => refetch()} className="rounded-lg h-7 text-xs">
                     Coba Lagi
                   </Button>
                 </div>
@@ -255,7 +255,7 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
                     </p>
                   </div>
                   {!search && (
-                    <Button size="sm" onClick={() => setShowUpload(true)} className="rounded-lg h-7 text-xs gap-1.5">
+                    <Button type="button" size="sm" onClick={() => setShowUpload(true)} className="rounded-lg h-7 text-xs gap-1.5">
                       <Upload className="size-3" /> Upload
                     </Button>
                   )}
@@ -322,9 +322,13 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1.5 p-2">
                           {onSelect && (
                             <Button
+                              type="button"
                               size="sm"
                               className="w-full h-7 text-xs rounded-md font-semibold active:scale-[0.98]"
-                              onClick={() => handleSelect(asset.secure_url || asset.url)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSelect(asset.secure_url || asset.url);
+                              }}
                             >
                               Pilih
                             </Button>

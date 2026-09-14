@@ -30,6 +30,8 @@ export const apiClient: AxiosInstance = axios.create({
 
 export const adminApi = apiClient;
 
+import { useAdminDebugStore } from '../store/adminDebugStore';
+
 // Request Interceptor
 apiClient.interceptors.request.use(
   (config) => {
@@ -53,6 +55,14 @@ apiClient.interceptors.request.use(
       } catch (e) {}
       config.headers.Authorization = `Bearer ${token}`;
     }
+
+    useAdminDebugStore.getState().addLog({
+      level: 'info',
+      category: 'api',
+      title: `[REQ] ${config.method?.toUpperCase()} ${config.url}`,
+      details: { params: config.params, data: config.data }
+    });
+
     return config;
   },
   (error) => Promise.reject(error)
@@ -61,9 +71,28 @@ apiClient.interceptors.request.use(
 // Response Interceptor
 let lastDbUnavailableAt = 0;
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    useAdminDebugStore.getState().addLog({
+      level: 'success',
+      category: 'api',
+      status: response.status,
+      title: `[RES ${response.status}] ${response.config?.method?.toUpperCase()} ${response.config?.url}`,
+      details: response.data
+    });
+    return response;
+  },
   async (error) => {
     const originalRequest = error.config;
+    const status = error.response?.status;
+    const errorData = error.response?.data;
+
+    useAdminDebugStore.getState().addLog({
+      level: 'error',
+      category: 'api',
+      status: status || 0,
+      title: `[ERR ${status || 'NET'}] ${originalRequest?.method?.toUpperCase()} ${originalRequest?.url}: ${errorData?.error || errorData?.message || error.message}`,
+      details: { status, data: errorData, message: error.message, stack: error.stack }
+    });
 
     if (error.response?.status === 503 && error.response?.data?.code === 'DB_UNAVAILABLE') {
       const now = Date.now();
@@ -77,22 +106,9 @@ apiClient.interceptors.response.use(
     // Handle 401 Unauthorized (Token Expired) or 403 Forbidden (Invalid Token)
     if ((error.response?.status === 401 || error.response?.status === 403) && !originalRequest._retry) {
       originalRequest._retry = true;
-      
-      // Logout user if token is invalid
       useAdminAuthStore.getState().logout();
       window.location.href = '/admin/login';
-      
       return Promise.reject(error);
-    }
-    
-    // Handle Network Errors (Connection Refused, etc.) - DO NOT LOGOUT
-    if (!error.response) {
-        return Promise.reject(error);
-    }
-
-    // Handle Global Errors
-    if (error.response?.status === 500) {
-      // swallow console logs in production
     }
     
     return Promise.reject(error);
