@@ -6,6 +6,7 @@ import { normalizeMediaUrl } from '@/lib/utils';
 import { useModalStore } from '@/store/modalStore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLocalizedContent } from '@/hooks/useLocalizedContent';
+import { MediaThumbnail } from '@/components/ui/VideoThumbnail';
 
 export const ExperienceSection = () => {
   const { t } = useTranslation();
@@ -81,7 +82,7 @@ export const ExperienceSection = () => {
 
     const galleryUrls = gallery.map((item: any) => {
       const u = typeof item === 'string' ? item : item?.url;
-      return u && !/\.(mp4|webm|mov|mkv|avi)($|\?)/i.test(u) ? normalizeMediaUrl(u) : null;
+      return u ? normalizeMediaUrl(u) : null;
     }).filter(Boolean);
 
     const previewList = galleryUrls.length > 0 ? galleryUrls : (coverUrl ? [normalizeMediaUrl(coverUrl)] : []);
@@ -109,11 +110,11 @@ export const ExperienceSection = () => {
             title="Sentuh untuk memperbesar foto bukti"
           >
             {coverUrl ? (
-              <img 
-                src={normalizeMediaUrl(coverUrl)} 
+              <MediaThumbnail 
+                src={coverUrl} 
                 alt={exp.company} 
                 className="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-105" 
-                loading="lazy"
+                videoBadgePosition="top-right"
               />
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center">

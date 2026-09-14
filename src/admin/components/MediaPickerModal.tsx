@@ -23,9 +23,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { mediaApi, formatBytes, type MediaAsset } from '../services/mediaApi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { cn, getCloudinaryVideoThumbnail } from '@/lib/utils';
+import { cn, isVideoUrl } from '@/lib/utils';
 import { MediaUploadModal } from '../pages/media/MediaUploadModal';
 import { CustomVideoPlayer } from '@/components/ui/CustomVideoPlayer';
+import { VideoThumbnail } from '@/components/ui/VideoThumbnail';
 
 interface MediaPickerModalProps {
   isOpen: boolean;
@@ -236,7 +237,7 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                   {filtered.map((asset) => {
                     const isPdf = asset.format === 'pdf' || asset.resource_type === 'raw' || /\.pdf($|\?)/i.test(asset.secure_url || asset.url);
-                    const isVideo = asset.resource_type === 'video' || ['mp4', 'webm', 'mov'].includes(asset.format || '');
+                    const isVideo = asset.resource_type === 'video' || isVideoUrl(asset.secure_url || asset.url) || ['mp4', 'webm', 'mov'].includes(asset.format || '');
 
                     return (
                       <motion.div
@@ -252,11 +253,10 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
                         >
                           {isVideo ? (
                             <div className="size-full bg-black flex items-center justify-center relative">
-                              <img
-                                src={getCloudinaryVideoThumbnail(asset.secure_url)}
-                                alt={asset.public_id}
+                              <VideoThumbnail
+                                src={asset.secure_url || asset.url}
                                 className="size-full object-cover opacity-90 transition-transform duration-300 group-hover:scale-105"
-                                loading="lazy"
+                                showBadge={false}
                               />
                               <div className="absolute top-1.5 right-1.5 bg-purple-600/90 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-1 shadow-xs z-10">
                                 <Video className="size-2.5" /> VIDEO
@@ -412,9 +412,9 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
               </div>
 
               <div className="flex-1 overflow-hidden flex items-center justify-center p-4 bg-black/40">
-                {previewAsset.resource_type === 'video' ? (
+                {previewAsset.resource_type === 'video' || isVideoUrl(previewAsset.secure_url || previewAsset.url) || ['mp4', 'webm', 'mov'].includes(previewAsset.format || '') ? (
                   <CustomVideoPlayer
-                    src={previewAsset.secure_url}
+                    src={previewAsset.secure_url || previewAsset.url}
                     className="w-full max-w-2xl aspect-video rounded-lg"
                   />
                 ) : (

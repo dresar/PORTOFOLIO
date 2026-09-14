@@ -17,6 +17,7 @@ import { ModernLoader } from '@/components/ui/ModernLoader';
 import { useQueryClient } from '@tanstack/react-query';
 import { RichHtmlEditor } from '@/admin/components/RichHtmlEditor';
 import { MediaUploadInput } from '@/admin/components/MediaUploadInput';
+import { MediaThumbnail } from '@/components/ui/VideoThumbnail';
 
 const experienceSchema = z.object({
   type: z.enum(['work', 'internship', 'organization']),
@@ -277,11 +278,12 @@ export default function ExperienceForm() {
                       </div>
                       {form.watch(`gallery.${index}.url`) && (
                         <div className="h-10 w-10 relative rounded overflow-hidden border shrink-0">
-                          <img 
+                          <MediaThumbnail 
                             src={form.watch(`gallery.${index}.url`)} 
                             alt={`Galeri ${index + 1}`} 
                             className="h-full w-full object-cover" 
-                            onError={(e) => (e.currentTarget.src = '/placeholder.svg')}
+                            showVideoBadge={true}
+                            videoBadgePosition="center"
                           />
                         </div>
                       )}

@@ -7,7 +7,8 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 import { mediaApi, fileToBase64, formatBytes, type UploadResult } from '../../services/mediaApi';
 import { Button } from '@/components/ui/button';
-import { cn, getCloudinaryVideoThumbnail } from '@/lib/utils';
+import { cn, isVideoUrl } from '@/lib/utils';
+import { VideoThumbnail } from '@/components/ui/VideoThumbnail';
 
 interface MediaUploadModalProps {
   isOpen: boolean;
@@ -242,12 +243,9 @@ export function MediaUploadModal({ isOpen, onClose, onInsert }: MediaUploadModal
                       )}
                     >
                       <div className="size-10 rounded-lg bg-muted flex items-center justify-center shrink-0 overflow-hidden border border-border/50">
-                        {item.status === 'success' && item.result && item.result.resource_type === 'video' ? (
+                        {item.status === 'success' && item.result && (item.result.resource_type === 'video' || isVideoUrl(item.result.secure_url)) ? (
                           <div className="size-full relative bg-black flex items-center justify-center">
-                            <img src={getCloudinaryVideoThumbnail(item.result.secure_url)} className="size-full object-cover" alt="preview" />
-                            <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                              <Video className="size-4 text-white" />
-                            </div>
+                            <VideoThumbnail src={item.result.secure_url} className="size-full object-cover" showBadge={true} badgePosition="center" />
                           </div>
                         ) : item.file.type.startsWith('video/') ? (
                           <div className="size-full bg-purple-950/80 flex items-center justify-center text-purple-400">
@@ -357,12 +355,9 @@ export function MediaUploadModal({ isOpen, onClose, onInsert }: MediaUploadModal
                       animate={{ opacity: 1, y: 0 }}
                       className="flex items-center gap-3 p-2.5 rounded-lg bg-muted/40 border border-border/40"
                     >
-                      {item.resource_type === 'video' ? (
+                      {item.resource_type === 'video' || isVideoUrl(item.secure_url) ? (
                         <div className="size-11 rounded-md shrink-0 border border-border/50 overflow-hidden relative bg-black flex items-center justify-center">
-                          <img src={getCloudinaryVideoThumbnail(item.secure_url)} alt={item.public_id} className="size-full object-cover" />
-                          <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                            <Video className="size-4 text-white" />
-                          </div>
+                          <VideoThumbnail src={item.secure_url} className="size-full object-cover" showBadge={true} badgePosition="center" />
                         </div>
                       ) : item.resource_type === 'raw' || item.format === 'pdf' ? (
                         <div className="size-11 rounded-md shrink-0 border border-border/50 bg-red-500/10 text-red-500 flex items-center justify-center">

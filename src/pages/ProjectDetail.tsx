@@ -3,11 +3,12 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useProjects, useProject } from '@/hooks/useProjects';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
-import { normalizeMediaUrl, sanitizeHtmlContent, safeUrl } from '@/lib/utils';
+import { normalizeMediaUrl, sanitizeHtmlContent, safeUrl, isVideoUrl } from '@/lib/utils';
 import { ArrowLeft, ExternalLink, Github, Sparkles, Loader2, Calendar, ChevronLeft, ChevronRight, Maximize2, Video, FileText, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { MediaThumbnail } from '@/components/ui/VideoThumbnail';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { AISummaryModal } from '@/components/ui/AISummaryModal';
@@ -311,19 +312,23 @@ const ProjectDetail = () => {
                   onMouseEnter={() => setIsAutoPlaying(false)}
                   onMouseLeave={() => setIsAutoPlaying(true)}
                 >
-                    <AnimatePresence mode="wait">
-                        <motion.img 
-                            key={safeImageIndex}
-                            src={allImages[safeImageIndex] || ''} 
-                            alt={project.title} 
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.5 }}
-                            className="w-full h-full object-cover cursor-pointer hover:scale-[1.02] transition-transform"
-                            onClick={() => openImagePreviewModal(allImages[safeImageIndex], project.title, allImages, safeImageIndex)}
-                        />
-                    </AnimatePresence>
+                    {isVideoUrl(allImages[safeImageIndex]) ? (
+                      <CustomVideoPlayer key={allImages[safeImageIndex]} src={allImages[safeImageIndex]} className="w-full h-full" />
+                    ) : (
+                      <AnimatePresence mode="wait">
+                          <motion.img 
+                              key={safeImageIndex}
+                              src={allImages[safeImageIndex] || ''} 
+                              alt={project.title} 
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                              transition={{ duration: 0.5 }}
+                              className="w-full h-full object-cover cursor-pointer hover:scale-[1.02] transition-transform"
+                              onClick={() => openImagePreviewModal(allImages[safeImageIndex], project.title, allImages, safeImageIndex)}
+                          />
+                      </AnimatePresence>
+                    )}
 
                     {/* Expand Image Button Badge */}
                     <button
@@ -381,7 +386,7 @@ const ProjectDetail = () => {
                                           : 'border-border/60 opacity-60 hover:opacity-100 hover:border-primary/50'
                                     }`}
                                 >
-                                    <img src={img} className="w-full h-full object-cover" alt={`Thumbnail ${idx + 1}`} />
+                                    <MediaThumbnail src={img} className="w-full h-full object-cover" alt={`Thumbnail ${idx + 1}`} showVideoBadge={true} videoBadgePosition="center" />
                                 </button>
                             ))}
                         </div>
@@ -397,7 +402,7 @@ const ProjectDetail = () => {
                 <span>Video Demo</span>
               </h3>
               {isDirectVideo ? (
-                <CustomVideoPlayer src={normalizeMediaUrl(rawVideoUrl)} />
+                <CustomVideoPlayer src={normalizeMediaUrl(rawVideoUrl)} poster={allImages[0] ? normalizeMediaUrl(allImages[0]) : undefined} />
               ) : youtubeEmbedUrl ? (
                 <div className="aspect-video w-full rounded-xl overflow-hidden border border-border/50 shadow-xl bg-black">
                   <iframe

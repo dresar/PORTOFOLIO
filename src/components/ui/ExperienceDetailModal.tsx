@@ -19,8 +19,9 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { normalizeMediaUrl, sanitizeHtmlContent, getCloudinaryVideoThumbnail, safeUrl } from '@/lib/utils';
+import { normalizeMediaUrl, sanitizeHtmlContent, isVideoUrl, safeUrl } from '@/lib/utils';
 import { CustomVideoPlayer } from '@/components/ui/CustomVideoPlayer';
+import { MediaThumbnail } from '@/components/ui/VideoThumbnail';
 import { useLocalizedContent } from '@/hooks/useLocalizedContent';
 
 export const ExperienceDetailModal = () => {
@@ -241,7 +242,7 @@ export const ExperienceDetailModal = () => {
                   {(() => {
                     const rawUrl = typeof gallery[currentGalleryIndex] === 'string' ? gallery[currentGalleryIndex] : gallery[currentGalleryIndex].url;
                     const mediaUrl = normalizeMediaUrl(rawUrl);
-                    const isVideo = /\.(mp4|webm|mov|mkv|avi)($|\?)/i.test(mediaUrl) || mediaUrl.includes('/video/upload/');
+                    const isVideo = isVideoUrl(mediaUrl);
 
                     if (isVideo) {
                       return <CustomVideoPlayer key={mediaUrl} src={mediaUrl} className="w-full h-full" />;
@@ -283,8 +284,6 @@ export const ExperienceDetailModal = () => {
                     {gallery.map((photo: any, idx: number) => {
                       const rawUrl = typeof photo === 'string' ? photo : photo.url;
                       const mediaUrl = normalizeMediaUrl(rawUrl);
-                      const isVideo = /\.(mp4|webm|mov|mkv|avi)($|\?)/i.test(mediaUrl) || mediaUrl.includes('/video/upload/');
-                      const thumbUrl = getCloudinaryVideoThumbnail(mediaUrl);
 
                       return (
                         <button
@@ -294,16 +293,13 @@ export const ExperienceDetailModal = () => {
                             currentGalleryIndex === idx ? 'border-primary scale-105' : 'border-transparent opacity-60 hover:opacity-100'
                           }`}
                         >
-                          <img 
-                            src={thumbUrl} 
-                            alt="" 
-                            className="w-full h-full object-cover" 
+                          <MediaThumbnail
+                            src={mediaUrl}
+                            alt=""
+                            className="w-full h-full object-cover"
+                            showVideoBadge={true}
+                            videoBadgePosition="center"
                           />
-                          {isVideo && (
-                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                              <Video className="w-4 h-4 text-white drop-shadow-md" />
-                            </div>
-                          )}
                         </button>
                       );
                     })}

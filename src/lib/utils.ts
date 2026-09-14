@@ -156,12 +156,18 @@ export function safeUrl(raw?: string | null, fallback = '#'): string {
   return fallback;
 }
 
+export function isVideoUrl(url?: string | null): boolean {
+  if (!url) return false;
+  const clean = url.split('?')[0].split('#')[0].toLowerCase();
+  return /\.(mp4|webm|ogg|mov|mkv|avi|m4v)$/i.test(clean) || url.includes('/video/upload/');
+}
+
 export function getVideoThumbnail(url?: string | null): string {
   if (!url) return '';
   if (url.includes('/video/upload/')) {
     return url.replace(/\.(mp4|webm|mov|mkv|avi)$/i, '.jpg');
   }
-  return url;
+  return '';
 }
 
 export const getCloudinaryVideoThumbnail = getVideoThumbnail;

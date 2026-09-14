@@ -26,6 +26,7 @@ import { CustomDatePicker } from "@/components/ui/CustomDatePicker";
 import { DocumentAttachmentInput } from '@/admin/components/DocumentAttachmentInput';
 import { MediaUploadInput } from '@/admin/components/MediaUploadInput';
 import { MediaPickerModal } from '@/admin/components/MediaPickerModal';
+import { MediaThumbnail } from '@/components/ui/VideoThumbnail';
 import type { DocumentAttachment } from '@/types';
 
 const projectSchema = z.object({
@@ -673,12 +674,12 @@ export default function ProjectForm() {
                   <div className="grid grid-cols-2 gap-2 mb-2">
                     {gallery.map((img: string, idx: number) => (
                       <div key={idx} className="relative aspect-square rounded-md overflow-hidden border group">
-                        <img src={img} alt={`Galeri ${idx}`} className="w-full h-full object-cover" />
+                        <MediaThumbnail src={img} alt={`Galeri ${idx}`} className="w-full h-full object-cover" showVideoBadge={true} videoBadgePosition="center" />
                         <Button 
                           type="button" 
                           variant="destructive" 
                           size="icon" 
-                          className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity" 
+                          className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity z-10" 
                           onClick={() => handleRemoveGalleryImage(idx)}
                         >
                           <Trash2 className="h-3 w-3" />

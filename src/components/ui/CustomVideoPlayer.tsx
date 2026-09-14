@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Play, Pause, Volume2, VolumeX, Maximize, Minimize } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, getCloudinaryVideoThumbnail } from '@/lib/utils';
 
 interface CustomVideoPlayerProps {
   src: string;
@@ -30,6 +30,9 @@ export const CustomVideoPlayer: React.FC<CustomVideoPlayerProps> = ({
   const [showControls, setShowControls] = useState(true);
   const [isPortrait, setIsPortrait] = useState(false);
 
+  const cloudThumb = getCloudinaryVideoThumbnail(src);
+  const effectivePoster = poster || (cloudThumb ? cloudThumb : undefined);
+
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -39,6 +42,11 @@ export const CustomVideoPlayer: React.FC<CustomVideoPlayerProps> = ({
       setDuration(video.duration || 0);
       if (video.videoWidth && video.videoHeight) {
         setIsPortrait(video.videoHeight > video.videoWidth);
+      }
+      if (!isPlaying && video.currentTime === 0 && !effectivePoster) {
+        try {
+          video.currentTime = 0.001;
+        } catch {}
       }
     };
     const handleEnded = () => setIsPlaying(false);
@@ -108,7 +116,9 @@ export const CustomVideoPlayer: React.FC<CustomVideoPlayerProps> = ({
       <video
         ref={videoRef}
         src={src}
-        poster={poster}
+        poster={effectivePoster}
+        preload="metadata"
+        playsInline
         autoPlay={autoPlay}
         loop={loop}
         muted={isMuted}

@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useModalStore } from '@/store/modalStore';
 import { X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
-import { normalizeMediaUrl } from '@/lib/utils';
+import { normalizeMediaUrl, isVideoUrl } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from 'next-themes';
+import { CustomVideoPlayer } from '@/components/ui/CustomVideoPlayer';
+import { MediaThumbnail } from '@/components/ui/VideoThumbnail';
 
 export const ImagePreviewModal = () => {
   const { isOpen, modalType, imagePreviewUrl, imagePreviewTitle, imagePreviewList, imagePreviewIndex, setImagePreviewIndex, closeModal } = useModalStore();
@@ -39,6 +41,7 @@ export const ImagePreviewModal = () => {
   if (!isModalOpen || !imagePreviewUrl) return null;
 
   const currentUrl = normalizeMediaUrl(imagePreviewList[imagePreviewIndex] || imagePreviewUrl);
+  const isCurrentVideo = isVideoUrl(currentUrl);
   const totalCount = imagePreviewList.length;
 
   const handlePrev = () => {
@@ -92,52 +95,54 @@ export const ImagePreviewModal = () => {
 
           {/* Action Buttons */}
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-            {/* Desktop Zoom controls */}
-            <div 
-              className={`hidden sm:flex items-center gap-1.5 p-1 rounded-lg border ${
-                isDark ? 'bg-white/10 border-white/10' : 'bg-slate-100 border-slate-200/80'
-              }`}
-            >
-              <button
-                onClick={() => setZoom((z) => Math.max(0.5, z - 0.25))}
-                className={`p-1.5 rounded-md transition-colors ${
-                  isDark ? 'hover:bg-white/20 text-white/80' : 'hover:bg-slate-200 text-slate-700'
-                }`}
-                title="Perkecil (-)"
-              >
-                <ZoomOut className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setZoom(1)}
-                className={`p-1.5 rounded-md transition-colors ${
-                  isDark ? 'hover:bg-white/20 text-white/80' : 'hover:bg-slate-200 text-slate-700'
-                }`}
-                title="Reset Zoom"
-              >
-                <RotateCcw className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setZoom((z) => Math.min(3, z + 0.25))}
-                className={`p-1.5 rounded-md transition-colors ${
-                  isDark ? 'hover:bg-white/20 text-white/80' : 'hover:bg-slate-200 text-slate-700'
-                }`}
-                title="Perbesar (+)"
-              >
-                <ZoomIn className="w-4 h-4" />
-              </button>
-            </div>
+            {!isCurrentVideo && (
+              <>
+                <div 
+                  className={`hidden sm:flex items-center gap-1.5 p-1 rounded-lg border ${
+                    isDark ? 'bg-white/10 border-white/10' : 'bg-slate-100 border-slate-200/80'
+                  }`}
+                >
+                  <button
+                    onClick={() => setZoom((z) => Math.max(0.5, z - 0.25))}
+                    className={`p-1.5 rounded-md transition-colors ${
+                      isDark ? 'hover:bg-white/20 text-white/80' : 'hover:bg-slate-200 text-slate-700'
+                    }`}
+                    title="Perkecil (-)"
+                  >
+                    <ZoomOut className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => setZoom(1)}
+                    className={`p-1.5 rounded-md transition-colors ${
+                      isDark ? 'hover:bg-white/20 text-white/80' : 'hover:bg-slate-200 text-slate-700'
+                    }`}
+                    title="Reset Zoom"
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => setZoom((z) => Math.min(3, z + 0.25))}
+                    className={`p-1.5 rounded-md transition-colors ${
+                      isDark ? 'hover:bg-white/20 text-white/80' : 'hover:bg-slate-200 text-slate-700'
+                    }`}
+                    title="Perbesar (+)"
+                  >
+                    <ZoomIn className="w-4 h-4" />
+                  </button>
+                </div>
 
-            {/* Mobile Reset Zoom */}
-            {zoom !== 1 && (
-              <button
-                onClick={() => setZoom(1)}
-                className={`sm:hidden p-2 rounded-full text-xs font-mono font-bold ${
-                  isDark ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-800'
-                }`}
-                title="Reset Zoom"
-              >
-                1x
-              </button>
+                {zoom !== 1 && (
+                  <button
+                    onClick={() => setZoom(1)}
+                    className={`sm:hidden p-2 rounded-full text-xs font-mono font-bold ${
+                      isDark ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-800'
+                    }`}
+                    title="Reset Zoom"
+                  >
+                    1x
+                  </button>
+                )}
+              </>
             )}
             
             {/* Close Button */}
@@ -169,25 +174,31 @@ export const ImagePreviewModal = () => {
             </button>
           )}
 
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentUrl}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: zoom }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.2 }}
-              className="w-full h-full flex items-center justify-center overflow-hidden"
-            >
-              <img
-                src={currentUrl}
-                alt={imagePreviewTitle || "Pratinjau Gambar"}
-                className={`max-w-full max-h-[72vh] sm:max-h-[80vh] w-auto h-auto object-contain rounded-lg shadow-xl transition-transform duration-200 cursor-grab active:cursor-grabbing ${
-                  !isDark && 'border border-slate-200/60 shadow-slate-300/50'
-                }`}
-                style={{ transform: `scale(${zoom})` }}
-              />
-            </motion.div>
-          </AnimatePresence>
+          {isCurrentVideo ? (
+            <div className="w-full max-w-4xl max-h-[75vh] flex items-center justify-center p-2 z-20">
+              <CustomVideoPlayer key={currentUrl} src={currentUrl} className="w-full max-h-[72vh] aspect-video rounded-xl shadow-2xl" />
+            </div>
+          ) : (
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentUrl}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: zoom }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+                className="w-full h-full flex items-center justify-center overflow-hidden"
+              >
+                <img
+                  src={currentUrl}
+                  alt={imagePreviewTitle || "Pratinjau Gambar"}
+                  className={`max-w-full max-h-[72vh] sm:max-h-[80vh] w-auto h-auto object-contain rounded-lg shadow-xl transition-transform duration-200 cursor-grab active:cursor-grabbing ${
+                    !isDark && 'border border-slate-200/60 shadow-slate-300/50'
+                  }`}
+                  style={{ transform: `scale(${zoom})` }}
+                />
+              </motion.div>
+            </AnimatePresence>
+          )}
 
           {totalCount > 1 && (
             <button
@@ -225,10 +236,12 @@ export const ImagePreviewModal = () => {
                       : 'border-slate-300 opacity-60 hover:opacity-100'
                 }`}
               >
-                <img
-                  src={normalizeMediaUrl(imgUrl)}
+                <MediaThumbnail
+                  src={imgUrl}
                   alt={`Thumb ${idx + 1}`}
                   className="w-full h-full object-cover"
+                  showVideoBadge={true}
+                  videoBadgePosition="center"
                 />
               </button>
             ))}

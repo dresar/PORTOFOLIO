@@ -13,11 +13,13 @@ import {
   Eye,
   FolderOpen,
   Copy,
-  ExternalLink
+  ExternalLink,
+  Video
 } from 'lucide-react';
 import { mediaApi, fileToBase64, formatBytes } from '../services/mediaApi';
 import { MediaPickerModal } from './MediaPickerModal';
-import { cn } from '@/lib/utils';
+import { cn, isVideoUrl } from '@/lib/utils';
+import { VideoThumbnail } from '@/components/ui/VideoThumbnail';
 
 export type CdnProvider = 'github';
 
@@ -71,6 +73,12 @@ export function MediaUploadInput({
     ? /\.pdf($|\?)/i.test(activeUrl) || (selectedFile && selectedFile.type === 'application/pdf')
     : selectedFile
     ? selectedFile.type === 'application/pdf' || selectedFile.name.toLowerCase().endsWith('.pdf')
+    : false;
+
+  const isVideo = activeUrl
+    ? isVideoUrl(activeUrl) || (selectedFile ? selectedFile.type.startsWith('video/') : false)
+    : selectedFile
+    ? selectedFile.type.startsWith('video/') || /\.(mp4|webm|mov|mkv|avi|m4v)$/i.test(selectedFile.name)
     : false;
 
   const handleFile = (file: File) => {
@@ -170,7 +178,7 @@ export function MediaUploadInput({
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
           <div className="size-7 rounded-md bg-primary/10 text-primary flex items-center justify-center border border-primary/20 shrink-0">
-            {isPdf ? <FileText className="size-3.5" /> : <ImageIcon className="size-3.5" />}
+            {isPdf ? <FileText className="size-3.5" /> : isVideo ? <Video className="size-3.5 text-purple-400" /> : <ImageIcon className="size-3.5" />}
           </div>
           <div className="min-w-0">
             <span className="text-xs font-semibold text-foreground tracking-wide block truncate">{label}</span>
@@ -219,7 +227,7 @@ export function MediaUploadInput({
           <div className="flex items-center justify-between gap-2 min-w-0">
             <div className="flex items-center gap-2 min-w-0">
               <div className="size-7 rounded-md bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                {isPdf ? <FileText className="size-3.5" /> : <ImageIcon className="size-3.5" />}
+                {isPdf ? <FileText className="size-3.5" /> : isVideo ? <Video className="size-3.5 text-purple-400" /> : <ImageIcon className="size-3.5" />}
               </div>
               <div className="min-w-0">
                 <p className="text-xs font-semibold text-foreground truncate">{selectedFile.name}</p>
@@ -319,17 +327,21 @@ export function MediaUploadInput({
             <div
               className={cn(
                 'w-full bg-black/5 dark:bg-black/30 flex items-center justify-center overflow-hidden',
-                aspectRatio === 'video' ? 'aspect-video' : aspectRatio === 'square' ? 'aspect-square max-h-48' : 'h-32'
+                aspectRatio === 'video' || isVideo ? 'aspect-video' : aspectRatio === 'square' ? 'aspect-square max-h-48' : 'h-32'
               )}
             >
-              <img
-                src={activeUrl}
-                alt="Preview"
-                className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300"
-                onError={(e) => {
-                  (e.target as HTMLElement).style.display = 'none';
-                }}
-              />
+              {isVideo ? (
+                <VideoThumbnail src={activeUrl} className="w-full h-full object-cover" showBadge={true} badgePosition="center" showPlayIcon={true} />
+              ) : (
+                <img
+                  src={activeUrl}
+                  alt="Preview"
+                  className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300"
+                  onError={(e) => {
+                    (e.target as HTMLElement).style.display = 'none';
+                  }}
+                />
+              )}
             </div>
 
             <div className="absolute top-1.5 left-1.5 flex items-center gap-1 bg-black/70 backdrop-blur-xs text-white text-[10px] font-medium px-2 py-0.5 rounded-md border border-white/10 shadow-xs">

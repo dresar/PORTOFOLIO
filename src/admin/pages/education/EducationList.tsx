@@ -28,6 +28,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { DeleteAlert } from "../../components/DeleteAlert";
 import { Input } from '@/components/ui/input';
+import { MediaThumbnail } from '@/components/ui/VideoThumbnail';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function EducationList() {
@@ -326,11 +327,11 @@ export default function EducationList() {
                       if (gallery.length > 0) {
                           return (
                               <div className="flex gap-1 mt-2 overflow-hidden">
-                                  {gallery.slice(0, 3).map((img: string, i: number) => (
-                                      <div key={i} className="h-8 w-12 rounded bg-muted overflow-hidden flex-shrink-0">
-                                          <img src={img} className="w-full h-full object-cover" />
-                                      </div>
-                                  ))}
+                                   {gallery.slice(0, 3).map((img: string, i: number) => (
+                                       <div key={i} className="h-8 w-12 rounded bg-muted overflow-hidden flex-shrink-0">
+                                           <MediaThumbnail src={img} className="w-full h-full object-cover" showVideoBadge={true} videoBadgePosition="center" />
+                                       </div>
+                                   ))}
                                   {gallery.length > 3 && (
                                       <div className="h-8 w-8 rounded bg-muted flex items-center justify-center text-xs text-muted-foreground">
                                           +{gallery.length - 3}
