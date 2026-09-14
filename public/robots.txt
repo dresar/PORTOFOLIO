@@ -59,6 +59,5 @@ Disallow: /login/
 Disallow: /dashboard/
 Disallow: /private/
 
-# Sitemaps & LLM Context Discovery
+# Sitemaps
 Sitemap: https://ekasyarif.my.id/sitemap.xml
-# LLMs-Txt: https://ekasyarif.my.id/llms.txt

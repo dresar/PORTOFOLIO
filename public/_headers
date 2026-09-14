@@ -29,7 +29,15 @@
   Cache-Control: public, max-age=86400, must-revalidate
 
 /robots.txt
-  Cache-Control: public, max-age=86400, must-revalidate
+  Cache-Control: public, max-age=0, must-revalidate
+
+/llms.txt
+  Cache-Control: public, max-age=0, must-revalidate
+  Content-Type: text/plain; charset=utf-8
+
+/llms-full.txt
+  Cache-Control: public, max-age=0, must-revalidate
+  Content-Type: text/plain; charset=utf-8
 
 /.env*
   Cache-Control: no-store, no-cache, must-revalidate

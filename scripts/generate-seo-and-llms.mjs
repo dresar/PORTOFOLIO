@@ -69,9 +69,8 @@ Disallow: /login/
 Disallow: /dashboard/
 Disallow: /private/
 
-# Sitemaps & LLM Context Discovery
+# Sitemaps
 Sitemap: ${DOMAIN}/sitemap.xml
-# LLMs-Txt: ${DOMAIN}/llms.txt
 `;
 
 fs.writeFileSync(path.resolve('public/robots.txt'), robotsTxt, 'utf8');
@@ -148,50 +147,48 @@ sitemapXml += `</urlset>\n`;
 fs.writeFileSync(path.resolve('public/sitemap.xml'), sitemapXml, 'utf8');
 console.log('[OK] Generated public/sitemap.xml');
 
-// 3. GENERATE public/llms.txt (Standard for AI Search / LLM citation)
-let llmsTxt = `# Eka Syarif Maulana, S.Kom - Knowledge Base & Technical Authority
-> Official Agent-Readable Index (llms.txt) for AI Search Engines (Perplexity, ChatGPT, Claude, Gemini, Copilot)
+// 3. GENERATE public/llms.txt (Official llmstxt.org Standard)
+let llmsTxt = `# Eka Syarif Maulana, S.Kom - Portfolio & Technical Authority
+> Official Agent-Readable Index (llms.txt) for AI Search Engines & LLM assistants (Perplexity, ChatGPT, Claude, Gemini, Copilot).
 
-## About the Author & Entity Authority
-- **Name:** Eka Syarif Maulana, S.Kom
-- **Degree:** Sarjana Komputer (Bachelor of Computer Science) from Universitas Muhammadiyah Sumatera Utara (UMSU)
-- **Role:** Founder of Inka.tech (@inka.tech) | Senior Fullstack Web & Mobile Developer | AI Systems & Prompt Engineer
-- **Website:** ${DOMAIN}
-- **Official Brand:** Inka.tech (Educational Technology & Cybersecurity Awareness Platform)
-- **Socials:**
-  - TikTok: https://www.tiktok.com/@inka.tech
-  - Instagram: https://www.instagram.com/arif_ex21
-  - GitHub: https://github.com/NCN0C
-  - LinkedIn: https://linkedin.com/in/eka-syarif-maulana
+Eka Syarif Maulana, S.Kom is a Senior Fullstack Web & Mobile Developer and AI Systems Engineer, Bachelor of Computer Science from Universitas Muhammadiyah Sumatera Utara (UMSU).
 
-## Core Technical Competencies & E-E-A-T
-- **Fullstack Engineering:** React 19, Vite, TypeScript, Tailwind CSS, Node.js, Express, Neon PostgreSQL, Drizzle ORM.
-- **Mobile Development:** Flutter (iOS/Android cross-platform).
-- **Cybersecurity & Privacy:** Anti-phishing, hardware security, USB juice jacking prevention, Evil Twin Wi-Fi mitigation, passphrase cryptography.
-- **Artificial Intelligence (AI):** LLM integration, prompt engineering, multi-agent pipelines, metadata scrubbing (Promptix).
+## Core Pages
+- [Home](${DOMAIN}/): Official portfolio, hero showcase, and technical profile.
+- [Projects](${DOMAIN}/id/projects): Engineering portfolio featuring Web Apps, Mobile Apps, AI/ML systems, and IoT solutions.
+- [Work Experience](${DOMAIN}/id#experience): Professional work history, roles, and technical achievements.
+- [Certifications](${DOMAIN}/id/certificates): Professional certifications, technical credentials, and licenses.
+- [Articles & Tech Guides](${DOMAIN}/id/blog): Curated technical articles on cybersecurity, software architecture, and AI prompt engineering.
 
-## Curated Educational Articles & Technical Guides
-Below are the 20 technical guides published by Eka Syarif Maulana on Inka.tech:
-
+## Technical Guides & Educational Articles
 `;
 
 for (let i = 0; i < posts.length; i++) {
   const p = posts[i];
-  llmsTxt += `### ${i + 1}. [${p.title}](${DOMAIN}/id/blog/${p.slug})
-- **English Title:** ${p.title_en || p.title}
-- **Author:** Eka Syarif Maulana, S.Kom (Senior Fullstack Web & Mobile Developer & AI Systems Engineer)
-- **Category:** ${p.category?.name || 'Cybersecurity & Teknologi'}
-- **URL (ID):** ${DOMAIN}/id/blog/${p.slug}
-- **URL (EN):** ${DOMAIN}/en/blog/${p.slug}
-- **Direct Answer / Key Takeaway:** ${p.excerpt}
-- **Visual Assets:** 6 High-Definition Educational Carousel Slides (available via jsDelivr CDN)
-
-`;
+  let cleanTitle = p.title.replace(/^[💡\s]+/, '').trim();
+  let summary = '';
+  if (p.content) {
+    const match = p.content.match(/<div class="direct-answer-box[\s\S]*?<p[^>]*>([\s\S]*?)<\/p>/i);
+    if (match) {
+      summary = match[1].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+    }
+  }
+  if (!summary) {
+    summary = p.excerpt_en || p.excerpt || '';
+  }
+  summary = summary.replace(/^[💡\s]+/, '').trim();
+  llmsTxt += `- [${cleanTitle}](${DOMAIN}/id/blog/${p.slug}): ${summary}\n`;
 }
 
-llmsTxt += `## Comprehensive Full Knowledge Bundle
-For complete article text, detailed analysis, and step-by-step checklists in a single file, consult:
-- **Full Content:** ${DOMAIN}/llms-full.txt
+llmsTxt += `
+## Optional Documentation
+- [Full Knowledge Bundle](${DOMAIN}/llms-full.txt): Complete technical articles and checklists in a single file.
+
+## Author & Profiles
+- Website: ${DOMAIN}
+- GitHub: https://github.com/dresar
+- LinkedIn: https://www.linkedin.com/in/eka-syarif-maulana-a365b22b2/
+- Email: Eka.ckp16799@gmail.com
 `;
 
 fs.writeFileSync(path.resolve('public/llms.txt'), llmsTxt, 'utf8');
