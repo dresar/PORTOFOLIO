@@ -19,7 +19,6 @@ import { ScrollToTop } from '@/components/effects/ScrollToTop';
 import { CustomVideoPlayer } from '@/components/ui/CustomVideoPlayer';
 import { useTheme } from 'next-themes';
 import { useModalStore } from '@/store/modalStore';
-import { MacBookFrame } from '@/components/ui/MacBookFrame';
 import MDEditor from '@uiw/react-md-editor';
 import '@uiw/react-md-editor/markdown-editor.css';
 import '@uiw/react-markdown-preview/markdown.css';
@@ -306,61 +305,56 @@ const ProjectDetail = () => {
                 </div>
             </div>
 
-            {/* Gallery Column (MacBook Showcase Slider) */}
+            {/* Gallery Column (Showcase Slider) */}
             <div className="order-1 lg:order-2 lg:col-span-7 space-y-4">
                 <div 
-                  className="relative group select-none"
+                  className="relative group select-none aspect-video sm:aspect-[16/10] w-full rounded-2xl overflow-hidden bg-[#030712] border border-border/50 shadow-xl flex items-center justify-center cursor-pointer"
                   onMouseEnter={() => setIsAutoPlaying(false)}
                   onMouseLeave={() => setIsAutoPlaying(true)}
+                  onClick={() => openImagePreviewModal(allImages[safeImageIndex], project.title, allImages, safeImageIndex)}
                 >
-                    <MacBookFrame
-                      alt={project.title}
-                      onClick={() => openImagePreviewModal(allImages[safeImageIndex], project.title, allImages, safeImageIndex)}
-                      className="w-full"
-                    >
-                      {isVideoUrl(allImages[safeImageIndex]) ? (
-                        <CustomVideoPlayer key={allImages[safeImageIndex]} src={allImages[safeImageIndex]} className="w-full h-full aspect-[16/10]" />
-                      ) : (
-                        <img 
-                            key={safeImageIndex}
-                            src={allImages[safeImageIndex] || ''} 
-                            alt={project.title} 
-                            className="w-full h-full object-contain bg-[#08090c] transition-opacity duration-200"
-                            loading="eager"
-                            decoding="async"
-                        />
-                      )}
-                    </MacBookFrame>
+                  {isVideoUrl(allImages[safeImageIndex]) ? (
+                    <CustomVideoPlayer key={allImages[safeImageIndex]} src={allImages[safeImageIndex]} className="w-full h-full aspect-[16/10]" />
+                  ) : (
+                    <img 
+                        key={safeImageIndex}
+                        src={allImages[safeImageIndex] || ''} 
+                        alt={project.title} 
+                        className="w-full h-full object-contain bg-[#030712] transition-opacity duration-150"
+                        loading="eager"
+                        decoding="async"
+                    />
+                  )}
 
-                    {/* Expand Image Button Badge */}
-                    <button
-                      onClick={() => openImagePreviewModal(allImages[safeImageIndex], project.title, allImages, safeImageIndex)}
-                      className="absolute top-4 right-4 p-2 rounded-lg bg-black/60 hover:bg-primary text-white backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all flex items-center gap-1.5 text-xs font-semibold shadow-lg z-20 cursor-pointer"
-                      title="Perbesar"
-                    >
-                      <Maximize2 className="w-4 h-4" />
-                      <span>Perbesar</span>
-                    </button>
+                  {/* Expand Image Button Badge */}
+                  <button
+                    onClick={(e) => { e.stopPropagation(); openImagePreviewModal(allImages[safeImageIndex], project.title, allImages, safeImageIndex); }}
+                    className="absolute top-4 right-4 p-2 rounded-lg bg-black/60 hover:bg-primary text-white backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all flex items-center gap-1.5 text-xs font-semibold shadow-lg z-20 cursor-pointer"
+                    title="Perbesar"
+                  >
+                    <Maximize2 className="w-4 h-4" />
+                    <span>Perbesar</span>
+                  </button>
 
-                    {/* Slider Controls */}
-                    {allImages.length > 1 && (
-                        <>
-                            <button 
-                                onClick={(e) => { e.stopPropagation(); prevImage(); }}
-                                className="absolute left-1 sm:left-2 top-[44%] -translate-y-1/2 p-2 sm:p-2.5 rounded-full bg-black/70 hover:bg-primary text-white opacity-0 group-hover:opacity-100 transition-all hover:scale-105 active:scale-95 shadow-xl border border-white/10 z-20"
-                                aria-label="Sebelumnya"
-                            >
-                                <ChevronLeft className="w-5 h-5" />
-                            </button>
-                            <button 
-                                onClick={(e) => { e.stopPropagation(); nextImage(); }}
-                                className="absolute right-1 sm:right-2 top-[44%] -translate-y-1/2 p-2 sm:p-2.5 rounded-full bg-black/70 hover:bg-primary text-white opacity-0 group-hover:opacity-100 transition-all hover:scale-105 active:scale-95 shadow-xl border border-white/10 z-20"
-                                aria-label="Selanjutnya"
-                            >
-                                <ChevronRight className="w-5 h-5" />
-                            </button>
-                        </>
-                    )}
+                  {/* Slider Controls */}
+                  {allImages.length > 1 && (
+                      <>
+                          <button 
+                              onClick={(e) => { e.stopPropagation(); prevImage(); }}
+                              className="absolute left-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-black/70 hover:bg-primary text-white opacity-0 group-hover:opacity-100 transition-all hover:scale-105 active:scale-95 shadow-xl border border-white/10 z-20 cursor-pointer"
+                              aria-label="Sebelumnya"
+                          >
+                              <ChevronLeft className="w-5 h-5" />
+                          </button>
+                          <button 
+                              onClick={(e) => { e.stopPropagation(); nextImage(); }}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-black/70 hover:bg-primary text-white opacity-0 group-hover:opacity-100 transition-all hover:scale-105 active:scale-95 shadow-xl border border-white/10 z-20 cursor-pointer"
+                              aria-label="Selanjutnya"
+                          >
+                              <ChevronRight className="w-5 h-5" />
+                          </button>
+                      </>
+                  )}
                 </div>
                 
                 {/* Thumbnails (Horizontal Single Row Scrollable) */}
