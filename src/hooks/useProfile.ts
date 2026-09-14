@@ -12,7 +12,7 @@ export const DEFAULT_PROFILE = {
   heroImage: "/media/uploads/media_1789117259295_3cc3ea8e.webp",
   aboutImage: "/media/uploads/about_profile.jpg",
   resumeUrl: "https://go.fliplink.me/view/C0F05869-43CD-4124-9E6D-A7F9F9FC807A",
-  location: "3.6163, 98.6744",
+  location: "Medan, Sumatera Utara, Indonesia",
   email: "eka.ckp16799@gmail.com",
   phone: "+6282392115909",
   stats_project_count: "50+",

@@ -236,7 +236,7 @@ export const FloatingWhatsApp = ({ forceOpen = false, onClose }: { forceOpen?: b
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsOpen(false)}>{t('common.cancel')}</Button>
-            <Button onClick={handleSend} className="bg-[#25D366] hover:bg-[#128C7E] text-white">
+            <Button onClick={handleSend} className="bg-[#075E54] hover:bg-[#128C7E] text-white font-semibold">
               <Send className="w-4 h-4 mr-2" />
               {t('whatsapp.send')}
             </Button>

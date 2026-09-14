@@ -231,7 +231,7 @@ export default function LoginPage() {
             <Button variant="outline" onClick={() => setIsDbModalOpen(false)} className="border-zinc-700 hover:bg-zinc-800">
               Tutup
             </Button>
-            <Button onClick={() => window.location.reload()} className="bg-emerald-600 hover:bg-emerald-500 text-white">
+            <Button onClick={() => window.location.reload()} className="bg-emerald-700 hover:bg-emerald-600 text-white font-semibold">
               Coba Lagi
             </Button>
           </div>
@@ -319,7 +319,7 @@ export default function LoginPage() {
                   <button 
                     type="submit" 
                     disabled={isLoading}
-                    className="w-full h-10 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white font-semibold text-xs tracking-wider uppercase transition-all duration-150 cursor-pointer shadow-xs flex items-center justify-center gap-2 mt-2 disabled:opacity-50"
+                    className="w-full h-10 rounded-lg bg-emerald-700 hover:bg-emerald-600 active:scale-[0.98] text-white font-semibold text-xs tracking-wider uppercase transition-all duration-150 cursor-pointer shadow-xs flex items-center justify-center gap-2 mt-2 disabled:opacity-50"
                   >
                     {isLoading ? (
                       <>
@@ -486,7 +486,7 @@ export default function LoginPage() {
                     <button 
                       type="submit" 
                       disabled={isLoading || pin.length < 6}
-                      className="w-full h-10 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white font-semibold text-xs tracking-wider uppercase transition-all duration-150 cursor-pointer shadow-xs flex items-center justify-center gap-2 disabled:opacity-50"
+                      className="w-full h-10 rounded-lg bg-emerald-700 hover:bg-emerald-600 active:scale-[0.98] text-white font-semibold text-xs tracking-wider uppercase transition-all duration-150 cursor-pointer shadow-xs flex items-center justify-center gap-2 disabled:opacity-50"
                     >
                       {isLoading ? (
                         <>

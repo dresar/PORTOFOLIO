@@ -62,7 +62,7 @@ export const ContactSection = () => {
   const { mutate: sendMessage, isPending: isSending } = useMutation({
     mutationFn: messagesAPI.create,
     onSuccess: () => {
-      toast.success(isId ? 'Pesan berhasil dikirim! Terima kasih atas kontak Anda.' : 'Message sent successfully! Thank you for reaching out.');
+      toast.success(isId ? 'Pesan berhasil dikirim! Eka Syarif akan segera merespons Anda.' : 'Message sent successfully! Eka Syarif will get back to you shortly.');
       setFormData({
         name: '',
         email: '',
@@ -72,7 +72,7 @@ export const ContactSection = () => {
     },
     onError: (error) => {
       console.error('Failed to send message:', error);
-      toast.error(isId ? 'Gagal mengirim pesan. Silakan coba kembali atau hubungi via WhatsApp.' : 'Failed to send message. Please try again or reach out via WhatsApp.');
+      toast.error(isId ? 'Gagal mengirim pesan. Silakan gunakan WhatsApp langsung untuk respon instan.' : 'Failed to send message. Please contact via WhatsApp directly for an instant response.');
     },
   });
 
@@ -98,7 +98,7 @@ export const ContactSection = () => {
     if (!text) return;
     navigator.clipboard.writeText(text);
     setCopiedField(label);
-    toast.success(isId ? `${label} berhasil disalin ke papan klip` : `${label} copied to clipboard`);
+    toast.success(isId ? `${label} berhasil disalin` : `${label} copied to clipboard`);
     setTimeout(() => setCopiedField(null), 2000);
   };
 
@@ -137,18 +137,21 @@ export const ContactSection = () => {
   const emailVal = profile?.email || 'eka.ckp16799@gmail.com';
   const phoneVal = profile?.phone || '+6282392115909';
   const cleanPhone = phoneVal.replace(/[^0-9]/g, '');
-  const locationVal = profile?.location || 'Medan, Sumatera Utara, Indonesia';
+
+  const rawLocation = profile?.location || 'Medan, Sumatera Utara, Indonesia';
+  const isCoordinates = /^[\d\s.,\-+]+$/.test(rawLocation.trim());
+  const locationVal = isCoordinates ? 'Medan, Sumatera Utara, Indonesia' : rawLocation;
 
   const whatsappGreeting = encodeURIComponent(
     isId 
-      ? 'Halo Mas Eka Syarif, saya melihat portofolio Anda dan tertarik untuk berdiskusi mengenai proyek kolaborasi.'
+      ? 'Halo Mas Eka Syarif, saya melihat portofolio Anda dan tertarik untuk mendiskusikan peluang proyek kolaborasi.'
       : 'Hello Eka Syarif, I reviewed your portfolio and would like to discuss a project collaboration opportunity.'
   );
 
   return (
     <section id="contact" className="py-20 md:py-28 relative overflow-hidden bg-background">
       <div className="absolute inset-0 pointer-events-none -z-10">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-gradient-to-b from-primary/10 via-primary/5 to-transparent blur-[140px]" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[750px] h-[450px] bg-gradient-to-b from-primary/15 via-primary/5 to-transparent blur-[160px]" />
       </div>
 
       <div className="container mx-auto px-4 max-w-6xl">
@@ -159,32 +162,32 @@ export const ContactSection = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-semibold mb-4 shadow-xs">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-950/40 text-emerald-400 text-xs font-semibold mb-4 shadow-xs">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
             </span>
             <span className="tracking-wide">
-              {isId ? 'TERBUKA UNTUK KOLABORASI & PROYEK BARU' : 'AVAILABLE FOR COLLABORATION & NEW PROJECTS'}
+              {isId ? 'TERBUKA UNTUK KOLABORASI & PROYEK BARU' : 'OPEN FOR COLLABORATIONS & HIGH-IMPACT ROLES'}
             </span>
           </div>
 
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-extrabold tracking-tight mb-4 text-foreground">
             {isId ? (
               <>
-                Mari Berkolaborasi & <span className="bg-gradient-to-r from-primary via-teal-400 to-emerald-500 bg-clip-text text-transparent">Wujudkan Solusi Hebat</span>
+                Mari Berkolaborasi & <span className="bg-gradient-to-r from-primary via-teal-400 to-emerald-400 bg-clip-text text-transparent">Wujudkan Solusi Hebat</span>
               </>
             ) : (
               <>
-                Let's Collaborate & <span className="bg-gradient-to-r from-primary via-teal-400 to-emerald-500 bg-clip-text text-transparent">Build Scalable Solutions</span>
+                Let's Collaborate & <span className="bg-gradient-to-r from-primary via-teal-400 to-emerald-400 bg-clip-text text-transparent">Architect Scalable Solutions</span>
               </>
             )}
           </h2>
 
-          <p className="text-muted-foreground text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+          <p className="text-zinc-400 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
             {isId 
-              ? 'Punya ide produk digital, kebutuhan rekayasa web/mobile, integrasi sistem AI, atau tawaran posisi profesional? Diskusikan langsung bersama Eka Syarif Maulana.'
-              : 'Have an ambitious project, enterprise web/mobile engineering need, AI integration, or professional role? Let’s architect the right solution together.'}
+              ? 'Punya ide produk digital, kebutuhan rekayasa web/mobile, sistem otomasi AI, atau tawaran posisi profesional? Pintu komunikasi selalu terbuka.'
+              : 'Whether you are seeking to build an ambitious product, scale enterprise cloud architecture, deploy intelligent AI solutions, or discuss career roles — let’s connect.'}
           </p>
         </motion.div>
 
@@ -194,31 +197,33 @@ export const ContactSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="lg:col-span-7 bg-card/70 backdrop-blur-md border border-border/80 rounded-2xl p-6 md:p-8 shadow-sm hover:border-primary/40 transition-all"
+            className="lg:col-span-7 bg-card/80 backdrop-blur-xl border border-border/80 rounded-2xl p-6 md:p-8 shadow-xl hover:border-primary/40 transition-all relative overflow-hidden"
           >
+            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+
             <div className="flex items-center justify-between pb-5 mb-5 border-b border-border/60">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                <div className="h-10 w-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
                   <MessageSquare className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="font-heading font-bold text-lg text-foreground">
                     {isId ? 'Kirim Pesan Langsung' : 'Send a Direct Message'}
                   </h3>
-                  <p className="text-xs text-muted-foreground">
-                    {isId ? 'Tinggalkan rincian pesan atau kebutuhan proyek Anda' : 'Drop your project scope or inquiry below'}
+                  <p className="text-xs text-zinc-400">
+                    {isId ? 'Tinggalkan rincian proyek atau pertanyaan Anda di bawah ini' : 'Detail your project scope or engineering inquiry below'}
                   </p>
                 </div>
               </div>
-              <div className="hidden sm:flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-md font-medium">
+              <div className="hidden sm:flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-950/50 border border-emerald-500/30 px-2.5 py-1 rounded-md font-semibold">
                 <Clock className="w-3.5 h-3.5" />
                 <span>{isId ? 'Respon < 2 jam' : 'Replies < 2 hrs'}</span>
               </div>
             </div>
 
             <div className="mb-5 space-y-2">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                {isId ? 'Pilih Topik Cepat:' : 'Quick Topic Select:'}
+              <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
+                {isId ? 'Pilih Topik Kebutuhan:' : 'Select Topic / Scope:'}
               </p>
               <div className="flex flex-wrap gap-1.5">
                 {quickTopics.map((topic) => {
@@ -230,8 +235,8 @@ export const ContactSection = () => {
                       onClick={() => handleSelectTopic(topic.value)}
                       className={`h-7 px-2.5 rounded-md text-[11px] font-medium border transition-all active:scale-[0.98] ${
                         isSelected 
-                          ? 'bg-primary text-primary-foreground border-primary shadow-xs' 
-                          : 'bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground border-border/60'
+                          ? 'bg-primary text-black font-semibold border-primary shadow-xs' 
+                          : 'bg-muted/40 hover:bg-muted text-zinc-300 hover:text-white border-border/60'
                       }`}
                     >
                       {isId ? topic.labelId : topic.labelEn}
@@ -244,10 +249,10 @@ export const ContactSection = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label htmlFor="name" className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                  <label htmlFor="name" className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
                     <User className="w-3.5 h-3.5 text-primary" />
                     <span>{isId ? 'Nama Lengkap' : 'Full Name'}</span>
-                    <span className="text-rose-500">*</span>
+                    <span className="text-rose-400">*</span>
                   </label>
                   <input
                     type="text"
@@ -255,17 +260,17 @@ export const ContactSection = () => {
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    className="w-full h-10 px-3.5 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground/60 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                    className="w-full h-10 px-3.5 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-zinc-500 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
                     placeholder={isId ? 'Contoh: Budi Pratama' : 'e.g. John Doe'}
                     required
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label htmlFor="email" className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                  <label htmlFor="email" className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
                     <Mail className="w-3.5 h-3.5 text-primary" />
                     <span>{isId ? 'Alamat Email' : 'Email Address'}</span>
-                    <span className="text-rose-500">*</span>
+                    <span className="text-rose-400">*</span>
                   </label>
                   <input
                     type="email"
@@ -273,7 +278,7 @@ export const ContactSection = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full h-10 px-3.5 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground/60 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                    className="w-full h-10 px-3.5 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-zinc-500 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
                     placeholder={isId ? 'nama@perusahaan.com' : 'name@company.com'}
                     required
                   />
@@ -281,10 +286,10 @@ export const ContactSection = () => {
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="subject" className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                <label htmlFor="subject" className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
                   <FileText className="w-3.5 h-3.5 text-primary" />
-                  <span>{isId ? 'Subjek / Judul Kebutuhan' : 'Subject / Inquired Topic'}</span>
-                  <span className="text-rose-500">*</span>
+                  <span>{isId ? 'Subjek / Judul Kebutuhan' : 'Subject / Topic'}</span>
+                  <span className="text-rose-400">*</span>
                 </label>
                 <input
                   type="text"
@@ -292,17 +297,17 @@ export const ContactSection = () => {
                   name="subject"
                   value={formData.subject}
                   onChange={handleChange}
-                  className="w-full h-10 px-3.5 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground/60 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
-                  placeholder={isId ? 'Contoh: Diskusi Pembuatan Aplikasi Web Enterprise' : 'e.g. Enterprise Web Architecture Consultation'}
+                  className="w-full h-10 px-3.5 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-zinc-500 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                  placeholder={isId ? 'Contoh: Konsultasi Arsitektur Web Enterprise' : 'e.g. Enterprise Web Architecture Inquiry'}
                   required
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="message" className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                <label htmlFor="message" className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
                   <MessageSquare className="w-3.5 h-3.5 text-primary" />
                   <span>{isId ? 'Rincian Pesan' : 'Message Details'}</span>
-                  <span className="text-rose-500">*</span>
+                  <span className="text-rose-400">*</span>
                 </label>
                 <textarea
                   id="message"
@@ -310,8 +315,8 @@ export const ContactSection = () => {
                   value={formData.message}
                   onChange={handleChange}
                   rows={4}
-                  className="w-full p-3.5 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground/60 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all resize-none"
-                  placeholder={isId ? 'Ceritakan ringkas mengenai latar belakang proyek, fitur yang dibutuhkan, atau tawaran kerja sama Anda...' : 'Briefly describe your project requirements, target timeline, or collaboration proposal...'}
+                  className="w-full p-3.5 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-zinc-500 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all resize-none"
+                  placeholder={isId ? 'Ceritakan ringkas mengenai latar belakang proyek, fitur yang dibutuhkan, atau tawaran kerja sama Anda...' : 'Briefly describe your project requirements, target timeline, or collaboration details...'}
                   required
                 />
               </div>
@@ -319,23 +324,23 @@ export const ContactSection = () => {
               <button
                 type="submit"
                 disabled={isSending}
-                className="w-full h-10 px-5 rounded-lg bg-primary text-primary-foreground text-xs md:text-sm font-semibold flex items-center justify-center gap-2 hover:bg-primary/90 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                className="w-full h-11 px-5 rounded-lg bg-primary hover:bg-primary/90 text-black font-bold text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-primary/20"
               >
                 {isSending ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 className="w-4 h-4 animate-spin text-black" />
                     <span>{isId ? 'Mengirim Pesan...' : 'Sending Message...'}</span>
                   </>
                 ) : (
                   <>
-                    <Send className="w-4 h-4" />
+                    <Send className="w-4 h-4 text-black" />
                     <span>{isId ? 'Kirim Pesan Sekarang' : 'Send Message Now'}</span>
                   </>
                 )}
               </button>
 
-              <div className="pt-2 flex items-center justify-center gap-2 text-[11px] text-muted-foreground text-center">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+              <div className="pt-2 flex items-center justify-center gap-2 text-xs text-zinc-400 text-center">
+                <ShieldCheck className="w-4 h-4 text-emerald-400" />
                 <span>
                   {isId 
                     ? 'Privasi data terjamin. Pesan langsung diterima oleh Eka Syarif Maulana.' 
@@ -350,40 +355,42 @@ export const ContactSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="lg:col-span-5 space-y-4"
+            className="lg:col-span-5 bg-card/80 backdrop-blur-xl border border-border/80 rounded-2xl p-6 shadow-xl space-y-5 relative overflow-hidden"
           >
-            <div className="bg-card/70 backdrop-blur-md border border-border/80 rounded-2xl p-5 shadow-sm space-y-3.5">
-              <div className="p-3.5 rounded-xl bg-muted/30 border border-border/40 hover:border-primary/40 transition-colors">
+            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent" />
+
+            <div className="space-y-3">
+              <div className="p-4 rounded-xl bg-muted/30 border border-border/60 hover:border-primary/40 transition-colors">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="h-9 w-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
-                      <Mail className="w-4 h-4" />
+                    <div className="h-10 w-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
+                      <Mail className="w-4.5 h-4.5" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
                         {isId ? 'EMAIL UTAMA' : 'PRIMARY EMAIL'}
                       </p>
                       <a 
                         href={`mailto:${emailVal}`} 
-                        className="text-xs sm:text-sm font-semibold text-foreground hover:text-primary transition-colors block truncate"
+                        className="text-sm font-semibold text-foreground hover:text-primary transition-colors block truncate"
                       >
                         {emailVal}
                       </a>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1 shrink-0">
+                  <div className="flex items-center gap-1.5 shrink-0">
                     <button
                       type="button"
                       onClick={() => handleCopy(emailVal, 'Email')}
-                      className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                      className="p-1.5 rounded-md hover:bg-muted text-zinc-400 hover:text-white transition-colors border border-border/40"
                       aria-label="Copy Email"
                       title={isId ? 'Salin Email' : 'Copy Email'}
                     >
-                      {copiedField === 'Email' ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
+                      {copiedField === 'Email' ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
                     </button>
                     <a
                       href={`mailto:${emailVal}`}
-                      className="p-1.5 rounded-md bg-primary/10 hover:bg-primary/20 text-primary transition-colors"
+                      className="p-1.5 rounded-md bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 transition-colors"
                       aria-label="Send Email"
                       title={isId ? 'Buka Aplikasi Email' : 'Open Email Client'}
                     >
@@ -393,88 +400,88 @@ export const ContactSection = () => {
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-muted/30 border border-border/40 hover:border-emerald-500/40 transition-colors">
+              <div className="p-4 rounded-xl bg-muted/30 border border-border/60 hover:border-emerald-500/40 transition-colors">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="h-9 w-9 rounded-lg bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
-                      <MessageCircle className="w-4 h-4" />
+                    <div className="h-10 w-10 rounded-lg bg-[#075E54]/20 border border-[#075E54]/40 flex items-center justify-center text-emerald-400 shrink-0">
+                      <MessageCircle className="w-4.5 h-4.5" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                        {isId ? 'WHATSAPP & TELEPON' : 'WHATSAPP & DIRECT CALL'}
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                        {isId ? 'WHATSAPP (RESPON TERCEPAT)' : 'WHATSAPP (FASTEST RESPONSE)'}
                       </p>
                       <a 
                         href={`https://wa.me/${cleanPhone}?text=${whatsappGreeting}`} 
                         target="_blank" 
                         rel="noopener noreferrer" 
-                        className="text-xs sm:text-sm font-semibold text-foreground hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors block truncate"
+                        className="text-sm font-semibold text-foreground hover:text-emerald-400 transition-colors block truncate"
                       >
                         {phoneVal}
                       </a>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1 shrink-0">
+                  <div className="flex items-center gap-1.5 shrink-0">
                     <button
                       type="button"
-                      onClick={() => handleCopy(phoneVal, isId ? 'Nomor HP' : 'Phone Number')}
-                      className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                      onClick={() => handleCopy(phoneVal, isId ? 'Nomor WhatsApp' : 'WhatsApp Number')}
+                      className="p-1.5 rounded-md hover:bg-muted text-zinc-400 hover:text-white transition-colors border border-border/40"
                       aria-label="Copy Phone"
-                      title={isId ? 'Salin Nomor' : 'Copy Phone'}
+                      title={isId ? 'Salin Nomor' : 'Copy Number'}
                     >
-                      {copiedField === (isId ? 'Nomor HP' : 'Phone Number') ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
+                      {copiedField === (isId ? 'Nomor WhatsApp' : 'WhatsApp Number') ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
                     </button>
                     <a
                       href={`https://wa.me/${cleanPhone}?text=${whatsappGreeting}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="h-7 px-2 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-semibold flex items-center gap-1 transition-all active:scale-[0.98]"
+                      className="h-8 px-3 rounded-md bg-[#075E54] hover:bg-[#128C7E] text-white text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-[0.98] shadow-sm"
                       aria-label="Chat WhatsApp"
                       title="Chat via WhatsApp"
                     >
-                      <MessageCircle className="w-3 h-3" />
+                      <MessageCircle className="w-3.5 h-3.5" />
                       <span>Chat</span>
                     </a>
                   </div>
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-muted/30 border border-border/40">
-                <div className="flex items-start justify-between gap-3 mb-2.5">
+              <div className="p-4 rounded-xl bg-muted/30 border border-border/60">
+                <div className="flex items-start justify-between gap-3 mb-3">
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="h-9 w-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
-                      <MapPin className="w-4 h-4" />
+                    <div className="h-10 w-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
+                      <MapPin className="w-4.5 h-4.5" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
                         {isId ? 'LOKASI & DOMISILI' : 'BASE LOCATION'}
                       </p>
-                      <p className="text-xs sm:text-sm font-semibold text-foreground truncate">
+                      <p className="text-sm font-semibold text-foreground truncate">
                         {locationVal}
                       </p>
                     </div>
                   </div>
                   {currentTime && (
-                    <span className="text-[10px] font-semibold px-2 py-1 rounded-md bg-background border border-border text-muted-foreground shrink-0 flex items-center gap-1">
+                    <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-background border border-border text-zinc-300 shrink-0 flex items-center gap-1.5">
                       <Clock className="w-3 h-3 text-primary" />
                       <span>{currentTime}</span>
                     </span>
                   )}
                 </div>
 
-                <div className="flex flex-wrap gap-1.5 pt-1">
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-background/80 border border-border/70 text-[10px] font-medium text-foreground">
-                    <Globe2 className="w-3 h-3 text-primary" />
+                <div className="flex flex-wrap gap-2 pt-1 border-t border-border/40">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-background border border-border text-xs font-medium text-zinc-300">
+                    <Globe2 className="w-3.5 h-3.5 text-primary" />
                     <span>Remote Worldwide</span>
                   </span>
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-background/80 border border-border/70 text-[10px] font-medium text-foreground">
-                    <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-background border border-border text-xs font-medium text-zinc-300">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                     <span>Hybrid / On-site Ready</span>
                   </span>
                 </div>
               </div>
             </div>
 
-            <div ref={mapContainerRef} className="bg-card/70 backdrop-blur-md border border-border/80 rounded-2xl overflow-hidden h-[200px] sm:h-[220px] relative shadow-sm group">
+            <div ref={mapContainerRef} className="rounded-xl overflow-hidden border border-border/80 h-44 relative group bg-background">
               {isValidMapUrl && showMap ? (
                 <>
                   <iframe 
@@ -487,27 +494,33 @@ export const ContactSection = () => {
                     allowFullScreen={true} 
                     loading="lazy" 
                     referrerPolicy="no-referrer-when-downgrade"
-                    className="absolute inset-0 w-full h-full grayscale contrast-125 dark:opacity-85 hover:grayscale-0 transition-all duration-500"
+                    className="w-full h-full grayscale contrast-125 dark:opacity-75 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700"
                   />
-                  <a
-                    href="https://maps.google.com/?q=Medan,Sumatera+Utara"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="absolute bottom-3 right-3 px-2.5 py-1.5 rounded-lg bg-background/95 hover:bg-background border border-border text-[11px] font-semibold text-foreground backdrop-blur-md flex items-center gap-1.5 shadow-sm transition-all"
-                  >
-                    <span>{isId ? 'Buka Google Maps' : 'Open in Maps'}</span>
-                    <ExternalLink className="w-3 h-3 text-primary" />
-                  </a>
+                  <div className="absolute inset-x-0 bottom-0 p-2.5 bg-gradient-to-t from-black/90 via-black/60 to-transparent flex items-center justify-between pointer-events-auto">
+                    <div className="flex items-center gap-1.5 text-xs text-white font-semibold">
+                      <MapPin className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>Medan, Sumatera Utara</span>
+                    </div>
+                    <a
+                      href="https://maps.google.com/?q=Medan,Sumatera+Utara"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-2.5 py-1 rounded-md bg-zinc-900/95 hover:bg-zinc-800 border border-zinc-700 text-[11px] font-semibold text-white flex items-center gap-1 shadow-sm transition-all active:scale-[0.98]"
+                    >
+                      <span>Buka Maps</span>
+                      <ExternalLink className="w-3 h-3 text-emerald-400" />
+                    </a>
+                  </div>
                 </>
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-muted/40 text-muted-foreground text-xs">
+                <div className="w-full h-full flex items-center justify-center bg-muted/40 text-zinc-400 text-xs">
                   {isValidMapUrl ? (isId ? "Memuat peta lokasi..." : "Loading location map...") : "Map unavailable"}
                 </div>
               )}
             </div>
 
-            <div className="bg-card/70 backdrop-blur-md border border-border/80 rounded-2xl p-4 shadow-sm">
-              <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-3">
+            <div className="pt-2 border-t border-border/60">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-3">
                 {isId ? 'JARINGAN & REPOSITORI PROFESIONAL' : 'PROFESSIONAL NETWORKS & REPOSITORIES'}
               </p>
               <div className="flex flex-wrap gap-2">
@@ -517,10 +530,10 @@ export const ContactSection = () => {
                     href={safeUrl(link.url)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="h-9 px-3 rounded-lg bg-background border border-border/80 hover:border-primary hover:text-primary transition-all flex items-center gap-2 text-xs font-medium group active:scale-[0.98]"
+                    className="h-8 px-3 rounded-lg bg-background border border-border/80 hover:border-primary hover:text-primary transition-all flex items-center gap-2 text-xs font-medium text-zinc-300 hover:text-white group active:scale-[0.98]"
                     aria-label={link.platform || 'Social Link'}
                   >
-                    <SocialIcon platform={link.platform} icon={(link as any).icon} url={link.url} size={15} />
+                    <SocialIcon platform={link.platform} icon={(link as any).icon} url={link.url} size={14} />
                     <span className="capitalize">{link.platform}</span>
                   </a>
                 ))}

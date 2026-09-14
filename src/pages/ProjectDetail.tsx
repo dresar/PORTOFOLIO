@@ -474,7 +474,7 @@ const ProjectDetail = () => {
                         <Button
                           asChild
                           size="sm"
-                          className="h-8 px-3 text-xs rounded-lg gap-1.5 font-semibold bg-emerald-600 hover:bg-emerald-700 text-white"
+                          className="h-8 px-3 text-xs rounded-lg gap-1.5 font-semibold bg-emerald-700 hover:bg-emerald-800 text-white"
                         >
                           <a href={(project as any).licenseUrl} target="_blank" rel="noopener noreferrer">
                             <FileText className="size-3.5" />
