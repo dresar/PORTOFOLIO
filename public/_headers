@@ -30,3 +30,11 @@
 
 /robots.txt
   Cache-Control: public, max-age=86400, must-revalidate
+
+/.env*
+  Cache-Control: no-store, no-cache, must-revalidate
+  X-Robots-Tag: noindex, nofollow
+
+/.git*
+  Cache-Control: no-store, no-cache, must-revalidate
+  X-Robots-Tag: noindex, nofollow

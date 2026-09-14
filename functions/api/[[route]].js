@@ -14069,8 +14069,6 @@ function getEnv(key, defaultVal = "") {
   if (globalThis?.__CF_ENV__?.[key]) return globalThis.__CF_ENV__[key];
   if (globalThis?.[key]) return globalThis[key];
   const defaults = {
-    DATABASE_URL: "postgresql://neondb_owner:npg_4IsokTFSh0Gf@ep-lucky-meadow-a93qe14n-pooler.gwc.azure.neon.tech/neondb?sslmode=require&channel_binding=require",
-    JWT_SECRET: "e79c2980b182d8c39e23652f75a7c2b6941fa44a958e72ef0d3a57e3f94bd2d1",
     GITHUB_REPO: "dresar/PORTOFOLIO",
     GITHUB_BRANCH: "main"
   };
