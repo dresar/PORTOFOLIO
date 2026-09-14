@@ -155,7 +155,7 @@ const App = () => {
                   <Route path="/admin/login" element={<LoginPage />} />
                   <Route path="/kerja" element={<KerjaPage />} />
                   <Route path="/admin" element={<AdminLayout />}>
-                    <Route index element={<Navigate to="dashboard" />} />
+                    <Route index element={<Navigate to="/admin/dashboard" replace />} />
                     <Route path="dashboard" element={<DashboardPage />} />
                     <Route path="messages" element={<MessagesPage />} />
                     
@@ -187,6 +187,11 @@ const App = () => {
                     <Route path="blog/comments" element={<CommentList />} />
                     
                     <Route path="settings" element={<SettingsPage />} />
+                    <Route path="pengguna" element={<Navigate to="/admin/settings" replace />} />
+                    <Route path="users" element={<Navigate to="/admin/settings" replace />} />
+                    <Route path="user" element={<Navigate to="/admin/settings" replace />} />
+                    <Route path="profile" element={<Navigate to="/admin/settings" replace />} />
+                    <Route path="profil" element={<Navigate to="/admin/settings" replace />} />
                     <Route path="about-content" element={<AboutContentPage />} />
                     <Route path="experience" element={<ExperienceList />} />
                     <Route path="experience/new" element={<ExperienceForm />} />
@@ -197,8 +202,8 @@ const App = () => {
                     <Route path="cloudinary" element={<Navigate to="/admin/media" replace />} />
                     <Route path="export-pdf" element={<ExportPdfPage />} />
 
-                    {/* Fallback unknown admin paths to dashboard */}
-                    <Route path="*" element={<Navigate to="dashboard" replace />} />
+                    {/* Fallback unknown admin paths cleanly to /admin/dashboard */}
+                    <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
                   </Route>
 
                   {/* Public Routes (Inside Maintenance Guard) */}

@@ -60,7 +60,7 @@ export function AdminSidebar({ isOpen, onClose }: SidebarProps) {
 
   const handleLogout = () => {
     logout();
-    navigate('/admin/login');
+    window.location.href = '/admin/login';
   };
 
   return (

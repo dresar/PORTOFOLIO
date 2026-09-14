@@ -39,7 +39,7 @@ export default function AdminHeader({ onToggleSidebar, onOpenMediaPicker }: Admi
 
   const handleLogout = () => {
     logout();
-    navigate('/admin/login');
+    window.location.href = '/admin/login';
   };
 
   const adminName = user?.name || user?.username || "Admin";
