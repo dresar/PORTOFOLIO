@@ -29,7 +29,7 @@ export function getEnv(key: string, defaultVal = ''): string {
   if ((globalThis as any)?.__CF_ENV__?.[key]) return (globalThis as any).__CF_ENV__[key];
   if ((globalThis as any)?.[key]) return (globalThis as any)[key];
   const defaults: Record<string, string> = {
-    GITHUB_REPO: 'dresar/PORTOFOLIO',
+    GITHUB_REPO: 'ekasyarifmaulana10-crypto/PORTOFOLIO-assets',
     GITHUB_BRANCH: 'main'
   };
   return defaults[key] || defaultVal;
@@ -657,8 +657,8 @@ export default async function handler(req: any, res: any) {
         return;
       }
 
-      const upstreamUrl = `https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/${subpath}`;
-      const fallbackUrl = `https://raw.githubusercontent.com/dresar/PORTOFOLIO/main/public/${subpath}`;
+      const upstreamUrl = `https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/public/${subpath}`;
+      const fallbackUrl = `https://raw.githubusercontent.com/ekasyarifmaulana10-crypto/PORTOFOLIO-assets/main/public/${subpath}`;
       try {
         let ghRes = await fetch(upstreamUrl, { headers: { 'User-Agent': 'Portfolio-Media-Proxy' } });
         if (!ghRes.ok) {
@@ -1205,9 +1205,9 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
         });
     }
 
-    // ── GitHub CDN Media Helpers (dresar/PORTOFOLIO) ──────────────────────
+    // ── GitHub CDN Media Helpers (ekasyarifmaulana10-crypto/PORTOFOLIO-assets) ──
     const getGhToken = () => getEnv('GITHUB_TOKEN');
-    const getGhRepo = () => getEnv('GITHUB_REPO', 'dresar/PORTOFOLIO');
+    const getGhRepo = () => getEnv('GITHUB_REPO', 'ekasyarifmaulana10-crypto/PORTOFOLIO-assets');
     const getGhBranch = () => getEnv('GITHUB_BRANCH', 'main');
 
     async function uploadToGitHubCDN(fileBase64: string, customPublicId?: string, folder?: string) {

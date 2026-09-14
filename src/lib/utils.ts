@@ -36,7 +36,7 @@ export function normalizeMediaUrl(raw?: string | null, options?: MediaUrlOptions
     return `https:${url}`;
   }
 
-  if (url.includes('cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/')) {
+  if (url.includes('cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/public/') || url.includes('cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/')) {
     return url;
   }
 

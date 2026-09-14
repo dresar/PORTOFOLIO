@@ -136,22 +136,22 @@ tags:
 Setiap artikel disusun dalam 6 slide carousel presisi tinggi yang dapat diakses secara publik via CDN:
 
 1. **Slide 1: Hook & Pengenalan Masalah**  
-   ![Slide 1 - Hook](https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/${slug}/${slug}_01.png)
+   ![Slide 1 - Hook](https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/public/uploads/articles/${slug}/${slug}_01.png)
 
 2. **Slide 2: Arsitektur & Fakta Sebenarnya**  
-   ![Slide 2 - Fakta Sebenarnya](https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/${slug}/${slug}_02.png)
+   ![Slide 2 - Fakta Sebenarnya](https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/public/uploads/articles/${slug}/${slug}_02.png)
 
 3. **Slide 3: Vektor Risiko & Dampak Keamanan**  
-   ![Slide 3 - Vektor Risiko](https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/${slug}/${slug}_03.png)
+   ![Slide 3 - Vektor Risiko](https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/public/uploads/articles/${slug}/${slug}_03.png)
 
 4. **Slide 4: Solusi Praktis & Langkah Preventif**  
-   ![Slide 4 - Solusi Praktis](https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/${slug}/${slug}_04.png)
+   ![Slide 4 - Solusi Praktis](https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/public/uploads/articles/${slug}/${slug}_04.png)
 
 5. **Slide 5: Analisis Lanjutan & Rekomendasi Ahli**  
-   ![Slide 5 - Analisis Lanjutan](https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/${slug}/${slug}_05.png)
+   ![Slide 5 - Analisis Lanjutan](https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/public/uploads/articles/${slug}/${slug}_05.png)
 
 6. **Slide 6: Kesimpulan & Call to Action**  
-   ![Slide 6 - Kesimpulan](https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/${slug}/${slug}_06.png)
+   ![Slide 6 - Kesimpulan](https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/public/uploads/articles/${slug}/${slug}_06.png)
 
 ---
 

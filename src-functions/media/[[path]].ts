@@ -67,8 +67,8 @@ export async function onRequest(context: any) {
     } catch (e) {}
   }
 
-  const upstreamUrl = `https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/${subpath}`;
-  const fallbackUrl = `https://raw.githubusercontent.com/dresar/PORTOFOLIO/main/public/${subpath}`;
+  const upstreamUrl = `https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/public/${subpath}`;
+  const fallbackUrl = `https://raw.githubusercontent.com/ekasyarifmaulana10-crypto/PORTOFOLIO-assets/main/public/${subpath}`;
 
   let upstreamRes = await fetch(upstreamUrl, {
     headers: { 'User-Agent': 'Portfolio-Media-Proxy' }

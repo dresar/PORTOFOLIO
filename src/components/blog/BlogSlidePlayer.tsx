@@ -46,7 +46,7 @@ export const BlogSlidePlayer: React.FC<BlogSlidePlayerProps> = ({
     const urls: string[] = [];
     for (let i = 1; i <= totalSlides; i++) {
       const pad = String(i).padStart(2, '0');
-      urls.push(`https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/${slug}/${slug}_${pad}.png`);
+      urls.push(`https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/public/uploads/articles/${slug}/${slug}_${pad}.png`);
     }
     return urls;
   }, [slug, totalSlides, customSlides]);
@@ -199,7 +199,7 @@ export const BlogSlidePlayer: React.FC<BlogSlidePlayerProps> = ({
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 const pad = String(currentIndex + 1).padStart(2, '0');
-                const cdn = `https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/${slug}/${slug}_${pad}.png`;
+                const cdn = `https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/public/uploads/articles/${slug}/${slug}_${pad}.png`;
                 if (target.src !== cdn) {
                   target.src = cdn;
                 } else {
@@ -267,7 +267,7 @@ export const BlogSlidePlayer: React.FC<BlogSlidePlayerProps> = ({
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 const pad = String(idx + 1).padStart(2, '0');
-                const cdn = `https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/${slug}/${slug}_${pad}.png`;
+                const cdn = `https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/public/uploads/articles/${slug}/${slug}_${pad}.png`;
                 if (target.src !== cdn) {
                   target.src = cdn;
                 }

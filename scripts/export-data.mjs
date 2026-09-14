@@ -77,7 +77,7 @@ async function main() {
       excerpt: post.excerpt || '',
       excerpt_en: enPost.excerpt || post.excerpt || '',
       content: post.content || '',
-      cover_image: post.cover_image || post.coverImage || `https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/${slug}/${slug}_01.png`,
+      cover_image: post.cover_image || post.coverImage || `https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/public/uploads/articles/${slug}/${slug}_01.png`,
       category_id: post.category_id || post.categoryId || 1,
       category: {
         id: post.category_id || post.categoryId || 1,
@@ -115,12 +115,12 @@ ${post.excerpt || 'Artikel panduan edukasi teknologi dan keamanan digital resmi 
 
 ## Galeri Slide Carousel (Inka.tech 6-Slide Series)
 
-1. ![Slide 1](https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/${slug}/${slug}_01.png)
-2. ![Slide 2](https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/${slug}/${slug}_02.png)
-3. ![Slide 3](https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/${slug}/${slug}_03.png)
-4. ![Slide 4](https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/${slug}/${slug}_04.png)
-5. ![Slide 5](https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/${slug}/${slug}_05.png)
-6. ![Slide 6](https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/uploads/articles/${slug}/${slug}_06.png)
+1. ![Slide 1](https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/public/uploads/articles/${slug}/${slug}_01.png)
+2. ![Slide 2](https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/public/uploads/articles/${slug}/${slug}_02.png)
+3. ![Slide 3](https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/public/uploads/articles/${slug}/${slug}_03.png)
+4. ![Slide 4](https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/public/uploads/articles/${slug}/${slug}_04.png)
+5. ![Slide 5](https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/public/uploads/articles/${slug}/${slug}_05.png)
+6. ![Slide 6](https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/public/uploads/articles/${slug}/${slug}_06.png)
 
 ---
 

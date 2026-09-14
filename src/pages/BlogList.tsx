@@ -230,7 +230,7 @@ const BlogList = () => {
                             if (!currentSrc.includes('cdn.jsdelivr.net')) {
                               const match = currentSrc.match(/uploads\/articles\/.+$/);
                               if (match) {
-                                target.src = `https://cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/${match[0]}`;
+                                target.src = `https://cdn.jsdelivr.net/gh/ekasyarifmaulana10-crypto/PORTOFOLIO-assets@main/public/${match[0]}`;
                                 return;
                               }
                             }
