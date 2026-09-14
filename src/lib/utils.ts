@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL || "https://server1-etech.vercel.app";
+const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL || "https://ekasyarif.my.id";
 
 export interface MediaUrlOptions {
   width?: number;
@@ -26,6 +26,10 @@ export function normalizeMediaUrl(raw?: string | null, options?: MediaUrlOptions
   const dataIdx = url.indexOf('data:image/');
   if (dataIdx !== -1) {
     return url.substring(dataIdx);
+  }
+
+  if (url.includes('server1-etech.vercel.app')) {
+    url = url.replace(/https?:\/\/server1-etech\.vercel\.app\/?/gi, '/');
   }
 
   if (url.startsWith('//')) {

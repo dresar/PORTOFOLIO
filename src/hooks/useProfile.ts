@@ -9,7 +9,7 @@ export const DEFAULT_PROFILE = {
   role: '["Senior Fullstack Developer","System Analyst","Artificial Intelligence (AI) Engineer"]',
   bio: "Saya adalah lulusan Program Studi Teknologi Informasi Universitas Muhammadiyah Sumatera Utara (UMSU) yang memiliki minat besar dalam bidang teknologi, pengembangan perangkat lunak, dan transformasi digital. Saya memiliki kemampuan dalam pengembangan aplikasi web dan mobile, pengelolaan basis data, serta pemanfaatan teknologi untuk menyelesaikan berbagai permasalahan.",
   shortBio: "Membantu bisnis tumbuh melalui teknologi yang tepat",
-  heroImage: "/media/uploads/about_profile.jpg",
+  heroImage: "/media/uploads/media_1789117259295_3cc3ea8e.webp",
   aboutImage: "/media/uploads/about_profile.jpg",
   resumeUrl: "https://go.fliplink.me/view/C0F05869-43CD-4124-9E6D-A7F9F9FC807A",
   location: "3.6163, 98.6744",
