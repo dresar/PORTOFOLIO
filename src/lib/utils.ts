@@ -19,6 +19,19 @@ export function normalizeMediaUrl(raw?: string | null, options?: MediaUrlOptions
   let url = raw.trim();
   if (!url) return "";
 
+  if (url.startsWith('data:') || url.startsWith('blob:')) {
+    return url;
+  }
+
+  const dataIdx = url.indexOf('data:image/');
+  if (dataIdx !== -1) {
+    return url.substring(dataIdx);
+  }
+
+  if (url.startsWith('//')) {
+    return `https:${url}`;
+  }
+
   let cleanPath = '';
   if (url.includes('cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/')) {
     cleanPath = `/media/${url.split('public/')[1]}`;
@@ -77,7 +90,11 @@ export function normalizeMediaUrl(raw?: string | null, options?: MediaUrlOptions
   }
 
   if (import.meta.env.VITE_BACKEND_URL && url.startsWith(import.meta.env.VITE_BACKEND_URL)) {
-      url = url.replace(import.meta.env.VITE_BACKEND_URL, "");
+    url = url.replace(import.meta.env.VITE_BACKEND_URL, "");
+  }
+
+  if (url.startsWith('/') && !url.startsWith('/api')) {
+    return url;
   }
 
   const baseUrl = BACKEND_BASE_URL.endsWith('/') ? BACKEND_BASE_URL.slice(0, -1) : BACKEND_BASE_URL;

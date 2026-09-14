@@ -209,7 +209,7 @@ export const SkillsSection = () => {
                         decoding="async"
                         onClick={() => setSelectedSkill(skill)}
                         onError={(e) => {
-                          e.currentTarget.src = 'https://placehold.co/64x64/png?text=Logo';
+                          e.currentTarget.src = '/placeholder.svg';
                         }}
                       />
                     ) : (
@@ -284,7 +284,7 @@ export const SkillsSection = () => {
                       alt={selectedSkill.name} 
                       className="max-w-full max-h-full object-contain hover:scale-105 transition-transform duration-300"
                       onError={(e) => {
-                        e.currentTarget.src = 'https://placehold.co/128x128/png?text=Logo';
+                        e.currentTarget.src = '/placeholder.svg';
                       }}
                     />
                   ) : (
