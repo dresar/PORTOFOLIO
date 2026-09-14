@@ -78,12 +78,12 @@ createRoot(document.getElementById("root")!).render(
   </HelmetProvider>
 );
 
-if ('serviceWorker' in navigator && import.meta.env.PROD) {
+if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    import('virtual:pwa-register')
-      .then(({ registerSW }) => {
-        registerSW({ immediate: true });
-      })
-      .catch(() => {});
+    navigator.serviceWorker.getRegistrations().then((registrations) => {
+      for (const reg of registrations) {
+        reg.unregister();
+      }
+    }).catch(() => {});
   });
 }

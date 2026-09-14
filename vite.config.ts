@@ -43,7 +43,7 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     VitePWA({
-      disable: mode === 'development',
+      disable: true,
       devOptions: {
         enabled: false,
       },
