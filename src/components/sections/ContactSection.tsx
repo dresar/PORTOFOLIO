@@ -3,7 +3,8 @@ import { motion } from 'framer-motion';
 import { 
   Mail, Phone, MapPin, Send, Loader2, Check, Copy, 
   ExternalLink, Clock, Sparkles, MessageCircle, 
-  User, FileText, MessageSquare 
+  User, FileText, MessageSquare, ShieldCheck, ArrowRight,
+  Globe2, CheckCircle2
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useProfile } from '@/hooks/useProfile';
@@ -31,6 +32,14 @@ export const ContactSection = () => {
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [currentTime, setCurrentTime] = useState('');
 
+  const quickTopics = [
+    { labelId: '🚀 Aplikasi Web', labelEn: '🚀 Web App', value: 'Pengembangan Aplikasi Web Modern' },
+    { labelId: '📱 Mobile App', labelEn: '📱 Mobile App', value: 'Pengembangan Mobile App (iOS/Android)' },
+    { labelId: '🤖 AI & Otomasi', labelEn: '🤖 AI & Automation', value: 'Integrasi AI & Otomasi Workflow' },
+    { labelId: '⚡ Cloud & Performa', labelEn: '⚡ Cloud & Perf', value: 'Optimasi Arsitektur Cloud & Performa' },
+    { labelId: '💼 Peluang Karir', labelEn: '💼 Career Role', value: 'Diskusi Peluang Karir / Full-time Role' },
+  ];
+
   useEffect(() => {
     const updateTime = () => {
       try {
@@ -53,7 +62,7 @@ export const ContactSection = () => {
   const { mutate: sendMessage, isPending: isSending } = useMutation({
     mutationFn: messagesAPI.create,
     onSuccess: () => {
-      toast.success(t('contact.toast.success'));
+      toast.success(isId ? 'Pesan berhasil dikirim! Terima kasih atas kontak Anda.' : 'Message sent successfully! Thank you for reaching out.');
       setFormData({
         name: '',
         email: '',
@@ -63,12 +72,16 @@ export const ContactSection = () => {
     },
     onError: (error) => {
       console.error('Failed to send message:', error);
-      toast.error(t('contact.toast.error'));
+      toast.error(isId ? 'Gagal mengirim pesan. Silakan coba kembali atau hubungi via WhatsApp.' : 'Failed to send message. Please try again or reach out via WhatsApp.');
     },
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSelectTopic = (val: string) => {
+    setFormData(prev => ({ ...prev, subject: val }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -85,7 +98,7 @@ export const ContactSection = () => {
     if (!text) return;
     navigator.clipboard.writeText(text);
     setCopiedField(label);
-    toast.success(isId ? `${label} berhasil disalin` : `${label} copied to clipboard`);
+    toast.success(isId ? `${label} berhasil disalin ke papan klip` : `${label} copied to clipboard`);
     setTimeout(() => setCopiedField(null), 2000);
   };
 
@@ -126,35 +139,52 @@ export const ContactSection = () => {
   const cleanPhone = phoneVal.replace(/[^0-9]/g, '');
   const locationVal = profile?.location || 'Medan, Sumatera Utara, Indonesia';
 
+  const whatsappGreeting = encodeURIComponent(
+    isId 
+      ? 'Halo Mas Eka Syarif, saya melihat portofolio Anda dan tertarik untuk berdiskusi mengenai proyek kolaborasi.'
+      : 'Hello Eka Syarif, I reviewed your portfolio and would like to discuss a project collaboration opportunity.'
+  );
+
   return (
-    <section id="contact" className="py-16 md:py-24 relative overflow-hidden bg-background">
+    <section id="contact" className="py-20 md:py-28 relative overflow-hidden bg-background">
       <div className="absolute inset-0 pointer-events-none -z-10">
-        <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[600px] h-[350px] bg-gradient-to-b from-primary/10 via-primary/5 to-transparent blur-[140px]" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-gradient-to-b from-primary/10 via-primary/5 to-transparent blur-[140px]" />
       </div>
 
       <div className="container mx-auto px-4 max-w-6xl">
         <motion.div
-          className="text-center mb-12"
+          className="text-center mb-14"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-semibold mb-4 shadow-xs">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-semibold mb-4 shadow-xs">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
             </span>
-            <span>{isId ? 'Terbuka untuk Peluang Kerja & Kolaborasi Proyek' : 'Available for Full-time Roles & High-Impact Projects'}</span>
+            <span className="tracking-wide">
+              {isId ? 'TERBUKA UNTUK KOLABORASI & PROYEK BARU' : 'AVAILABLE FOR COLLABORATION & NEW PROJECTS'}
+            </span>
           </div>
 
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-extrabold tracking-tight mb-3">
-            {t('sections.contact.title')}
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-extrabold tracking-tight mb-4 text-foreground">
+            {isId ? (
+              <>
+                Mari Berkolaborasi & <span className="bg-gradient-to-r from-primary via-teal-400 to-emerald-500 bg-clip-text text-transparent">Wujudkan Solusi Hebat</span>
+              </>
+            ) : (
+              <>
+                Let's Collaborate & <span className="bg-gradient-to-r from-primary via-teal-400 to-emerald-500 bg-clip-text text-transparent">Build Scalable Solutions</span>
+              </>
+            )}
           </h2>
-          <p className="text-muted-foreground text-sm md:text-base max-w-2xl mx-auto">
+
+          <p className="text-muted-foreground text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
             {isId 
-              ? 'Punya ide proyek, kebutuhan engineering, atau tawaran kolaborasi? Mari diskusikan solusi terbaik bersama.'
-              : 'Have a project concept, technical initiative, or engineering opportunity? Let’s connect and architect it.'}
+              ? 'Punya ide produk digital, kebutuhan rekayasa web/mobile, integrasi sistem AI, atau tawaran posisi profesional? Diskusikan langsung bersama Eka Syarif Maulana.'
+              : 'Have an ambitious project, enterprise web/mobile engineering need, AI integration, or professional role? Let’s architect the right solution together.'}
           </p>
         </motion.div>
 
@@ -164,25 +194,50 @@ export const ContactSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="lg:col-span-7 bg-card border border-border/80 rounded-2xl p-6 md:p-8 shadow-sm hover:border-primary/30 transition-colors"
+            className="lg:col-span-7 bg-card/70 backdrop-blur-md border border-border/80 rounded-2xl p-6 md:p-8 shadow-sm hover:border-primary/40 transition-all"
           >
-            <div className="flex items-center justify-between pb-6 mb-6 border-b border-border/60">
+            <div className="flex items-center justify-between pb-5 mb-5 border-b border-border/60">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                <div className="h-10 w-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
                   <MessageSquare className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="font-heading font-bold text-lg text-foreground">
-                    {t('contact.form.title')}
+                    {isId ? 'Kirim Pesan Langsung' : 'Send a Direct Message'}
                   </h3>
                   <p className="text-xs text-muted-foreground">
-                    {isId ? 'Tinggalkan detail kebutuhan Anda di bawah ini' : 'Leave your inquiry details below'}
+                    {isId ? 'Tinggalkan rincian pesan atau kebutuhan proyek Anda' : 'Drop your project scope or inquiry below'}
                   </p>
                 </div>
               </div>
-              <div className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/50 px-2.5 py-1 rounded-md">
-                <Clock className="w-3.5 h-3.5 text-primary" />
+              <div className="hidden sm:flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-md font-medium">
+                <Clock className="w-3.5 h-3.5" />
                 <span>{isId ? 'Respon < 2 jam' : 'Replies < 2 hrs'}</span>
+              </div>
+            </div>
+
+            <div className="mb-5 space-y-2">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                {isId ? 'Pilih Topik Cepat:' : 'Quick Topic Select:'}
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {quickTopics.map((topic) => {
+                  const isSelected = formData.subject === topic.value;
+                  return (
+                    <button
+                      key={topic.value}
+                      type="button"
+                      onClick={() => handleSelectTopic(topic.value)}
+                      className={`h-7 px-2.5 rounded-md text-[11px] font-medium border transition-all active:scale-[0.98] ${
+                        isSelected 
+                          ? 'bg-primary text-primary-foreground border-primary shadow-xs' 
+                          : 'bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground border-border/60'
+                      }`}
+                    >
+                      {isId ? topic.labelId : topic.labelEn}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -190,8 +245,9 @@ export const ContactSection = () => {
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label htmlFor="name" className="text-xs font-semibold text-foreground flex items-center gap-1.5">
-                    <User className="w-3.5 h-3.5 text-muted-foreground" />
-                    {t('contact.form.name')}
+                    <User className="w-3.5 h-3.5 text-primary" />
+                    <span>{isId ? 'Nama Lengkap' : 'Full Name'}</span>
+                    <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -200,14 +256,16 @@ export const ContactSection = () => {
                     value={formData.name}
                     onChange={handleChange}
                     className="w-full h-10 px-3.5 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground/60 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
-                    placeholder={t('contact.form.name_placeholder')}
+                    placeholder={isId ? 'Contoh: Budi Pratama' : 'e.g. John Doe'}
                     required
                   />
                 </div>
+
                 <div className="space-y-1.5">
                   <label htmlFor="email" className="text-xs font-semibold text-foreground flex items-center gap-1.5">
-                    <Mail className="w-3.5 h-3.5 text-muted-foreground" />
-                    {t('contact.form.email')}
+                    <Mail className="w-3.5 h-3.5 text-primary" />
+                    <span>{isId ? 'Alamat Email' : 'Email Address'}</span>
+                    <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="email"
@@ -216,7 +274,7 @@ export const ContactSection = () => {
                     value={formData.email}
                     onChange={handleChange}
                     className="w-full h-10 px-3.5 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground/60 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
-                    placeholder={t('contact.form.email_placeholder')}
+                    placeholder={isId ? 'nama@perusahaan.com' : 'name@company.com'}
                     required
                   />
                 </div>
@@ -224,8 +282,9 @@ export const ContactSection = () => {
 
               <div className="space-y-1.5">
                 <label htmlFor="subject" className="text-xs font-semibold text-foreground flex items-center gap-1.5">
-                  <FileText className="w-3.5 h-3.5 text-muted-foreground" />
-                  {t('contact.form.subject')}
+                  <FileText className="w-3.5 h-3.5 text-primary" />
+                  <span>{isId ? 'Subjek / Judul Kebutuhan' : 'Subject / Inquired Topic'}</span>
+                  <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -234,15 +293,16 @@ export const ContactSection = () => {
                   value={formData.subject}
                   onChange={handleChange}
                   className="w-full h-10 px-3.5 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground/60 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
-                  placeholder={t('contact.form.subject_placeholder')}
+                  placeholder={isId ? 'Contoh: Diskusi Pembuatan Aplikasi Web Enterprise' : 'e.g. Enterprise Web Architecture Consultation'}
                   required
                 />
               </div>
 
               <div className="space-y-1.5">
                 <label htmlFor="message" className="text-xs font-semibold text-foreground flex items-center gap-1.5">
-                  <MessageSquare className="w-3.5 h-3.5 text-muted-foreground" />
-                  {t('contact.form.message')}
+                  <MessageSquare className="w-3.5 h-3.5 text-primary" />
+                  <span>{isId ? 'Rincian Pesan' : 'Message Details'}</span>
+                  <span className="text-rose-500">*</span>
                 </label>
                 <textarea
                   id="message"
@@ -251,7 +311,7 @@ export const ContactSection = () => {
                   onChange={handleChange}
                   rows={4}
                   className="w-full p-3.5 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground/60 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all resize-none"
-                  placeholder={t('contact.form.message_placeholder')}
+                  placeholder={isId ? 'Ceritakan ringkas mengenai latar belakang proyek, fitur yang dibutuhkan, atau tawaran kerja sama Anda...' : 'Briefly describe your project requirements, target timeline, or collaboration proposal...'}
                   required
                 />
               </div>
@@ -264,15 +324,24 @@ export const ContactSection = () => {
                 {isSending ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>{t('contact.form.sending')}</span>
+                    <span>{isId ? 'Mengirim Pesan...' : 'Sending Message...'}</span>
                   </>
                 ) : (
                   <>
                     <Send className="w-4 h-4" />
-                    <span>{t('contact.form.send')}</span>
+                    <span>{isId ? 'Kirim Pesan Sekarang' : 'Send Message Now'}</span>
                   </>
                 )}
               </button>
+
+              <div className="pt-2 flex items-center justify-center gap-2 text-[11px] text-muted-foreground text-center">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+                <span>
+                  {isId 
+                    ? 'Privasi data terjamin. Pesan langsung diterima oleh Eka Syarif Maulana.' 
+                    : 'Privacy guaranteed. Messages route directly to Eka Syarif Maulana.'}
+                </span>
+              </div>
             </form>
           </motion.div>
 
@@ -283,100 +352,129 @@ export const ContactSection = () => {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="lg:col-span-5 space-y-4"
           >
-            <div className="bg-card border border-border/80 rounded-2xl p-5 shadow-sm space-y-3">
-              <div className="flex items-start justify-between gap-3 p-3 rounded-xl bg-muted/30 border border-border/40 hover:border-primary/40 transition-colors">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
-                    <Mail className="w-4 h-4" />
+            <div className="bg-card/70 backdrop-blur-md border border-border/80 rounded-2xl p-5 shadow-sm space-y-3.5">
+              <div className="p-3.5 rounded-xl bg-muted/30 border border-border/40 hover:border-primary/40 transition-colors">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="h-9 w-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
+                      <Mail className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                        {isId ? 'EMAIL UTAMA' : 'PRIMARY EMAIL'}
+                      </p>
+                      <a 
+                        href={`mailto:${emailVal}`} 
+                        className="text-xs sm:text-sm font-semibold text-foreground hover:text-primary transition-colors block truncate"
+                      >
+                        {emailVal}
+                      </a>
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                      {t('contact.info.email')}
-                    </p>
-                    <a 
-                      href={`mailto:${emailVal}`} 
-                      className="text-xs sm:text-sm font-medium text-foreground hover:text-primary transition-colors block truncate"
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => handleCopy(emailVal, 'Email')}
+                      className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                      aria-label="Copy Email"
+                      title={isId ? 'Salin Email' : 'Copy Email'}
                     >
-                      {emailVal}
+                      {copiedField === 'Email' ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
+                    </button>
+                    <a
+                      href={`mailto:${emailVal}`}
+                      className="p-1.5 rounded-md bg-primary/10 hover:bg-primary/20 text-primary transition-colors"
+                      aria-label="Send Email"
+                      title={isId ? 'Buka Aplikasi Email' : 'Open Email Client'}
+                    >
+                      <ExternalLink className="w-4 h-4" />
                     </a>
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => handleCopy(emailVal, 'Email')}
-                  className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors shrink-0"
-                  aria-label="Copy Email"
-                  title="Salin Email"
-                >
-                  {copiedField === 'Email' ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
-                </button>
               </div>
 
-              <div className="flex items-start justify-between gap-3 p-3 rounded-xl bg-muted/30 border border-border/40 hover:border-emerald-500/40 transition-colors">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="h-9 w-9 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
-                    <Phone className="w-4 h-4" />
+              <div className="p-3.5 rounded-xl bg-muted/30 border border-border/40 hover:border-emerald-500/40 transition-colors">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="h-9 w-9 rounded-lg bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
+                      <MessageCircle className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                        {isId ? 'WHATSAPP & TELEPON' : 'WHATSAPP & DIRECT CALL'}
+                      </p>
+                      <a 
+                        href={`https://wa.me/${cleanPhone}?text=${whatsappGreeting}`} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="text-xs sm:text-sm font-semibold text-foreground hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors block truncate"
+                      >
+                        {phoneVal}
+                      </a>
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                      WhatsApp / {t('contact.info.phone')}
-                    </p>
-                    <a 
-                      href={`https://wa.me/${cleanPhone}`} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      className="text-xs sm:text-sm font-medium text-foreground hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors block truncate"
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => handleCopy(phoneVal, isId ? 'Nomor HP' : 'Phone Number')}
+                      className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                      aria-label="Copy Phone"
+                      title={isId ? 'Salin Nomor' : 'Copy Phone'}
                     >
-                      {phoneVal}
+                      {copiedField === (isId ? 'Nomor HP' : 'Phone Number') ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
+                    </button>
+                    <a
+                      href={`https://wa.me/${cleanPhone}?text=${whatsappGreeting}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="h-7 px-2 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-semibold flex items-center gap-1 transition-all active:scale-[0.98]"
+                      aria-label="Chat WhatsApp"
+                      title="Chat via WhatsApp"
+                    >
+                      <MessageCircle className="w-3 h-3" />
+                      <span>Chat</span>
                     </a>
                   </div>
                 </div>
-                <div className="flex items-center gap-1 shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => handleCopy(phoneVal, 'Nomor HP')}
-                    className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-                    aria-label="Copy Phone"
-                    title="Salin Nomor"
-                  >
-                    {copiedField === 'Nomor HP' ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
-                  </button>
-                  <a
-                    href={`https://wa.me/${cleanPhone}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-1.5 rounded-md bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 transition-colors"
-                    aria-label="Chat WhatsApp"
-                    title="Chat via WhatsApp"
-                  >
-                    <MessageCircle className="w-4 h-4" />
-                  </a>
-                </div>
               </div>
 
-              <div className="flex items-center justify-between gap-3 p-3 rounded-xl bg-muted/30 border border-border/40">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
-                    <MapPin className="w-4 h-4" />
+              <div className="p-3.5 rounded-xl bg-muted/30 border border-border/40">
+                <div className="flex items-start justify-between gap-3 mb-2.5">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="h-9 w-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
+                      <MapPin className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                        {isId ? 'LOKASI & DOMISILI' : 'BASE LOCATION'}
+                      </p>
+                      <p className="text-xs sm:text-sm font-semibold text-foreground truncate">
+                        {locationVal}
+                      </p>
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                      {t('contact.info.location')}
-                    </p>
-                    <p className="text-xs sm:text-sm font-medium text-foreground truncate">
-                      {locationVal}
-                    </p>
-                  </div>
+                  {currentTime && (
+                    <span className="text-[10px] font-semibold px-2 py-1 rounded-md bg-background border border-border text-muted-foreground shrink-0 flex items-center gap-1">
+                      <Clock className="w-3 h-3 text-primary" />
+                      <span>{currentTime}</span>
+                    </span>
+                  )}
                 </div>
-                {currentTime && (
-                  <span className="text-[10px] font-semibold px-2 py-1 rounded bg-background border border-border text-muted-foreground shrink-0">
-                    {currentTime}
+
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-background/80 border border-border/70 text-[10px] font-medium text-foreground">
+                    <Globe2 className="w-3 h-3 text-primary" />
+                    <span>Remote Worldwide</span>
                   </span>
-                )}
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-background/80 border border-border/70 text-[10px] font-medium text-foreground">
+                    <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+                    <span>Hybrid / On-site Ready</span>
+                  </span>
+                </div>
               </div>
             </div>
 
-            <div ref={mapContainerRef} className="bg-card border border-border/80 rounded-2xl overflow-hidden h-[200px] sm:h-[220px] relative shadow-sm group">
+            <div ref={mapContainerRef} className="bg-card/70 backdrop-blur-md border border-border/80 rounded-2xl overflow-hidden h-[200px] sm:h-[220px] relative shadow-sm group">
               {isValidMapUrl && showMap ? (
                 <>
                   <iframe 
@@ -395,22 +493,22 @@ export const ContactSection = () => {
                     href="https://maps.google.com/?q=Medan,Sumatera+Utara"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="absolute bottom-3 right-3 px-2.5 py-1.5 rounded-lg bg-background/90 hover:bg-background border border-border text-[11px] font-medium text-foreground backdrop-blur-xs flex items-center gap-1.5 shadow-sm transition-all"
+                    className="absolute bottom-3 right-3 px-2.5 py-1.5 rounded-lg bg-background/95 hover:bg-background border border-border text-[11px] font-semibold text-foreground backdrop-blur-md flex items-center gap-1.5 shadow-sm transition-all"
                   >
                     <span>{isId ? 'Buka Google Maps' : 'Open in Maps'}</span>
-                    <ExternalLink className="w-3 h-3 text-muted-foreground" />
+                    <ExternalLink className="w-3 h-3 text-primary" />
                   </a>
                 </>
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-muted/40 text-muted-foreground text-xs">
-                  {isValidMapUrl ? "Memuat peta lokasi..." : "Map unavailable"}
+                  {isValidMapUrl ? (isId ? "Memuat peta lokasi..." : "Loading location map...") : "Map unavailable"}
                 </div>
               )}
             </div>
 
-            <div className="bg-card border border-border/80 rounded-2xl p-4 shadow-sm">
-              <p className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
-                {t('contact.follow_me')}
+            <div className="bg-card/70 backdrop-blur-md border border-border/80 rounded-2xl p-4 shadow-sm">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-3">
+                {isId ? 'JARINGAN & REPOSITORI PROFESIONAL' : 'PROFESSIONAL NETWORKS & REPOSITORIES'}
               </p>
               <div className="flex flex-wrap gap-2">
                 {normalizedSocialLinks.map((link) => (
@@ -419,7 +517,7 @@ export const ContactSection = () => {
                     href={safeUrl(link.url)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="h-9 px-3 rounded-lg bg-background border border-border/80 hover:border-primary hover:text-primary transition-all flex items-center gap-2 text-xs font-medium group"
+                    className="h-9 px-3 rounded-lg bg-background border border-border/80 hover:border-primary hover:text-primary transition-all flex items-center gap-2 text-xs font-medium group active:scale-[0.98]"
                     aria-label={link.platform || 'Social Link'}
                   >
                     <SocialIcon platform={link.platform} icon={(link as any).icon} url={link.url} size={15} />
