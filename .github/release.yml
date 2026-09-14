@@ -1,0 +1,26 @@
+changelog:
+  categories:
+    - title: '🚀 Fitur Baru (New Features)'
+      labels:
+        - 'enhancement'
+        - 'feature'
+    - title: '🐛 Perbaikan Bug (Bug Fixes)'
+      labels:
+        - 'fix'
+        - 'bug'
+    - title: '⚡ Optimasi Performa (Performance)'
+      labels:
+        - 'performance'
+        - 'perf'
+    - title: '🎨 Peningkatan UI/UX'
+      labels:
+        - 'ui'
+        - 'ux'
+        - 'design'
+    - title: '🔒 Pembaruan Keamanan (Security)'
+      labels:
+        - 'security'
+    - title: '🔧 Pemeliharaan & Dependensi (Chores)'
+      labels:
+        - 'chore'
+        - 'dependencies'

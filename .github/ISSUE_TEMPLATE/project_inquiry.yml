@@ -1,0 +1,48 @@
+name: '💼 Tawaran Kerjasama & Proyek (Project / Hire Inquiry)'
+description: 'Kirim tawaran freelance, konsultasi arsitektur AI / Web, atau kerjasama profesional'
+title: '[Inquiry]: '
+labels: ['inquiry', 'collaboration']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Ingin berkolaborasi, merekrut, atau mendiskusikan pembangunan aplikasi web/mobile dan sistem AI berskala tinggi bersama **Eka Syarif Maulana, S.Kom**?
+
+  - type: input
+    id: organization
+    attributes:
+      label: Nama Perusahaan / Instansi / Individu
+      placeholder: PT Inovasi Digital / Nama Klien
+    validations:
+      required: true
+
+  - type: input
+    id: email
+    attributes:
+      label: Alamat Email Kontak
+      placeholder: kontak@perusahaan.com
+    validations:
+      required: true
+
+  - type: dropdown
+    id: project_type
+    attributes:
+      label: Jenis Proyek / Kerjasama
+      options:
+        - 'Pengembangan Fullstack Web App (React / Vite / Cloudflare / Node)'
+        - 'Pengembangan Mobile App (React Native / Android)'
+        - 'Integrasi AI & Machine Learning / LLM Gateway'
+        - 'Konsultasi Arsitektur Database & Cloud (PostgreSQL / Neon)'
+        - 'Peluang Karir / Full-Time / Remote Contract'
+        - 'Lainnya'
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Deskripsi & Ruang Lingkup Proyek
+      description: Jelaskan gambaran kebutuhan proyek, timeline yang diharapkan, dan estimasi anggaran.
+      placeholder: Kami membutuhkan sistem manajemen...
+    validations:
+      required: true

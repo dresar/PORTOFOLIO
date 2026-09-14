@@ -1,9 +1,17 @@
 # PORTOFOLIO EKA SYARIF MAULANA
 
+[![CI & Build Verification](https://github.com/dresar/PORTOFOLIO/actions/workflows/ci.yml/badge.svg)](https://github.com/dresar/PORTOFOLIO/actions/workflows/ci.yml)
+[![CodeQL Security Analysis](https://github.com/dresar/PORTOFOLIO/actions/workflows/codeql.yml/badge.svg)](https://github.com/dresar/PORTOFOLIO/actions/workflows/codeql.yml)
+[![Cloudflare Pages](https://img.shields.io/badge/Cloudflare_Pages-Deployed-F38020?logo=cloudflare&logoColor=white)](https://ekasyarif.my.id)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)](https://react.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Neon Database](https://img.shields.io/badge/Neon-Serverless_PostgreSQL-00E599?logo=postgresql&logoColor=white)](https://neon.tech/)
+
 Dokumentasi resmi untuk proyek Web Portofolio dinamis beserta Panel Admin (CMS).
 Website ini dirancang untuk menampilkan profil profesional, pengalaman, proyek unggulan, keahlian, sertifikasi, serta artikel blog dengan antarmuka yang modern, responsif, dan interaktif.
 
-- **Live Demo**: [https://www.inka.my.id/](https://www.inka.my.id/)
+- **Live Production**: [https://ekasyarif.my.id/](https://ekasyarif.my.id/)
 - **GitHub Repository**: [https://github.com/dresar/PORTOFOLIO](https://github.com/dresar/PORTOFOLIO)
 
 ---

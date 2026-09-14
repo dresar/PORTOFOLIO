@@ -1,0 +1,45 @@
+name: CI & Build Verification
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build & Verify
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Functions & Client
+        run: npm run build
+        env:
+          NODE_ENV: production
+          VITE_API_URL: https://ekasyarif.my.id/api
+
+      - name: Verify Build Artifacts
+        run: |
+          test -d dist
+          test -f dist/index.html
+          test -d functions
+          test -f functions/api/\[\[route\]\].js
+          test -f functions/media/\[\[path\]\].js

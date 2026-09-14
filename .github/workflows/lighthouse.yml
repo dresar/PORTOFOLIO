@@ -1,0 +1,25 @@
+name: Lighthouse Audit
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 0'
+
+jobs:
+  audit:
+    name: PageSpeed & Lighthouse
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run Lighthouse CI on Live Site
+        run: |
+          npx @lhci/cli@0.14.x collect --url=https://ekasyarif.my.id/ --numberOfRuns=2
+          npx @lhci/cli@0.14.x assert --preset=lighthouse:recommended --assertions.categories:pwa=off || true

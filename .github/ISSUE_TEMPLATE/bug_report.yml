@@ -1,0 +1,71 @@
+name: '🐛 Laporan Bug (Bug Report)'
+description: 'Laporkan masalah, galat tampilan, atau kerusakan fitur pada website'
+title: '[Bug]: '
+labels: ['bug', 'triage']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Terima kasih telah meluangkan waktu untuk melaporkan masalah pada website portofolio Eka Syarif Maulana.
+
+  - type: input
+    id: url
+    attributes:
+      label: URL Halaman yang Terdampak
+      description: Tautan halaman tempat bug terjadi (misal https://ekasyarif.my.id/id/projects).
+      placeholder: https://ekasyarif.my.id/...
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Deskripsi Masalah
+      description: Jelaskan apa yang terjadi dan bagaimana kondisi yang seharusnya.
+      placeholder: Saat menekan tombol X, halaman tidak merespon...
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Langkah Mereproduksi Masalah
+      description: Tuliskan tahapan untuk memicu bug tersebut.
+      placeholder: |
+        1. Buka halaman '...'
+        2. Klik elemen '...'
+        3. Gulir ke bawah
+        4. Terjadi error '...'
+    validations:
+      required: true
+
+  - type: dropdown
+    id: device
+    attributes:
+      label: Perangkat & Lingkungan
+      description: Perangkat apa yang Anda gunakan saat menemukan masalah ini?
+      options:
+        - 'Desktop / Laptop (Windows)'
+        - 'Desktop / Laptop (macOS)'
+        - 'Desktop / Laptop (Linux)'
+        - 'Smartphone (Android)'
+        - 'Smartphone (iOS / iPhone)'
+        - 'Tablet / iPad'
+    validations:
+      required: true
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser
+      description: Browser dan versi yang digunakan (misal Chrome 128, Safari 18, Firefox 130).
+      placeholder: Chrome Desktop v128
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log Konsol / Tangkapan Layar
+      description: Tempelkan pesan error dari console browser jika ada.
+      placeholder: TypeError: Cannot read property ...
