@@ -55,7 +55,6 @@ export default defineConfig(({ mode }) => ({
         clientsClaim: true,
         skipWaiting: true,
         globPatterns: [
-          'index.html',
           'favicon.svg',
           'pwa-*.png'
         ],
@@ -64,6 +63,9 @@ export default defineConfig(({ mode }) => ({
         navigateFallbackDenylist: [
           /^\/admin\/.*/,
           /^\/api\/.*/,
+          /^\/assets\/.*/,
+          /\.js$/,
+          /\.css$/,
           /\.xml$/,
           /\.txt$/,
           /\.json$/,
@@ -74,16 +76,16 @@ export default defineConfig(({ mode }) => ({
         ],
         runtimeCaching: [
           {
-            // Cache hashed assets dynamically as pages are visited (On-Demand / StaleWhileRevalidate)
+            // Cache hashed assets dynamically with status 200 only
             urlPattern: ({ url }) => url.origin === self.location.origin && url.pathname.includes('/assets/'),
-            handler: 'StaleWhileRevalidate',
+            handler: 'CacheFirst',
             options: {
-              cacheName: 'assets-runtime-cache',
+              cacheName: 'assets-runtime-cache-v3',
               expiration: {
                 maxEntries: 80,
                 maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
               },
-              cacheableResponse: { statuses: [0, 200] }
+              cacheableResponse: { statuses: [200] }
             }
           },
           {

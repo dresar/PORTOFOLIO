@@ -87,32 +87,37 @@
     ]
     </script>
 
-    <!-- ✅ Console suppression on production -->
+    <!-- ✅ Stale Chunk & ServiceWorker Auto-Recovery -->
     <script>
-      (function () {
-        var host = location.hostname || '';
-        var isProd = /(ekasyarif|inka)\.my\.id$/i.test(host);
-        if (isProd) {
-          var methods = ['log','warn','error','info','debug','trace'];
-          for (var i=0;i<methods.length;i++){
-            try { console[methods[i]] = function(){}; } catch(e) {}
-          }
-        } else {
-          if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(function(regs) {
-              for (var i = 0; i < regs.length; i++) {
-                regs[i].unregister();
+      (function() {
+        window.addEventListener('error', function(e) {
+          var src = (e.target && e.target.src) || '';
+          var msg = (e.message || '') + '';
+          var isModuleError = (e.target && e.target.tagName === 'SCRIPT' && src.indexOf('/assets/') !== -1) ||
+                              msg.indexOf('MIME type') !== -1 ||
+                              msg.indexOf('Failed to load module script') !== -1 ||
+                              msg.indexOf('dynamically imported module') !== -1;
+          if (isModuleError) {
+            var now = Date.now();
+            var last = sessionStorage.getItem('cf_sw_bust_ts');
+            if (!last || now - parseInt(last, 10) > 10000) {
+              sessionStorage.setItem('cf_sw_bust_ts', String(now));
+              if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(function(regs) {
+                  for (var i = 0; i < regs.length; i++) regs[i].unregister();
+                });
               }
-            });
-          }
-          if ('caches' in window) {
-            caches.keys().then(function(names) {
-              for (var i = 0; i < names.length; i++) {
-                caches.delete(names[i]);
+              if ('caches' in window) {
+                caches.keys().then(function(keys) {
+                  for (var i = 0; i < keys.length; i++) caches.delete(keys[i]);
+                });
               }
-            });
+              var u = new URL(window.location.href);
+              u.searchParams.set('v', String(now));
+              window.location.replace(u.toString());
+            }
           }
-        }
+        }, true);
       })();
     </script>
   </head>
