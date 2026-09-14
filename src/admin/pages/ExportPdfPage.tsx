@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { jsPDF } from 'jspdf';
-import html2canvas from 'html2canvas';
 import { 
   FileText, 
   Download, 
@@ -79,6 +77,11 @@ export default function ExportPdfPage() {
     await new Promise(resolve => setTimeout(resolve, 300));
     
     try {
+      const [{ jsPDF }, { default: html2canvas }] = await Promise.all([
+        import('jspdf'),
+        import('html2canvas')
+      ]);
+
       const element = document.getElementById(`pdf-preview-${sectionId}`);
       if (!element) {
         throw new Error(`Elemen pratinjau untuk bagian ${sectionTitle} tidak ditemukan.`);
@@ -143,6 +146,11 @@ export default function ExportPdfPage() {
     await new Promise(resolve => setTimeout(resolve, 500));
 
     try {
+      const [{ jsPDF }, { default: html2canvas }] = await Promise.all([
+        import('jspdf'),
+        import('html2canvas')
+      ]);
+
       const doc = new jsPDF('l', 'mm', 'a4');
       let isFirstPage = true;
 

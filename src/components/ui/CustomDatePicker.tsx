@@ -187,7 +187,7 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
               value={currentMonth.getMonth().toString()}
               onValueChange={handleMonthSelect}
             >
-              <SelectTrigger className="h-8 text-xs font-medium bg-secondary/50 border-border/50 flex-1">
+              <SelectTrigger aria-label="Pilih Bulan" className="h-8 text-xs font-medium bg-secondary/50 border-border/50 flex-1">
                 <SelectValue placeholder="Bulan" />
               </SelectTrigger>
               <SelectContent className="max-h-60 z-50">
@@ -203,7 +203,7 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
               value={currentMonth.getFullYear().toString()}
               onValueChange={handleYearSelect}
             >
-              <SelectTrigger className="h-8 text-xs font-medium bg-secondary/50 border-border/50 w-[100px]">
+              <SelectTrigger aria-label="Pilih Tahun" className="h-8 text-xs font-medium bg-secondary/50 border-border/50 w-[100px]">
                 <SelectValue placeholder="Tahun" />
               </SelectTrigger>
               <SelectContent className="max-h-60 z-50">

@@ -143,7 +143,7 @@ export const ProjectsSection = () => {
             value={String(activeFilter)} 
             onValueChange={(val) => handleFilterChange(val === 'all' ? 'all' : Number(val))}
           >
-            <SelectTrigger className="h-9 w-full rounded-lg border-border/70 bg-card/90 backdrop-blur text-xs font-medium shadow-sm hover:border-primary/50 transition-colors">
+            <SelectTrigger aria-label="Filter kategori proyek" className="h-9 w-full rounded-lg border-border/70 bg-card/90 backdrop-blur text-xs font-medium shadow-sm hover:border-primary/50 transition-colors">
               <div className="flex items-center gap-2 min-w-0">
                 <Filter className="w-3.5 h-3.5 text-primary shrink-0" />
                 <SelectValue placeholder={t('projects.all_projects')} />

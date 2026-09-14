@@ -196,7 +196,6 @@ export default defineConfig(({ mode }) => ({
             if (id.includes('drizzle-orm')) return 'vendor-drizzle';
             if (id.includes('embla-carousel')) return 'vendor-embla';
             if (id.includes('zod')) return 'vendor-zod';
-            if (id.includes('jspdf') || id.includes('jspdf-autotable')) return 'vendor-pdf';
             if (id.includes('xlsx')) return 'vendor-xlsx';
           }
         },

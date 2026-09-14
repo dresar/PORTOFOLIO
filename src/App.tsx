@@ -78,7 +78,7 @@ const ExportPdfPage = lazyRetry(() => import("./admin/pages/ExportPdfPage"));
 const KerjaPage = lazyRetry(() => import("./pages/KerjaPage"));
 const KerjaAdminPage = lazyRetry(() => import("./admin/pages/kerja/KerjaAdminPage"));
 
-import { AdminLayout } from "./admin/components/AdminLayout";
+const AdminLayout = lazyRetry(() => import("./admin/components/AdminLayout").then(m => ({ default: m.AdminLayout })));
 
 // Configure Query Client with Persistence
 const queryClient = new QueryClient({

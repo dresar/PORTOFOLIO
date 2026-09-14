@@ -71,7 +71,7 @@ Disallow: /private/
 
 # Sitemaps & LLM Context Discovery
 Sitemap: ${DOMAIN}/sitemap.xml
-LLMs-Txt: ${DOMAIN}/llms.txt
+# LLMs-Txt: ${DOMAIN}/llms.txt
 `;
 
 fs.writeFileSync(path.resolve('public/robots.txt'), robotsTxt, 'utf8');

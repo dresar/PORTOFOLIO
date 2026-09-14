@@ -61,4 +61,4 @@ Disallow: /private/
 
 # Sitemaps & LLM Context Discovery
 Sitemap: https://ekasyarif.my.id/sitemap.xml
-LLMs-Txt: https://ekasyarif.my.id/llms.txt
+# LLMs-Txt: https://ekasyarif.my.id/llms.txt

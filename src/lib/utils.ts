@@ -59,6 +59,15 @@ export function normalizeMediaUrl(raw?: string | null, options?: MediaUrlOptions
     return url;
   }
 
+  if (url.includes('ik.imagekit.io')) {
+    const w = width || 600;
+    const sep = url.includes('?') ? '&' : '?';
+    if (!url.includes('tr=')) {
+      return `${url}${sep}tr=w-${w},q-${quality},f-auto`;
+    }
+    return url;
+  }
+
   if (
     (url.startsWith('http://') || url.startsWith('https://')) &&
     !url.endsWith('.svg') &&

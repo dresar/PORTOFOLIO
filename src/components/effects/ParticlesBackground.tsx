@@ -33,6 +33,7 @@ export const ParticlesBackground = () => {
     <div
       className="absolute inset-0 overflow-hidden pointer-events-none"
       aria-hidden="true"
+      style={{ contain: 'strict' }}
     >
       {seededParticles.map((p) => (
         <div
@@ -50,19 +51,22 @@ export const ParticlesBackground = () => {
         />
       ))}
 
-      {/* Static gradient orbs – no animation on main thread */}
       <div
-        className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full"
+        className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full pointer-events-none"
         style={{
           background: 'hsl(var(--primary) / 0.08)',
           filter: 'blur(80px)',
+          willChange: 'transform',
+          contain: 'paint layout',
         }}
       />
       <div
-        className="absolute bottom-1/4 right-1/4 w-72 h-72 rounded-full"
+        className="absolute bottom-1/4 right-1/4 w-72 h-72 rounded-full pointer-events-none"
         style={{
           background: 'hsl(var(--primary) / 0.05)',
           filter: 'blur(70px)',
+          willChange: 'transform',
+          contain: 'paint layout',
         }}
       />
     </div>
