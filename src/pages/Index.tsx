@@ -1,10 +1,9 @@
 import React, { Suspense } from 'react';
 import { Header } from '@/components/layout/Header';
 import { HeroSection } from '@/components/sections/HeroSection';
-import { AboutSection } from '@/components/sections/AboutSection';
 import { Helmet } from 'react-helmet-async';
 
-// Dynamically import below-the-fold components to reduce initial chunk size
+const AboutSection = React.lazy(() => import('@/components/sections/AboutSection').then(module => ({ default: module.AboutSection })));
 const Footer = React.lazy(() => import('@/components/layout/Footer').then(module => ({ default: module.Footer })));
 const EducationSection = React.lazy(() => import('@/components/sections/EducationSection').then(module => ({ default: module.EducationSection })));
 const SkillsSection = React.lazy(() => import('@/components/sections/SkillsSection').then(module => ({ default: module.SkillsSection })));
@@ -15,8 +14,6 @@ const BlogSection = React.lazy(() => import('@/components/sections/BlogSection')
 const ContactSection = React.lazy(() => import('@/components/sections/ContactSection').then(module => ({ default: module.ContactSection })));
 const GlobalModal = React.lazy(() => import('@/components/GlobalModal').then(module => ({ default: module.GlobalModal })));
 const BlobCursor = React.lazy(() => import('@/components/effects/BlobCursor').then(module => ({ default: module.BlobCursor })));
-import { FloatingWhatsApp } from '@/components/effects/FloatingWhatsApp';
-import { ScrollToTop } from '@/components/effects/ScrollToTop';
 
 const Index = () => {
   return (
@@ -39,9 +36,9 @@ const Index = () => {
         {/* Main Content */}
         <main>
           <HeroSection />
-          <AboutSection />
           
           <Suspense fallback={<div className="min-h-[200px]" />}>
+            <AboutSection />
             <EducationSection />
             <SkillsSection />
             <ProjectsSection />
@@ -55,8 +52,6 @@ const Index = () => {
         <Suspense fallback={null}>
           <Footer />
           <GlobalModal />
-          <FloatingWhatsApp />
-          <ScrollToTop />
         </Suspense>
 
         {/* Custom Cursor - Hidden on mobile */}

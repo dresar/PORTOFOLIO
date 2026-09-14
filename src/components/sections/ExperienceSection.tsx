@@ -132,9 +132,11 @@ export const ExperienceSection = () => {
           {logoUrl && (
             <div className="absolute -bottom-3 sm:-bottom-3.5 left-2.5 sm:left-3.5 size-6 sm:size-8 rounded-md sm:rounded-lg border-2 border-background bg-white p-0.5 sm:p-1 shadow-sm flex items-center justify-center z-10">
               <img 
-                src={normalizeMediaUrl(logoUrl)} 
+                src={normalizeMediaUrl(logoUrl, { width: 64 })} 
                 alt={`${exp.company} logo`} 
                 className="w-full h-full object-contain"
+                loading="lazy"
+                decoding="async"
               />
             </div>
           )}

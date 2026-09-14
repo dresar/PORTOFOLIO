@@ -19,24 +19,25 @@ export function normalizeMediaUrl(raw?: string | null, options?: MediaUrlOptions
   let url = raw.trim();
   if (!url) return "";
 
+  let cleanPath = '';
   if (url.includes('cdn.jsdelivr.net/gh/dresar/PORTOFOLIO@main/public/')) {
-    return `/media/${url.split('public/')[1]}`;
-  }
-
-  if (url.startsWith('/media/') || url.startsWith('media/')) {
-    return `/${url.replace(/^\/+/, '')}`;
-  }
-
-  if (url.startsWith('/uploads/') || url.startsWith('uploads/')) {
-    return `/media/${url.replace(/^\/+/, '')}`;
-  }
-
-  if (url.includes('uploads/articles')) {
+    cleanPath = `/media/${url.split('public/')[1]}`;
+  } else if (url.startsWith('/media/') || url.startsWith('media/')) {
+    cleanPath = `/${url.replace(/^\/+/, '')}`;
+  } else if (url.startsWith('/uploads/') || url.startsWith('uploads/')) {
+    cleanPath = `/media/${url.replace(/^\/+/, '')}`;
+  } else if (url.includes('uploads/articles')) {
     const match = url.match(/uploads\/articles\/.+$/);
     if (match) {
-      return `/media/${match[0]}`;
+      cleanPath = `/media/${match[0]}`;
     }
-    return url;
+  }
+
+  if (cleanPath) {
+    if (options?.format !== 'png' && (cleanPath.includes('/uploads/articles/') || cleanPath.includes('3cc3ea8e') || cleanPath.includes('edu_4_logo'))) {
+      return cleanPath.replace(/\.(png|jpe?g)$/i, '.webp');
+    }
+    return cleanPath;
   }
 
   const width = options?.width;
@@ -59,27 +60,20 @@ export function normalizeMediaUrl(raw?: string | null, options?: MediaUrlOptions
     return url;
   }
 
-  if (url.includes('ik.imagekit.io')) {
-    const w = width || 600;
-    const sep = url.includes('?') ? '&' : '?';
-    if (!url.includes('tr=')) {
-      return `${url}${sep}tr=w-${w},q-${quality},f-auto`;
-    }
-    return url;
-  }
-
   if (
     (url.startsWith('http://') || url.startsWith('https://')) &&
-    !url.endsWith('.svg') &&
-    !url.includes('.svg?') &&
     (url.includes('upload.wikimedia.org') || url.includes('vecteezy.com') || url.includes('googleusercontent.com'))
   ) {
+    const isSvg = url.endsWith('.svg') || url.includes('.svg?');
+    if (isSvg) {
+      return `https://wsrv.nl/?url=${url.replace(/^https?:\/\//, '')}`;
+    }
     const w = width || 600;
     return `https://wsrv.nl/?url=${url.replace(/^https?:\/\//, '')}&w=${w}&output=webp&q=${quality}`;
   }
 
   if (url.startsWith('http://') || url.startsWith('https://')) {
-     return url;
+    return url;
   }
 
   if (import.meta.env.VITE_BACKEND_URL && url.startsWith(import.meta.env.VITE_BACKEND_URL)) {

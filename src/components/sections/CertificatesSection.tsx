@@ -170,15 +170,11 @@ export const CertificatesSection = () => {
         </div>
 
         {/* Certificates Static Responsive Grid */}
-        <motion.div 
-          layout 
-          className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 md:gap-6"
-        >
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 md:gap-6">
           <AnimatePresence mode="popLayout">
             {displayedCertificates.map((cert: any) => (
               <motion.div
                 key={cert.id}
-                layout
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
@@ -263,7 +259,7 @@ export const CertificatesSection = () => {
               </motion.div>
             ))}
           </AnimatePresence>
-        </motion.div>
+        </div>
         
         {totalPages > 1 && (
           <div className="flex items-center justify-center gap-2 mt-6 sm:mt-8">

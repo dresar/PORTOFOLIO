@@ -5,6 +5,7 @@ import { useEducation } from '@/hooks/useEducation';
 import { useModalStore } from '@/store/modalStore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLocalizedContent } from '@/hooks/useLocalizedContent';
+import { normalizeMediaUrl } from '@/lib/utils';
 
 export const EducationSection = () => {
   const { t } = useTranslation();
@@ -45,10 +46,11 @@ export const EducationSection = () => {
           <div className="relative aspect-video overflow-hidden bg-muted flex items-center justify-center">
             {coverUrl ? (
               <img 
-                src={coverUrl} 
+                src={normalizeMediaUrl(coverUrl, { width: 400 })} 
                 alt={edu.institution} 
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
                 loading="lazy"
+                decoding="async"
               />
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center">
@@ -62,9 +64,11 @@ export const EducationSection = () => {
           {(edu.logo || edu.logo_url) && (
             <div className="absolute -bottom-4 sm:-bottom-6 left-3 sm:left-5 w-9 h-9 sm:w-14 sm:h-14 rounded-full border-2 sm:border-4 border-background bg-white flex items-center justify-center z-10 overflow-hidden shadow-md">
               <img 
-                src={edu.logo || edu.logo_url} 
+                src={normalizeMediaUrl(edu.logo || edu.logo_url, { width: 96 })} 
                 alt={`${edu.institution} logo`} 
                 className="w-full h-full object-contain rounded-full p-0.5"
+                loading="lazy"
+                decoding="async"
               />
             </div>
           )}

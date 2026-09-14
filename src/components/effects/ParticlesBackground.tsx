@@ -52,21 +52,10 @@ export const ParticlesBackground = () => {
       ))}
 
       <div
-        className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full pointer-events-none"
+        className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'hsl(var(--primary) / 0.08)',
-          filter: 'blur(80px)',
-          willChange: 'transform',
-          contain: 'paint layout',
-        }}
-      />
-      <div
-        className="absolute bottom-1/4 right-1/4 w-72 h-72 rounded-full pointer-events-none"
-        style={{
-          background: 'hsl(var(--primary) / 0.05)',
-          filter: 'blur(70px)',
-          willChange: 'transform',
-          contain: 'paint layout',
+          background: 'radial-gradient(circle 240px at 25% 25%, hsl(var(--primary) / 0.08) 0%, transparent 70%), radial-gradient(circle 200px at 75% 75%, hsl(var(--primary) / 0.05) 0%, transparent 70%)',
+          contain: 'strict',
         }}
       />
     </div>

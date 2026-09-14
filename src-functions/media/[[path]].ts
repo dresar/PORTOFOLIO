@@ -12,6 +12,24 @@ export async function onRequest(context: any) {
 
   if (env?.ASSETS) {
     try {
+      const acceptHeader = request.headers.get('accept') || '';
+      if (acceptHeader.includes('image/webp') && /\.(png|jpe?g)$/i.test(subpath)) {
+        const webpSubpath = subpath.replace(/\.(png|jpe?g)$/i, '.webp');
+        const webpUrl = new URL(`/${webpSubpath}`, request.url);
+        const webpRes = await env.ASSETS.fetch(webpUrl.toString());
+        if (webpRes.status === 200) {
+          const resHeaders = new Headers(webpRes.headers);
+          resHeaders.set('Content-Type', 'image/webp');
+          resHeaders.set('Cache-Control', 'public, max-age=31536000, s-maxage=31536000, immutable');
+          resHeaders.set('Access-Control-Allow-Origin', '*');
+          resHeaders.set('Vary', 'Accept');
+          return new Response(webpRes.body, {
+            status: 200,
+            headers: resHeaders
+          });
+        }
+      }
+
       const assetUrl = new URL(`/${subpath}`, request.url);
       const assetRes = await env.ASSETS.fetch(assetUrl.toString());
       if (assetRes.status === 200) {

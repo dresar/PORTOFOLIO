@@ -48,6 +48,7 @@ export default defineConfig(({ mode }) => ({
         enabled: false,
       },
       registerType: 'autoUpdate',
+      injectRegister: null,
       includeAssets: ['favicon.svg', 'robots.txt'],
       workbox: {
         cleanupOutdatedCaches: true,

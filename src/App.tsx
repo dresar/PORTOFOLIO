@@ -1,6 +1,4 @@
 import { Suspense, lazy, useState, useEffect } from "react";
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
@@ -10,8 +8,6 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ThemeApplicator } from "@/components/effects/ThemeApplicator";
 import MaintenanceGuard from "@/components/MaintenanceGuard";
 import { dataManager } from "@/services/dataManager";
-import { FloatingWhatsApp } from '@/components/effects/FloatingWhatsApp';
-import { ScrollToTop } from '@/components/effects/ScrollToTop';
 import { ScrollRestoration } from '@/components/effects/ScrollRestoration';
 
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
@@ -50,6 +46,8 @@ const BlogList = lazyRetry(() => import("./pages/BlogList"));
 const BlogDetail = lazyRetry(() => import("./pages/BlogDetail"));
 const ProjectDetail = lazyRetry(() => import("./pages/ProjectDetail"));
 import { LanguageRouteSync, RootLanguageRedirect, LocalizedHomeRedirect } from "@/components/common/LanguageRouteSync";
+const FloatingWhatsApp = lazyRetry(() => import('@/components/effects/FloatingWhatsApp').then(m => ({ default: m.FloatingWhatsApp })));
+const ScrollToTop = lazyRetry(() => import('@/components/effects/ScrollToTop').then(m => ({ default: m.ScrollToTop })));
 
 // Admin Pages
 const LoginPage = lazyRetry(() => import("./admin/pages/LoginPage"));
@@ -224,9 +222,10 @@ const App = () => {
                         {/* Global fallback: redirect any unknown URL directly to home */}
                         <Route path="*" element={<RootLanguageRedirect />} />
                       </Routes>
-                      {/* Global Floating Elements */}
-                      <FloatingWhatsApp />
-                      <ScrollToTop />
+                      <Suspense fallback={null}>
+                        <FloatingWhatsApp />
+                        <ScrollToTop />
+                      </Suspense>
                     </MaintenanceGuard>
                   } />
                 </Routes>
