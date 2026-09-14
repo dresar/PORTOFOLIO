@@ -48,6 +48,8 @@ const ProjectDetail = lazyRetry(() => import("./pages/ProjectDetail"));
 import { LanguageRouteSync, RootLanguageRedirect, LocalizedHomeRedirect } from "@/components/common/LanguageRouteSync";
 const FloatingWhatsApp = lazyRetry(() => import('@/components/effects/FloatingWhatsApp').then(m => ({ default: m.FloatingWhatsApp })));
 const ScrollToTop = lazyRetry(() => import('@/components/effects/ScrollToTop').then(m => ({ default: m.ScrollToTop })));
+const Toaster = lazyRetry(() => import("@/components/ui/toaster").then(m => ({ default: m.Toaster })));
+const Sonner = lazyRetry(() => import("@/components/ui/sonner").then(m => ({ default: m.Toaster })));
 
 // Admin Pages
 const LoginPage = lazyRetry(() => import("./admin/pages/LoginPage"));
@@ -139,8 +141,10 @@ const App = () => {
       <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
         <ThemeApplicator />
         <TooltipProvider>
-          <Toaster />
-          <Sonner />
+          <Suspense fallback={null}>
+            <Toaster />
+            <Sonner />
+          </Suspense>
           
           <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             <ScrollRestoration />
