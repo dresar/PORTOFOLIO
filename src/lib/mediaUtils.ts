@@ -2,12 +2,37 @@ import { type MediaAsset } from '@/admin/services/mediaApi';
 
 export const FIVE_MINUTES_MS = 5 * 60 * 1000;
 
+const RECENT_UPLOADS_KEY = 'portfolio_recent_uploads';
+
+/**
+ * Records a freshly uploaded file in local session storage
+ */
+export function recordRecentUpload(publicId: string): void {
+  try {
+    const raw = sessionStorage.getItem(RECENT_UPLOADS_KEY);
+    const map: Record<string, number> = raw ? JSON.parse(raw) : {};
+    map[publicId] = Date.now();
+    sessionStorage.setItem(RECENT_UPLOADS_KEY, JSON.stringify(map));
+  } catch {}
+}
+
+function getSessionUploadTimestamp(publicId: string): number {
+  try {
+    const raw = sessionStorage.getItem(RECENT_UPLOADS_KEY);
+    if (!raw) return 0;
+    const map: Record<string, number> = JSON.parse(raw);
+    return map[publicId] || 0;
+  } catch {
+    return 0;
+  }
+}
+
 /**
  * Extracts numeric upload timestamp from public_id or created_at
  */
 export function getAssetTimestamp(asset: { public_id?: string; created_at?: string }): number {
   const id = asset.public_id || '';
-  
+
   // 1. Matches media_<timestamp>_...
   const match = id.match(/media_(\d{10,13})/);
   if (match) {
@@ -22,7 +47,15 @@ export function getAssetTimestamp(asset: { public_id?: string; created_at?: stri
     if (!isNaN(ts) && ts > 1000000000) return ts;
   }
 
-  // 3. Check created_at ISO string
+  // 3. Check session upload registry
+  const sessionTs = getSessionUploadTimestamp(id);
+  if (sessionTs > 0) return sessionTs;
+
+  // 4. Legacy static files (skill_*, exp_*, cert_*, etc.) have no timestamp
+  const isLegacy = /^(skill_|exp_|cert_|gallery_|avatar_|about_)/i.test(id);
+  if (isLegacy) return 0;
+
+  // 5. Check created_at ISO string if authentic
   if (asset.created_at) {
     const time = new Date(asset.created_at).getTime();
     if (!isNaN(time) && time > 1000000000) return time;
@@ -35,11 +68,32 @@ export function getAssetTimestamp(asset: { public_id?: string; created_at?: stri
  * Checks if an asset was uploaded within the specified minutes (default 5 minutes)
  */
 export function isNewUpload(asset: { public_id?: string; created_at?: string }, thresholdMinutes = 5): boolean {
-  const ts = getAssetTimestamp(asset);
-  if (ts <= 0) return false;
+  const id = asset.public_id || '';
+
+  // Legacy static files are NEVER new
+  if (/^(skill_|exp_|cert_|gallery_|avatar_|about_)/i.test(id)) {
+    return false;
+  }
+
+  // Check if uploaded in current session
+  const sessionTs = getSessionUploadTimestamp(id);
+  if (sessionTs > 0) {
+    const diff = Date.now() - sessionTs;
+    if (diff >= -10000 && diff <= thresholdMinutes * 60 * 1000) {
+      return true;
+    }
+  }
+
+  // Must have an explicit upload timestamp
+  const match = id.match(/media_(\d{10,13})/);
+  if (!match) return false;
+
+  const ts = parseInt(match[1], 10);
+  if (isNaN(ts) || ts <= 0) return false;
+
   const diff = Date.now() - ts;
-  // Between 0 and threshold (plus up to 60s clock skew allowance)
-  return diff >= -60000 && diff <= thresholdMinutes * 60 * 1000;
+  // Uploaded between now and thresholdMinutes ago (with 30s clock skew tolerance)
+  return diff >= -30000 && diff <= thresholdMinutes * 60 * 1000;
 }
 
 /**

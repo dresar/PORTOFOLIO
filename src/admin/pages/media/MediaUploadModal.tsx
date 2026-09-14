@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { mediaApi, formatBytes, type UploadResult } from '../../services/mediaApi';
-import { compressImageToWebP } from '@/lib/mediaUtils';
+import { compressImageToWebP, recordRecentUpload } from '@/lib/mediaUtils';
 import { Button } from '@/components/ui/button';
 import { cn, isVideoUrl } from '@/lib/utils';
 import { VideoThumbnail } from '@/components/ui/VideoThumbnail';
@@ -118,6 +118,7 @@ export function MediaUploadModal({ isOpen, onClose, onInsert }: MediaUploadModal
         });
 
         setQueue(prev => prev.map((item, idx) => idx === i ? { ...item, status: 'success', progress: 100, result } : item));
+        recordRecentUpload(result.public_id);
         setUploaded(prev => [{ ...result }, ...prev]);
         successCount++;
 
