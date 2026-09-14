@@ -96,21 +96,22 @@ const queryClient = new QueryClient({
 
 const persister = createSyncStoragePersister({
   storage: window.localStorage,
-  key: 'REACT_QUERY_OFFLINE_CACHE_V4',
+  key: 'REACT_QUERY_OFFLINE_CACHE_V5',
 });
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Purge legacy obsolete caches so stale demo articles never appear
+    // Purge legacy obsolete caches so stale demo articles or empty admin queries never persist
     try {
       localStorage.removeItem('REACT_QUERY_OFFLINE_CACHE');
       localStorage.removeItem('REACT_QUERY_OFFLINE_CACHE_V2');
       localStorage.removeItem('REACT_QUERY_OFFLINE_CACHE_V3');
+      localStorage.removeItem('REACT_QUERY_OFFLINE_CACHE_V4');
       Object.keys(localStorage).forEach(key => {
         if (key.startsWith('portfolio_cache_blog') || key.includes('blog-post') || key.includes('REACT_QUERY_OFFLINE_CACHE')) {
-          if (key !== 'REACT_QUERY_OFFLINE_CACHE_V4') {
+          if (key !== 'REACT_QUERY_OFFLINE_CACHE_V5') {
             localStorage.removeItem(key);
           }
         }
@@ -121,7 +122,7 @@ const App = () => {
 
     const checkCache = () => {
       const hasLegacyCache = Object.keys(localStorage).some(key => key.startsWith('portfolio_cache_'));
-      const hasQueryCache = localStorage.getItem('REACT_QUERY_OFFLINE_CACHE_V4');
+      const hasQueryCache = localStorage.getItem('REACT_QUERY_OFFLINE_CACHE_V5');
       
       if (hasLegacyCache || hasQueryCache) {
         setIsLoading(false);
@@ -136,7 +137,21 @@ const App = () => {
   return (
     <PersistQueryClientProvider 
       client={queryClient} 
-      persistOptions={{ persister }}
+      persistOptions={{ 
+        persister,
+        dehydrateOptions: {
+          shouldDehydrateQuery: (query) => {
+            const queryKey = query.queryKey;
+            if (Array.isArray(queryKey) && typeof queryKey[0] === 'string') {
+              const key = queryKey[0].toLowerCase();
+              if (key.startsWith('media') || key.startsWith('admin')) {
+                return false;
+              }
+            }
+            return true;
+          }
+        }
+      }}
     >
       <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
         <ThemeApplicator />

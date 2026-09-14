@@ -30,12 +30,13 @@ export default function MediaPage() {
   const [resourceTypeTab, setResourceTypeTab] = useState<'all' | 'image' | 'video' | 'raw'>('all');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
-  const { data, isLoading, isError, refetch } = useQuery({
+  const { data, isLoading, isFetching, isError, refetch } = useQuery({
     queryKey: ['media-assets', resourceTypeTab],
     queryFn: () => mediaApi.listAssets({
       resource_type: resourceTypeTab === 'all' ? undefined : resourceTypeTab
     }),
-    staleTime: 30_000,
+    staleTime: 0,
+    refetchOnMount: 'always',
   });
 
   const rawAssets: MediaAsset[] = data?.resources || [];
@@ -122,11 +123,15 @@ export default function MediaPage() {
           <Button
             size="sm"
             variant="outline"
-            onClick={() => refetch()}
+            onClick={async () => {
+              await qc.invalidateQueries({ queryKey: ['media-assets'] });
+              refetch();
+            }}
+            disabled={isFetching}
             className="h-8 size-8 p-0 rounded-lg shrink-0"
             title="Muat ulang data"
           >
-            <RefreshCw className="size-3.5" />
+            <RefreshCw className={cn("size-3.5", isFetching && "animate-spin")} />
           </Button>
           <Button
             size="sm"

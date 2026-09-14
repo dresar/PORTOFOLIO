@@ -53,7 +53,8 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
         resource_type: resourceTypeTab === 'all' ? undefined : resourceTypeTab,
       }),
     enabled: isOpen,
-    staleTime: 30_000,
+    staleTime: 0,
+    refetchOnMount: 'always',
   });
 
   const rawAssets: MediaAsset[] = data?.resources || [];
