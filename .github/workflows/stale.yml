@@ -13,7 +13,7 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: actions/stale@v9
+      - uses: actions/stale@v11
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           stale-issue-message: 'Issue ini belum memiliki aktivitas selama 60 hari dan ditandai sebagai stale. Issue akan ditutup secara otomatis jika tidak ada aktivitas lebih lanjut dalam 7 hari.'
