@@ -1,5 +1,5 @@
 export async function onRequest(context: any) {
-  const { request, params } = context;
+  const { request, params, env } = context;
   const rawSegments = params.path;
   let subpath = Array.isArray(rawSegments) ? rawSegments.join('/') : (rawSegments || '');
   if (!subpath) {
@@ -10,8 +10,33 @@ export async function onRequest(context: any) {
     subpath = subpath.slice(7);
   }
 
+  if (env?.ASSETS) {
+    try {
+      const assetUrl = new URL(`/${subpath}`, request.url);
+      const assetRes = await env.ASSETS.fetch(assetUrl.toString());
+      if (assetRes.status === 200) {
+        const resHeaders = new Headers(assetRes.headers);
+        resHeaders.set('Cache-Control', 'public, max-age=31536000, s-maxage=31536000, immutable');
+        resHeaders.set('Access-Control-Allow-Origin', '*');
+        return new Response(assetRes.body, {
+          status: 200,
+          headers: resHeaders
+        });
+      }
+    } catch (e) {}
+  }
+
   const cache = (typeof caches !== 'undefined' && (caches as any)?.default) ? (caches as any).default : null;
-  if (cache && request.method === 'GET') {
+  const urlObj = new URL(request.url);
+  const isPurge = urlObj.searchParams.has('purge') || request.headers.get('cache-control')?.includes('no-cache');
+
+  if (cache && isPurge) {
+    try {
+      await cache.delete(request);
+    } catch (e) {}
+  }
+
+  if (cache && request.method === 'GET' && !isPurge) {
     try {
       const cached = await cache.match(request);
       if (cached) {
