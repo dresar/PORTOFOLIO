@@ -183,20 +183,29 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('framer-motion')) return 'vendor-motion';
-            if (id.includes('@tanstack/react-query') || id.includes('@tanstack/query-sync-storage-persister')) return 'vendor-query';
-            if (id.includes('react-router') || id.includes('@remix-run')) return 'vendor-router';
-            if (id.includes('lucide-react')) return 'vendor-icons';
-            if (id.includes('date-fns')) return 'vendor-date';
-            if (id.includes('dompurify')) return 'vendor-purify';
-            if (id.includes('@radix-ui')) return 'vendor-radix';
-            if (id.includes('@tiptap')) return 'vendor-tiptap';
-            if (id.includes('@uiw')) return 'vendor-uiw';
-            if (id.includes('drizzle-orm')) return 'vendor-drizzle';
-            if (id.includes('embla-carousel')) return 'vendor-embla';
-            if (id.includes('zod')) return 'vendor-zod';
-            if (id.includes('xlsx')) return 'vendor-xlsx';
+          const nid = id.replace(/\\/g, '/');
+          if (nid.includes('/node_modules/')) {
+            if (
+              nid.includes('/node_modules/react/') ||
+              nid.includes('/node_modules/react-dom/') ||
+              nid.includes('/node_modules/scheduler/') ||
+              nid.includes('/node_modules/use-sync-external-store/')
+            ) {
+              return 'vendor-react';
+            }
+            if (nid.includes('/node_modules/@radix-ui/')) return 'vendor-radix';
+            if (nid.includes('/node_modules/framer-motion/')) return 'vendor-motion';
+            if (nid.includes('/node_modules/@tanstack/')) return 'vendor-query';
+            if (nid.includes('/node_modules/react-router/') || nid.includes('/node_modules/@remix-run/')) return 'vendor-router';
+            if (nid.includes('/node_modules/lucide-react/')) return 'vendor-icons';
+            if (nid.includes('/node_modules/date-fns/')) return 'vendor-date';
+            if (nid.includes('/node_modules/dompurify/')) return 'vendor-purify';
+            if (nid.includes('/node_modules/@tiptap/')) return 'vendor-tiptap';
+            if (nid.includes('/node_modules/@uiw/')) return 'vendor-uiw';
+            if (nid.includes('/node_modules/drizzle-orm/')) return 'vendor-drizzle';
+            if (nid.includes('/node_modules/embla-carousel/')) return 'vendor-embla';
+            if (nid.includes('/node_modules/zod/')) return 'vendor-zod';
+            if (nid.includes('/node_modules/xlsx/')) return 'vendor-xlsx';
           }
         },
         // Use content hash for long-term caching
