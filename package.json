@@ -128,7 +128,7 @@
     "vite-plugin-pwa": "^1.2.0",
     "workbox-window": "^7.4.0",
     "ws": "^8.19.0",
-    "zod": "^3.25.76",
+    "zod": "^4.6.4",
     "zustand": "^5.0.10"
   },
   "devDependencies": {
