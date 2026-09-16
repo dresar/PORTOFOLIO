@@ -9,15 +9,13 @@ async function main() {
     console.log('=== CATEGORIES ===');
     console.log(catsRes.rows);
 
-    const res = await pool.query(`
-      SELECT p.id, p.title, p.slug, p."categoryId", c.name as category_name, p."repoUrl", p."demoUrl", p."coverImage", p.gallery
-      FROM project p
-      LEFT JOIN project_category c ON p."categoryId" = c.id
-      WHERE p."categoryId" = 1
-        AND p.title NOT ILIKE '%SIRA Report%'
-        AND p.title NOT ILIKE '%Web Portofolio Dinamis%'
-      ORDER BY p.id ASC
-    `);
+    const res = await pool.query('SELECT id, title, slug, "coverImage", gallery FROM project WHERE id IN (18, 21, 22, 28, 32) ORDER BY id ASC');
+    console.log('=== VERIFIED 5 UPDATED PROJECTS IN DB ===');
+    for (const p of res.rows) {
+      console.log(`[ID ${p.id}] ${p.title} (${p.slug})`);
+      console.log(`  Cover: ${p.coverImage}`);
+      console.log(`  Gallery: ${p.gallery}`);
+    }
     console.log(`\n=== WEB APP CANDIDATE PROJECTS: ${res.rows.length} ===`);
     for (const r of res.rows) {
       console.log(JSON.stringify({
