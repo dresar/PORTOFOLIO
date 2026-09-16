@@ -21,7 +21,7 @@
     --secondary-foreground: 220 20% 20%;
 
     --muted: 220 15% 95%;
-    --muted-foreground: 220 10% 45%;
+    --muted-foreground: 220 14% 38%;
 
     --accent: 270 80% 60%;
     --accent-foreground: 0 0% 100%;
@@ -240,7 +240,7 @@
   }
 
   .glass {
-    @apply bg-white/5 backdrop-blur-md border border-white/10;
+    @apply bg-background/80 dark:bg-white/5 backdrop-blur-md border border-border/50 dark:border-white/10;
   }
 
   .glass-strong {
@@ -363,4 +363,17 @@
 
 .dark .html-theme-responsive hr {
   border-top-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+html:not(.dark) .html-theme-responsive *[style*="color:#fff"],
+html:not(.dark) .html-theme-responsive *[style*="color: #fff"],
+html:not(.dark) .html-theme-responsive *[style*="color:#ffffff"],
+html:not(.dark) .html-theme-responsive *[style*="color: #ffffff"],
+html:not(.dark) .html-theme-responsive *[style*="color:white"],
+html:not(.dark) .html-theme-responsive *[style*="color: white"],
+html:not(.dark) .html-theme-responsive *[style*="color:#f8fafc"],
+html:not(.dark) .html-theme-responsive *[style*="color:#f1f5f9"],
+html:not(.dark) .html-theme-responsive *[style*="color:#e2e8f0"],
+html:not(.dark) .html-theme-responsive *[style*="color:#cbd5e1"] {
+  color: #1e293b !important;
 }

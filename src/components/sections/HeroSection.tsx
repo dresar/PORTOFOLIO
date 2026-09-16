@@ -124,7 +124,7 @@ export const HeroSection = () => {
 
             {/* Description */}
             <motion.div
-              className="text-muted-foreground text-base md:text-lg max-w-lg mx-auto lg:mx-0 mb-8 prose prose-invert"
+              className="text-muted-foreground text-base md:text-lg max-w-lg mx-auto lg:mx-0 mb-8 prose dark:prose-invert"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}

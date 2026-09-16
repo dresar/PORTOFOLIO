@@ -184,7 +184,7 @@ export const ContactSection = () => {
             )}
           </h2>
 
-          <p className="text-zinc-400 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+          <p className="text-muted-foreground dark:text-zinc-400 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
             {isId 
               ? 'Punya ide produk digital, kebutuhan rekayasa web/mobile, sistem otomasi AI, atau tawaran posisi profesional? Pintu komunikasi selalu terbuka.'
               : 'Whether you are seeking to build an ambitious product, scale enterprise cloud architecture, deploy intelligent AI solutions, or discuss career roles — let’s connect.'}
@@ -210,19 +210,19 @@ export const ContactSection = () => {
                   <h3 className="font-heading font-bold text-lg text-foreground">
                     {isId ? 'Kirim Pesan Langsung' : 'Send a Direct Message'}
                   </h3>
-                  <p className="text-xs text-zinc-400">
+                  <p className="text-xs text-muted-foreground dark:text-zinc-400">
                     {isId ? 'Tinggalkan rincian proyek atau pertanyaan Anda di bawah ini' : 'Detail your project scope or engineering inquiry below'}
                   </p>
                 </div>
               </div>
-              <div className="hidden sm:flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-950/50 border border-emerald-500/30 px-2.5 py-1 rounded-md font-semibold">
+              <div className="hidden sm:flex items-center gap-1.5 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 dark:text-emerald-400 dark:bg-emerald-950/50 dark:border-emerald-500/30 px-2.5 py-1 rounded-md font-semibold">
                 <Clock className="w-3.5 h-3.5" />
                 <span>{isId ? 'Respon < 2 jam' : 'Replies < 2 hrs'}</span>
               </div>
             </div>
 
             <div className="mb-5 space-y-2">
-              <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground dark:text-zinc-400">
                 {isId ? 'Pilih Topik Kebutuhan:' : 'Select Topic / Scope:'}
               </p>
               <div className="flex flex-wrap gap-1.5">
@@ -236,7 +236,7 @@ export const ContactSection = () => {
                       className={`h-7 px-2.5 rounded-md text-[11px] font-medium border transition-all active:scale-[0.98] ${
                         isSelected 
                           ? 'bg-primary text-black font-semibold border-primary shadow-xs' 
-                          : 'bg-muted/40 hover:bg-muted text-zinc-300 hover:text-white border-border/60'
+                          : 'bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground dark:text-zinc-300 dark:hover:text-white border-border/60'
                       }`}
                     >
                       {isId ? topic.labelId : topic.labelEn}
@@ -249,7 +249,7 @@ export const ContactSection = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label htmlFor="name" className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
+                  <label htmlFor="name" className="text-xs font-semibold text-foreground/90 flex items-center gap-1.5">
                     <User className="w-3.5 h-3.5 text-primary" />
                     <span>{isId ? 'Nama Lengkap' : 'Full Name'}</span>
                     <span className="text-rose-400">*</span>
@@ -260,14 +260,14 @@ export const ContactSection = () => {
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    className="w-full h-10 px-3.5 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-zinc-500 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                    className="w-full h-10 px-3.5 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground/60 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
                     placeholder={isId ? 'Contoh: Budi Pratama' : 'e.g. John Doe'}
                     required
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label htmlFor="email" className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
+                  <label htmlFor="email" className="text-xs font-semibold text-foreground/90 flex items-center gap-1.5">
                     <Mail className="w-3.5 h-3.5 text-primary" />
                     <span>{isId ? 'Alamat Email' : 'Email Address'}</span>
                     <span className="text-rose-400">*</span>
@@ -278,7 +278,7 @@ export const ContactSection = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full h-10 px-3.5 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-zinc-500 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                    className="w-full h-10 px-3.5 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground/60 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
                     placeholder={isId ? 'nama@perusahaan.com' : 'name@company.com'}
                     required
                   />
@@ -286,7 +286,7 @@ export const ContactSection = () => {
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="subject" className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
+                <label htmlFor="subject" className="text-xs font-semibold text-foreground/90 flex items-center gap-1.5">
                   <FileText className="w-3.5 h-3.5 text-primary" />
                   <span>{isId ? 'Subjek / Judul Kebutuhan' : 'Subject / Topic'}</span>
                   <span className="text-rose-400">*</span>
@@ -297,14 +297,14 @@ export const ContactSection = () => {
                   name="subject"
                   value={formData.subject}
                   onChange={handleChange}
-                  className="w-full h-10 px-3.5 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-zinc-500 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                  className="w-full h-10 px-3.5 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground/60 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
                   placeholder={isId ? 'Contoh: Konsultasi Arsitektur Web Enterprise' : 'e.g. Enterprise Web Architecture Inquiry'}
                   required
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="message" className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
+                <label htmlFor="message" className="text-xs font-semibold text-foreground/90 flex items-center gap-1.5">
                   <MessageSquare className="w-3.5 h-3.5 text-primary" />
                   <span>{isId ? 'Rincian Pesan' : 'Message Details'}</span>
                   <span className="text-rose-400">*</span>
@@ -315,7 +315,7 @@ export const ContactSection = () => {
                   value={formData.message}
                   onChange={handleChange}
                   rows={4}
-                  className="w-full p-3.5 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-zinc-500 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all resize-none"
+                  className="w-full p-3.5 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground/60 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all resize-none"
                   placeholder={isId ? 'Ceritakan ringkas mengenai latar belakang proyek, fitur yang dibutuhkan, atau tawaran kerja sama Anda...' : 'Briefly describe your project requirements, target timeline, or collaboration details...'}
                   required
                 />
@@ -339,7 +339,7 @@ export const ContactSection = () => {
                 )}
               </button>
 
-              <div className="pt-2 flex items-center justify-center gap-2 text-xs text-zinc-400 text-center">
+              <div className="pt-2 flex items-center justify-center gap-2 text-xs text-muted-foreground dark:text-zinc-400 text-center">
                 <ShieldCheck className="w-4 h-4 text-emerald-400" />
                 <span>
                   {isId 
@@ -367,7 +367,7 @@ export const ContactSection = () => {
                       <Mail className="w-4.5 h-4.5" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground dark:text-zinc-400">
                         {isId ? 'EMAIL UTAMA' : 'PRIMARY EMAIL'}
                       </p>
                       <a 
@@ -382,11 +382,11 @@ export const ContactSection = () => {
                     <button
                       type="button"
                       onClick={() => handleCopy(emailVal, 'Email')}
-                      className="p-1.5 rounded-md hover:bg-muted text-zinc-400 hover:text-white transition-colors border border-border/40"
+                      className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors border border-border/40"
                       aria-label="Copy Email"
                       title={isId ? 'Salin Email' : 'Copy Email'}
                     >
-                      {copiedField === 'Email' ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                      {copiedField === 'Email' ? <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> : <Copy className="w-4 h-4" />}
                     </button>
                     <a
                       href={`mailto:${emailVal}`}
@@ -403,18 +403,18 @@ export const ContactSection = () => {
               <div className="p-4 rounded-xl bg-muted/30 border border-border/60 hover:border-emerald-500/40 transition-colors">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="h-10 w-10 rounded-lg bg-[#075E54]/20 border border-[#075E54]/40 flex items-center justify-center text-emerald-400 shrink-0">
+                    <div className="h-10 w-10 rounded-lg bg-[#075E54]/20 border border-[#075E54]/40 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
                       <MessageCircle className="w-4.5 h-4.5" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground dark:text-zinc-400">
                         {isId ? 'WHATSAPP (RESPON TERCEPAT)' : 'WHATSAPP (FASTEST RESPONSE)'}
                       </p>
                       <a 
                         href={`https://wa.me/${cleanPhone}?text=${whatsappGreeting}`} 
                         target="_blank" 
                         rel="noopener noreferrer" 
-                        className="text-sm font-semibold text-foreground hover:text-emerald-400 transition-colors block truncate"
+                        className="text-sm font-semibold text-foreground hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors block truncate"
                       >
                         {phoneVal}
                       </a>
@@ -424,11 +424,11 @@ export const ContactSection = () => {
                     <button
                       type="button"
                       onClick={() => handleCopy(phoneVal, isId ? 'Nomor WhatsApp' : 'WhatsApp Number')}
-                      className="p-1.5 rounded-md hover:bg-muted text-zinc-400 hover:text-white transition-colors border border-border/40"
+                      className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors border border-border/40"
                       aria-label="Copy Phone"
                       title={isId ? 'Salin Nomor' : 'Copy Number'}
                     >
-                      {copiedField === (isId ? 'Nomor WhatsApp' : 'WhatsApp Number') ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                      {copiedField === (isId ? 'Nomor WhatsApp' : 'WhatsApp Number') ? <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> : <Copy className="w-4 h-4" />}
                     </button>
                     <a
                       href={`https://wa.me/${cleanPhone}?text=${whatsappGreeting}`}
@@ -452,7 +452,7 @@ export const ContactSection = () => {
                       <MapPin className="w-4.5 h-4.5" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground dark:text-zinc-400">
                         {isId ? 'LOKASI & DOMISILI' : 'BASE LOCATION'}
                       </p>
                       <p className="text-sm font-semibold text-foreground truncate">
@@ -461,7 +461,7 @@ export const ContactSection = () => {
                     </div>
                   </div>
                   {currentTime && (
-                    <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-background border border-border text-zinc-300 shrink-0 flex items-center gap-1.5">
+                    <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-background border border-border text-muted-foreground dark:text-zinc-300 shrink-0 flex items-center gap-1.5">
                       <Clock className="w-3 h-3 text-primary" />
                       <span>{currentTime}</span>
                     </span>
@@ -469,12 +469,12 @@ export const ContactSection = () => {
                 </div>
 
                 <div className="flex flex-wrap gap-2 pt-1 border-t border-border/40">
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-background border border-border text-xs font-medium text-zinc-300">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-background border border-border text-xs font-medium text-muted-foreground dark:text-zinc-300">
                     <Globe2 className="w-3.5 h-3.5 text-primary" />
                     <span>Remote Worldwide</span>
                   </span>
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-background border border-border text-xs font-medium text-zinc-300">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-background border border-border text-xs font-medium text-muted-foreground dark:text-zinc-300">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                     <span>Hybrid / On-site Ready</span>
                   </span>
                 </div>
@@ -513,14 +513,14 @@ export const ContactSection = () => {
                   </div>
                 </>
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-muted/40 text-zinc-400 text-xs">
+                <div className="w-full h-full flex items-center justify-center bg-muted/40 text-muted-foreground dark:text-zinc-400 text-xs">
                   {isValidMapUrl ? (isId ? "Memuat peta lokasi..." : "Loading location map...") : "Map unavailable"}
                 </div>
               )}
             </div>
 
             <div className="pt-2 border-t border-border/60">
-              <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-3">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground dark:text-zinc-400 mb-3">
                 {isId ? 'JARINGAN & REPOSITORI PROFESIONAL' : 'PROFESSIONAL NETWORKS & REPOSITORIES'}
               </p>
               <div className="flex flex-wrap gap-2">
@@ -530,7 +530,7 @@ export const ContactSection = () => {
                     href={safeUrl(link.url)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="h-8 px-3 rounded-lg bg-background border border-border/80 hover:border-primary hover:text-primary transition-all flex items-center gap-2 text-xs font-medium text-zinc-300 hover:text-white group active:scale-[0.98]"
+                    className="h-8 px-3 rounded-lg bg-background border border-border/80 hover:border-primary hover:text-primary transition-all flex items-center gap-2 text-xs font-medium text-muted-foreground hover:text-foreground dark:text-zinc-300 dark:hover:text-white group active:scale-[0.98]"
                     aria-label={link.platform || 'Social Link'}
                   >
                     <SocialIcon platform={link.platform} icon={(link as any).icon} url={link.url} size={14} />
