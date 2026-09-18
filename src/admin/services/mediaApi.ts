@@ -68,9 +68,12 @@ export const mediaApi = {
     return res.data;
   },
 
-  deleteAsset: async (public_ids: string | string[], resource_type = 'image', provider = 'github', sha?: string): Promise<{ success: boolean; results?: any[] }> => {
+  deleteAsset: async (public_ids: string | string[], resource_type = 'image', provider = 'github', sha?: string): Promise<{ success: boolean; count?: number }> => {
     const ids = Array.isArray(public_ids) ? public_ids : [public_ids];
     const res = await adminApi.post('/media/delete', { public_ids: ids, sha });
+    if (!res.data || res.data.success === false) {
+      throw new Error(res.data?.error || 'Gagal menghapus berkas');
+    }
     return res.data;
   },
 

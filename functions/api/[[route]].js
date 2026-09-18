@@ -15232,59 +15232,118 @@ async function handler(req, res) {
       });
       return assets;
     }
-    async function deleteFromGitHubCDN(publicId, sha) {
+    async function deleteMultipleFromGitHubCDN(publicIds) {
       const token = getGhToken();
       const repo = getGhRepo();
       const branch = getGhBranch();
-      if (!token) return "error: GITHUB_TOKEN missing";
+      if (!token) throw new Error("GITHUB_TOKEN missing");
+      if (!publicIds || publicIds.length === 0) return { success: true, count: 0 };
+      const cleanIds = publicIds.map((id2) => id2.replace(/^public\/uploads\//, "").trim()).filter(Boolean);
+      if (cleanIds.length === 0) return { success: true, count: 0 };
       try {
-        const localDest = path.join(process.cwd(), "public", "uploads", publicId);
-        if (fs.existsSync(localDest)) {
-          fs.unlinkSync(localDest);
+        for (const id2 of cleanIds) {
+          const localDest = path.join(process.cwd(), "public", "uploads", id2);
+          if (fs.existsSync(localDest)) {
+            fs.unlinkSync(localDest);
+          }
         }
       } catch (e) {
       }
-      let fileSha = sha;
-      const targetPath = `${GITHUB_UPLOADS_PATH}/${publicId}`;
-      if (!fileSha) {
-        try {
-          const getRes = await fetch(`https://api.github.com/repos/${repo}/contents/${targetPath}?ref=${branch}`, {
-            headers: {
-              "Authorization": `Bearer ${token}`,
-              "Accept": "application/vnd.github.v3+json",
-              "User-Agent": "Portfolio-App"
-            }
-          });
-          if (getRes.ok) {
-            const data = await getRes.json();
-            fileSha = data.sha;
-          }
-        } catch (e) {
+      const refRes = await fetch(`https://api.github.com/repos/${repo}/git/ref/heads/${branch}`, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Accept": "application/vnd.github.v3+json",
+          "User-Agent": "Portfolio-App"
         }
+      });
+      if (!refRes.ok) {
+        const errText = await refRes.text();
+        throw new Error(`Git ref error (${refRes.status}): ${errText}`);
       }
-      let ghResult = "ok";
-      if (fileSha) {
-        try {
-          const delRes = await fetch(`https://api.github.com/repos/${repo}/contents/${targetPath}`, {
-            method: "DELETE",
-            headers: {
-              "Authorization": `Bearer ${token}`,
-              "Accept": "application/vnd.github.v3+json",
-              "Content-Type": "application/json",
-              "User-Agent": "Portfolio-App"
-            },
-            body: JSON.stringify({
-              message: `delete: ${publicId} from GitHub CDN`,
-              sha: fileSha,
-              branch
-            })
-          });
-          ghResult = delRes.ok ? "ok" : "error";
-        } catch (delErr) {
-          ghResult = "error";
+      const refData = await refRes.json();
+      const latestCommitSha = refData.object.sha;
+      const commitRes = await fetch(`https://api.github.com/repos/${repo}/git/commits/${latestCommitSha}`, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Accept": "application/vnd.github.v3+json",
+          "User-Agent": "Portfolio-App"
         }
+      });
+      if (!commitRes.ok) {
+        const errText = await commitRes.text();
+        throw new Error(`Git commit error (${commitRes.status}): ${errText}`);
       }
-      return ghResult;
+      const commitData = await commitRes.json();
+      const baseTreeSha = commitData.tree.sha;
+      const treePayload = cleanIds.map((id2) => ({
+        path: `${GITHUB_UPLOADS_PATH}/${id2}`,
+        mode: "100644",
+        type: "blob",
+        sha: null
+      }));
+      const createTreeRes = await fetch(`https://api.github.com/repos/${repo}/git/trees`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Accept": "application/vnd.github.v3+json",
+          "Content-Type": "application/json",
+          "User-Agent": "Portfolio-App"
+        },
+        body: JSON.stringify({
+          base_tree: baseTreeSha,
+          tree: treePayload
+        })
+      });
+      if (!createTreeRes.ok) {
+        const errText = await createTreeRes.text();
+        throw new Error(`Git tree error (${createTreeRes.status}): ${errText}`);
+      }
+      const newTreeData = await createTreeRes.json();
+      const newCommitRes = await fetch(`https://api.github.com/repos/${repo}/git/commits`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Accept": "application/vnd.github.v3+json",
+          "Content-Type": "application/json",
+          "User-Agent": "Portfolio-App"
+        },
+        body: JSON.stringify({
+          message: `delete: ${cleanIds.length} media file(s) via Portfolio Admin`,
+          tree: newTreeData.sha,
+          parents: [latestCommitSha]
+        })
+      });
+      if (!newCommitRes.ok) {
+        const errText = await newCommitRes.text();
+        throw new Error(`Git new commit error (${newCommitRes.status}): ${errText}`);
+      }
+      const newCommitData = await newCommitRes.json();
+      const updateRefRes = await fetch(`https://api.github.com/repos/${repo}/git/refs/heads/${branch}`, {
+        method: "PATCH",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Accept": "application/vnd.github.v3+json",
+          "Content-Type": "application/json",
+          "User-Agent": "Portfolio-App"
+        },
+        body: JSON.stringify({
+          sha: newCommitData.sha,
+          force: false
+        })
+      });
+      if (!updateRefRes.ok) {
+        const errText = await updateRefRes.text();
+        throw new Error(`Git update ref error (${updateRefRes.status}): ${errText}`);
+      }
+      try {
+        const client = { query: async (q, p2) => getSql().query(q, p2), release: () => {
+        } };
+        for (const itemKey of cleanIds) {
+          await client.query("DELETE FROM media_file_folder WHERE public_id = $1", [itemKey]);
+        }
+      } catch (e) {
+      }
+      return { success: true, count: cleanIds.length };
     }
     if (resourceName === "upload") {
       const tokenUser2 = await verifyJwtToken(req);
@@ -15641,15 +15700,15 @@ async function handler(req, res) {
       }
       if (action === "delete" && req.method === "POST") {
         const body = await parseBody(req);
-        const { public_id, public_ids, sha } = body || {};
+        const { public_id, public_ids } = body || {};
         const idsToDelete = Array.isArray(public_ids) ? public_ids : public_id ? [public_id] : [];
-        if (idsToDelete.length === 0) return sendJSON(res, 400, { error: "public_id or public_ids is required" });
-        const results = [];
-        for (const itemKey of idsToDelete) {
-          const resStatus = await deleteFromGitHubCDN(itemKey, sha);
-          results.push({ id: itemKey, status: 200, result: resStatus, provider: "github" });
+        if (idsToDelete.length === 0) return sendJSON(res, 400, { success: false, error: "public_id atau public_ids wajib diisi" });
+        try {
+          const deleteResult = await deleteMultipleFromGitHubCDN(idsToDelete);
+          return sendJSON(res, 200, { success: true, count: deleteResult.count });
+        } catch (delErr) {
+          return sendJSON(res, 500, { success: false, error: delErr?.message || "Gagal menghapus berkas dari GitHub" });
         }
-        return sendJSON(res, 200, { success: true, results });
       }
       if (action === "folders" && req.method === "GET") {
         try {

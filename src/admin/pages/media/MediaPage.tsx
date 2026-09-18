@@ -88,11 +88,25 @@ export default function MediaPage() {
   }, [data?.resources]);
 
   const deleteMutation = useMutation({
-    mutationFn: (asset: MediaAsset) => mediaApi.deleteAsset(asset.public_id, asset.resource_type, 'github', asset.sha),
+    mutationFn: (publicId: string) => mediaApi.deleteAsset([publicId]),
     onSuccess: () => {
       toast({ title: '✓ Berkas dihapus' });
       qc.invalidateQueries({ queryKey: ['media-assets'] });
       setConfirmDel(null);
+    },
+    onError: (e: any) => toast({
+      variant: 'destructive',
+      title: 'Gagal menghapus berkas',
+      description: e?.response?.data?.error || e.message
+    })
+  });
+
+  const bulkDeleteMutation = useMutation({
+    mutationFn: (ids: string[]) => mediaApi.deleteAsset(ids),
+    onSuccess: (_, ids) => {
+      toast({ title: `✓ ${ids.length} berkas dihapus` });
+      qc.invalidateQueries({ queryKey: ['media-assets'] });
+      setSelectedIds(new Set());
     },
     onError: (e: any) => toast({
       variant: 'destructive',
@@ -149,12 +163,9 @@ export default function MediaPage() {
   };
 
   const handleBulkDelete = () => {
-    if (window.confirm(`Hapus permanen ${selectedIds.size} berkas yang dipilih?`)) {
-      const items = assets.filter(a => selectedIds.has(a.public_id));
-      for (const item of items) {
-        deleteMutation.mutate(item);
-      }
-      setSelectedIds(new Set());
+    if (!selectedIds.size) return;
+    if (window.confirm(`Hapus permanen ${selectedIds.size} berkas terpilih?`)) {
+      bulkDeleteMutation.mutate(Array.from(selectedIds));
     }
   };
 
@@ -233,7 +244,7 @@ export default function MediaPage() {
             <h1 className="text-2xl font-bold tracking-tight text-foreground">Media Library</h1>
           </div>
           <p className="text-xs text-muted-foreground mt-1">
-            Pengelompokan folder, penyimpanan berkas foto, dokumen PDF, dan video portofolio.
+            Kelola berkas media dan dokumen portofolio.
           </p>
         </div>
 
@@ -244,9 +255,10 @@ export default function MediaPage() {
             variant="outline"
             onClick={() => setIsNewFolderOpen(true)}
             className="h-8 text-xs gap-1.5 px-3 rounded-lg active:scale-[0.98] shrink-0"
-            title="Tambah folder baru"
+            title="Tambah folder"
           >
-            <FolderPlus className="size-3.5 text-primary" /> Folder Baru
+            <FolderPlus className="size-3.5 text-primary" />
+            <span>Folder</span>
           </Button>
 
           <Button
@@ -259,7 +271,7 @@ export default function MediaPage() {
             }}
             disabled={isFetching}
             className="h-8 size-8 p-0 rounded-lg shrink-0"
-            title="Muat ulang data"
+            title="Muat ulang"
           >
             <RefreshCw className={cn("size-3.5", isFetching && "animate-spin")} />
           </Button>
@@ -270,7 +282,8 @@ export default function MediaPage() {
             onClick={() => setShowUpload(true)}
             className="h-8 text-xs gap-1.5 px-3 rounded-lg active:scale-[0.98] shrink-0"
           >
-            <Upload className="size-3.5" /> Unggah Media
+            <Upload className="size-3.5" />
+            <span>Unggah</span>
           </Button>
         </div>
       </div>
@@ -278,11 +291,11 @@ export default function MediaPage() {
       {currentFolder === null ? (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              Folder Media
+            <span className="text-xs font-semibold text-muted-foreground">
+              Folder
             </span>
             <span className="text-[11px] text-muted-foreground font-mono">
-              Tarik & lepas gambar ke dalam folder
+              Tarik & lepas media ke folder
             </span>
           </div>
 
@@ -301,9 +314,9 @@ export default function MediaPage() {
               </div>
               <div className="mt-3">
                 <p className="text-xs font-semibold text-foreground truncate group-hover:text-primary transition-colors">
-                  Semua Berkas
+                  Semua
                 </p>
-                <p className="text-[10px] text-muted-foreground truncate">Total media</p>
+                <p className="text-[10px] text-muted-foreground truncate">Total berkas</p>
               </div>
             </div>
 
@@ -357,7 +370,7 @@ export default function MediaPage() {
                       {folderName}
                     </p>
                     <p className="text-[10px] text-muted-foreground truncate">
-                      {isOver ? 'Lepas di sini...' : `${count} berkas`}
+                      {isOver ? 'Lepas di sini' : `${count} berkas`}
                     </p>
                   </div>
                 </div>
@@ -370,47 +383,45 @@ export default function MediaPage() {
               className="flex flex-col items-center justify-center p-3 rounded-xl border border-dashed border-border/80 hover:border-primary/60 bg-muted/20 hover:bg-muted/40 transition-all text-muted-foreground hover:text-primary cursor-pointer min-h-[92px] gap-1.5"
             >
               <FolderPlus className="size-5" />
-              <span className="text-xs font-medium">+ Folder</span>
+              <span className="text-xs font-medium">Folder</span>
             </button>
           </div>
         </div>
       ) : (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl border border-border/70 bg-card/60 backdrop-blur-xs">
-          <div className="flex items-center gap-2 min-w-0">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-2.5 rounded-xl border border-border/70 bg-card/60 backdrop-blur-xs">
+          <div className="flex items-center gap-2.5 min-w-0">
             <Button
               type="button"
               size="sm"
               variant="outline"
               onClick={() => setCurrentFolder(null)}
-              className="h-8 px-2.5 text-xs rounded-lg gap-1.5 shrink-0"
+              className="h-7 px-2 text-xs rounded-lg gap-1 shrink-0"
             >
               <ArrowLeft className="size-3.5" />
-              <span>Semua Folder</span>
+              <span>Folder</span>
             </Button>
 
             <div className="h-4 w-px bg-border/80 shrink-0" />
 
             <div className="flex items-center gap-2 min-w-0">
-              <div className={cn('size-7 rounded-md flex items-center justify-center shrink-0', getFolderStyle(currentFolder).bg, getFolderStyle(currentFolder).text)}>
+              <div className={cn('size-6 rounded-md flex items-center justify-center shrink-0', getFolderStyle(currentFolder).bg, getFolderStyle(currentFolder).text)}>
                 <Folder className="size-3.5 fill-current/20" />
               </div>
-              <div className="min-w-0">
-                <span className="text-xs font-bold text-foreground truncate block">
-                  {currentFolder === 'all' ? 'Semua Berkas' : currentFolder}
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="text-xs font-bold text-foreground truncate">
+                  {currentFolder === 'all' ? 'Semua' : currentFolder}
                 </span>
-                <span className="text-[10px] text-muted-foreground font-mono">
-                  {filtered.length} berkas ditampilkan
+                <span className="text-[10px] text-muted-foreground font-mono bg-muted/60 px-1.5 py-0.5 rounded shrink-0">
+                  {filtered.length} berkas
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 overflow-x-auto py-0.5 max-w-full">
-            <span className="text-[10px] text-muted-foreground shrink-0 uppercase tracking-wider font-semibold mr-1">
-              Lompat ke:
-            </span>
+          <div className="flex items-center gap-1.5 overflow-x-auto py-0.5 max-w-full scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
             {allFolders.map(f => {
               const isOver = dragOverFolder === f;
+              const isCurrent = currentFolder === f;
               return (
                 <button
                   key={f}
@@ -424,15 +435,15 @@ export default function MediaPage() {
                   onDragLeave={() => setDragOverFolder(null)}
                   onDrop={(e) => handleDropOnFolder(f, e)}
                   className={cn(
-                    'px-2.5 py-1 rounded-md text-[11px] font-medium transition-all shrink-0 border',
-                    currentFolder === f
-                      ? 'bg-primary text-white border-primary shadow-xs'
+                    'px-2.5 py-1 rounded-md text-[11px] font-medium transition-all shrink-0 border select-none',
+                    isCurrent
+                      ? 'bg-primary text-primary-foreground border-primary shadow-xs'
                       : isOver
                       ? 'bg-primary/20 border-primary text-primary scale-105'
-                      : 'bg-muted/50 border-border/60 text-muted-foreground hover:text-foreground hover:bg-muted'
+                      : 'bg-muted/40 border-border/60 text-muted-foreground hover:text-foreground hover:bg-muted'
                   )}
                 >
-                  {f} ({folderItemCounts[f] || 0})
+                  {f} <span className="opacity-70 text-[10px]">({folderItemCounts[f] || 0})</span>
                 </button>
               );
             })}
@@ -467,7 +478,7 @@ export default function MediaPage() {
             className="h-7 text-xs gap-1.5 font-medium px-2.5 rounded-md"
             onClick={() => setResourceTypeTab('raw')}
           >
-            <FileText className="size-3.5 text-red-500" /> Dokumen / PDF
+            <FileText className="size-3.5 text-red-500" /> Dokumen
           </Button>
           <Button
             type="button"
@@ -494,7 +505,7 @@ export default function MediaPage() {
                 onClick={() => setIsMoveModalOpen(true)}
                 className="h-7 gap-1.5 px-2 text-xs rounded-md border-primary/40 text-primary hover:bg-primary hover:text-white"
               >
-                <MoveRight className="size-3" /> Pindah Folder
+                <MoveRight className="size-3" /> Pindah
               </Button>
 
               <Button
@@ -502,10 +513,10 @@ export default function MediaPage() {
                 size="sm"
                 variant="destructive"
                 onClick={handleBulkDelete}
-                disabled={deleteMutation.isPending}
+                disabled={bulkDeleteMutation.isPending}
                 className="h-7 gap-1 px-2 text-xs rounded-md active:scale-[0.98]"
               >
-                {deleteMutation.isPending ? <Loader2 className="size-3 animate-spin" /> : <Trash2 className="size-3" />}
+                {bulkDeleteMutation.isPending ? <Loader2 className="size-3 animate-spin" /> : <Trash2 className="size-3" />}
                 Hapus
               </Button>
 
@@ -524,7 +535,7 @@ export default function MediaPage() {
           <div className="relative flex-1 sm:w-64">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
             <Input
-              placeholder="Cari nama berkas..."
+              placeholder="Cari"
               value={search}
               onChange={e => setSearch(e.target.value)}
               className="pl-9 h-8 text-xs rounded-lg font-mono"
@@ -547,7 +558,7 @@ export default function MediaPage() {
           )}>
             {selectedIds.size === filtered.length && filtered.length > 0 && <Check className="size-2.5 text-white" />}
           </div>
-          Pilih Semua ({filtered.length})
+          <span>Pilih semua ({filtered.length})</span>
         </Button>
         <p className="text-[11px] text-muted-foreground font-mono">
           {filtered.length} Berkas
@@ -723,18 +734,18 @@ export default function MediaPage() {
 
                 {confirmDel === asset.public_id && (
                   <div className="absolute inset-0 z-30 bg-destructive/95 backdrop-blur-sm p-3 flex flex-col items-center justify-center text-center text-white gap-2">
-                    <AlertCircle className="size-6" />
-                    <p className="text-xs font-semibold">Hapus berkas ini?</p>
+                    <AlertCircle className="size-5" />
+                    <p className="text-xs font-semibold">Hapus berkas?</p>
                     <div className="flex gap-1.5 w-full">
                       <Button
                         type="button"
                         size="sm"
                         variant="secondary"
                         className="h-7 text-xs flex-1 rounded-md"
-                        onClick={() => deleteMutation.mutate(asset)}
+                        onClick={() => deleteMutation.mutate(asset.public_id)}
                         disabled={deleteMutation.isPending}
                       >
-                        {deleteMutation.isPending ? '...' : 'Ya'}
+                        {deleteMutation.isPending ? <Loader2 className="size-3 animate-spin" /> : 'Hapus'}
                       </Button>
                       <Button
                         type="button"
@@ -772,14 +783,14 @@ export default function MediaPage() {
       <Dialog open={isNewFolderOpen} onOpenChange={setIsNewFolderOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Buat Folder Baru</DialogTitle>
+            <DialogTitle>Folder Baru</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-2">
             <p className="text-xs text-muted-foreground">
-              Masukkan nama folder untuk mengelompokkan media Anda secara rapi.
+              Nama folder pengelompokan.
             </p>
             <Input
-              placeholder="Contoh: Alma Hub, Banner, Dokumen..."
+              placeholder="Nama"
               value={newFolderName}
               onChange={(e) => setNewFolderName(e.target.value)}
               onKeyDown={(e) => {
@@ -806,7 +817,7 @@ export default function MediaPage() {
               disabled={!newFolderName.trim()}
               className="rounded-lg h-8 text-xs"
             >
-              Buat Folder
+              Buat
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -815,11 +826,11 @@ export default function MediaPage() {
       <Dialog open={isMoveModalOpen} onOpenChange={setIsMoveModalOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Pindahkan {selectedIds.size} Berkas ke Folder</DialogTitle>
+            <DialogTitle>Pindah Berkas</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-2">
             <p className="text-xs text-muted-foreground">
-              Pilih folder tujuan untuk berkas yang sedang dipilih:
+              Pilih folder tujuan.
             </p>
             <div className="grid grid-cols-2 gap-2 max-h-56 overflow-y-auto p-1">
               {allFolders.map(f => {
@@ -864,7 +875,7 @@ export default function MediaPage() {
               onClick={handleMoveSelected}
               className="rounded-lg h-8 text-xs"
             >
-              Pindahkan Sekarang
+              Pindah
             </Button>
           </DialogFooter>
         </DialogContent>
