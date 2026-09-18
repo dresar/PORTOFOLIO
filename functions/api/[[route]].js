@@ -15111,7 +15111,8 @@ async function handler(req, res) {
         filename = `media_${Date.now()}_${crypto2.randomBytes(4).toString("hex")}.${ext}`;
       }
       const buffer = Buffer.from(base64Data, "base64");
-      const targetPath = `${GITHUB_UPLOADS_PATH}/${filename}`;
+      const subFolder = folder ? folder.replace(/^\/+|\/+$/g, "") + "/" : "";
+      const targetPath = `${GITHUB_UPLOADS_PATH}/${subFolder}${filename}`;
       let existingSha;
       try {
         const checkRes = await fetch(`https://api.github.com/repos/${repo}/contents/${targetPath}?ref=${branch}`, {
@@ -15128,7 +15129,7 @@ async function handler(req, res) {
       } catch (err) {
       }
       const uploadPayload = {
-        message: `upload: ${filename} via GitHub CDN`,
+        message: `upload: ${subFolder}${filename} via GitHub CDN`,
         content: base64Data,
         branch
       };
@@ -15156,11 +15157,15 @@ async function handler(req, res) {
         console.error("GitHub CDN Upload Error:", ghRes.status, parsedMessage);
         throw new Error(`GitHub CDN Upload Failed (${ghRes.status}): ${parsedMessage}`);
       }
-      const cdnUrl = `https://cdn.jsdelivr.net/gh/${repo}@${branch}/public/uploads/${filename}`;
+      const cdnUrl = `https://cdn.jsdelivr.net/gh/${repo}@${branch}/public/uploads/${subFolder}${filename}`;
+      const rawUrl = `https://raw.githubusercontent.com/${repo}/${branch}/public/uploads/${subFolder}${filename}`;
+      const publicId = `${subFolder}${filename}`;
       return {
-        public_id: filename,
+        public_id: publicId,
         secure_url: cdnUrl,
         url: cdnUrl,
+        jsdelivr_url: cdnUrl,
+        raw_url: rawUrl,
         format: ext,
         bytes: buffer.length,
         resource_type: mimeType.startsWith("video") ? "video" : mimeType.includes("pdf") ? "raw" : "image",
@@ -15205,6 +15210,38 @@ async function handler(req, res) {
                   created_at: itemCreatedAt,
                   provider: "github"
                 });
+              } else if (item.type === "dir" && item.name === "public") {
+                try {
+                  const subRes = await fetch(`https://api.github.com/repos/${repo}/contents/${GITHUB_UPLOADS_PATH}/public?ref=${branch}`, { headers });
+                  if (subRes.ok) {
+                    const subItems = await subRes.json();
+                    if (Array.isArray(subItems)) {
+                      for (const subItem of subItems) {
+                        if (subItem.type === "file" && subItem.name !== ".gitkeep") {
+                          const ext = subItem.name.split(".").pop()?.toLowerCase() || "png";
+                          const isVideo = ["mp4", "webm", "mov"].includes(ext);
+                          const cdnUrl = `https://cdn.jsdelivr.net/gh/${repo}@${branch}/${GITHUB_UPLOADS_PATH}/public/${subItem.name}`;
+                          const tsMatch = subItem.name.match(/(\d{10,13})/);
+                          const itemCreatedAt = tsMatch ? new Date(parseInt(tsMatch[1].length === 10 ? tsMatch[1] + "000" : tsMatch[1], 10)).toISOString() : void 0;
+                          assets.push({
+                            public_id: `public/${subItem.name}`,
+                            secure_url: cdnUrl,
+                            url: cdnUrl,
+                            sha: subItem.sha,
+                            width: 800,
+                            height: 600,
+                            format: ext,
+                            bytes: subItem.size || 0,
+                            resource_type: isVideo ? "video" : ext === "pdf" ? "raw" : "image",
+                            created_at: itemCreatedAt,
+                            provider: "github"
+                          });
+                        }
+                      }
+                    }
+                  }
+                } catch (subErr) {
+                }
               }
             }
           }
@@ -15344,6 +15381,66 @@ async function handler(req, res) {
       } catch (e) {
       }
       return { success: true, count: cleanIds.length };
+    }
+    if (resourceName === "cloud-upload" || resourceName === "cloud" && action === "upload" || resourceName === "upload" && action === "public") {
+      if (req.method !== "POST") return sendJSON(res, 405, { error: "Method not allowed" });
+      const ip = getClientIp(req);
+      if (isRateLimited(ip)) {
+        return sendJSON(res, 429, { error: "Terlalu banyak permintaan. Coba lagi dalam beberapa menit." });
+      }
+      try {
+        const body = await parseBody(req);
+        const { file, filename, customPublicId } = body || {};
+        if (!file) return sendJSON(res, 400, { error: "file (base64) diperlukan" });
+        const result = await uploadToGitHubCDN(file, filename || customPublicId, "public");
+        let origin = "";
+        if (req.headers?.origin) {
+          origin = req.headers.origin;
+        } else if (req.headers?.referer) {
+          try {
+            origin = new URL(req.headers.referer).origin;
+          } catch {
+          }
+        }
+        if (!origin) {
+          const forwardedProto = (req.headers?.["x-forwarded-proto"] || "").split(",")[0].trim();
+          const forwardedHost = (req.headers?.["x-forwarded-host"] || req.headers?.host || "").split(",")[0].trim();
+          const proto = forwardedProto || (forwardedHost.includes("localhost") || forwardedHost.includes("127.0.0.1") ? "http" : "https");
+          const host = forwardedHost || "localhost:8084";
+          origin = `${proto}://${host}`;
+        }
+        const domainUrl = `${origin}/media/uploads/${result.public_id}`;
+        try {
+          const client = { query: async (q, p2) => getSql().query(q, p2), release: () => {
+          } };
+          await client.query(`
+                    CREATE TABLE IF NOT EXISTS media_file_folder (
+                        public_id TEXT PRIMARY KEY,
+                        folder_name TEXT NOT NULL,
+                        updated_at TIMESTAMP DEFAULT NOW()
+                    );
+                `);
+          await client.query(
+            "INSERT INTO media_file_folder (public_id, folder_name, updated_at) VALUES ($1, $2, NOW()) ON CONFLICT (public_id) DO UPDATE SET folder_name = $2, updated_at = NOW()",
+            [result.public_id, "Public"]
+          );
+        } catch (dbErr) {
+          console.warn("Could not record folder in DB:", dbErr);
+        }
+        return sendJSON(res, 200, {
+          success: true,
+          public_id: result.public_id,
+          raw_url: result.raw_url,
+          jsdelivr_url: result.jsdelivr_url,
+          domain_url: domainUrl,
+          bytes: result.bytes,
+          format: result.format,
+          resource_type: result.resource_type
+        });
+      } catch (e) {
+        console.error("Cloud Upload error:", e);
+        return sendJSON(res, 500, { error: "Upload gagal", details: e.message });
+      }
     }
     if (resourceName === "upload") {
       const tokenUser2 = await verifyJwtToken(req);
@@ -15731,11 +15828,13 @@ async function handler(req, res) {
                 `);
           const fRes = await client.query("SELECT name, color FROM media_folder ORDER BY name ASC");
           const mRes = await client.query("SELECT public_id, folder_name FROM media_file_folder");
+          const fRows = Array.isArray(fRes) ? fRes : fRes?.rows || [];
+          const mRows = Array.isArray(mRes) ? mRes : mRes?.rows || [];
           const mapping = {};
-          for (const r of mRes?.rows || []) {
+          for (const r of mRows) {
             mapping[r.public_id] = r.folder_name;
           }
-          const customFolders = (fRes?.rows || []).map((r) => r.name);
+          const customFolders = fRows.map((r) => r.name);
           return sendJSON(res, 200, { folders: customFolders, mapping });
         } catch (err) {
           return sendJSON(res, 200, { folders: [], mapping: {} });

@@ -83,6 +83,7 @@ const MediaPage = lazyRetry(() => import("./admin/pages/media/MediaPage"));
 const ExportPdfPage = lazyRetry(() => import("./admin/pages/ExportPdfPage"));
 const KerjaPage = lazyRetry(() => import("./pages/KerjaPage"));
 const KerjaAdminPage = lazyRetry(() => import("./admin/pages/kerja/KerjaAdminPage"));
+const CloudPage = lazyRetry(() => import("./pages/CloudPage"));
 
 const AdminLayout = lazyRetry(() => import("./admin/components/AdminLayout").then(m => ({ default: m?.AdminLayout || m?.default || m })));
 
@@ -172,9 +173,10 @@ const App = () => {
             <ErrorBoundary>
               <Suspense fallback={null}> 
                 <Routes>
-                  {/* Admin Routes (Outside Maintenance Guard) */}
+                  {/* Admin & Public Utility Routes (Outside Maintenance Guard) */}
                   <Route path="/admin/login" element={<LoginPage />} />
                   <Route path="/kerja" element={<KerjaPage />} />
+                  <Route path="/cloud" element={<CloudPage />} />
                   <Route path="/admin" element={<AdminLayout />}>
                     <Route index element={<Navigate to="/admin/dashboard" replace />} />
                     <Route path="dashboard" element={<DashboardPage />} />

@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { mediaApi } from '../services/mediaApi';
 
-export const DEFAULT_FOLDERS = ['Umum', 'Projects', 'Certificates', 'Blog', 'Profile', 'Dokumen'] as const;
+export const DEFAULT_FOLDERS = ['Umum', 'Projects', 'Certificates', 'Blog', 'Profile', 'Dokumen', 'Public'] as const;
 export type DefaultFolderName = (typeof DEFAULT_FOLDERS)[number];
 
 export interface MediaFolderState {
@@ -41,6 +41,7 @@ export const useMediaFolderStore = create<MediaFolderState>()(
         }
 
         const lower = publicId.toLowerCase();
+        if (lower.startsWith('public/') || lower.includes('/public/') || lower.startsWith('public_')) return 'Public';
         if (lower.endsWith('.pdf')) return 'Dokumen';
         if (lower.includes('project') || lower.includes('proyek') || lower.includes('cover')) return 'Projects';
         if (lower.includes('cert') || lower.includes('sertifikat') || lower.includes('hki')) return 'Certificates';
