@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { api } from '../../services/api';
-import { Loader2, Plus, Trash2, ArrowLeft, Sparkles, Wand2, FileText, ShieldCheck } from 'lucide-react';
+import { Loader2, Plus, Trash2, ArrowLeft, Sparkles, Wand2, FileText, ShieldCheck, Copy, Check, ExternalLink } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
@@ -116,6 +116,7 @@ export default function ProjectForm() {
   const [isManualSummaryOpen, setIsManualSummaryOpen] = useState(false);
   const [manualSummaryContent, setManualSummaryContent] = useState('');
   const [isGalleryPickerOpen, setIsGalleryPickerOpen] = useState(false);
+  const [copiedGalleryIdx, setCopiedGalleryIdx] = useState<number | null>(null);
 
   const form = useForm<ProjectFormValues>({
     resolver: zodResolver(projectSchema),
@@ -396,6 +397,17 @@ export default function ProjectForm() {
     form.setValue('gallery', JSON.stringify(updated), { shouldDirty: true });
   };
 
+  const handleCopyGalleryUrl = async (url: string, index: number) => {
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopiedGalleryIdx(index);
+      setTimeout(() => setCopiedGalleryIdx(null), 2000);
+      toast({ title: '✓ URL disalin' });
+    } catch (e) {
+      toast({ variant: 'destructive', title: 'Gagal menyalin URL' });
+    }
+  };
+
   const parsedAttachments: DocumentAttachment[] = (() => {
     try {
       const val = form.watch('attachments');
@@ -670,30 +682,76 @@ export default function ProjectForm() {
                 />
 
                 <div className="space-y-2">
-                  <Label>Galeri</Label>
-                  <div className="grid grid-cols-2 gap-2 mb-2">
+                  <div className="flex items-center justify-between">
+                    <Label>Galeri ({gallery.length})</Label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="h-7 text-xs gap-1.5 rounded-md"
+                      onClick={handleAddGalleryImage}
+                    >
+                      <Plus className="size-3.5" /> Tambah
+                    </Button>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-2">
                     {gallery.map((img: string, idx: number) => (
-                      <div key={idx} className="relative aspect-square rounded-md overflow-hidden border group">
-                        <MediaThumbnail src={img} alt={`Galeri ${idx}`} className="w-full h-full object-cover" showVideoBadge={true} videoBadgePosition="center" />
-                        <Button 
-                          type="button" 
-                          variant="destructive" 
-                          size="icon" 
-                          className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity z-10" 
-                          onClick={() => handleRemoveGalleryImage(idx)}
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
+                      <div key={idx} className="flex flex-col gap-1.5 p-2 rounded-lg border border-border/70 bg-card/60">
+                        <div className="relative aspect-video rounded-md overflow-hidden border border-border/40 group bg-muted/20">
+                          <MediaThumbnail src={img} alt={`Galeri ${idx}`} className="w-full h-full object-cover" showVideoBadge={true} videoBadgePosition="center" />
+                          <div className="absolute top-1 right-1 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                            <Button 
+                              type="button" 
+                              variant="ghost" 
+                              size="icon" 
+                              asChild
+                              className="size-6 rounded bg-black/70 text-white hover:bg-black hover:text-white" 
+                              title="Buka URL"
+                            >
+                              <a href={img} target="_blank" rel="noreferrer">
+                                <ExternalLink className="size-3" />
+                              </a>
+                            </Button>
+                            <Button 
+                              type="button" 
+                              variant="destructive" 
+                              size="icon" 
+                              className="size-6 rounded" 
+                              onClick={() => handleRemoveGalleryImage(idx)}
+                              title="Hapus"
+                            >
+                              <Trash2 className="size-3" />
+                            </Button>
+                          </div>
+                        </div>
+
+                        <div className="relative flex items-center w-full">
+                          <Input
+                            value={img}
+                            readOnly
+                            className="h-7 w-full pr-7 text-[10px] font-mono rounded-md border-border/60 bg-muted/30 focus-visible:ring-0 select-all truncate"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleCopyGalleryUrl(img, idx)}
+                            className="absolute right-1 text-muted-foreground hover:text-foreground size-5 flex items-center justify-center rounded transition-all cursor-pointer active:scale-95"
+                            title="Salin URL"
+                          >
+                            {copiedGalleryIdx === idx ? <Check className="size-3 text-emerald-500" /> : <Copy className="size-3" />}
+                          </button>
+                        </div>
                       </div>
                     ))}
+
                     <Button 
                       type="button" 
                       variant="outline" 
-                      className="aspect-square flex flex-col items-center justify-center gap-2 h-auto" 
+                      className="aspect-video flex flex-col items-center justify-center gap-1.5 h-auto rounded-lg border-dashed border-border/80 hover:border-primary/60 bg-muted/15 hover:bg-muted/30" 
                       onClick={handleAddGalleryImage}
                     >
-                      <Plus className="h-6 w-6" />
-                      <span className="text-xs">Tambah</span>
+                      <Plus className="size-5 text-muted-foreground" />
+                      <span className="text-xs text-muted-foreground font-medium">Tambah Galeri</span>
                     </Button>
                   </div>
                 </div>
