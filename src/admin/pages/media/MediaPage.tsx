@@ -5,7 +5,8 @@ import {
   FolderOpen, Folder, FolderPlus, Trash2, Loader2,
   AlertCircle, Upload, ArrowLeft,
   RefreshCw, Copy, Check, Search, ZoomIn, Play, Video,
-  FileText, ImageIcon, X, MoveRight, CornerDownRight
+  FileText, ImageIcon, X, MoveRight, CornerDownRight,
+  ExternalLink
 } from 'lucide-react';
 import { mediaApi, formatBytes, type MediaAsset } from '../../services/mediaApi';
 import { isNewUpload, formatMediaName, sortAssetsNewestFirst } from '@/lib/mediaUtils';
@@ -81,8 +82,10 @@ export default function MediaPage() {
     refetchOnMount: 'always',
   });
 
-  const rawAssets: MediaAsset[] = data?.resources || [];
-  const assets: MediaAsset[] = useMemo(() => sortAssetsNewestFirst(rawAssets), [rawAssets]);
+  const assets: MediaAsset[] = useMemo(() => {
+    const rawAssets: MediaAsset[] = data?.resources || [];
+    return sortAssetsNewestFirst(rawAssets);
+  }, [data?.resources]);
 
   const deleteMutation = useMutation({
     mutationFn: (asset: MediaAsset) => mediaApi.deleteAsset(asset.public_id, asset.resource_type, 'github', asset.sha),
