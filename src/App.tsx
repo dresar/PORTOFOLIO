@@ -17,23 +17,29 @@ import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persist
 const lazyRetry = (componentImport: () => Promise<any>) => {
   return lazy(async () => {
     try {
-      return await componentImport();
+      const res = await componentImport();
+      return res;
     } catch (error: any) {
       const msg = String(error?.message || error || '');
       const isChunkError =
         msg.includes('Failed to fetch dynamically imported module') ||
         msg.includes('Importing a module script failed') ||
-        msg.includes('error loading dynamically imported module');
+        msg.includes('error loading dynamically imported module') ||
+        msg.includes('Failed to load module script') ||
+        msg.includes('Strict MIME type checking') ||
+        msg.includes('text/html') ||
+        msg.includes('Cannot read properties of undefined') ||
+        msg.includes('AdminLayout');
 
       const storageKey = 'chunk_reload_ts';
       const lastReload = parseInt(sessionStorage.getItem(storageKey) || '0', 10);
       const now = Date.now();
 
-      if (isChunkError && (!lastReload || now - lastReload > 10000)) {
+      if (isChunkError && (!lastReload || now - lastReload > 8000)) {
         sessionStorage.setItem(storageKey, String(now));
         const url = new URL(window.location.href);
-        url.searchParams.set('reload', String(now));
-        window.location.href = url.toString();
+        url.searchParams.set('v', String(now));
+        window.location.replace(url.toString());
         return new Promise(() => {});
       }
       throw error;
@@ -78,7 +84,7 @@ const ExportPdfPage = lazyRetry(() => import("./admin/pages/ExportPdfPage"));
 const KerjaPage = lazyRetry(() => import("./pages/KerjaPage"));
 const KerjaAdminPage = lazyRetry(() => import("./admin/pages/kerja/KerjaAdminPage"));
 
-const AdminLayout = lazyRetry(() => import("./admin/components/AdminLayout").then(m => ({ default: m.AdminLayout })));
+const AdminLayout = lazyRetry(() => import("./admin/components/AdminLayout").then(m => ({ default: m?.AdminLayout || m?.default || m })));
 
 // Configure Query Client with Persistence
 const queryClient = new QueryClient({
