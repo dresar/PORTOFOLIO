@@ -6,7 +6,7 @@ import {
   AlertCircle, Upload, ArrowLeft,
   RefreshCw, Copy, Check, Search, ZoomIn, Play, Video,
   FileText, ImageIcon, X, MoveRight, CornerDownRight,
-  ExternalLink
+  ExternalLink, ChevronDown
 } from 'lucide-react';
 import { mediaApi, formatBytes, type MediaAsset } from '../../services/mediaApi';
 import { isNewUpload, formatMediaName, sortAssetsNewestFirst } from '@/lib/mediaUtils';
@@ -20,6 +20,7 @@ import { VideoThumbnail } from '@/components/ui/VideoThumbnail';
 import { useModalStore } from '@/store/modalStore';
 import { useMediaFolderStore, DEFAULT_FOLDERS } from '@/admin/store/mediaFolderStore';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 const FOLDER_COLORS: Record<string, { bg: string; text: string; border: string }> = {
   Semua: { bg: 'bg-zinc-500/10 dark:bg-zinc-500/20', text: 'text-zinc-600 dark:text-zinc-300', border: 'border-zinc-500/30' },
@@ -68,6 +69,9 @@ export default function MediaPage() {
   const [isMoveModalOpen, setIsMoveModalOpen] = useState(false);
   const [targetMoveFolder, setTargetMoveFolder] = useState<string>('Umum');
   const [dragOverFolder, setDragOverFolder] = useState<string | null>(null);
+  const [isFolderOpen, setIsFolderOpen] = useState(false);
+  const [folderSearch, setFolderSearch] = useState('');
+  const [moveSearch, setMoveSearch] = useState('');
 
   useEffect(() => {
     initFolders();
@@ -116,6 +120,18 @@ export default function MediaPage() {
   });
 
   const allFolders = getAllFolders();
+
+  const filteredFolders = useMemo(() => {
+    if (!folderSearch.trim()) return allFolders;
+    const q = folderSearch.trim().toLowerCase();
+    return allFolders.filter(f => f.toLowerCase().includes(q));
+  }, [allFolders, folderSearch]);
+
+  const filteredMoveFolders = useMemo(() => {
+    if (!moveSearch.trim()) return allFolders;
+    const q = moveSearch.trim().toLowerCase();
+    return allFolders.filter(f => f.toLowerCase().includes(q));
+  }, [allFolders, moveSearch]);
 
   const folderItemCounts = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -288,207 +304,231 @@ export default function MediaPage() {
         </div>
       </div>
 
-      {currentFolder === null ? (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-muted-foreground">
-              Folder
-            </span>
-            <span className="text-[11px] text-muted-foreground font-mono">
-              Tarik & lepas media ke folder
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">
-            <div
-              onClick={() => setCurrentFolder('all')}
-              className="group relative flex flex-col justify-between p-3 rounded-xl border border-border/70 bg-card hover:border-primary/60 hover:shadow-sm transition-all cursor-pointer select-none active:scale-[0.98]"
-            >
-              <div className="flex items-center justify-between gap-1">
-                <div className="size-8 rounded-lg bg-zinc-500/15 text-zinc-600 dark:text-zinc-300 flex items-center justify-center">
-                  <Folder className="size-4" />
+      <div className="flex flex-col lg:flex-row gap-3 lg:items-center justify-between">
+        <div className="flex flex-wrap items-center gap-2">
+          <Popover open={isFolderOpen} onOpenChange={setIsFolderOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.dataTransfer.dropEffect = 'move';
+                  setDragOverFolder(currentFolder && currentFolder !== 'all' ? currentFolder : 'Umum');
+                }}
+                onDragLeave={() => setDragOverFolder(null)}
+                onDrop={(e) => {
+                  const target = currentFolder && currentFolder !== 'all' ? currentFolder : 'Umum';
+                  handleDropOnFolder(target, e);
+                }}
+                className={cn(
+                  "h-8 px-2.5 text-xs rounded-lg gap-2 border-border/80 bg-card hover:bg-accent/50 font-medium active:scale-[0.98] transition-all",
+                  dragOverFolder && "border-primary ring-2 ring-primary/40 bg-primary/10"
+                )}
+              >
+                <div className={cn(
+                  'size-5 rounded flex items-center justify-center shrink-0',
+                  getFolderStyle(currentFolder && currentFolder !== 'all' ? currentFolder : 'Semua').bg,
+                  getFolderStyle(currentFolder && currentFolder !== 'all' ? currentFolder : 'Semua').text
+                )}>
+                  <Folder className="size-3 fill-current/20" />
                 </div>
-                <span className="text-[10px] font-mono text-muted-foreground bg-muted/60 px-1.5 py-0.5 rounded-full">
-                  {assets.length}
+                <span className="font-semibold text-foreground max-w-[140px] truncate">
+                  {currentFolder && currentFolder !== 'all' ? currentFolder : 'Semua Folder'}
                 </span>
-              </div>
-              <div className="mt-3">
-                <p className="text-xs font-semibold text-foreground truncate group-hover:text-primary transition-colors">
-                  Semua
-                </p>
-                <p className="text-[10px] text-muted-foreground truncate">Total berkas</p>
-              </div>
-            </div>
-
-            {allFolders.map(folderName => {
-              const style = getFolderStyle(folderName);
-              const count = folderItemCounts[folderName] || 0;
-              const isOver = dragOverFolder === folderName;
-              const isDefault = DEFAULT_FOLDERS.includes(folderName as any);
-
-              return (
-                <div
-                  key={folderName}
-                  onClick={() => setCurrentFolder(folderName)}
-                  onDragOver={(e) => {
-                    e.preventDefault();
-                    e.dataTransfer.dropEffect = 'move';
-                    setDragOverFolder(folderName);
-                  }}
-                  onDragLeave={() => setDragOverFolder(null)}
-                  onDrop={(e) => handleDropOnFolder(folderName, e)}
-                  className={cn(
-                    'group relative flex flex-col justify-between p-3 rounded-xl border transition-all cursor-pointer select-none active:scale-[0.98]',
-                    isOver
-                      ? 'border-primary ring-2 ring-primary/50 bg-primary/10 scale-[1.02]'
-                      : 'border-border/70 bg-card hover:border-primary/60 hover:shadow-sm'
+                <span className="text-[10px] font-mono text-muted-foreground bg-muted/60 px-1.5 py-0.5 rounded-full">
+                  {currentFolder && currentFolder !== 'all' ? (folderItemCounts[currentFolder] || 0) : assets.length}
+                </span>
+                <ChevronDown className="size-3 text-muted-foreground ml-auto" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="start" className="w-72 p-2 rounded-xl border border-border/80 bg-popover shadow-xl">
+              <div className="space-y-2">
+                <div className="relative">
+                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+                  <Input
+                    placeholder="Cari"
+                    value={folderSearch}
+                    onChange={(e) => setFolderSearch(e.target.value)}
+                    className="pl-8 pr-7 h-7 text-xs rounded-md font-mono"
+                    autoFocus
+                  />
+                  {folderSearch && (
+                    <button
+                      type="button"
+                      onClick={() => setFolderSearch('')}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      <X className="size-3" />
+                    </button>
                   )}
-                >
-                  <div className="flex items-center justify-between gap-1">
-                    <div className={cn('size-8 rounded-lg flex items-center justify-center', style.bg, style.text)}>
-                      <Folder className="size-4 fill-current/20" />
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span className="text-[10px] font-mono text-muted-foreground bg-muted/60 px-1.5 py-0.5 rounded-full">
-                        {count}
-                      </span>
-                      {!isDefault && (
-                        <button
-                          type="button"
-                          onClick={(e) => handleDeleteFolder(e, folderName)}
-                          className="size-5 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                          title="Hapus folder"
-                        >
-                          <Trash2 className="size-3" />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="mt-3">
-                    <p className="text-xs font-semibold text-foreground truncate group-hover:text-primary transition-colors">
-                      {folderName}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground truncate">
-                      {isOver ? 'Lepas di sini' : `${count} berkas`}
-                    </p>
-                  </div>
                 </div>
-              );
-            })}
 
-            <button
-              type="button"
-              onClick={() => setIsNewFolderOpen(true)}
-              className="flex flex-col items-center justify-center p-3 rounded-xl border border-dashed border-border/80 hover:border-primary/60 bg-muted/20 hover:bg-muted/40 transition-all text-muted-foreground hover:text-primary cursor-pointer min-h-[92px] gap-1.5"
-            >
-              <FolderPlus className="size-5" />
-              <span className="text-xs font-medium">Folder</span>
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-2.5 rounded-xl border border-border/70 bg-card/60 backdrop-blur-xs">
-          <div className="flex items-center gap-2.5 min-w-0">
+                <div className="flex items-center justify-between px-1 text-[10px] font-mono text-muted-foreground">
+                  <span>FOLDER ({allFolders.length})</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsFolderOpen(false);
+                      setIsNewFolderOpen(true);
+                    }}
+                    className="text-primary hover:underline flex items-center gap-1 font-semibold"
+                  >
+                    <FolderPlus className="size-3" /> Baru
+                  </button>
+                </div>
+
+                <div className="max-h-60 overflow-y-auto space-y-0.5 pr-0.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCurrentFolder('all');
+                      setIsFolderOpen(false);
+                    }}
+                    className={cn(
+                      "w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs transition-colors select-none text-left",
+                      (!currentFolder || currentFolder === 'all')
+                        ? "bg-primary/15 text-primary font-semibold"
+                        : "hover:bg-muted text-foreground"
+                    )}
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className="size-5 rounded bg-zinc-500/15 text-zinc-500 flex items-center justify-center shrink-0">
+                        <Folder className="size-3" />
+                      </div>
+                      <span className="truncate">Semua Folder</span>
+                    </div>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <span className="text-[10px] font-mono text-muted-foreground bg-muted/60 px-1.5 py-0.5 rounded-full">
+                        {assets.length}
+                      </span>
+                      {(!currentFolder || currentFolder === 'all') && <Check className="size-3.5 text-primary" />}
+                    </div>
+                  </button>
+
+                  <div className="h-px bg-border/60 my-1" />
+
+                  {filteredFolders.length === 0 ? (
+                    <p className="text-[11px] text-muted-foreground text-center py-4">Folder tidak ditemukan</p>
+                  ) : (
+                    filteredFolders.map(f => {
+                      const style = getFolderStyle(f);
+                      const count = folderItemCounts[f] || 0;
+                      const isSelected = currentFolder === f;
+                      const isDefault = DEFAULT_FOLDERS.includes(f as any);
+
+                      return (
+                        <div
+                          key={f}
+                          onClick={() => {
+                            setCurrentFolder(f);
+                            setIsFolderOpen(false);
+                          }}
+                          onDragOver={(e) => {
+                            e.preventDefault();
+                            e.dataTransfer.dropEffect = 'move';
+                            setDragOverFolder(f);
+                          }}
+                          onDragLeave={() => setDragOverFolder(null)}
+                          onDrop={(e) => handleDropOnFolder(f, e)}
+                          className={cn(
+                            "group flex items-center justify-between px-2 py-1.5 rounded-lg text-xs cursor-pointer transition-colors select-none",
+                            isSelected
+                              ? "bg-primary/15 text-primary font-semibold"
+                              : "hover:bg-muted text-foreground",
+                            dragOverFolder === f && "ring-2 ring-primary bg-primary/20"
+                          )}
+                        >
+                          <div className="flex items-center gap-2 min-w-0 flex-1">
+                            <div className={cn('size-5 rounded flex items-center justify-center shrink-0', style.bg, style.text)}>
+                              <Folder className="size-3 fill-current/20" />
+                            </div>
+                            <span className="truncate">{f}</span>
+                          </div>
+
+                          <div className="flex items-center gap-1 shrink-0">
+                            <span className="text-[10px] font-mono text-muted-foreground bg-muted/60 px-1.5 py-0.5 rounded-full">
+                              {count}
+                            </span>
+                            {isSelected && <Check className="size-3.5 text-primary" />}
+                            {!isDefault && (
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeleteFolder(e, f);
+                                }}
+                                className="size-5 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity ml-0.5"
+                                title="Hapus folder"
+                              >
+                                <Trash2 className="size-3" />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+
+          {currentFolder && currentFolder !== 'all' && (
             <Button
               type="button"
+              variant="ghost"
               size="sm"
-              variant="outline"
-              onClick={() => setCurrentFolder(null)}
-              className="h-7 px-2 text-xs rounded-lg gap-1 shrink-0"
+              onClick={() => setCurrentFolder('all')}
+              className="h-8 px-2 text-xs rounded-lg text-muted-foreground hover:text-foreground gap-1"
+              title="Kembali ke semua folder"
             >
-              <ArrowLeft className="size-3.5" />
-              <span>Folder</span>
+              <X className="size-3" />
+              <span>Semua</span>
             </Button>
+          )}
 
-            <div className="h-4 w-px bg-border/80 shrink-0" />
+          <div className="h-4 w-px bg-border/60 mx-0.5 hidden sm:block" />
 
-            <div className="flex items-center gap-2 min-w-0">
-              <div className={cn('size-6 rounded-md flex items-center justify-center shrink-0', getFolderStyle(currentFolder).bg, getFolderStyle(currentFolder).text)}>
-                <Folder className="size-3.5 fill-current/20" />
-              </div>
-              <div className="flex items-center gap-2 min-w-0">
-                <span className="text-xs font-bold text-foreground truncate">
-                  {currentFolder === 'all' ? 'Semua' : currentFolder}
-                </span>
-                <span className="text-[10px] text-muted-foreground font-mono bg-muted/60 px-1.5 py-0.5 rounded shrink-0">
-                  {filtered.length} berkas
-                </span>
-              </div>
-            </div>
+          <div className="flex items-center gap-1 bg-muted/60 p-1 rounded-lg border border-border/50">
+            <Button
+              type="button"
+              variant={resourceTypeTab === 'all' ? 'default' : 'ghost'}
+              size="sm"
+              className="h-6 text-xs font-medium px-2 rounded-md"
+              onClick={() => setResourceTypeTab('all')}
+            >
+              Semua
+            </Button>
+            <Button
+              type="button"
+              variant={resourceTypeTab === 'image' ? 'default' : 'ghost'}
+              size="sm"
+              className="h-6 text-xs gap-1 font-medium px-2 rounded-md"
+              onClick={() => setResourceTypeTab('image')}
+            >
+              <ImageIcon className="size-3" /> Gambar
+            </Button>
+            <Button
+              type="button"
+              variant={resourceTypeTab === 'raw' ? 'default' : 'ghost'}
+              size="sm"
+              className="h-6 text-xs gap-1 font-medium px-2 rounded-md"
+              onClick={() => setResourceTypeTab('raw')}
+            >
+              <FileText className="size-3 text-red-500" /> Dokumen
+            </Button>
+            <Button
+              type="button"
+              variant={resourceTypeTab === 'video' ? 'default' : 'ghost'}
+              size="sm"
+              className="h-6 text-xs gap-1 font-medium px-2 rounded-md"
+              onClick={() => setResourceTypeTab('video')}
+            >
+              <Video className="size-3 text-purple-400" /> Video
+            </Button>
           </div>
-
-          <div className="flex items-center gap-1.5 overflow-x-auto py-0.5 max-w-full scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-            {allFolders.map(f => {
-              const isOver = dragOverFolder === f;
-              const isCurrent = currentFolder === f;
-              return (
-                <button
-                  key={f}
-                  type="button"
-                  onClick={() => setCurrentFolder(f)}
-                  onDragOver={(e) => {
-                    e.preventDefault();
-                    e.dataTransfer.dropEffect = 'move';
-                    setDragOverFolder(f);
-                  }}
-                  onDragLeave={() => setDragOverFolder(null)}
-                  onDrop={(e) => handleDropOnFolder(f, e)}
-                  className={cn(
-                    'px-2.5 py-1 rounded-md text-[11px] font-medium transition-all shrink-0 border select-none',
-                    isCurrent
-                      ? 'bg-primary text-primary-foreground border-primary shadow-xs'
-                      : isOver
-                      ? 'bg-primary/20 border-primary text-primary scale-105'
-                      : 'bg-muted/40 border-border/60 text-muted-foreground hover:text-foreground hover:bg-muted'
-                  )}
-                >
-                  {f} <span className="opacity-70 text-[10px]">({folderItemCounts[f] || 0})</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      <div className="flex flex-col md:flex-row gap-3 md:items-center justify-between">
-        <div className="flex items-center gap-1 bg-muted/60 p-1 rounded-lg border border-border/50">
-          <Button
-            type="button"
-            variant={resourceTypeTab === 'all' ? 'default' : 'ghost'}
-            size="sm"
-            className="h-7 text-xs font-medium px-2.5 rounded-md"
-            onClick={() => setResourceTypeTab('all')}
-          >
-            Semua
-          </Button>
-          <Button
-            type="button"
-            variant={resourceTypeTab === 'image' ? 'default' : 'ghost'}
-            size="sm"
-            className="h-7 text-xs gap-1.5 font-medium px-2.5 rounded-md"
-            onClick={() => setResourceTypeTab('image')}
-          >
-            <ImageIcon className="size-3.5" /> Gambar
-          </Button>
-          <Button
-            type="button"
-            variant={resourceTypeTab === 'raw' ? 'default' : 'ghost'}
-            size="sm"
-            className="h-7 text-xs gap-1.5 font-medium px-2.5 rounded-md"
-            onClick={() => setResourceTypeTab('raw')}
-          >
-            <FileText className="size-3.5 text-red-500" /> Dokumen
-          </Button>
-          <Button
-            type="button"
-            variant={resourceTypeTab === 'video' ? 'default' : 'ghost'}
-            size="sm"
-            className="h-7 text-xs gap-1.5 font-medium px-2.5 rounded-md"
-            onClick={() => setResourceTypeTab('video')}
-          >
-            <Video className="size-3.5 text-purple-400" /> Video
-          </Button>
         </div>
 
         <div className="flex items-center gap-2">
@@ -503,7 +543,7 @@ export default function MediaPage() {
                 size="sm"
                 variant="outline"
                 onClick={() => setIsMoveModalOpen(true)}
-                className="h-7 gap-1.5 px-2 text-xs rounded-md border-primary/40 text-primary hover:bg-primary hover:text-white"
+                className="h-7 gap-1 px-2 text-xs rounded-md border-primary/40 text-primary hover:bg-primary hover:text-white"
               >
                 <MoveRight className="size-3" /> Pindah
               </Button>
@@ -829,34 +869,54 @@ export default function MediaPage() {
             <DialogTitle>Pindah Berkas</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-2">
-            <p className="text-xs text-muted-foreground">
-              Pilih folder tujuan.
-            </p>
-            <div className="grid grid-cols-2 gap-2 max-h-56 overflow-y-auto p-1">
-              {allFolders.map(f => {
-                const style = getFolderStyle(f);
-                const isSelected = targetMoveFolder === f;
-                return (
-                  <div
-                    key={f}
-                    onClick={() => setTargetMoveFolder(f)}
-                    className={cn(
-                      'flex items-center gap-2 p-2.5 rounded-lg border cursor-pointer transition-all',
-                      isSelected
-                        ? 'border-primary ring-1 ring-primary bg-primary/10'
-                        : 'border-border/70 hover:border-primary/40 bg-card'
-                    )}
-                  >
-                    <div className={cn('size-7 rounded flex items-center justify-center shrink-0', style.bg, style.text)}>
-                      <Folder className="size-3.5 fill-current/20" />
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+              <Input
+                placeholder="Cari"
+                value={moveSearch}
+                onChange={(e) => setMoveSearch(e.target.value)}
+                className="pl-8 pr-7 h-8 text-xs rounded-lg font-mono"
+              />
+              {moveSearch && (
+                <button
+                  type="button"
+                  onClick={() => setMoveSearch('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="size-3" />
+                </button>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto p-1">
+              {filteredMoveFolders.length === 0 ? (
+                <p className="col-span-2 text-xs text-muted-foreground text-center py-4">Folder tidak ditemukan</p>
+              ) : (
+                filteredMoveFolders.map(f => {
+                  const style = getFolderStyle(f);
+                  const isSelected = targetMoveFolder === f;
+                  return (
+                    <div
+                      key={f}
+                      onClick={() => setTargetMoveFolder(f)}
+                      className={cn(
+                        'flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-all select-none',
+                        isSelected
+                          ? 'border-primary ring-1 ring-primary bg-primary/10'
+                          : 'border-border/70 hover:border-primary/40 bg-card'
+                      )}
+                    >
+                      <div className={cn('size-6 rounded flex items-center justify-center shrink-0', style.bg, style.text)}>
+                        <Folder className="size-3.5 fill-current/20" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs font-semibold text-foreground truncate">{f}</p>
+                        <p className="text-[10px] text-muted-foreground">{folderItemCounts[f] || 0} berkas</p>
+                      </div>
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-xs font-semibold text-foreground truncate">{f}</p>
-                      <p className="text-[10px] text-muted-foreground">{folderItemCounts[f] || 0} berkas</p>
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              )}
             </div>
           </div>
           <DialogFooter className="gap-2">
