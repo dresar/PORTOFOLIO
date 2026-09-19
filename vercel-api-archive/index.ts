@@ -205,6 +205,7 @@ export const projects = pgTable('project', {
   createdAt: timestamp('createdAt').defaultNow().notNull(),
   updatedAt: timestamp('updatedAt').defaultNow().notNull(),
   custom_created_at: timestamp('custom_created_at'),
+  ai_thumbnail_prompt: text('ai_thumbnail_prompt'),
 });
 
 export const projectRelations = relations(projects, ({ one }) => ({
@@ -1426,8 +1427,21 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
         };
     }
 
-    async function listGitHubCDNAssets() {
-        const assets: any[] = [];
+    let cachedGitHubAssets: any[] | null = null;
+    let lastGitHubFetchTime = 0;
+    const GITHUB_CACHE_TTL = 60 * 1000;
+
+    function invalidateGitHubMediaCache() {
+        cachedGitHubAssets = null;
+        lastGitHubFetchTime = 0;
+    }
+
+    async function listGitHubCDNAssets(forceRefresh = false) {
+        const now = Date.now();
+        if (!forceRefresh && cachedGitHubAssets && (now - lastGitHubFetchTime < GITHUB_CACHE_TTL)) {
+            return cachedGitHubAssets;
+        }
+
         const token = getGhToken();
         const repo = getGhRepo();
         const branch = getGhBranch();
@@ -1438,6 +1452,73 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
         };
         if (token) headers['Authorization'] = `Bearer ${token}`;
 
+        // 1. Fast path: Single-request Git Trees API (fetches complete repository tree in <700ms)
+        try {
+            const treeRes = await fetch(`https://api.github.com/repos/${repo}/git/trees/${branch}?recursive=1`, { headers });
+            if (treeRes.ok) {
+                const treeData: any = await treeRes.json();
+                if (Array.isArray(treeData?.tree)) {
+                    const assets: any[] = [];
+                    for (const item of treeData.tree) {
+                        if (item.type === 'blob' && item.path.startsWith('public/uploads/') && !item.path.endsWith('.gitkeep')) {
+                            const relativePath = item.path.replace(/^public\/uploads\//, '');
+                            const filename = relativePath.split('/').pop() || relativePath;
+                            const ext = filename.split('.').pop()?.toLowerCase() || 'png';
+                            const isVideo = ['mp4', 'webm', 'mov'].includes(ext);
+                            const isPdf = ext === 'pdf';
+                            const cdnUrl = `https://cdn.jsdelivr.net/gh/${repo}@${branch}/${item.path}`;
+                            const tsMatch = filename.match(/(\d{10,13})/);
+                            const itemCreatedAt = tsMatch
+                                ? new Date(parseInt(tsMatch[1].length === 10 ? tsMatch[1] + '000' : tsMatch[1], 10)).toISOString()
+                                : undefined;
+
+                            assets.push({
+                                public_id: relativePath,
+                                secure_url: cdnUrl,
+                                url: cdnUrl,
+                                sha: item.sha,
+                                width: 800,
+                                height: 600,
+                                format: ext,
+                                bytes: item.size || 0,
+                                resource_type: isVideo ? 'video' : (isPdf ? 'raw' : 'image'),
+                                created_at: itemCreatedAt,
+                                provider: 'github'
+                            });
+                        }
+                    }
+
+                    assets.sort((a, b) => {
+                        const getTs = (id: string) => {
+                            const m = id.match(/media_(\d+)_/);
+                            if (m) {
+                                const n = parseInt(m[1], 10);
+                                if (!isNaN(n)) return n;
+                            }
+                            const any13 = id.match(/(\d{13})/);
+                            if (any13) {
+                                const n = parseInt(any13[1], 10);
+                                if (!isNaN(n)) return n;
+                            }
+                            return 0;
+                        };
+                        const tsA = getTs(a.public_id);
+                        const tsB = getTs(b.public_id);
+                        if (tsA !== tsB) return tsB - tsA;
+                        return b.public_id.localeCompare(a.public_id);
+                    });
+
+                    cachedGitHubAssets = assets;
+                    lastGitHubFetchTime = Date.now();
+                    return assets;
+                }
+            }
+        } catch (treeErr) {
+            console.warn('Git Trees single-call failed, falling back to directory scan:', treeErr);
+        }
+
+        // 2. Fallback: Sequential directory scan
+        const assets: any[] = [];
         async function scanDir(dirPath: string, publicIdPrefix: string) {
             try {
                 const ghRes = await fetch(`https://api.github.com/repos/${repo}/contents/${dirPath}?ref=${branch}`, { headers });
@@ -1500,6 +1581,9 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
             if (tsA !== tsB) return tsB - tsA;
             return b.public_id.localeCompare(a.public_id);
         });
+
+        cachedGitHubAssets = assets;
+        lastGitHubFetchTime = Date.now();
         return assets;
     }
 
@@ -2121,8 +2205,9 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
 
         if (action === 'list' && req.method === 'GET') {
             const resourceType = urlObj.searchParams.get('resource_type') || 'all';
+            const forceRefresh = urlObj.searchParams.get('refresh') === 'true';
             try {
-                const ghAssets = await listGitHubCDNAssets();
+                const ghAssets = await listGitHubCDNAssets(forceRefresh);
                 const filtered = resourceType === 'all' ? ghAssets : ghAssets.filter(a => a.resource_type === resourceType);
                 return sendJSON(res, 200, {
                     resources: filtered,
@@ -2140,6 +2225,7 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
 
             try {
                 const uploadResult = await uploadToGitHubCDN(file, reqPublicId, folder);
+                invalidateGitHubMediaCache();
                 return sendJSON(res, 200, uploadResult);
             } catch (ghErr: any) {
                 return sendJSON(res, 500, { error: 'Upload ke GitHub gagal', details: ghErr.message });
@@ -2154,6 +2240,7 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
 
             try {
                 const deleteResult = await deleteMultipleFromGitHubCDN(idsToDelete);
+                invalidateGitHubMediaCache();
                 return sendJSON(res, 200, { success: true, count: deleteResult.count });
             } catch (delErr: any) {
                 return sendJSON(res, 500, { success: false, error: delErr?.message || 'Gagal menghapus berkas dari GitHub' });

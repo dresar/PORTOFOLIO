@@ -11,20 +11,27 @@ import { compressImageToWebP, recordRecentUpload } from '@/lib/mediaUtils';
 import { Button } from '@/components/ui/button';
 import { cn, isVideoUrl } from '@/lib/utils';
 import { VideoThumbnail } from '@/components/ui/VideoThumbnail';
+import { useMediaFolderStore, DEFAULT_FOLDERS } from '@/admin/store/mediaFolderStore';
 
 interface MediaUploadModalProps {
   isOpen: boolean;
   onClose: () => void;
   onInsert?: (url: string) => void;
+  targetFolder?: string;
 }
 
 interface UploadedItem extends UploadResult {
   copied?: boolean;
 }
 
-export function MediaUploadModal({ isOpen, onClose, onInsert }: MediaUploadModalProps) {
+export function MediaUploadModal({ isOpen, onClose, onInsert, targetFolder }: MediaUploadModalProps) {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { getAllFolders, moveFiles } = useMediaFolderStore();
+  const [selectedFolder, setSelectedFolder] = useState<string>(() => {
+    if (targetFolder && targetFolder.toLowerCase() !== 'all') return targetFolder;
+    return 'Projects';
+  });
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploaded, setUploaded] = useState<UploadedItem[]>([]);
@@ -111,12 +118,17 @@ export function MediaUploadModal({ isOpen, onClose, onInsert }: MediaUploadModal
       try {
         // Compress raster images to ultra-crisp, lightweight WebP
         const compressed = await compressImageToWebP(queue[i].file, { quality: 0.88, maxDimension: 1920 });
-        setQueue(prev => prev.map((item, idx) => idx === i ? { ...item, progress: 40 } : item));
-
+        const targetFld = (selectedFolder || 'Projects').toLowerCase();
         const result = await mediaApi.uploadFile(compressed.base64, {
-          folder: 'portfolio',
+          folder: targetFld,
           public_id: compressed.fileName
         });
+
+        if (selectedFolder && selectedFolder !== 'Umum') {
+          try {
+            await moveFiles([result.public_id], selectedFolder);
+          } catch (e) {}
+        }
 
         setQueue(prev => prev.map((item, idx) => idx === i ? { ...item, status: 'success', progress: 100, result } : item));
         recordRecentUpload(result.public_id);
@@ -209,6 +221,28 @@ export function MediaUploadModal({ isOpen, onClose, onInsert }: MediaUploadModal
           </div>
 
           <div className="p-5 space-y-4">
+            {/* Target Folder Selector */}
+            <div className="flex items-center gap-1.5 flex-wrap pb-1 border-b border-border/40">
+              <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mr-1 select-none">
+                Folder Tujuan:
+              </span>
+              {['Projects', 'Certificates', 'Blog', 'Profile', 'Public', 'Dokumen', 'Umum'].map((f) => (
+                <button
+                  key={f}
+                  type="button"
+                  onClick={() => setSelectedFolder(f)}
+                  className={cn(
+                    'h-[24px] px-2.5 rounded-[5px] text-[11px] font-medium transition-all shrink-0 active:scale-95',
+                    selectedFolder.toLowerCase() === f.toLowerCase()
+                      ? 'bg-primary text-primary-foreground font-semibold shadow-xs'
+                      : 'bg-muted/40 hover:bg-muted/70 text-muted-foreground hover:text-foreground border border-border/30'
+                  )}
+                >
+                  {f}
+                </button>
+              ))}
+            </div>
+
             {queue.length === 0 ? (
               <div
                 className={cn(

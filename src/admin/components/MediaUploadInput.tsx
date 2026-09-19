@@ -217,16 +217,15 @@ export function MediaUploadInput({
           <Button
             type="button"
             variant="outline"
-            size="sm"
+            size="icon"
             onClick={(e) => {
               e.stopPropagation();
               setIsMediaPickerOpen(true);
             }}
-            className="h-7 px-2 text-[11px] font-medium rounded-lg gap-1 border-border/80 hover:bg-muted active:scale-[0.98]"
-            title="Pilih dari Media Library"
+            className="size-7 rounded-lg border-border/80 hover:bg-muted active:scale-[0.98] transition-all cursor-pointer"
+            title="Media Library"
           >
-            <FolderOpen className="size-3 text-muted-foreground" />
-            <span className="hidden sm:inline">Library</span>
+            <FolderOpen className="size-3.5 text-muted-foreground" />
           </Button>
 
           {activeUrl && (

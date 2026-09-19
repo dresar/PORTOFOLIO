@@ -27,6 +27,8 @@ import { DocumentAttachmentInput } from '@/admin/components/DocumentAttachmentIn
 import { MediaUploadInput } from '@/admin/components/MediaUploadInput';
 import { MediaPickerModal } from '@/admin/components/MediaPickerModal';
 import { MediaThumbnail } from '@/components/ui/VideoThumbnail';
+import { ThumbnailPromptModal } from '@/admin/components/ThumbnailPromptModal';
+import { countWords } from '@/lib/thumbnailPromptGenerator';
 import type { DocumentAttachment } from '@/types';
 
 const projectSchema = z.object({
@@ -47,6 +49,7 @@ const projectSchema = z.object({
   is_published: z.boolean().default(true),
   custom_created_at: z.date().optional(),
   order: z.coerce.number().default(0),
+  ai_thumbnail_prompt: z.string().optional(),
 });
 
 type ProjectFormValues = z.infer<typeof projectSchema>;
@@ -117,6 +120,7 @@ export default function ProjectForm() {
   const [manualSummaryContent, setManualSummaryContent] = useState('');
   const [isGalleryPickerOpen, setIsGalleryPickerOpen] = useState(false);
   const [copiedGalleryIdx, setCopiedGalleryIdx] = useState<number | null>(null);
+  const [isPromptModalOpen, setIsPromptModalOpen] = useState(false);
 
   const form = useForm<ProjectFormValues>({
     resolver: zodResolver(projectSchema),
@@ -129,7 +133,8 @@ export default function ProjectForm() {
       licenseUrl: '',
       content: '',
       description: '',
-      order: 0
+      order: 0,
+      ai_thumbnail_prompt: ''
     }
   });
 
@@ -166,6 +171,7 @@ export default function ProjectForm() {
           is_published: project.is_published,
           custom_created_at: project.custom_created_at ? new Date(project.custom_created_at) : undefined,
           order: project.order ?? 0,
+          ai_thumbnail_prompt: (project as any).ai_thumbnail_prompt || '',
         });
         
         if (project.summaries) {
@@ -666,19 +672,31 @@ export default function ProjectForm() {
 
           <div className="space-y-6">
             <Card>
-              <CardHeader>
-                <CardTitle>Media</CardTitle>
+              <CardHeader className="flex flex-row items-center justify-between pb-3">
+                <CardTitle className="text-base font-semibold">Media</CardTitle>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setIsPromptModalOpen(true)}
+                  className="relative size-8 rounded-lg border-amber-500/30 text-amber-500 hover:bg-amber-500/10 hover:border-amber-500/60 active:scale-[0.98] transition-all cursor-pointer"
+                  title="Prompt Thumbnail AI"
+                >
+                  <Sparkles className="size-4" />
+                  {form.watch('ai_thumbnail_prompt') && (
+                    <span className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-emerald-500 ring-2 ring-card" />
+                  )}
+                </Button>
               </CardHeader>
               <CardContent className="space-y-6">
                 <MediaUploadInput
-                  label="Sampul Proyek"
+                  label="Sampul"
                   value={form.watch('coverImage') || ''}
                   onChange={(url) => form.setValue('coverImage', url, { shouldDirty: true })}
-                  placeholder="URL sampul atau unggah berkas gambar..."
+                  placeholder="URL"
                   defaultProvider="github"
                   folder="projects/covers"
                   aspectRatio="video"
-                  description="Default Gambar: GitHub CDN (jsDelivr Edge)"
                 />
 
                 <div className="space-y-2">
@@ -878,6 +896,28 @@ export default function ProjectForm() {
         isOpen={isGalleryPickerOpen}
         onClose={() => setIsGalleryPickerOpen(false)}
         onSelect={handleSelectGalleryImage}
+      />
+
+      <ThumbnailPromptModal
+        isOpen={isPromptModalOpen}
+        onClose={() => setIsPromptModalOpen(false)}
+        project={{
+          id: id ? Number(id) : undefined,
+          title: form.watch('title') || 'Untitled Project',
+          description: form.watch('description') || '',
+          content: form.watch('content') || '',
+          tech: form.watch('tech') || '',
+          coverImage: form.watch('coverImage') || '',
+          gallery: form.watch('gallery') || '[]',
+          repoUrl: form.watch('repoUrl') || '',
+          demoUrl: form.watch('demoUrl') || '',
+          categoryId: form.watch('categoryId'),
+          category: categories.find((c: any) => c.id === form.watch('categoryId')),
+          ai_thumbnail_prompt: form.watch('ai_thumbnail_prompt') || '',
+        }}
+        onSavePrompt={(newPrompt) => {
+          form.setValue('ai_thumbnail_prompt', newPrompt, { shouldDirty: true });
+        }}
       />
     </div>
   );

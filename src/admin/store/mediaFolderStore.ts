@@ -43,10 +43,10 @@ export const useMediaFolderStore = create<MediaFolderState>()(
         const lower = publicId.toLowerCase();
         if (lower.startsWith('public/') || lower.includes('/public/') || lower.startsWith('public_')) return 'Public';
         if (lower.endsWith('.pdf')) return 'Dokumen';
-        if (lower.includes('project') || lower.includes('proyek') || lower.includes('cover')) return 'Projects';
-        if (lower.includes('cert') || lower.includes('sertifikat') || lower.includes('hki')) return 'Certificates';
-        if (lower.includes('blog') || lower.includes('post') || lower.includes('artikel')) return 'Blog';
-        if (lower.includes('profile') || lower.includes('avatar') || lower.includes('hero') || lower.includes('author')) return 'Profile';
+        if (lower.startsWith('portfolio/') || lower.startsWith('projects/') || lower.includes('project') || lower.includes('proyek') || lower.includes('cover') || lower.includes('portfolio')) return 'Projects';
+        if (lower.startsWith('certificates/') || lower.includes('cert') || lower.includes('sertifikat') || lower.includes('hki')) return 'Certificates';
+        if (lower.startsWith('articles/') || lower.includes('blog') || lower.includes('post') || lower.includes('artikel') || lower.includes('article')) return 'Blog';
+        if (lower.startsWith('profile/') || lower.includes('profile') || lower.includes('avatar') || lower.includes('hero') || lower.includes('author')) return 'Profile';
         return 'Umum';
       },
 

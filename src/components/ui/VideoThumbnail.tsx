@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Video, Play } from 'lucide-react';
+import { Video, Play, ImageOff } from 'lucide-react';
 import { cn, normalizeMediaUrl, isVideoUrl, getCloudinaryVideoThumbnail } from '@/lib/utils';
 
 interface VideoThumbnailProps {
@@ -168,6 +168,7 @@ export const MediaThumbnail: React.FC<{
   showPlayIcon?: boolean;
   videoBadgePosition?: 'center' | 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
   onClick?: (e: React.MouseEvent) => void;
+  fallbackText?: string;
 }> = ({
   src,
   alt = '',
@@ -179,8 +180,14 @@ export const MediaThumbnail: React.FC<{
   showPlayIcon = false,
   videoBadgePosition = 'center',
   onClick,
+  fallbackText,
 }) => {
+  const [hasError, setHasError] = useState(false);
   const isVideo = isVideoUrl(src);
+
+  useEffect(() => {
+    setHasError(false);
+  }, [src]);
 
   if (isVideo) {
     return (
@@ -198,15 +205,30 @@ export const MediaThumbnail: React.FC<{
     );
   }
 
+  if (hasError || !src) {
+    return (
+      <div
+        className={cn(
+          'w-full h-full min-h-[60px] bg-muted/30 border border-border/40 flex flex-col items-center justify-center p-2 text-center text-muted-foreground select-none transition-colors',
+          className
+        )}
+        onClick={onClick}
+      >
+        <ImageOff className="size-5 text-muted-foreground/40 mb-1" />
+        <span className="text-[10px] font-medium text-muted-foreground/60 line-clamp-1">
+          {fallbackText || alt || 'Gambar tidak tersedia'}
+        </span>
+      </div>
+    );
+  }
+
   return (
     <img
       src={normalizeMediaUrl(src)}
       alt={alt}
       className={cn('w-full h-full object-cover', imageClassName, className)}
       loading="lazy"
-      onError={(e) => {
-        (e.target as HTMLElement).style.display = 'none';
-      }}
+      onError={() => setHasError(true)}
       onClick={onClick}
     />
   );

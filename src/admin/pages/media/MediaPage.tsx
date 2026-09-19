@@ -943,9 +943,11 @@ export default function MediaPage() {
 
       <MediaUploadModal
         isOpen={showUpload}
+        targetFolder={currentFolder && currentFolder !== 'all' ? currentFolder : 'Projects'}
         onClose={() => {
           setShowUpload(false);
           qc.invalidateQueries({ queryKey: ['media-assets'] });
+          refetch();
         }}
       />
 

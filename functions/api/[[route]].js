@@ -14217,7 +14217,8 @@ var projects = pgTable("project", {
   order: integer("order").default(0).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().notNull(),
-  custom_created_at: timestamp("custom_created_at")
+  custom_created_at: timestamp("custom_created_at"),
+  ai_thumbnail_prompt: text("ai_thumbnail_prompt")
 });
 var projectRelations = relations(projects, ({ one }) => ({
   category: one(projectCategories, {
@@ -14641,6 +14642,10 @@ async function handler(req, res) {
   }
   res.__corsOrigin = resolveCorsOrigin(req);
   try {
+    let invalidateGitHubMediaCache = function() {
+      cachedGitHubAssets = null;
+      lastGitHubFetchTime = 0;
+    };
     const { url } = req;
     const urlObj = new URL(url, `http://${req.headers.host}`);
     const query = Object.fromEntries(urlObj.searchParams.entries());
@@ -15259,8 +15264,14 @@ async function handler(req, res) {
         provider: "github"
       };
     }
-    async function listGitHubCDNAssets() {
-      const assets = [];
+    let cachedGitHubAssets = null;
+    let lastGitHubFetchTime = 0;
+    const GITHUB_CACHE_TTL = 60 * 1e3;
+    async function listGitHubCDNAssets(forceRefresh = false) {
+      const now = Date.now();
+      if (!forceRefresh && cachedGitHubAssets && now - lastGitHubFetchTime < GITHUB_CACHE_TTL) {
+        return cachedGitHubAssets;
+      }
       const token = getGhToken();
       const repo = getGhRepo();
       const branch = getGhBranch();
@@ -15269,6 +15280,65 @@ async function handler(req, res) {
         "User-Agent": "Portfolio-App"
       };
       if (token) headers["Authorization"] = `Bearer ${token}`;
+      try {
+        const treeRes = await fetch(`https://api.github.com/repos/${repo}/git/trees/${branch}?recursive=1`, { headers });
+        if (treeRes.ok) {
+          const treeData = await treeRes.json();
+          if (Array.isArray(treeData?.tree)) {
+            const assets2 = [];
+            for (const item of treeData.tree) {
+              if (item.type === "blob" && item.path.startsWith("public/uploads/") && !item.path.endsWith(".gitkeep")) {
+                const relativePath = item.path.replace(/^public\/uploads\//, "");
+                const filename = relativePath.split("/").pop() || relativePath;
+                const ext = filename.split(".").pop()?.toLowerCase() || "png";
+                const isVideo = ["mp4", "webm", "mov"].includes(ext);
+                const isPdf = ext === "pdf";
+                const cdnUrl = `https://cdn.jsdelivr.net/gh/${repo}@${branch}/${item.path}`;
+                const tsMatch = filename.match(/(\d{10,13})/);
+                const itemCreatedAt = tsMatch ? new Date(parseInt(tsMatch[1].length === 10 ? tsMatch[1] + "000" : tsMatch[1], 10)).toISOString() : void 0;
+                assets2.push({
+                  public_id: relativePath,
+                  secure_url: cdnUrl,
+                  url: cdnUrl,
+                  sha: item.sha,
+                  width: 800,
+                  height: 600,
+                  format: ext,
+                  bytes: item.size || 0,
+                  resource_type: isVideo ? "video" : isPdf ? "raw" : "image",
+                  created_at: itemCreatedAt,
+                  provider: "github"
+                });
+              }
+            }
+            assets2.sort((a2, b2) => {
+              const getTs = (id2) => {
+                const m2 = id2.match(/media_(\d+)_/);
+                if (m2) {
+                  const n = parseInt(m2[1], 10);
+                  if (!isNaN(n)) return n;
+                }
+                const any13 = id2.match(/(\d{13})/);
+                if (any13) {
+                  const n = parseInt(any13[1], 10);
+                  if (!isNaN(n)) return n;
+                }
+                return 0;
+              };
+              const tsA = getTs(a2.public_id);
+              const tsB = getTs(b2.public_id);
+              if (tsA !== tsB) return tsB - tsA;
+              return b2.public_id.localeCompare(a2.public_id);
+            });
+            cachedGitHubAssets = assets2;
+            lastGitHubFetchTime = Date.now();
+            return assets2;
+          }
+        }
+      } catch (treeErr) {
+        console.warn("Git Trees single-call failed, falling back to directory scan:", treeErr);
+      }
+      const assets = [];
       async function scanDir(dirPath, publicIdPrefix) {
         try {
           const ghRes = await fetch(`https://api.github.com/repos/${repo}/contents/${dirPath}?ref=${branch}`, { headers });
@@ -15329,6 +15399,8 @@ async function handler(req, res) {
         if (tsA !== tsB) return tsB - tsA;
         return b2.public_id.localeCompare(a2.public_id);
       });
+      cachedGitHubAssets = assets;
+      lastGitHubFetchTime = Date.now();
       return assets;
     }
     async function deleteMultipleFromGitHubCDN(publicIds) {
@@ -15852,8 +15924,9 @@ async function handler(req, res) {
       }
       if (action === "list" && req.method === "GET") {
         const resourceType = urlObj.searchParams.get("resource_type") || "all";
+        const forceRefresh = urlObj.searchParams.get("refresh") === "true";
         try {
-          const ghAssets = await listGitHubCDNAssets();
+          const ghAssets = await listGitHubCDNAssets(forceRefresh);
           const filtered = resourceType === "all" ? ghAssets : ghAssets.filter((a2) => a2.resource_type === resourceType);
           return sendJSON(res, 200, {
             resources: filtered,
@@ -15869,6 +15942,7 @@ async function handler(req, res) {
         if (!file) return sendJSON(res, 400, { error: "file (base64 data URL) is required" });
         try {
           const uploadResult = await uploadToGitHubCDN(file, reqPublicId, folder);
+          invalidateGitHubMediaCache();
           return sendJSON(res, 200, uploadResult);
         } catch (ghErr) {
           return sendJSON(res, 500, { error: "Upload ke GitHub gagal", details: ghErr.message });
@@ -15881,6 +15955,7 @@ async function handler(req, res) {
         if (idsToDelete.length === 0) return sendJSON(res, 400, { success: false, error: "public_id atau public_ids wajib diisi" });
         try {
           const deleteResult = await deleteMultipleFromGitHubCDN(idsToDelete);
+          invalidateGitHubMediaCache();
           return sendJSON(res, 200, { success: true, count: deleteResult.count });
         } catch (delErr) {
           return sendJSON(res, 500, { success: false, error: delErr?.message || "Gagal menghapus berkas dari GitHub" });

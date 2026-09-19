@@ -146,6 +146,7 @@ export interface Project {
   attachments?: DocumentAttachment[] | any;
   license?: string | null;
   licenseUrl?: string | null;
+  ai_thumbnail_prompt?: string | null;
 }
 
 export interface CertificateCategory {

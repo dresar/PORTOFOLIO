@@ -144,7 +144,7 @@ export default function KerjaAdminPage() {
     setIsUploadingDoc(true);
     try {
       const base64 = await fileToBase64(selectedFile);
-      const uploadRes = await mediaApi.uploadFile(base64, { folder: 'portfolio' });
+      const uploadRes = await mediaApi.uploadFile(base64, { folder: 'dokumen' });
 
       await adminApi.post('/kerja-documents', {
         title: docTitle.trim(),

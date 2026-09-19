@@ -103,7 +103,7 @@ const queryClient = new QueryClient({
 
 const persister = createSyncStoragePersister({
   storage: window.localStorage,
-  key: 'REACT_QUERY_OFFLINE_CACHE_V5',
+  key: 'REACT_QUERY_OFFLINE_CACHE_V6',
 });
 
 const App = () => {

@@ -52,27 +52,33 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
   const [resourceTypeTab, setResourceTypeTab] = useState<'all' | 'image' | 'video' | 'raw'>('image');
 
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ['media-assets-picker', resourceTypeTab],
-    queryFn: () =>
-      mediaApi.listAssets({
-        resource_type: resourceTypeTab === 'all' ? undefined : resourceTypeTab,
-      }),
+    queryKey: ['media-assets-picker'],
+    queryFn: () => mediaApi.listAssets(),
     enabled: isOpen,
-    staleTime: 0,
-    refetchOnMount: 'always',
+    staleTime: 60 * 1000,
   });
 
   const rawAssets: MediaAsset[] = data?.resources || [];
   const assets: MediaAsset[] = useMemo(() => sortAssetsNewestFirst(rawAssets), [rawAssets]);
   const allFolders = getAllFolders();
 
-  const filtered = assets.filter((a) => {
-    if (selectedFolder !== 'all') {
-      const f = getFileFolder(a.public_id);
-      if (f !== selectedFolder) return false;
-    }
-    return !search || a.public_id.toLowerCase().includes(search.toLowerCase());
-  });
+  const filtered = useMemo(() => {
+    return assets.filter((a) => {
+      // 1. Filter by resourceTypeTab
+      if (resourceTypeTab !== 'all') {
+        if (resourceTypeTab === 'image' && a.resource_type !== 'image') return false;
+        if (resourceTypeTab === 'video' && a.resource_type !== 'video') return false;
+        if (resourceTypeTab === 'raw' && a.resource_type !== 'raw') return false;
+      }
+      // 2. Filter by selectedFolder
+      if (selectedFolder !== 'all') {
+        const f = getFileFolder(a.public_id);
+        if (f !== selectedFolder) return false;
+      }
+      // 3. Filter by search
+      return !search || a.public_id.toLowerCase().includes(search.toLowerCase());
+    });
+  }, [assets, resourceTypeTab, selectedFolder, search, getFileFolder]);
 
   const deleteMutation = useMutation({
     mutationFn: (asset: MediaAsset) =>
@@ -128,7 +134,7 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
           <motion.div className="absolute inset-0 bg-black/75 backdrop-blur-sm" onClick={onClose} />
 
           <motion.div
-            className="relative w-full max-w-4xl max-h-[85vh] flex flex-col bg-card border border-border/60 rounded-xl shadow-2xl overflow-hidden"
+            className="relative w-[95vw] max-w-6xl h-[88vh] max-h-[88vh] flex flex-col bg-card border border-border/60 rounded-xl shadow-2xl overflow-hidden"
             initial={{ scale: 0.95, opacity: 0, y: 16 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0 }}
@@ -185,7 +191,7 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
               </div>
             </div>
 
-            <div className="px-4 py-2.5 border-b border-border/50 shrink-0 space-y-2">
+            <div className="px-4 py-2 border-b border-border/50 shrink-0 space-y-1.5">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-1 bg-muted/60 p-1 rounded-lg">
                   <Button
@@ -237,18 +243,19 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
                 </div>
               </div>
 
-              <div className="flex items-center gap-1.5 overflow-x-auto py-1 text-xs">
-                <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground shrink-0 mr-0.5">
+              {/* Minimalist Compact Folder Bar */}
+              <div className="flex items-center gap-1 overflow-x-auto py-0.5 no-scrollbar">
+                <span className="text-[9px] uppercase font-bold text-muted-foreground/70 tracking-wider shrink-0 mr-1 select-none">
                   Folder:
                 </span>
                 <button
                   type="button"
                   onClick={() => setSelectedFolder('all')}
                   className={cn(
-                    'px-2 py-0.5 rounded-md text-[11px] font-medium transition-colors shrink-0 border',
+                    'h-[22px] px-2 rounded-[5px] text-[10.5px] font-medium transition-all shrink-0 active:scale-95 flex items-center',
                     selectedFolder === 'all'
-                      ? 'bg-primary text-white border-primary'
-                      : 'bg-muted/40 border-border/60 text-muted-foreground hover:text-foreground'
+                      ? 'bg-primary text-primary-foreground font-semibold shadow-xs'
+                      : 'bg-muted/40 hover:bg-muted/70 text-muted-foreground hover:text-foreground border border-border/30'
                   )}
                 >
                   Semua
@@ -259,14 +266,14 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
                     type="button"
                     onClick={() => setSelectedFolder(f)}
                     className={cn(
-                      'px-2 py-0.5 rounded-md text-[11px] font-medium transition-colors shrink-0 border flex items-center gap-1',
+                      'h-[22px] px-2 rounded-[5px] text-[10.5px] font-medium transition-all shrink-0 active:scale-95 flex items-center gap-1',
                       selectedFolder === f
-                        ? 'bg-primary text-white border-primary'
-                        : 'bg-muted/40 border-border/60 text-muted-foreground hover:text-foreground'
+                        ? 'bg-primary text-primary-foreground font-semibold shadow-xs'
+                        : 'bg-muted/40 hover:bg-muted/70 text-muted-foreground hover:text-foreground border border-border/30'
                     )}
                   >
-                    <Folder className="size-2.5 fill-current/20" />
-                    <span>{f}</span>
+                    <Folder className="size-2.5 opacity-70 shrink-0" />
+                    <span className="capitalize">{f}</span>
                   </button>
                 ))}
               </div>
@@ -305,7 +312,7 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
                   )}
                 </div>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-2.5">
                   {filtered.map((asset) => {
                     const isPdf = asset.format === 'pdf' || asset.resource_type === 'raw' || /\.pdf($|\?)/i.test(asset.secure_url || asset.url);
                     const isVideo = asset.resource_type === 'video' || isVideoUrl(asset.secure_url || asset.url) || ['mp4', 'webm', 'mov'].includes(asset.format || '');
@@ -440,6 +447,7 @@ export function MediaPickerModal({ isOpen, onClose, onSelect }: MediaPickerModal
 
       <MediaUploadModal
         isOpen={showUpload}
+        targetFolder={selectedFolder !== 'all' ? selectedFolder : 'Projects'}
         onClose={() => {
           setShowUpload(false);
           qc.invalidateQueries({ queryKey: ['media-assets-picker'] });

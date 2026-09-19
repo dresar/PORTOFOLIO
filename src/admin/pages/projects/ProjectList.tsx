@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { api } from '../../services/api';
-import { Plus, Trash2, Edit, ExternalLink, Github, Youtube, Layers, MoreVertical, ChevronLeft, ChevronRight, Filter, CheckSquare, Square, Loader2, RefreshCw } from 'lucide-react';
+import { Plus, Trash2, Edit, ExternalLink, Github, Youtube, Layers, MoreVertical, ChevronLeft, ChevronRight, Filter, CheckSquare, Square, Loader2, RefreshCw, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -17,12 +17,14 @@ import { formatDistanceToNow } from 'date-fns';
 import { id as idLocale } from 'date-fns/locale';
 import { DeleteAlert } from '@/admin/components/DeleteAlert';
 import { CategoryManager as ProjectCategoryManager } from './CategoryManager';
+import { ThumbnailPromptModal } from '@/admin/components/ThumbnailPromptModal';
 
 export default function ProjectList() {
   const queryClient = useQueryClient();
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [promptProject, setPromptProject] = useState<any | null>(null);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -208,6 +210,9 @@ export default function ProjectList() {
                                 <DropdownMenuItem onClick={() => navigate(`/admin/projects/edit/${proj.id}`)}>
                                     <Edit className="mr-2 h-4 w-4" /> Edit
                                 </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setPromptProject(proj)}>
+                                    <Sparkles className="mr-2 h-4 w-4 text-amber-500" /> Prompt Thumbnail AI
+                                </DropdownMenuItem>
                                 <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDelete(proj.id)}>
                                     <Trash2 className="mr-2 h-4 w-4" /> Hapus
                                 </DropdownMenuItem>
@@ -256,8 +261,18 @@ export default function ProjectList() {
                             </a>
                         ) : <Youtube className="h-4 w-4 text-muted-foreground/30 p-1" />}
                         
-                        <div className="ml-auto">
-                            <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => navigate(`/admin/projects/edit/${proj.id}`)}>
+                        <div className="ml-auto flex items-center gap-1.5">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="icon"
+                                className="size-7 rounded-lg border-amber-500/30 text-amber-500 hover:bg-amber-500/10 active:scale-[0.98] transition-all cursor-pointer"
+                                onClick={() => setPromptProject(proj)}
+                                title="Prompt Thumbnail AI"
+                            >
+                                <Sparkles className="size-3.5" />
+                            </Button>
+                            <Button variant="ghost" size="sm" className="h-7 text-xs rounded-lg active:scale-[0.98]" onClick={() => navigate(`/admin/projects/edit/${proj.id}`)}>
                                 Detail
                             </Button>
                         </div>
@@ -300,6 +315,26 @@ export default function ProjectList() {
         title={deleteAlert.isBulk ? `Hapus ${selectedIds.length} Proyek?` : "Hapus Proyek?"}
         description="Tindakan permanen dan tidak dapat dibatalkan."
       />
+
+      {promptProject && (
+        <ThumbnailPromptModal
+          isOpen={!!promptProject}
+          onClose={() => setPromptProject(null)}
+          project={promptProject}
+          onSavePrompt={async (newPrompt) => {
+            try {
+              await api.projects.update(promptProject.id, {
+                ...promptProject,
+                ai_thumbnail_prompt: newPrompt,
+              });
+              toast({ title: "✓ Tersimpan!", description: "Prompt thumbnail AI berhasil disimpan ke database." });
+              queryClient.invalidateQueries({ queryKey: ['projects'] });
+            } catch (err) {
+              toast({ variant: "destructive", title: "Gagal!", description: "Gagal menyimpan prompt ke database." });
+            }
+          }}
+        />
+      )}
     </div>
   );
 }
