@@ -1326,75 +1326,53 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
         const repo = getGhRepo();
         const branch = getGhBranch();
 
-        try {
-            const headers: Record<string, string> = {
-                'Accept': 'application/vnd.github.v3+json',
-                'User-Agent': 'Portfolio-App'
-            };
-            if (token) headers['Authorization'] = `Bearer ${token}`;
+        const headers: Record<string, string> = {
+            'Accept': 'application/vnd.github.v3+json',
+            'User-Agent': 'Portfolio-App'
+        };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
 
-            const ghRes = await fetch(`https://api.github.com/repos/${repo}/contents/${GITHUB_UPLOADS_PATH}?ref=${branch}`, {
-                headers
-            });
-
-            if (ghRes.ok) {
+        async function scanDir(dirPath: string, publicIdPrefix: string) {
+            try {
+                const ghRes = await fetch(`https://api.github.com/repos/${repo}/contents/${dirPath}?ref=${branch}`, { headers });
+                if (!ghRes.ok) return;
                 const items: any = await ghRes.json();
-                if (Array.isArray(items)) {
-                    for (const item of items) {
-                        if (item.type === 'file' && item.name !== '.gitkeep') {
-                            const ext = item.name.split('.').pop()?.toLowerCase() || 'png';
-                            const isVideo = ['mp4', 'webm', 'mov'].includes(ext);
-                            const cdnUrl = `https://cdn.jsdelivr.net/gh/${repo}@${branch}/${GITHUB_UPLOADS_PATH}/${item.name}`;
-                            const tsMatch = item.name.match(/media_(\d+)_/);
-                            const itemCreatedAt = tsMatch ? new Date(parseInt(tsMatch[1], 10)).toISOString() : undefined;
-                            assets.push({
-                                public_id: item.name,
-                                secure_url: cdnUrl,
-                                url: cdnUrl,
-                                sha: item.sha,
-                                width: 800,
-                                height: 600,
-                                format: ext,
-                                bytes: item.size || 0,
-                                resource_type: isVideo ? 'video' : (ext === 'pdf' ? 'raw' : 'image'),
-                                created_at: itemCreatedAt,
-                                provider: 'github'
-                            });
-                        } else if (item.type === 'dir' && item.name === 'public') {
-                            try {
-                                const subRes = await fetch(`https://api.github.com/repos/${repo}/contents/${GITHUB_UPLOADS_PATH}/public?ref=${branch}`, { headers });
-                                if (subRes.ok) {
-                                    const subItems: any = await subRes.json();
-                                    if (Array.isArray(subItems)) {
-                                        for (const subItem of subItems) {
-                                            if (subItem.type === 'file' && subItem.name !== '.gitkeep') {
-                                                const ext = subItem.name.split('.').pop()?.toLowerCase() || 'png';
-                                                const isVideo = ['mp4', 'webm', 'mov'].includes(ext);
-                                                const cdnUrl = `https://cdn.jsdelivr.net/gh/${repo}@${branch}/${GITHUB_UPLOADS_PATH}/public/${subItem.name}`;
-                                                const tsMatch = subItem.name.match(/(\d{10,13})/);
-                                                const itemCreatedAt = tsMatch ? new Date(parseInt(tsMatch[1].length === 10 ? tsMatch[1] + '000' : tsMatch[1], 10)).toISOString() : undefined;
-                                                assets.push({
-                                                    public_id: `public/${subItem.name}`,
-                                                    secure_url: cdnUrl,
-                                                    url: cdnUrl,
-                                                    sha: subItem.sha,
-                                                    width: 800,
-                                                    height: 600,
-                                                    format: ext,
-                                                    bytes: subItem.size || 0,
-                                                    resource_type: isVideo ? 'video' : (ext === 'pdf' ? 'raw' : 'image'),
-                                                    created_at: itemCreatedAt,
-                                                    provider: 'github'
-                                                });
-                                            }
-                                        }
-                                    }
-                                }
-                            } catch (subErr) {}
-                        }
+                if (!Array.isArray(items)) return;
+                const subDirs: any[] = [];
+                for (const item of items) {
+                    if (item.type === 'file' && item.name !== '.gitkeep') {
+                        const ext = item.name.split('.').pop()?.toLowerCase() || 'png';
+                        const isVideo = ['mp4', 'webm', 'mov'].includes(ext);
+                        const cdnUrl = `https://cdn.jsdelivr.net/gh/${repo}@${branch}/${dirPath}/${item.name}`;
+                        const tsMatch = item.name.match(/(\d{10,13})/);
+                        const itemCreatedAt = tsMatch
+                            ? new Date(parseInt(tsMatch[1].length === 10 ? tsMatch[1] + '000' : tsMatch[1], 10)).toISOString()
+                            : undefined;
+                        assets.push({
+                            public_id: `${publicIdPrefix}${item.name}`,
+                            secure_url: cdnUrl,
+                            url: cdnUrl,
+                            sha: item.sha,
+                            width: 800,
+                            height: 600,
+                            format: ext,
+                            bytes: item.size || 0,
+                            resource_type: isVideo ? 'video' : (ext === 'pdf' ? 'raw' : 'image'),
+                            created_at: itemCreatedAt,
+                            provider: 'github'
+                        });
+                    } else if (item.type === 'dir') {
+                        subDirs.push(item);
                     }
                 }
-            }
+                for (const dir of subDirs) {
+                    await scanDir(`${dirPath}/${dir.name}`, `${publicIdPrefix}${dir.name}/`);
+                }
+            } catch (err) {}
+        }
+
+        try {
+            await scanDir(GITHUB_UPLOADS_PATH, '');
         } catch (err) {}
 
         assets.sort((a, b) => {
@@ -2008,10 +1986,10 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
         }
 
         if (action === 'list' && req.method === 'GET') {
-            const resourceType = urlObj.searchParams.get('resource_type') || 'image';
+            const resourceType = urlObj.searchParams.get('resource_type') || 'all';
             try {
                 const ghAssets = await listGitHubCDNAssets();
-                const filtered = ghAssets.filter(a => resourceType === 'all' || a.resource_type === resourceType);
+                const filtered = resourceType === 'all' ? ghAssets : ghAssets.filter(a => a.resource_type === resourceType);
                 return sendJSON(res, 200, {
                     resources: filtered,
                     total: filtered.length
