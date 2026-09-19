@@ -53,149 +53,134 @@ export function generateThumbnailMegaPrompt(project: ThumbnailProjectInput): str
 
   const combinedContext = `${title} ${description} ${categoryName} ${techList.join(' ')}`.toLowerCase();
 
-  let primaryColorName = 'Modern Matte Obsidian';
-  let primaryHex = '#0B0F19';
-  let accentColorName = 'Crisp Emerald Jade';
+  let canvasBgHex = '#0B0F19';
+  let accentName = 'Crisp Emerald Jade';
   let accentHex = '#059669';
   let accentSecondaryHex = '#10B981';
   let domainArchetype = 'Modern Cloud Web Application';
-  let studioAtmosphereDesc = 'Bright, clean, natural Scandinavian studio daylight with soft diffused ambient light';
+  let ambientAtmosphere = 'Subtle, dark, organic emerald-slate atmospheric ambient gradient within the canvas';
 
   if (/pesantren|santri|rapor|alma|sira|islamic|pondok|madrasah/i.test(combinedContext)) {
-    primaryColorName = 'Deep Forest Charcoal';
-    primaryHex = '#0A1813';
-    accentColorName = 'Deep Heritage Forest Jade';
-    accentHex = '#065F46';
-    accentSecondaryHex = '#059669';
+    canvasBgHex = '#071A14';
+    accentName = 'Deep Heritage Forest Jade';
+    accentHex = '#059669';
+    accentSecondaryHex = '#10B981';
     domainArchetype = 'Sistem Informasi Akademik & Pesantren Terpadu';
-    studioAtmosphereDesc = 'Bright architectural daylight studio with neutral matte ambient illumination and subtle emerald warmth';
+    ambientAtmosphere = 'Subtle dark forest green atmospheric gradient with warm golden amber tones within the dark canvas';
   } else if (/pajak|brevet|tax|finance|dana|donasi|keuangan|payment/i.test(combinedContext)) {
-    primaryColorName = 'Deep Slate Obsidian';
-    primaryHex = '#0B0F19';
-    accentColorName = 'Crisp Financial Emerald & Teal';
+    canvasBgHex = '#0B0F19';
+    accentName = 'Crisp Financial Emerald & Teal';
     accentHex = '#059669';
     accentSecondaryHex = '#0D9488';
     domainArchetype = 'Platform Pembelajaran & Perpajakan Digital';
-    studioAtmosphereDesc = 'Bright, clean studio daylight with diffused overhead softbox illumination and subtle organic teal ambient tone';
+    ambientAtmosphere = 'Subtle dark obsidian slate background infused with soft, deep emerald and teal atmospheric tones';
   } else if (/pertamina|oil|gas|monitoring|telemetry|iot|sensor|factory|industrial/i.test(combinedContext)) {
-    primaryColorName = 'Industrial Deep Navy Slate';
-    primaryHex = '#0A1124';
-    accentColorName = 'Industrial Cobalt Blue & Signal Red';
+    canvasBgHex = '#081022';
+    accentName = 'Industrial Cobalt Blue & Signal Red';
     accentHex = '#1D4ED8';
     accentSecondaryHex = '#DC2626';
     domainArchetype = 'Sistem Monitoring & Arsip Digital Industri';
-    studioAtmosphereDesc = 'Bright modern engineering design studio with neutral matte daylight and subtle cobalt atmosphere';
+    ambientAtmosphere = 'Subtle deep industrial sapphire atmosphere within the dark canvas';
   } else if (/wedding|undangan|invitation|cinta|nikah/i.test(combinedContext)) {
-    primaryColorName = 'Rich Warm Charcoal';
-    primaryHex = '#161414';
-    accentColorName = 'Warm Champagne & Amber';
+    canvasBgHex = '#140F13';
+    accentName = 'Warm Champagne & Amber';
     accentHex = '#B45309';
     accentSecondaryHex = '#D97706';
     domainArchetype = 'Platform Undangan Pernikahan Digital Elegan';
-    studioAtmosphereDesc = 'Bright luxury product studio with soft natural warm daylight and satin matte backdrop';
+    ambientAtmosphere = 'Subtle dark luxury espresso charcoal background with delicate warm champagne ambient lighting';
   } else if (/shoope|ecommerce|shop|toko|marketplace|pos|kasir/i.test(combinedContext)) {
-    primaryColorName = 'Modern Charcoal';
-    primaryHex = '#121316';
-    accentColorName = 'Crisp Tangerine Orange';
+    canvasBgHex = '#101014';
+    accentName = 'Crisp Tangerine Orange';
     accentHex = '#C2410C';
     accentSecondaryHex = '#EA580C';
     domainArchetype = 'Multi-Vendor E-Commerce & Marketplace Platform';
-    studioAtmosphereDesc = 'Bright, crisp modern product photography studio with clean diffused daylight';
+    ambientAtmosphere = 'Subtle dark charcoal background with warm tangerine ambient tones';
   } else if (/ai|agent|prompt|gpt|llm|workflow|machine learning/i.test(combinedContext)) {
-    primaryColorName = 'Deep Slate Charcoal';
-    primaryHex = '#0B0F19';
-    accentColorName = 'Refined Indigo & Violet';
+    canvasBgHex = '#0B0F19';
+    accentName = 'Refined Indigo & Violet';
     accentHex = '#4F46E5';
     accentSecondaryHex = '#6366F1';
     domainArchetype = 'AI Workflow & Prompt Engineering Studio';
-    studioAtmosphereDesc = 'Bright, minimalist engineering studio with crisp natural overhead lighting and neutral matte backdrop';
+    ambientAtmosphere = 'Subtle dark slate background with deep indigo atmospheric gradient';
   }
 
-  const cleanDescription = description.length > 105 
-    ? description.slice(0, 102) + '...' 
+  const cleanDescription = description.length > 110 
+    ? description.slice(0, 107) + '...' 
     : description;
 
-  const prompt = `Create image: An authentic, world-class 16:9 widescreen product presentation photograph and executive showcase graphic in HIGH-CRAFT HUMAN DESIGN AESTHETICS (Apple Keynote, Stripe, Linear, Vercel caliber) for the Indonesian web application titled "${title}".
+  const prompt = `Create image: A 100% FULL-BLEED, EDGE-TO-EDGE 16:9 widescreen digital product showcase graphic and executive master presentation banner (Apple Keynote, Stripe, Linear, Vercel design caliber) for the Indonesian web application titled "${title}".
 
 ================================================================================
-[SECTION 1: HIGH-CRAFT HUMAN DESIGN PHILOSOPHY — AUTHENTIC & ZERO-SLOP]
+[SECTION 1: MANDATORY FULL-BLEED SPECIFICATION — ZERO WHITE MARGINS & ZERO ROOMS]
 ================================================================================
-You are strictly commanded to act as a World-Class Principal Brand Director and Senior UI Designer.
-CRITICAL MANDATE: ELIMINATE ALL GENERIC "AI-GENERATED" TROPES.
-- The user demands a realistic, authentic, human-designed masterpiece that looks like an official executive press showcase from Apple, Stripe, or Linear.
-- STRICT PROHIBITION OF NEON: Absolutely NO neon glow, NO neon contour lines, NO glowing neon borders, NO electric cyber-glow, NO radioactive blooms.
-- STRICT PROHIBITION OF BADGES & PILL CAPSULES ("BUDGE / BADGE DI LARANG KERAS"):
-  * Absolutely NEVER render pill capsules or badge chips around categories or features.
-  * Absolutely NO "✦ CATEGORY" pill badges.
-  * Absolutely NO "✓ FEATURE" pill badges.
-  * All text must be rendered as PURE, UNBOXED, commandingly elegant typography floating directly on the surface without enclosing pills or badge outlines!
-- STRICT PROHIBITION OF AI CLUTTER:
-  * Absolutely NO glowing microchips with "AI" stamped on them.
-  * Absolutely NO floating glowing crystal spheres, floating diamonds, or glowing orbs.
-  * Absolutely NO fake piles of labeled books (NO "PPh, PPN, PBB" book stacks), NO random physical pens, NO desk potted plants.
-- PURE HIGH-CRAFT TYPOGRAPHY: The left side is defined exclusively by magnificent, clean, massive modern typography with generous breathing space.
+CRITICAL CANVAS INSTRUCTION (FULL BLEED / EDGE-TO-EDGE ONLY):
+- The dark background (${canvasBgHex}) MUST cover 100% OF THE ENTIRE 16:9 CANVAS from corner to corner (0px margin, full bleed, edge-to-edge).
+- STRICT NEGATIVE CONSTRAINT AGAINST WHITE SURROUNDINGS:
+  * Absolutely NO white borders, NO white margins, NO white background surrounding the graphic!
+  * Absolutely NO 3D physical rooms, NO photography studio floors, NO white walls, NO pedestals, NO podiums, NO concrete blocks, NO architectural pillars, NO daylight windows!
+  * You are NOT taking a photo of a card sitting inside a room. The entire 16:9 image IS the high-resolution digital master graphic itself!
+  * Every single pixel from X: 0% to 100% and Y: 0% to 100% is part of the sleek dark presentation banner!
 
 ================================================================================
-[SECTION 2: COMPOSITION LAYOUT — FULL-WIDTH SPLIT STAGE (92% CANVAS WIDTH)]
+[SECTION 2: MASTER FULL-CANVAS LAYOUT (SPLIT HERO ARCHITECTURE)]
 ================================================================================
-The entire presentation is anchored by an expansive, full-width matte dark obsidian showcase container (${primaryHex}) spanning 90% to 94% of the 16:9 widescreen canvas, resting on a bright, clean, diffused daylight studio floor:
-1. LEFT HALF (55% Width — PURE COMMANDING DISPLAY TYPOGRAPHY, ZERO BADGES):
-   - Category Sub-Heading: Crisp, unboxed, tracking-widest uppercase text in clean slate (#94A3B8): "${categoryName.toUpperCase()}". Rendered as plain typography with NO pill badge, NO border, NO background box.
-   - Massive Display Headline: The title "${title}" in EXTRA-LARGE, ULTRA-BOLD geometric sans-serif typography (Inter Display / SF Pro / Neue Haas Grotesk). The brand name is rendered in solid, crisp, non-glowing ${accentSecondaryHex}, while the descriptive title is in stark, solid, matte white (#FFFFFF). Razor-sharp, vector-clean, completely unboxed.
-   - Concise Indonesian Value Proposition: A clean, readable paragraph of authentic Indonesian copywriting in subtle slate grey (#CBD5E1): "${cleanDescription}".
-   - Tech & Architecture Line: A simple, elegant typographic line: "Arsitektur Modern: React 19 • TypeScript • PostgreSQL • Tailwind CSS". Pure text, NO pills.
-2. RIGHT HALF (45% Width — AUTHENTIC SOFTWARE UI WINDOW, ZERO PHYSICAL LAPTOPS):
-   - A floating, borderless, matte dark-mode digital application dashboard interface showing the genuine software workflow:
-     * Clean header with minimal controls and real application navigation.
-     * Clean financial / data analytics graphs with solid, matte, elegant data lines in ${accentHex} (NO neon glow).
-     * Minimalist white/slate KPI statistics cards with clean percentages (+94%).
-     * A clean, floating matte conversational card: "AI Tax Assistant" showing a realistic interactive chat bubble with natural typography.
-   - This right-side element is PURELY a floating 2D/2.5D software interface window. Absolutely NO physical laptop body, NO keyboard keys, NO hinges, NO desk clutter.
+The graphic spans 100% of the widescreen canvas in a commanding split layout:
+1. LEFT HALF (52% Canvas Width — MASSIVE DISPLAY TYPOGRAPHY, PURE & UNBOXED):
+   - Category Sub-Heading: Crisp, unboxed, tracking-widest uppercase typography in clean slate (#94A3B8): "${categoryName.toUpperCase()}". Rendered as clean text with ZERO pill badges, ZERO borders, ZERO enclosing boxes.
+   - Massive Display Headline: The title "${title}" in EXTRA-LARGE, ULTRA-BOLD geometric sans-serif typography (Inter Display / SF Pro / Neue Haas Grotesk). The brand name is rendered in solid, crisp ${accentSecondaryHex}, while the descriptive title is in stark, solid, matte white (#FFFFFF). Massive scale, razor-sharp vector clarity, completely unboxed.
+   - Concise Indonesian Value Proposition: A clean, perfectly readable paragraph of authentic Indonesian copywriting in subtle slate grey (#CBD5E1): "${cleanDescription}".
+   - Tech & Architecture Line: A simple, elegant typographic line: "Arsitektur Modern: React 19 • TypeScript • PostgreSQL • Tailwind CSS". Pure text, ZERO pills.
+2. RIGHT HALF (48% Canvas Width — AUTHENTIC HIGH-TECH SOFTWARE DASHBOARD):
+   - A full-height, borderless, dark-mode software application interface showing the authentic application workflow:
+     * Dark dashboard panel with clean navigation header and user profile ("Selamat Datang").
+     * Real-time financial / data analytics graphs with solid, crisp data curves in ${accentHex} (solid matte color, ZERO neon glow).
+     * Minimalist KPI metric cards with clean white typography and +12% status numbers.
+     * An interactive conversational card: "AI Tax Assistant" displaying a realistic chat prompt bubble with crisp typography.
+   - PURE SOFTWARE SCREEN: This is strictly a high-resolution 2D/2.5D software interface screenshot. Absolutely NO physical laptop body, NO keyboard keys, NO trackpads, NO hinges, NO desk clutter.
 
 ================================================================================
-[SECTION 3: MANDATORY SOCIAL BRANDING DOCK (BOTTOM CENTER — 100% COMPLETE)]
+[SECTION 3: MANDATORY SOCIAL BRANDING DOCK (BOTTOM CENTER)]
 ================================================================================
-At the bottom center of the 16:9 canvas (X: 50%, Y: 88%), floating with generous vertical clearance beneath the showcase container, render the creator's official social branding dock:
-- Form: A refined, minimalist matte charcoal dock (height: 44px, width: ~480px, background: rgba(15, 23, 42, 0.96), border: 1px solid #334155, shadow: 0 12px 28px rgba(0, 0, 0, 0.16)).
-- Complete Text & Icon Hierarchy from Left to Right (Strictly plain typography and official monochrome icons, zero neon):
+At the bottom center of the 16:9 canvas (X: 50%, Y: 90%), integrated seamlessly with generous breathing room beneath the text and dashboard:
+- Form: A refined, minimalist matte dark capsule dock (height: 46px, width: ~480px, background: rgba(15, 23, 42, 0.96), border: 1.5px solid #334155, shadow: 0 12px 30px rgba(0, 0, 0, 0.3)).
+- Complete Text & Icon Hierarchy from Left to Right (Strictly plain typography and official monochrome icons):
   1. The official black/white GitHub Octocat glyph followed by clean, bold text "dresar"
   2. A centered divider bullet dot "•" in slate (#64748B)
   3. The author's full legal name in crisp, solid white typography: "Eka Syarif Maulana"
   4. A centered divider bullet dot "•" in slate (#64748B)
   5. The official Instagram camera glyph followed by clean, bold text "@arif_ex21"
-- Crucial Mandate: Every single element ("dresar", "Eka Syarif Maulana", "@arif_ex21") MUST be rendered completely, legibly, and sharply. Do NOT omit or crop this dock.
+- Mandatory Priority: This dock is an essential brand asset. Every character and icon MUST be rendered completely, legibly, and sharply.
 
 ================================================================================
-[SECTION 4: NATURAL STUDIO LIGHTING & AUTHENTIC COLOR SCIENCE]
+[SECTION 4: ATMOSPHERIC COLOR SCIENCE & MATTE FINISH]
 ================================================================================
-- Lighting Atmosphere: ${studioAtmosphereDesc}.
-- Lighting Physics: Pure photographic daylight softbox (5500K daylight temperature) positioned above and slightly to the left, casting natural, realistic soft contact shadows beneath the floating showcase container.
-- Surface Texture: Premium satin-matte anti-reflective texture on all surfaces; ZERO plastic glossy shine, ZERO blinding specular reflections, ZERO fluorescent neon light spill.
-- Background: A bright, elegant, modern architectural studio backdrop in soft light grey / off-white with gentle natural daylight gradients that match the project's authentic domain palette without synthetic neon glows.
+- Base Canvas Color: Deep obsidian slate (${canvasBgHex}) covering 100% of the canvas.
+- Background Atmosphere: ${ambientAtmosphere}. Soft, deep, organic light gradients that live naturally within the dark digital canvas.
+- Surface Texture: Satin-matte anti-reflective finish across all UI surfaces; ZERO blinding plastic glares, ZERO radioactive neon light spills.
+- Lighting: Clean studio overhead softbox illumination focused directly onto the typography and UI dashboard.
 
 ================================================================================
-[SECTION 5: STRICT NEGATIVE PROMPTS & PROHIBITED ELEMENTS (CRITICAL)]
+[SECTION 5: STRICT NEGATIVE PROMPTS & ZERO-TOLERANCE PROHIBITIONS]
 ================================================================================
-The user strictly enforces the following negative constraints to avoid tacky AI tropes:
-1. STRICTLY NO NEON: Absolutely NO neon glow, NO neon outlines, NO neon borders, NO cyber-glow, NO electric blue/green lasers, NO radioactive halos, NO neon light strips.
-2. STRICTLY NO BADGES / PILL CAPSULES ("BUDGE / BADGE DI LARANG KERAS"): Absolutely NO pill-shaped badges, NO category capsules, NO tag buttons, NO checkmark pills. All text must be pure unboxed typography!
-3. STRICTLY NO GENERIC AI ICONS: Absolutely NO square microchips with "AI" printed on them, NO glowing circuit boards, NO floating crystal spheres, NO floating gems/diamonds.
-4. STRICTLY NO PHYSICAL LAPTOPS & DESK CLUTTER: Absolutely NO laptop keyboards, NO laptop trackpads, NO laptop clamshell hinges, NO desktop computers, NO piles of physical books, NO pens, NO potted plants, NO coffee cups.
-5. STRICTLY NO ANNOTATIONS OR WIREFRAME TEXT: Absolutely NEVER print words like "FLOATING DOCK", "BRANDING DOCK", "Creator Name:", "Window 1", or diagram arrows on the background.
+1. STRICTLY NO WHITE BORDERS OR MARGINS: Absolutely NO white borders, NO white padding, NO white background framing the image!
+2. STRICTLY NO 3D ROOMS OR FLOORS: Absolutely NO photography studio rooms, NO floors, NO walls, NO pedestals, NO podiums, NO concrete blocks, NO physical studio props!
+3. STRICTLY NO NEON: Absolutely NO neon glow, NO neon outlines, NO neon borders, NO cyber-glow, NO radioactive blooms!
+4. STRICTLY NO BADGES / PILL CAPSULES ("BUDGE / BADGE DI LARANG KERAS"): Absolutely NO pill-shaped badges, NO category capsules, NO tag buttons, NO checkmark pills. All text must be pure unboxed typography!
+5. STRICTLY NO PHYSICAL LAPTOPS & DESK JUNK: Absolutely NO laptop bodies, NO keyboards, NO laptop hinges, NO piles of physical books, NO pens, NO potted plants!
+6. STRICTLY NO ANNOTATIONS OR WIREFRAME LABELS: Absolutely NEVER print words like "FLOATING DOCK", "BRANDING DOCK", "Creator Name:", "Window 1", or diagram arrows.
 
 ================================================================================
 [SECTION 6: FINAL PRODUCTION VERIFICATION CHECKLIST]
 ================================================================================
-Before rendering, verify compliance with every single requirement:
-✓ 1. Canvas format is exactly 16:9 widescreen, clean and expansive.
-✓ 2. Full-width showcase container occupying 90% to 94% canvas width.
+✓ 1. Format is 100% FULL-BLEED 16:9 widescreen digital banner (dark background fills 100% of the image from edge to edge with ZERO white margins).
+✓ 2. Absolutely NO 3D studio rooms, NO floors, NO pedestals.
 ✓ 3. Left side features EXTRA-LARGE, ULTRA-BOLD typography (Title: "${title}"), completely unboxed (ZERO BADGES).
-✓ 4. Right side displays a realistic, sleek digital software UI dashboard without physical laptop hardware.
-✓ 5. Bottom center prominently features the complete social branding dock: GitHub "dresar" • "Eka Syarif Maulana" • Instagram "@arif_ex21".
-✓ 6. STRICTLY ZERO NEON: Natural, diffused studio daylight lighting with matte textures.
+✓ 4. Right side displays a realistic, full-height dark digital software UI dashboard without physical laptop hardware.
+✓ 5. Bottom center clearly displays the complete social branding dock: GitHub "dresar" • "Eka Syarif Maulana" • Instagram "@arif_ex21".
+✓ 6. STRICTLY ZERO NEON: Matte, sophisticated, natural executive presentation aesthetics.
 ✓ 7. All UI copy is in clear, correct Bahasa Indonesia.
 
-Generate the final 16:9 ultra-clean, authentic human-designed showcase thumbnail now adhering strictly to every single parameter specified above.`;
+Generate the 100% full-bleed, edge-to-edge 16:9 master showcase banner now adhering strictly to every single parameter specified above.`;
 
   return prompt;
 }
