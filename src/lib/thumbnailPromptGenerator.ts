@@ -64,6 +64,7 @@ export function generateThumbnailMegaPrompt(project: ThumbnailProjectInput): str
   let metricValue = '+92%';
   let featureBadge = '100% Automasi Cloud & Real-Time Sync';
   let bgAmbientDesc = 'Luminous electric cyan, vibrant cobalt blue, and soft lavender chromatic gradient mesh smoothly diffusing across the bright studio backdrop';
+  let bg3DElements = 'floating translucent frosted glass spheres, 3D refractive cyan prisms, and subtle isometric digital pulse nodes reflecting vibrant cyan light';
 
   if (/pesantren|santri|rapor|alma|sira|islamic|pondok|madrasah/i.test(combinedContext)) {
     primaryColorName = 'Deep Islamic Emerald Charcoal';
@@ -77,6 +78,7 @@ export function generateThumbnailMegaPrompt(project: ThumbnailProjectInput): str
     metricValue = '99.8%';
     featureBadge = 'Manajemen Santri & Rapor Digital Terpadu';
     bgAmbientDesc = 'Lush emerald green, radiant jade teal, and soft warm golden amber ambient mesh glowing organically across the bright studio background';
+    bg3DElements = 'floating 3D frosted-glass amber spheres, luminous jade crystals, and subtle Islamic geometric lattice facets refracting golden-green ambient light';
   } else if (/pajak|brevet|tax|finance|dana|donasi|keuangan|payment/i.test(combinedContext)) {
     primaryColorName = 'Deep Financial Obsidian';
     primaryHex = '#0B0F19';
@@ -89,6 +91,7 @@ export function generateThumbnailMegaPrompt(project: ThumbnailProjectInput): str
     metricValue = '+94%';
     featureBadge = '100+ Kasus Praktik & AI Tax Assistant';
     bgAmbientDesc = 'Lush emerald green, radiant turquoise cyan, and soft royal sapphire blue gradient mesh glowing vibrantly across the bright illuminated studio background';
+    bg3DElements = 'floating translucent emerald gems, 3D refractive cyan glass polyhedrons, soft luminous green orbs, and subtle upward financial trajectory sparkline curves';
   } else if (/pertamina|oil|gas|monitoring|telemetry|iot|sensor|factory|industrial/i.test(combinedContext)) {
     primaryColorName = 'Industrial Obsidian Navy';
     primaryHex = '#0A1128';
@@ -101,6 +104,7 @@ export function generateThumbnailMegaPrompt(project: ThumbnailProjectInput): str
     metricValue = '99.99%';
     featureBadge = 'Telemetri Real-Time & Arsip Digital Terpadu';
     bgAmbientDesc = 'Dynamic industrial royal cobalt blue, electric cyan, and warm energy crimson gradient aura diffusing across the bright studio background';
+    bg3DElements = 'floating 3D royal cobalt crystal prisms, electric cyan telemetry spheres, and industrial blue volumetric light rays';
   } else if (/wedding|undangan|invitation|cinta|nikah/i.test(combinedContext)) {
     primaryColorName = 'Rich Champagne Noir';
     primaryHex = '#140E14';
@@ -113,6 +117,7 @@ export function generateThumbnailMegaPrompt(project: ThumbnailProjectInput): str
     metricValue = '98.5%';
     featureBadge = 'Musik Otomatis & Amplop Digital Terintegrasi';
     bgAmbientDesc = 'Lush champagne gold, soft rose quartz, and radiant peach aurora gradient mesh illuminating the bright studio backdrop with warm luxury';
+    bg3DElements = 'floating 3D champagne gold glass spheres, translucent rose quartz crystals, and radiant peach luxury bokeh orbs';
   } else if (/shoope|ecommerce|shop|toko|marketplace|pos|kasir/i.test(combinedContext)) {
     primaryColorName = 'Modern Charcoal Obsidian';
     primaryHex = '#121216';
@@ -125,6 +130,7 @@ export function generateThumbnailMegaPrompt(project: ThumbnailProjectInput): str
     metricValue = '0.3s';
     featureBadge = 'Payment Gateway & Manajemen Stok Multi-Cabang';
     bgAmbientDesc = 'Vibrant sunset tangerine, electric coral, and soft purple ambient backlight creating warm modern energy in the bright studio';
+    bg3DElements = 'floating 3D sunset tangerine glass orbs, vibrant coral crystals, and modern e-commerce checkout glass badges';
   } else if (/ai|agent|prompt|gpt|llm|workflow|machine learning/i.test(combinedContext)) {
     primaryColorName = 'Cosmic Obsidian Slate';
     primaryHex = '#0B0F19';
@@ -137,6 +143,7 @@ export function generateThumbnailMegaPrompt(project: ThumbnailProjectInput): str
     metricValue = '99.4%';
     featureBadge = 'Multi-Agent Orchestration & Smart Pipelines';
     bgAmbientDesc = 'Futuristic electric violet, deep indigo, and luminous cyan aurora mesh gradient softly diffusing behind the showcase stage in the bright studio';
+    bg3DElements = 'floating 3D electric violet geometric polyhedrons, glowing neural pulse nodes, and luminous holographic cyan light trails';
   }
 
   const techFormatted = techList.slice(0, 5).join(' • ');
@@ -145,35 +152,38 @@ export function generateThumbnailMegaPrompt(project: ThumbnailProjectInput): str
     ? description.slice(0, 92) + '...' 
     : description;
 
-  const prompt = `Create image: A world-class, ultra-premium 16:9 widescreen showcase photograph and portfolio presentation graphic with EXTRA-LARGE BOLD TYPOGRAPHY and HIGH-CONTRAST AESTHETICS for the Indonesian web application titled "${title}".
+  const prompt = `Create image: A world-class, ultra-premium 16:9 widescreen showcase photograph and portfolio presentation graphic with EXTRA-LARGE BOLD DISPLAY TYPOGRAPHY and FULL-CANVAS HIGH-CONTRAST AESTHETICS for the Indonesian web application titled "${title}".
 
 ================================================================================
-[SECTION 1: HIGH-IMPACT THUMBNAIL PHILOSOPHY — LARGE BOLD TEXT OVER TINY DETAILS]
+[SECTION 1: HIGH-IMPACT THUMBNAIL PHILOSOPHY — FULL-WIDTH & MASSIVE BOLD TEXT]
 ================================================================================
 You are commanded to act as a World-Class Executive Creative Director and Lead Product Art Director (at the caliber of Apple Keynote, Stripe, Linear, and Vercel).
-CRITICAL THUMBNAIL DESIGN DIRECTIVE (ANTI-CLUTTER & ANTI-TINY-TEXT):
-- STRICT PROHIBITION OF TINY UNREADABLE UI TABLES: Under NO circumstances should you render tiny, dense dashboard tables, microscopic spreadsheet rows, tiny sidebars with 10 menu items, or illegible micro-text. In a thumbnail, tiny UI details look like blurry clutter.
-- MANDATORY LARGE BOLD TYPOGRAPHY: This thumbnail MUST be instantly readable, commanding, and magnetic when viewed as a thumbnail card on mobile or desktop screens:
-  1. MASSIVE COMMANDING DISPLAY TITLE: Render the project name "${title}" in EXTRA-LARGE, ULTRA-BOLD modern geometric sans-serif typography (occupying the upper-central focal point of the showcase). It must be huge, razor-sharp, and legible from across the room.
-  2. BOLD INDONESIAN CATEGORY KICKER: A large, eye-catching badge positioned directly above or beside the title: "✦ ${categoryName.toUpperCase()}".
+CRITICAL THUMBNAIL DESIGN DIRECTIVE (FULL CANVAS & BOLD IMPACT):
+- FULL-WIDTH COMPOSITION: The main showcase stage is an expansive, widescreen dark obsidian card window spanning 90% to 94% of the 16:9 canvas width, fully commanding the visual space with ZERO empty side deadzones.
+- STRICT PROHIBITION OF TINY UNREADABLE UI DETAILS: Under NO circumstances should you render microscopic spreadsheet rows, tiny sidebars with 10 menu items, or illegible micro-text. In a portfolio thumbnail, tiny UI details look like blurry clutter.
+- MANDATORY LARGE BOLD TYPOGRAPHY (LEFT SIDE):
+  1. BOLD INDONESIAN CATEGORY KICKER: A prominent, glowing accent pill badge: "✦ ${categoryName.toUpperCase()}".
+  2. MASSIVE COMMANDING DISPLAY TITLE: Render "${title}" in EXTRA-LARGE, ULTRA-BOLD modern geometric sans-serif typography. The primary brand name glows in vibrant neon (${accentHex}) while the descriptive title is in razor-sharp, bright white text. It must be huge, vector-sharp, and legible from across the room.
   3. PROMINENT VALUE PROPOSITION: Large, crisp, perfectly readable Indonesian subtitle copy in clean slate/white: "${cleanDescription}".
   4. LARGE FEATURE HIGHLIGHT CHIP: A bold interactive pill in ${accentHex} showing "✓ ${featureBadge}".
-  5. PROMINENT BOTTOM BRANDING DOCK: An unmistakable, large floating pill dock centered at the bottom margin:
-     [GitHub Logo] dresar  •  Eka Syarif Maulana  •  [Instagram Logo] @arif_ex21
+- PROMINENT BOTTOM BRANDING DOCK: An unmistakable, large floating pill dock centered at the bottom margin:
+  [GitHub Logo] dresar  •  Eka Syarif Maulana  •  [Instagram Logo] @arif_ex21
 
 ================================================================================
-[SECTION 2: BRIGHT VIBRANT STUDIO BACKGROUND vs HIGH-CONTRAST SLEEK SHOWCASE]
+[SECTION 2: THEMED BRIGHT STUDIO BACKGROUND vs HIGH-CONTRAST SLEEK SHOWCASE]
 ================================================================================
-The user explicitly demands that the BRIGHT THEME belongs to the BACKGROUND ATMOSPHERE, while the inner showcase container boasts HIGH CONTRAST for maximum punch and legibility:
-1. BRIGHT LUMINOUS STUDIO BACKGROUND (Latar Belakang Terang & Berwarna Hidup):
+The user explicitly commands that the BRIGHT THEME belongs to the BACKGROUND ATMOSPHERE, tailored to the project's authentic domain DNA, while the inner showcase container boasts HIGH CONTRAST for maximum punch:
+1. BRIGHT THEMED STUDIO BACKGROUND (Latar Belakang Terang Sesuai Tema Proyek):
    - The overall studio environment is bright, airy, and luminous with diffused daylight illumination.
    - Infused with a rich, vibrant multi-tone chromatic gradient mesh and organic aurora backlighting: ${bgAmbientDesc}.
-   - Soft, organic pools of vibrant glowing light in ${accentHex} and ${accentSecondaryHex} radiate outward, creating colorful atmospheric depth.
-   - Architectural Detail: In the far background, render a delicate, faint isometric dot-matrix pattern (micro-dots at 4% opacity) and 2 to 3 out-of-focus translucent frosted glass geometric spheres/prisms that catch and refract the colorful ambient backlight.
+   - Thematic 3D Ambient Accents: Hovering softly in the luminous background atmosphere are ${bg3DElements}, catching and refracting the project's theme colors.
+   - Delicate Architectural Grid: In the far background, a faint isometric dot-matrix pattern (micro-dots at 4% opacity) adds high-tech structural sophistication.
 2. HIGH-CONTRAST SLEEK HERO SHOWCASE CONTAINER (Isi Dalam Kontras Tinggi & Tajam):
-   - Floating prominently in the center of the bright colorful studio is a magnificent, sleek modern showcase window/card crafted in deep obsidian slate (${primaryHex}) with smooth glass reflections and a glowing 2px colored neon rim in ${accentHex}.
-   - Because the background is bright and colorful, this deep high-contrast showcase window pops forward with incredible 3D punch, dramatic presence, and razor-sharp clarity!
-   - All large white and neon text printed inside this showcase stands out with breathtaking 4K contrast and zero eye fatigue.
+   - Floating prominently across the bright studio is a magnificent, sleek modern showcase container crafted in deep obsidian slate (${primaryHex}) with smooth glass reflections and a glowing 2px colored neon rim in ${accentHex}.
+   - Split Layout Inside Container:
+     * Left Wing (55% Width): Hosts the massive, eye-catching bold typography, category kicker, subtitle, and feature pill.
+     * Right Wing (45% Width): Displays a sleek digital software screen preview of the application (a dark-mode web dashboard showing functional metric graphs in ${accentHex} and an interactive floating companion card).
+   - This deep high-contrast showcase window pops forward with incredible 3D punch, dramatic presence, and razor-sharp clarity against the bright colorful background!
 
 ================================================================================
 [SECTION 3: STRICT VERTICAL FRAMING & AMPLE BOTTOM CLEARANCE (ANTI-CROPPING)]
@@ -233,10 +243,10 @@ Under NO circumstances should you render diagram titles, section names, explanat
 [SECTION 8: ABSOLUTE NEGATIVE CONSTRAINTS & ZERO-DEVICE MANDATE (STRICT)]
 ================================================================================
 The user strictly enforces an absolute, non-negotiable rule forbidding all physical electronic hardware devices:
-- ZERO LAPTOPS: Absolutely NO MacBook Pros, MacBook Airs, Windows laptops, keyboards, trackpads, or clamshell hinges.
+- ZERO LAPTOPS: Absolutely NO physical laptop keyboards, trackpads, clamshell hinges, or notebook bodies. The application interface must be rendered purely as a sleek borderless digital software window.
 - ZERO SMARTPHONES & TABLETS: Absolutely NO iPhones, Android phones, iPads, mobile bezels, screen notches, or camera cutouts.
 - ZERO MONITORS & PHYSICAL COMPUTERS: Absolutely NO desktop PC monitors, iMac stands, display bezels, cables, or desk setups.
-- ZERO ROOMS & DESK ACCESSORIES: Absolutely NO wooden desks, coffee mugs, potted plants, reading glasses, external mice, or physical props.
+- ZERO ROOMS & DESK ACCESSORIES: Absolutely NO wooden desks, coffee mugs, potted plants, reading glasses, pens, books, or physical props.
 - FORM FACTOR IS PURELY FLOATING SOFTWARE CONTAINERS: Every interface element exists purely as refined, floating 2.5D software card windows with precision rounded corners, suspended weightlessly in studio space.
 
 ================================================================================
@@ -247,16 +257,16 @@ The user strictly enforces an absolute, non-negotiable rule forbidding all physi
 - Depth of Field: Deep and razor-sharp depth of field (f/11 optical equivalent); every single letter, badge, graph line, and icon is in pin-sharp focus.
 - Color Science: Rec.709 color gamut, high dynamic range contrast, vibrant yet balanced saturation, true sRGB fidelity.
 - Final Verification Checklist:
-  ✓ 1. Canvas is exactly 16:9 widescreen with a bright, luminous, colorful ambient gradient mesh background.
-  ✓ 2. High-contrast sleek dark obsidian showcase container (${primaryHex}) providing massive contrast against the bright background.
-  ✓ 3. Project title "${title}" is rendered in EXTRA-LARGE, ULTRA-BOLD, razor-sharp typography (NO tiny micro-text or cluttered tables).
+  ✓ 1. Canvas is exactly 16:9 widescreen with a bright, luminous, colorful ambient gradient mesh background matching the project domain.
+  ✓ 2. High-contrast sleek dark obsidian showcase container (${primaryHex}) spanning ~92% width for full-canvas coverage.
+  ✓ 3. Project title "${title}" is rendered in EXTRA-LARGE, ULTRA-BOLD, razor-sharp typography on the left half.
   ✓ 4. Showcase window stops cleanly at Y: 76%, leaving a generous 22% bottom margin.
   ✓ 5. Bottom center clearly displays the large, prominent floating social branding dock with GitHub "dresar" and Instagram "@arif_ex21".
-  ✓ 6. Absolutely NO laptops, NO phones, NO physical monitors.
+  ✓ 6. Absolutely NO laptops, NO phones, NO physical desk clutter (no pens, no plants).
   ✓ 7. Absolutely NO diagram labels or annotation text printed on the background.
   ✓ 8. All UI copy is in clear, correct Bahasa Indonesia.
 
-Generate the final 16:9 high-contrast showcase thumbnail now adhering strictly to every single parameter specified above.`;
+Generate the final 16:9 full-width high-contrast showcase thumbnail now adhering strictly to every single parameter specified above.`;
 
   return prompt;
 }
