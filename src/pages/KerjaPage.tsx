@@ -81,12 +81,23 @@ export default function KerjaPage() {
 
   const fetchKerjaData = async () => {
     try {
-      const res = await axios.get('/api/kerja/public-data');
+      const config: import('axios').AxiosRequestConfig = { headers: {} };
+      // SECURITY: pass the PIN session token (issued by /api/kerja/verify-pin) so the
+      // backend can authorise this public data request.
+      const pinToken = sessionStorage.getItem('kerja_pin_token');
+      if (pinToken) (config.headers as any)['x-kerja-token'] = pinToken;
+      const res = await axios.get('/api/kerja/public-data', config);
       if (res.data) {
         setItems(res.data.items || []);
         setDocuments(res.data.documents || []);
       }
     } catch (e: any) {
+      // If the PIN session token expired (30 min) or is missing, re-lock the page.
+      if (e?.response?.status === 401) {
+        sessionStorage.removeItem('kerja_pin_token');
+        sessionStorage.removeItem('kerja_unlocked');
+        setIsUnlocked(false);
+      }
       toast({
         variant: 'destructive',
         title: 'Gagal memuat data',
@@ -109,6 +120,8 @@ export default function KerjaPage() {
       const res = await axios.post('/api/kerja/verify-pin', { pin: pin.trim() });
       if (res.data?.success) {
         sessionStorage.setItem('kerja_unlocked', 'true');
+        // Keep the PIN session token for the subsequent data fetch (security gate).
+        if (res.data?.token) sessionStorage.setItem('kerja_pin_token', res.data.token);
         setIsUnlocked(true);
       } else {
         throw new Error(res.data?.error || 'PIN salah');

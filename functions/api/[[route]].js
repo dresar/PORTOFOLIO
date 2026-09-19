@@ -14074,6 +14074,24 @@ function getEnv(key, defaultVal = "") {
   };
   return defaults[key] || defaultVal;
 }
+var CORS_ALLOWED_ORIGINS = /* @__PURE__ */ new Set([
+  "https://ekasyarif.my.id",
+  "https://eka-portfolio.pages.dev"
+]);
+function resolveCorsOrigin(req) {
+  const raw = String(req?.headers?.["origin"] || "");
+  if (!raw) return "*";
+  let origin = "";
+  try {
+    origin = new URL(raw).origin;
+  } catch {
+    return null;
+  }
+  if (CORS_ALLOWED_ORIGINS.has(origin)) return origin;
+  const host = origin.split("//")[1] || "";
+  if (host === "localhost" || host === "127.0.0.1") return origin;
+  return null;
+}
 async function verifyJwtToken(req) {
   try {
     const secret = getEnv("JWT_SECRET");
@@ -14090,7 +14108,7 @@ async function verifyJwtToken(req) {
     const payload = decoded?.payload || decoded;
     if (payload?.exp) {
       const tokenExpiry = payload.exp * 1e3;
-      if (tokenExpiry < Date.now()) {
+      if (tokenExpiry <= Date.now()) {
         return null;
       }
     }
@@ -14107,6 +14125,10 @@ function getClientIp(req) {
   return String(req.socket?.remoteAddress || "unknown");
 }
 var loginAttempts = /* @__PURE__ */ new Map();
+var viewThrottle = /* @__PURE__ */ new Map();
+var commentThrottle = /* @__PURE__ */ new Map();
+var kerjaPinSessions = /* @__PURE__ */ new Map();
+var KERJA_PIN_TTL_MS = 30 * 60 * 1e3;
 var WINDOW_MS = 5 * 60 * 1e3;
 var MAX_ATTEMPTS = 10;
 function isRateLimited(ip) {
@@ -14521,9 +14543,13 @@ var sendJSON = (res, status, data) => {
   if (res.headersSent) return;
   res.statusCode = status;
   res.setHeader("Content-Type", "application/json");
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  const corsOrigin = res.__corsOrigin;
+  if (corsOrigin !== null && corsOrigin !== void 0) {
+    res.setHeader("Access-Control-Allow-Origin", corsOrigin);
+    if (corsOrigin !== "*") res.setHeader("Vary", "Origin");
+  }
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, x-api-key");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, x-api-key, x-kerja-token");
   res.end(JSON.stringify(data));
 };
 var parseBody = (req) => {
@@ -14602,13 +14628,18 @@ var processBodyDates = (body) => {
 };
 async function handler(req, res) {
   if (req.method === "OPTIONS") {
-    res.setHeader("Access-Control-Allow-Origin", "*");
+    const preflightOrigin = resolveCorsOrigin(req);
+    if (preflightOrigin !== null) {
+      res.setHeader("Access-Control-Allow-Origin", preflightOrigin === "*" ? "*" : preflightOrigin);
+      if (preflightOrigin !== "*") res.setHeader("Vary", "Origin");
+    }
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, x-api-key, x-kerja-token");
     res.statusCode = 200;
     res.end();
     return;
   }
+  res.__corsOrigin = resolveCorsOrigin(req);
   try {
     const { url } = req;
     const urlObj = new URL(url, `http://${req.headers.host}`);
@@ -14678,7 +14709,12 @@ async function handler(req, res) {
           } else if (!isNaN(Number(pathParts[1]))) {
             id = pathParts[1];
             if (pathParts.length > 2) {
-              subResource = pathParts[2];
+              const p2 = pathParts[2];
+              if ((resourceName === "blog-posts" || resourceName === "blog") && ["like", "view", "comments"].includes(p2)) {
+                action = p2;
+              } else {
+                subResource = p2;
+              }
             }
           } else if (pathParts[1] === "categories") {
             action = "categories";
@@ -14725,6 +14761,8 @@ async function handler(req, res) {
       }
     }
     if (resourceName === "admin" && action === "ensure-schema") {
+      const ensureUser = await verifyJwtToken(req);
+      if (!ensureUser) return sendJSON(res, 401, { error: "Unauthorized. Valid admin authentication required." });
       await ensureSchema();
       return sendJSON(res, 200, { success: true, message: "Schema ensured successfully" });
     }
@@ -14755,13 +14793,46 @@ async function handler(req, res) {
         if (req.method === "POST") {
           const body = await parseBody(req);
           const { name, email, content, avatar } = body;
-          if (!name || !content) return sendJSON(res, 400, { error: "Name and content required" });
+          const cleanName = String(name || "").trim();
+          const cleanContent = String(content || "").trim();
+          if (!cleanName || !cleanContent) return sendJSON(res, 400, { error: "Name and content required" });
+          if (cleanName.length > 120) return sendJSON(res, 400, { error: "Name too long (max 120)" });
+          if (cleanContent.length > 5e3) return sendJSON(res, 400, { error: "Content too long (max 5000 chars)" });
+          const ipRaw = String(req.headers["x-forwarded-for"] || req.socket.remoteAddress || "unknown").split(",")[0].trim();
+          const cKey = ipRaw;
+          const cNow = Date.now();
+          let cRec = commentThrottle.get(cKey);
+          if (!cRec || cNow > cRec.resetAt) {
+            cRec = { count: 0, resetAt: cNow + 10 * 60 * 1e3 };
+            commentThrottle.set(cKey, cRec);
+          }
+          if (cRec.count >= 5) {
+            return sendJSON(res, 429, { error: "Terlalu banyak komentar dalam 10 menit. Silakan coba lagi nanti." });
+          }
+          cRec.count += 1;
+          let cleanEmail = "anonymous";
+          const emailStr = String(email || "").trim();
+          if (emailStr && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailStr) && emailStr.length <= 254) {
+            cleanEmail = emailStr;
+          }
+          let cleanAvatar = null;
+          const avatarStr = String(avatar || "").trim();
+          if (avatarStr) {
+            try {
+              const u = new URL(avatarStr);
+              if ((u.protocol === "https:" || u.protocol === "http:") && (u.hostname === "ui-avatars.com" || u.hostname.endsWith(".ui-avatars.com"))) {
+                cleanAvatar = avatarStr;
+              }
+            } catch {
+              cleanAvatar = null;
+            }
+          }
           const [newComment] = await getDb().insert(blogComments).values({
             postId: Number(id),
-            name,
-            email: email || "anonymous",
-            content,
-            avatar,
+            name: cleanName,
+            email: cleanEmail,
+            content: cleanContent,
+            avatar: cleanAvatar,
             isApproved: true
             // Auto-approve for now as requested "nambah manual"
           }).returning();
@@ -14770,27 +14841,40 @@ async function handler(req, res) {
       }
       if (action === "like") {
         if (req.method !== "POST") return sendJSON(res, 405, { error: "Method not allowed" });
-        let count = 1;
-        try {
-          const body = await parseBody(req);
-          if (body && body.count) {
-            count = parseInt(body.count) || 1;
-          }
-        } catch (e) {
-        }
-        const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress || "unknown";
-        await getDb().insert(blogLikes).values({
-          postId: Number(id),
-          ipHash: ip
+        const postId = Number(id);
+        const ipRaw = String(req.headers["x-forwarded-for"] || req.socket.remoteAddress || "unknown").split(",")[0].trim();
+        const ipHash = crypto2.createHash("sha256").update(`${ipRaw}:${postId}:like`).digest("hex");
+        const existingLike = await getDb().query.blogLikes.findFirst({
+          where: and(eq(blogLikes.postId, postId), eq(blogLikes.ipHash, ipHash))
         });
-        await getDb().update(blogPosts).set({ likes: sql`${blogPosts.likes} + ${count}` }).where(eq(blogPosts.id, Number(id)));
-        const [post] = await getDb().select({ likes: blogPosts.likes }).from(blogPosts).where(eq(blogPosts.id, Number(id)));
+        if (existingLike) {
+          return sendJSON(res, 409, { error: "Already liked", likes: (await getDb().select({ likes: blogPosts.likes }).from(blogPosts).where(eq(blogPosts.id, postId)))?.[0]?.likes || 0 });
+        }
+        await getDb().insert(blogLikes).values({
+          postId,
+          ipHash
+        });
+        await getDb().update(blogPosts).set({ likes: sql`${blogPosts.likes} + 1` }).where(eq(blogPosts.id, postId));
+        const [post] = await getDb().select({ likes: blogPosts.likes }).from(blogPosts).where(eq(blogPosts.id, postId));
         return sendJSON(res, 200, { success: true, likes: post?.likes || 0 });
       }
       if (action === "view") {
         if (req.method !== "POST") return sendJSON(res, 405, { error: "Method not allowed" });
-        await getDb().update(blogPosts).set({ views: sql`${blogPosts.views} + 1` }).where(eq(blogPosts.id, Number(id)));
-        const [post] = await getDb().select({ views: blogPosts.views }).from(blogPosts).where(eq(blogPosts.id, Number(id)));
+        const postId = Number(id);
+        const ipRaw = String(req.headers["x-forwarded-for"] || req.socket.remoteAddress || "unknown").split(",")[0].trim();
+        const viewKey = `${ipRaw}:${postId}`;
+        let viewRec = viewThrottle.get(viewKey);
+        const now = Date.now();
+        if (!viewRec || now > viewRec.resetAt) {
+          viewRec = { count: 0, resetAt: now + 24 * 60 * 60 * 1e3 };
+          viewThrottle.set(viewKey, viewRec);
+        }
+        if (viewRec.count >= 50) {
+          return sendJSON(res, 429, { error: "Too many view updates", views: (await getDb().select({ views: blogPosts.views }).from(blogPosts).where(eq(blogPosts.id, postId)))?.[0]?.views || 0 });
+        }
+        viewRec.count += 1;
+        await getDb().update(blogPosts).set({ views: sql`${blogPosts.views} + 1` }).where(eq(blogPosts.id, postId));
+        const [post] = await getDb().select({ views: blogPosts.views }).from(blogPosts).where(eq(blogPosts.id, postId));
         return sendJSON(res, 200, { success: true, views: post?.views || 0 });
       }
     }
@@ -15057,6 +15141,8 @@ async function handler(req, res) {
       }
     }
     if (resourceName === "admin" && action === "dashboard-stats") {
+      const dashUser = await verifyJwtToken(req);
+      if (!dashUser) return sendJSON(res, 401, { error: "Unauthorized. Valid admin authentication required." });
       const [projCount] = await getDb().select({ count: sql`count(*)` }).from(projects);
       const [blogCount] = await getDb().select({ count: sql`count(*)` }).from(blogPosts);
       const [msgCount] = await getDb().select({ count: sql`count(*)` }).from(messages);
@@ -15368,7 +15454,20 @@ async function handler(req, res) {
         const body = await parseBody(req);
         const { file, filename, customPublicId } = body || {};
         if (!file) return sendJSON(res, 400, { error: "file (base64) diperlukan" });
-        const result = await uploadToGitHubCDN(file, filename || customPublicId, "public");
+        const fileStr = String(file);
+        if (fileStr.length > 2e7) {
+          return sendJSON(res, 413, { error: "File terlalu besar (maks 15 MB)" });
+        }
+        let uploadMime = "image/png";
+        if (fileStr.includes(";base64,")) {
+          const mimeMatch = fileStr.split(";base64,")[0].match(/data:([^;]+)/);
+          if (mimeMatch) uploadMime = mimeMatch[1].toLowerCase();
+        }
+        const allowedMime = ["image/webp", "image/jpeg", "image/jpg", "image/png", "image/gif", "application/pdf", "video/mp4", "video/webm"];
+        if (!allowedMime.includes(uploadMime)) {
+          return sendJSON(res, 415, { error: `Tipe file tidak diizinkan (${uploadMime}). Gunakan webp/jpg/png/gif/pdf/mp4/webm.` });
+        }
+        const result = await uploadToGitHubCDN(fileStr, filename || customPublicId, "public");
         let origin = "";
         if (req.headers?.origin) {
           origin = req.headers.origin;
@@ -15434,10 +15533,14 @@ async function handler(req, res) {
     }
     if (resourceName === "translate") {
       if (req.method !== "POST") return sendJSON(res, 405, { error: "Method not allowed" });
+      const translateUser = await verifyJwtToken(req);
+      if (!translateUser) return sendJSON(res, 401, { error: "Unauthorized. Translate requires authentication." });
       try {
         const body = await parseBody(req);
         const { text: text2, target = "en" } = body || {};
         if (!text2) return sendJSON(res, 400, { error: "Text is required" });
+        const input = String(text2);
+        if (input.length > 2e4) return sendJSON(res, 413, { error: "Text too large (max 20000 chars)" });
         const apiKey = getEnv("AI_API_KEY") || getEnv("AI_GATEWAY_API_KEY");
         const apiUrl = getEnv("AI_API_URL") || (getEnv("AI_GATEWAY_BASE_URL") ? `${getEnv("AI_GATEWAY_BASE_URL").replace(/\/+$/, "")}/chat/completions` : "https://9router.serverinka.cloud/v1/chat/completions");
         const model = getEnv("AI_MODEL") || getEnv("AI_GATEWAY_MODEL") || "MY-COMBO";
@@ -15454,7 +15557,7 @@ async function handler(req, res) {
             model,
             messages: [
               { role: "system", content: systemPrompt },
-              { role: "user", content: String(text2) }
+              { role: "user", content: input }
             ],
             stream: false
           })
@@ -15467,8 +15570,8 @@ async function handler(req, res) {
           const clean = rawText.replace(/data:\s*\[DONE\][\s\S]*$/, "").trim();
           data = JSON.parse(clean);
         }
-        const translated = data?.choices?.[0]?.message?.content?.trim() || text2;
-        return sendJSON(res, 200, { translated, original: text2 });
+        const translated = data?.choices?.[0]?.message?.content?.trim() || input;
+        return sendJSON(res, 200, { translated, original: input });
       } catch (err) {
         return sendJSON(res, 500, { error: "Translation failed", details: err?.message });
       }
@@ -15878,7 +15981,7 @@ async function handler(req, res) {
         const body = await parseBody(req);
         const inputPin = String(body?.pin || "").trim();
         if (!inputPin) return sendJSON(res, 400, { success: false, error: "PIN wajib diisi." });
-        let dbPin = "280219";
+        let dbPin = "";
         try {
           const configRow = await getDb().select().from(kerjaConfigs).where(eq(kerjaConfigs.key, "pin")).limit(1);
           if (configRow.length > 0 && configRow[0].value) {
@@ -15886,13 +15989,35 @@ async function handler(req, res) {
           }
         } catch (e) {
         }
+        if (!dbPin) {
+          return sendJSON(res, 401, { success: false, error: "PIN belum dikonfigurasi." });
+        }
         if (inputPin === dbPin) {
           const token = crypto2.randomBytes(24).toString("hex");
+          kerjaPinSessions.set(token, Date.now() + KERJA_PIN_TTL_MS);
+          if (kerjaPinSessions.size > 1e3) {
+            const now = Date.now();
+            for (const [k, exp] of kerjaPinSessions) if (exp < now) kerjaPinSessions.delete(k);
+          }
           return sendJSON(res, 200, { success: true, token, message: "PIN terverifikasi." });
         }
         return sendJSON(res, 401, { success: false, error: "PIN yang Anda masukkan salah." });
       }
       if (action === "public-data" && req.method === "GET") {
+        const adminUser = await verifyJwtToken(req);
+        let pinTokenOk = false;
+        const pinToken = String(req.headers?.["x-kerja-token"] || query.pin_token || "").trim();
+        if (pinToken) {
+          const exp = kerjaPinSessions.get(pinToken);
+          if (exp && exp > Date.now()) {
+            pinTokenOk = true;
+          } else if (exp) {
+            kerjaPinSessions.delete(pinToken);
+          }
+        }
+        if (!adminUser && !pinTokenOk) {
+          return sendJSON(res, 401, { error: "Unauthorized. PIN or admin access required." });
+        }
         try {
           const items = await getDb().select().from(kerjaItems).where(eq(kerjaItems.is_active, true)).orderBy(asc(kerjaItems.order), asc(kerjaItems.id));
           const documents = await getDb().select().from(kerjaDocuments).orderBy(asc(kerjaDocuments.order), asc(kerjaDocuments.id));
@@ -16120,6 +16245,9 @@ async function handler(req, res) {
     ];
     const isDbError = msg === "DB_UNAVAILABLE" || dbSignals.some((s) => msg.includes(s)) || dbSignals.some((s) => code.includes(s)) || code === "57P01";
     if (isDbError) {
+      if (!isAuthenticated) {
+        return sendJSON(res, 503, { error: "Service temporarily unavailable" });
+      }
       return sendJSON(res, 503, { error: "Service temporarily unavailable", details: msg });
     }
     if (isProduction && !isAuthenticated) {

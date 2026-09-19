@@ -42,6 +42,27 @@ interface TokenPayload {
   name?: string;
 }
 
+// SECURITY (H4): CORS origin allowlist. The public internet has been able to
+// read this API from any origin (Access-Control-Allow-Origin: *). Browsers
+// are now only permitted to read responses from known portfolio origins;
+// same-origin and non-browser clients (no Origin header) still get '*' so
+// server-to-server and dev flows keep working. Disallowed cross-origin
+// pages simply receive no ACAO header and are blocked by the browser.
+const CORS_ALLOWED_ORIGINS = new Set<string>([
+  'https://ekasyarif.my.id',
+  'https://eka-portfolio.pages.dev',
+]);
+function resolveCorsOrigin(req: any): string | null {
+  const raw = String(req?.headers?.['origin'] || '');
+  if (!raw) return '*'; // same-origin / non-browser client
+  let origin = '';
+  try { origin = new URL(raw).origin; } catch { return null; }
+  if (CORS_ALLOWED_ORIGINS.has(origin)) return origin;
+  const host = origin.split('//')[1] || '';
+  if (host === 'localhost' || host === '127.0.0.1') return origin; // local dev
+  return null; // disallowed cross-origin origin → no ACAO
+}
+
 async function verifyJwtToken(req: any): Promise<TokenPayload | null> {
   try {
     const secret = getEnv('JWT_SECRET');
@@ -58,7 +79,7 @@ async function verifyJwtToken(req: any): Promise<TokenPayload | null> {
     const payload = ((decoded as any)?.payload || decoded) as any;
     if (payload?.exp) {
       const tokenExpiry = payload.exp * 1000;
-      if (tokenExpiry < Date.now()) {
+      if (tokenExpiry <= Date.now()) {
         return null;
       }
     }
@@ -80,6 +101,11 @@ function getClientIp(req: any): string {
 let pool: Pool;
 
 const loginAttempts = new Map<string, { count: number; resetAt: number }>();
+const viewThrottle = new Map<string, { count: number; resetAt: number }>();
+const commentThrottle = new Map<string, { count: number; resetAt: number }>();
+// Pin-protected pages (e.g. /kerja): token -> expiry (ms). Issued by /api/kerja/verify-pin.
+const kerjaPinSessions = new Map<string, number>();
+const KERJA_PIN_TTL_MS = 30 * 60 * 1000; // 30 minutes
 const WINDOW_MS = 5 * 60 * 1000;
 const MAX_ATTEMPTS = 10;
 function isRateLimited(ip: string) {
@@ -529,9 +555,14 @@ const sendJSON = (res: any, status: number, data: any) => {
   if (res.headersSent) return; // Prevent double sending
   res.statusCode = status;
   res.setHeader('Content-Type', 'application/json');
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  // H4: honor the request-scoped CORS origin (allowlisted) instead of a blanket '*'.
+  const corsOrigin: string | null | undefined = res.__corsOrigin;
+  if (corsOrigin !== null && corsOrigin !== undefined) {
+    res.setHeader('Access-Control-Allow-Origin', corsOrigin);
+    if (corsOrigin !== '*') res.setHeader('Vary', 'Origin');
+  }
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-api-key');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-api-key, x-kerja-token');
   res.end(JSON.stringify(data));
 };
 
@@ -615,16 +646,22 @@ const processBodyDates = (body: any) => {
 // --- 4. MAIN HANDLER ---
 
 export default async function handler(req: any, res: any) {
-  // CORS Preflight
+  // CORS Preflight (H4: origin allowlist)
   if (req.method === 'OPTIONS') {
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    const preflightOrigin = resolveCorsOrigin(req);
+    if (preflightOrigin !== null) {
+      res.setHeader('Access-Control-Allow-Origin', preflightOrigin === '*' ? '*' : preflightOrigin);
+      if (preflightOrigin !== '*') res.setHeader('Vary', 'Origin');
+    }
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-api-key, x-kerja-token');
     res.statusCode = 200;
     res.end();
     return;
   }
 
+  // Resolve CORS once for the whole request; sendJSON honors it.
+  (res as any).__corsOrigin = resolveCorsOrigin(req);
   try {
     const { url } = req;
     const urlObj = new URL(url, `http://${req.headers.host}`);
@@ -705,7 +742,16 @@ export default async function handler(req: any, res: any) {
             } else if (!isNaN(Number(pathParts[1]))) {
                 id = pathParts[1];
                 if (pathParts.length > 2) {
-                    subResource = pathParts[2]; // e.g. /projects/1/details
+                    const p2 = pathParts[2];
+                    // SECURITY/BUGFIX: map blog sub-actions (like/view/comments) from the
+                    // 3rd path segment to `action` so the special blog handler matches
+                    // /api/blog(-posts)/:id/like|view|comments. Anything else stays a
+                    // sub-resource (e.g. /projects/1/summaries).
+                    if ((resourceName === 'blog-posts' || resourceName === 'blog') && ['like', 'view', 'comments'].includes(p2)) {
+                        action = p2;
+                    } else {
+                        subResource = p2; // e.g. /projects/1/details
+                    }
                 }
             } else if (pathParts[1] === 'categories') {
                 action = 'categories';
@@ -762,6 +808,8 @@ export default async function handler(req: any, res: any) {
 
     // --- Special Routes ---
     if (resourceName === 'admin' && action === 'ensure-schema') {
+      const ensureUser = await verifyJwtToken(req);
+      if (!ensureUser) return sendJSON(res, 401, { error: 'Unauthorized. Valid admin authentication required.' });
       await ensureSchema();
       return sendJSON(res, 200, { success: true, message: 'Schema ensured successfully' });
     }
@@ -803,14 +851,58 @@ export default async function handler(req: any, res: any) {
             if (req.method === 'POST') {
                 const body = await parseBody(req);
                 const { name, email, content, avatar } = body;
-                if (!name || !content) return sendJSON(res, 400, { error: 'Name and content required' });
-                
+                const cleanName = String(name || '').trim();
+                const cleanContent = String(content || '').trim();
+                if (!cleanName || !cleanContent) return sendJSON(res, 400, { error: 'Name and content required' });
+                if (cleanName.length > 120) return sendJSON(res, 400, { error: 'Name too long (max 120)' });
+                if (cleanContent.length > 5000) return sendJSON(res, 400, { error: 'Content too long (max 5000 chars)' });
+
+                // Per-IP comment throttle: max 5 comments / 10 min per client,
+                // so the public form cannot be used to spam the blog DB.
+                const ipRaw = String(req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown').split(',')[0].trim();
+                const cKey = ipRaw;
+                const cNow = Date.now();
+                let cRec = commentThrottle.get(cKey);
+                if (!cRec || cNow > cRec.resetAt) {
+                    cRec = { count: 0, resetAt: cNow + 10 * 60 * 1000 };
+                    commentThrottle.set(cKey, cRec);
+                }
+                if (cRec.count >= 5) {
+                    return sendJSON(res, 429, { error: 'Terlalu banyak komentar dalam 10 menit. Silakan coba lagi nanti.' });
+                }
+                cRec.count += 1;
+
+                // Validate email: keep it only when it looks like a real address,
+                // otherwise fall back to 'anonymous' (schema column is NOT NULL).
+                let cleanEmail = 'anonymous';
+                const emailStr = String(email || '').trim();
+                if (emailStr && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailStr) && emailStr.length <= 254) {
+                    cleanEmail = emailStr;
+                }
+
+                // Validate avatar: only allow http(s) URLs from the trusted
+                // ui-avatars.com domain (what the client already generates).
+                // Anything else is dropped to prevent arbitrary/SSRF-ish image refs.
+                let cleanAvatar: string | null = null;
+                const avatarStr = String(avatar || '').trim();
+                if (avatarStr) {
+                    try {
+                        const u = new URL(avatarStr);
+                        if ((u.protocol === 'https:' || u.protocol === 'http:') &&
+                            (u.hostname === 'ui-avatars.com' || u.hostname.endsWith('.ui-avatars.com'))) {
+                            cleanAvatar = avatarStr;
+                        }
+                    } catch {
+                        cleanAvatar = null;
+                    }
+                }
+
                 const [newComment] = await getDb().insert(blogComments).values({
                     postId: Number(id),
-                    name,
-                    email: email || 'anonymous',
-                    content,
-                    avatar,
+                    name: cleanName,
+                    email: cleanEmail,
+                    content: cleanContent,
+                    avatar: cleanAvatar,
                     isApproved: true // Auto-approve for now as requested "nambah manual"
                 }).returning();
                 return sendJSON(res, 201, newComment);
@@ -821,49 +913,61 @@ export default async function handler(req: any, res: any) {
         if (action === 'like') {
              if (req.method !== 'POST') return sendJSON(res, 405, { error: 'Method not allowed' });
              
-             let count = 1;
-             try {
-                const body = await parseBody(req);
-                if (body && body.count) {
-                    count = parseInt(body.count) || 1;
-                }
-             } catch (e) {
-                // Ignore parse error, default to 1
+             // SECURITY: client-supplied 'count' is ignored — one like = +1,
+             // preventing unbounded counter inflation (likes += N) by the public.
+             const postId = Number(id);
+
+             // Per-IP dedup: hash(IP + postId) so the same client can only like once.
+             const ipRaw = String(req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown').split(',')[0].trim();
+             const ipHash = crypto.createHash('sha256').update(`${ipRaw}:${postId}:like`).digest('hex');
+
+             const existingLike = await getDb().query.blogLikes.findFirst({
+                 where: and(eq(blogLikes.postId, postId), eq(blogLikes.ipHash, ipHash))
+             });
+             if (existingLike) {
+                 return sendJSON(res, 409, { error: 'Already liked', likes: (await getDb().select({ likes: blogPosts.likes }).from(blogPosts).where(eq(blogPosts.id, postId)))?.[0]?.likes || 0 });
              }
 
-             // Simple IP tracking (may be proxied)
-             const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
-             
-             // We can allow multiple likes or debounce. For now, just insert.
-             // If we want unique per IP:
-             // const existing = await getDb().query.blogLikes.findFirst({ where: and(eq(blogLikes.postId, Number(id)), eq(blogLikes.ipHash, ip)) });
-             // if (existing) return sendJSON(res, 400, { error: 'Already liked' });
-             
              await getDb().insert(blogLikes).values({
-                 postId: Number(id),
-                 ipHash: ip as string
+                 postId,
+                 ipHash
              });
              
              // Increment likes in blogPosts table (Source of Truth for count)
              await getDb().update(blogPosts)
-                .set({ likes: sql`${blogPosts.likes} + ${count}` })
-                .where(eq(blogPosts.id, Number(id)));
+                .set({ likes: sql`${blogPosts.likes} + 1` })
+                .where(eq(blogPosts.id, postId));
 
-             const [post] = await getDb().select({ likes: blogPosts.likes }).from(blogPosts).where(eq(blogPosts.id, Number(id)));
+             const [post] = await getDb().select({ likes: blogPosts.likes }).from(blogPosts).where(eq(blogPosts.id, postId));
              return sendJSON(res, 200, { success: true, likes: post?.likes || 0 });
         }
 
         // POST View
         if (action === 'view') {
              if (req.method !== 'POST') return sendJSON(res, 405, { error: 'Method not allowed' });
-             
-             // Increment view
-             // Atomic increment is better: update blog_post set views = views + 1 where id = ?
+
+             // SECURITY: in-memory per-(ip,post) throttle — max 50 recorded views
+             // per client per post, so bots cannot spam the counter or the DB.
+             const postId = Number(id);
+             const ipRaw = String(req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown').split(',')[0].trim();
+             const viewKey = `${ipRaw}:${postId}`;
+             let viewRec = viewThrottle.get(viewKey);
+             const now = Date.now();
+             if (!viewRec || now > viewRec.resetAt) {
+                 viewRec = { count: 0, resetAt: now + 24 * 60 * 60 * 1000 };
+                 viewThrottle.set(viewKey, viewRec);
+             }
+             if (viewRec.count >= 50) {
+                 return sendJSON(res, 429, { error: 'Too many view updates', views: (await getDb().select({ views: blogPosts.views }).from(blogPosts).where(eq(blogPosts.id, postId)))?.[0]?.views || 0 });
+             }
+             viewRec.count += 1;
+
+             // Increment view (atomic)
              await getDb().update(blogPosts)
                 .set({ views: sql`${blogPosts.views} + 1` })
-                .where(eq(blogPosts.id, Number(id)));
+                .where(eq(blogPosts.id, postId));
              
-             const [post] = await getDb().select({ views: blogPosts.views }).from(blogPosts).where(eq(blogPosts.id, Number(id)));
+             const [post] = await getDb().select({ views: blogPosts.views }).from(blogPosts).where(eq(blogPosts.id, postId));
              return sendJSON(res, 200, { success: true, views: post?.views || 0 });
         }
     }
@@ -1188,6 +1292,8 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
 
     // Dashboard Stats
     if (resourceName === 'admin' && action === 'dashboard-stats') {
+        const dashUser = await verifyJwtToken(req);
+        if (!dashUser) return sendJSON(res, 401, { error: 'Unauthorized. Valid admin authentication required.' });
         const [projCount] = await getDb().select({ count: sql`count(*)` }).from(projects);
         const [blogCount] = await getDb().select({ count: sql`count(*)` }).from(blogPosts);
         const [msgCount] = await getDb().select({ count: sql`count(*)` }).from(messages);
@@ -1532,7 +1638,29 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
             const { file, filename, customPublicId } = body || {};
             if (!file) return sendJSON(res, 400, { error: 'file (base64) diperlukan' });
 
-            const result = await uploadToGitHubCDN(file, filename || customPublicId, 'public');
+            // SECURITY: size cap on the base64 payload (~15 MB binary ≈ 20 MB base64).
+            // Prevents unbounded payload abuse through the public upload endpoint.
+            const fileStr = String(file);
+            if (fileStr.length > 20_000_000) {
+                return sendJSON(res, 413, { error: 'File terlalu besar (maks 15 MB)' });
+            }
+
+            // SECURITY: MIME whitelist. This endpoint is public (no auth) and files
+            // are written to a public GitHub repo that jsDelivr serves WITHOUT
+            // X-Content-Type-Options: nosniff — so executable content types (SVG,
+            // HTML) would become stored XSS. Only allow the media formats the
+            // portfolio actually uses (webp/jpg/png/gif/pdf/video).
+            let uploadMime = 'image/png';
+            if (fileStr.includes(';base64,')) {
+                const mimeMatch = fileStr.split(';base64,')[0].match(/data:([^;]+)/);
+                if (mimeMatch) uploadMime = mimeMatch[1].toLowerCase();
+            }
+            const allowedMime = ['image/webp', 'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'application/pdf', 'video/mp4', 'video/webm'];
+            if (!allowedMime.includes(uploadMime)) {
+                return sendJSON(res, 415, { error: `Tipe file tidak diizinkan (${uploadMime}). Gunakan webp/jpg/png/gif/pdf/mp4/webm.` });
+            }
+
+            const result = await uploadToGitHubCDN(fileStr, filename || customPublicId, 'public');
 
             let origin = '';
             if (req.headers?.origin) {
@@ -1599,10 +1727,16 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
 
     if (resourceName === 'translate') {
         if (req.method !== 'POST') return sendJSON(res, 405, { error: 'Method not allowed' });
+        // SECURITY: translate endpoint is gated by admin auth — prevents
+        // anonymous abuse of the AI gateway quota by the public internet.
+        const translateUser = await verifyJwtToken(req);
+        if (!translateUser) return sendJSON(res, 401, { error: 'Unauthorized. Translate requires authentication.' });
         try {
             const body = await parseBody(req);
             const { text, target = 'en' } = body || {};
             if (!text) return sendJSON(res, 400, { error: 'Text is required' });
+            const input = String(text);
+            if (input.length > 20000) return sendJSON(res, 413, { error: 'Text too large (max 20000 chars)' });
 
             const apiKey = getEnv('AI_API_KEY') || getEnv('AI_GATEWAY_API_KEY');
             const apiUrl = getEnv('AI_API_URL') || (getEnv('AI_GATEWAY_BASE_URL') ? `${getEnv('AI_GATEWAY_BASE_URL').replace(/\/+$/, '')}/chat/completions` : 'https://9router.serverinka.cloud/v1/chat/completions');
@@ -1622,7 +1756,7 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
                     model,
                     messages: [
                         { role: 'system', content: systemPrompt },
-                        { role: 'user', content: String(text) }
+                        { role: 'user', content: input }
                     ],
                     stream: false
                 })
@@ -1637,8 +1771,8 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
                 data = JSON.parse(clean);
             }
 
-            const translated = data?.choices?.[0]?.message?.content?.trim() || text;
-            return sendJSON(res, 200, { translated, original: text });
+            const translated = data?.choices?.[0]?.message?.content?.trim() || input;
+            return sendJSON(res, 200, { translated, original: input });
         } catch (err: any) {
             return sendJSON(res, 500, { error: 'Translation failed', details: err?.message });
         }
@@ -2123,22 +2257,52 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
             const inputPin = String(body?.pin || '').trim();
             if (!inputPin) return sendJSON(res, 400, { success: false, error: 'PIN wajib diisi.' });
 
-            let dbPin = '280219';
+            let dbPin = '';
             try {
                 const configRow = await getDb().select().from(kerjaConfigs).where(eq(kerjaConfigs.key, 'pin')).limit(1);
                 if (configRow.length > 0 && configRow[0].value) {
                     dbPin = configRow[0].value.trim();
                 }
             } catch (e) {}
-
+            // Fail secure: if the PIN is not configured in the DB, reject all attempts
+            // instead of falling back to a hardcoded default.
+            if (!dbPin) {
+                return sendJSON(res, 401, { success: false, error: 'PIN belum dikonfigurasi.' });
+            }
             if (inputPin === dbPin) {
                 const token = crypto.randomBytes(24).toString('hex');
+                // Register a short-lived PIN session so the frontend can gate
+                // /api/kerja/public-data (the documents & items payload).
+                kerjaPinSessions.set(token, Date.now() + KERJA_PIN_TTL_MS);
+                // Opportunistic cleanup of expired sessions.
+                if (kerjaPinSessions.size > 1000) {
+                    const now = Date.now();
+                    for (const [k, exp] of kerjaPinSessions) if (exp < now) kerjaPinSessions.delete(k);
+                }
                 return sendJSON(res, 200, { success: true, token, message: 'PIN terverifikasi.' });
             }
             return sendJSON(res, 401, { success: false, error: 'PIN yang Anda masukkan salah.' });
         }
 
         if (action === 'public-data' && req.method === 'GET') {
+            // SECURITY: the /kerja documents & items payload (career files, certificates)
+            // is no longer public. Access requires EITHER a valid admin JWT (admin panel)
+            // OR a valid PIN session token issued by /api/kerja/verify-pin (public page).
+            const adminUser = await verifyJwtToken(req);
+            let pinTokenOk = false;
+            const pinToken = String(req.headers?.['x-kerja-token'] || query.pin_token || '').trim();
+            if (pinToken) {
+                const exp = kerjaPinSessions.get(pinToken);
+                if (exp && exp > Date.now()) {
+                    pinTokenOk = true;
+                } else if (exp) {
+                    kerjaPinSessions.delete(pinToken);
+                }
+            }
+            if (!adminUser && !pinTokenOk) {
+                return sendJSON(res, 401, { error: 'Unauthorized. PIN or admin access required.' });
+            }
+
             try {
                 const items = await getDb()
                     .select()
@@ -2460,6 +2624,11 @@ decoded = (jwt.decode(tempToken)).payload || jwt.decode(tempToken);
       code === '57P01';
 
     if (isDbError) {
+      // M7: never leak DB error text (table names, query snippets) to anonymous
+      // clients. Authenticated admins still see the detail for debugging.
+      if (!isAuthenticated) {
+        return sendJSON(res, 503, { error: 'Service temporarily unavailable' });
+      }
       return sendJSON(res, 503, { error: 'Service temporarily unavailable', details: msg });
     }
 

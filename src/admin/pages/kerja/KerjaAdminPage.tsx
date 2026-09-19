@@ -65,7 +65,9 @@ export default function KerjaAdminPage() {
     }
   });
 
-  const currentPin = configData?.find((c: any) => c.key === 'pin')?.value || '280219';
+  // SECURITY: no hardcoded PIN default — the value is read only from the
+  // admin-authed /kerja/config endpoint (which 401s without a valid admin token).
+  const currentPin = configData?.find((c: any) => c.key === 'pin')?.value || '';
   const items: any[] = publicData?.items || [];
   const documents: any[] = publicData?.documents || [];
 

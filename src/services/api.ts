@@ -750,6 +750,23 @@ export const api = {
     bulkDelete: async (ids: number[]): Promise<void> => {
       await apiClient.delete('/blog-posts/bulk', { data: { ids } });
     },
+    // Public blog interactions (path-based endpoints on the backend).
+    like: async (id: number, count?: number): Promise<{ success: boolean; likes: number }> => {
+      const response = await apiClient.post(`/blog-posts/${id}/like`, count !== undefined ? { count } : {});
+      return response.data;
+    },
+    view: async (id: number): Promise<{ success: boolean; views: number }> => {
+      const response = await apiClient.post(`/blog-posts/${id}/view`, {});
+      return response.data;
+    },
+    getComments: async (id: number): Promise<any[]> => {
+      const response = await apiClient.get(`/blog-posts/${id}/comments`);
+      return response.data;
+    },
+    addComment: async (id: number, data: { name: string; email?: string; content: string; avatar?: string | null }): Promise<any> => {
+      const response = await apiClient.post(`/blog-posts/${id}/comments`, data);
+      return response.data;
+    },
   },
   blog: {
     posts: {
